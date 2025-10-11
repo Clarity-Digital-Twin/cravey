@@ -21,18 +21,26 @@ A modern, privacy-focused **iOS application** built with SwiftUI and SwiftData t
 
 ## Tech Stack
 
-### 2025 Modern iOS/macOS Development
-- **Swift 6.0** with strict concurrency
-- **SwiftUI** for declarative UI
+### 2025 Modern iOS Development
+- **Swift 6.2** with strict concurrency
+- **SwiftUI** for declarative UI (iOS 18+)
 - **SwiftData** for persistent storage (@Model macro)
 - **AVFoundation** for audio/video recording
-- **Swift Package Manager** for dependencies
+- **XcodeGen 2.44.1** for project generation
 
 ### Architecture
-- MVVM-inspired architecture
-- SwiftData models with relationships
-- Environment-based dependency injection
+- **Clean Architecture + MVVM** (Robert C. Martin principles)
+- Pure Domain layer (framework-independent business logic)
+- Repository pattern with protocol-based DI
+- @Observable ViewModels (Swift 6)
 - Proper separation of concerns
+
+### Development Tools
+- **Xcode 26.0.1** (Build 17A400)
+- **xcbeautify 2.30.1** - Pretty terminal output
+- **swiftlint 0.61.0** - Code linting
+- **swiftformat 0.58.3** - Auto-formatting
+- **gh 2.81.0** - GitHub CLI
 
 ## App Configuration Templates
 

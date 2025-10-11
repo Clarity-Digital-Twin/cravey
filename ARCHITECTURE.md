@@ -1,9 +1,9 @@
 # Cravey Architecture Documentation
 
 **Architecture Pattern:** Clean Architecture + MVVM
-**Language:** Swift 6.0
+**Language:** Swift 6.2
 **Frameworks:** SwiftUI, SwiftData, AVFoundation
-**Minimum Deployment:** iOS 18.0, macOS 15.0
+**Minimum Deployment:** iOS 18+ (macOS support planned for future release)
 
 ---
 
