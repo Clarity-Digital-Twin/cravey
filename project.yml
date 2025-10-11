@@ -1,0 +1,88 @@
+# XcodeGen Project Configuration
+# Generate Xcode project with: xcodegen generate
+
+name: Cravey
+options:
+  bundleIdPrefix: com.cravey
+  deploymentTarget:
+    iOS: 18.0
+    macOS: 15.0
+  createIntermediateGroups: true
+  usesTabs: false
+  indentWidth: 4
+  developmentLanguage: en
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: "complete"
+    ENABLE_PREVIEWS: true
+    DEVELOPMENT_TEAM: ""  # Add your team ID later
+
+targets:
+  Cravey:
+    type: application
+    platform: iOS
+    sources:
+      - path: Cravey
+        excludes:
+          - "**/.DS_Store"
+    settings:
+      base:
+        PRODUCT_NAME: Cravey
+        PRODUCT_BUNDLE_IDENTIFIER: com.cravey.app
+        INFOPLIST_FILE: Config/iOS.Info.plist.template
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1,2"  # iPhone and iPad
+        SUPPORTS_MACCATALYST: true
+    preBuildScripts:
+      - script: |
+          # SwiftLint
+          if which swiftlint >/dev/null; then
+            swiftlint
+          fi
+        name: SwiftLint
+        basedOnDependencyAnalysis: false
+
+  CraveyTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - CraveyTests
+    dependencies:
+      - target: Cravey
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.cravey.tests
+        GENERATE_INFOPLIST_FILE: true
+
+  CraveyUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - CraveyUITests
+    dependencies:
+      - target: Cravey
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.cravey.uitests
+        GENERATE_INFOPLIST_FILE: true
+
+schemes:
+  Cravey:
+    build:
+      targets:
+        Cravey: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - CraveyTests
+        - CraveyUITests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

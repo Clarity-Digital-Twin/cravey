@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Bundle Identifier -->
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+
+	<!-- App Name -->
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+
+	<key>CFBundleDisplayName</key>
+	<string>Cravey</string>
+
+	<!-- Bundle Version -->
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+
+	<key>CFBundleVersion</key>
+	<string>1</string>
+
+	<!-- macOS Minimum Version -->
+	<key>LSMinimumSystemVersion</key>
+	<string>15.0</string>
+
+	<!-- App Category -->
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.healthcare-fitness</string>
+
+	<!-- REQUIRED: Privacy Strings for Recording Features -->
+
+	<!-- Microphone Access (for audio recordings) -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Cravey needs microphone access to record personal motivational audio messages that help you during cravings. All recordings stay private on your device.</string>
+
+	<!-- Camera Access (for video recordings) -->
+	<key>NSCameraUsageDescription</key>
+	<string>Cravey needs camera access to record personal motivational videos that help you during cravings. All recordings stay private on your device.</string>
+
+	<!-- Photo Library Add (macOS doesn't use this key, but keeping for reference) -->
+
+	<!-- OPTIONAL: Speech Recognition -->
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Cravey can transcribe your voice notes to help you log cravings faster. All processing happens on your device.</string>
+
+	<!-- OPTIONAL: Location -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Cravey can use your location to help identify triggers and patterns. This data stays private on your device.</string>
+
+	<!-- App Transport Security (for optional remote chat API) -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+	</dict>
+
+	<!-- Principal Class (macOS SwiftUI App) -->
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+
+	<!-- Main Storyboard (not needed for pure SwiftUI, but good to have) -->
+	<key>NSMainStoryboardFile</key>
+	<string></string>
+
+	<!-- High Resolution Capable -->
+	<key>NSHighResolutionCapable</key>
+	<true/>
+
+	<!-- Support for Dark Mode -->
+	<key>NSRequiresAquaSystemAppearance</key>
+	<false/>
+
+	<!-- Document Types (if supporting file import/export later) -->
+	<!-- Commented out for now
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>Cravey Data</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.cravey.data</string>
+			</array>
+		</dict>
+	</array>
+	-->
+
+	<!-- App Icon (using Asset Catalog) -->
+	<key>CFBundleIconFile</key>
+	<string>AppIcon</string>
+
+	<!-- Sandbox Entitlements (macOS App Sandbox) -->
+	<!-- These would go in entitlements file, not Info.plist
+	- User Selected File Read/Write
+	- Audio Input
+	- Camera
+	- Network Client (for optional chat API)
+	-->
+</dict>
+</plist>
