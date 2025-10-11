@@ -1,6 +1,8 @@
 # Cravey - Cannabis Cessation Support App
 
-A modern, privacy-focused iOS/macOS application built with SwiftUI and SwiftData to help users track cannabis cravings, log their journey, and access motivational support during difficult moments.
+A modern, privacy-focused **iOS application** built with SwiftUI and SwiftData to help users track cannabis cravings, log their journey, and access motivational support during difficult moments.
+
+> **Note**: Currently focused on iOS 18+. macOS support planned for future release.
 
 ## Features
 
