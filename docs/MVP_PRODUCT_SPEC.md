@@ -1,8 +1,41 @@
 # Cravey MVP Product Specification
 
-**Version:** 1.0
+**Version:** 1.1
 **Last Updated:** 2025-10-12
-**Status:** v1.0 - Locked & Ready for Implementation
+**Status:** v1.1 - Final Product Specification
+
+---
+
+## 🔖 CHECKPOINT (2025-10-12)
+
+**📋 For Full Project Status:** See `docs/CHECKPOINT_STATUS.md` (master doc tracking all planning docs)
+
+**This Document's Status:**
+- ✅ MVP_PRODUCT_SPEC.md v1.1 completed and locked
+- ✅ Added 5 critical improvements:
+  1. Permission denial fallback UX (line 75)
+  2. Craving→Usage link dismissal behavior (line 105)
+  3. "Days in Progress" reset clarification (line 181)
+  4. Accessibility timing wording (line 256)
+  5. **Appendix B: Data Relationships & Deletion Rules** (NEW - defines SwiftData relationship behavior)
+
+**What's Next (Changed from Original Plan):**
+- ~~Original plan: Create DATA_MODEL_SPEC.md next~~
+- ✅ **New plan (correct order):** Create `CLINICAL_CANNABIS_SPEC.md` FIRST
+  - Domain expert (Ray - psychiatrist) validates clinical accuracy
+  - Ensures ROA/amounts/intensity scales are clinically meaningful
+  - Prevents building technically perfect but clinically useless features
+  - Then UX_FLOW_SPEC.md → Then DATA_MODEL_SPEC.md
+
+**Why the Change:**
+- Ray's instinct: "I need to validate the cannabis tracking model clinically before we build it"
+- This is correct: Domain-Driven Design says validate the model with domain expert BEFORE implementation
+- Example: "Half bowl vs. full bowl" might be more clinically useful than "number of puffs"
+
+**When You Return:**
+- Read `docs/CHECKPOINT_STATUS.md` for full project roadmap
+- See "YOU ARE HERE" marker (currently: CLINICAL_CANNABIS_SPEC.md)
+- Start validating cannabis tracking model with clinical expertise
 
 ---
 
@@ -72,6 +105,7 @@ Someone who uses cannabis and wants to:
   - Camera/Microphone (for motivational recordings)
   - Explained with clear "Why we need this" text
   - All permissions optional (app works without them)
+  - **If denied:** Recording feature shows "Enable camera/mic in Settings to record" message. User can still use all other features (logging, dashboard, AI chat).
 - **Quick Tour** (Optional, Skippable)
   - 3-screen walkthrough of core features
   - "Log Cravings → Record Motivational Videos → See Your Progress"
@@ -101,6 +135,7 @@ Sets user expectations, builds trust around privacy, and personalizes the experi
   - **Duration** - Optional timer or manual input ("How long did it last?")
   - **Notes** - Optional freeform text
 - **Link to Usage Log** - If outcome = "Used," prompt: "Log what you used?" (opens usage form with pre-filled timestamp)
+  - If user dismisses prompt: Craving saved with "Used" outcome, no usage log created. User can manually log usage later if desired.
 - **Instant Feedback** - After logging:
   - If Resisted: "💪 That's strength. Every moment counts."
   - If Still Deciding: "🤝 Take your time. You've got this."
@@ -176,7 +211,7 @@ Hearing your own voice/seeing your own face when you're clear-headed is more pow
   - **Resistance Rate** - Percentage of cravings resisted vs. used (pie chart or percentage)
   - **Method Breakdown** - Donut chart showing ROA distribution (e.g., "60% Smoke, 30% Vape, 10% Edible")
 - **Progress Stats** (at-a-glance cards)
-  - **Days in Progress** - Total days using the app (never resets, always counts up)
+  - **Days in Progress** - Total days using the app (never resets from setbacks, always counts up; only resets if user manually deletes all data)
   - **Days Since Last Use** - Factual counter (if quitting)
   - **Cravings Resisted** - Total count of ✅ Resisted outcomes
   - **Total Sessions Logged** - Combined usage + craving entries
@@ -251,7 +286,7 @@ Data transparency builds trust. Users feel in control, reducing anxiety about pr
 - **macOS version** - iOS-only first (macOS planned for future)
 - **Pre-populated motivational quotes** - User-generated content only (may add later)
 - **Integration with other apps** - No HealthKit, no calendar sync (future consideration)
-- **Accessibility audit** - Will add VoiceOver/Dynamic Type support in v1.1 after user testing
+- **Accessibility audit** - Will add VoiceOver/Dynamic Type support post-MVP after user testing
 
 ---
 
@@ -333,7 +368,7 @@ v1.0 MVP is ethically successful if:
 ### Immediate (Planning Phase)
 1. ✅ **AI Agent Review** - Completed (agent provided critical feedback)
 2. ✅ **Converge on Final Version** - Incorporated all must-have changes
-3. **Lock v1.0 Spec** - This document is now locked and ready for implementation
+3. ✅ **Lock v1.1 Spec** - This document is now locked and ready for implementation (added permission fallbacks, link dismissal behavior, data relationship rules)
 4. **Create `DATA_MODEL_SPEC.md`** - Define exact SwiftData schemas for CravingModel, UsageModel, RecordingModel, MotivationalMessageModel
 5. **Create `UX_FLOW_SPEC.md`** - Wireframe user journeys (onboarding, logging flows, dashboard navigation)
 6. **Create `TECHNICAL_IMPLEMENTATION.md`** - Map features to repos/use cases/views, define implementation order
@@ -404,4 +439,51 @@ v1.0 MVP is ethically successful if:
 
 ---
 
-**Status:** v1.0 LOCKED & READY FOR IMPLEMENTATION 🚀🔥
+## Appendix B: Data Relationships & Deletion Rules
+
+### Craving ↔ Recording Relationship
+**Structure:**
+- Cravings can optionally reference recordings (many-to-one: multiple cravings can link to the same motivational video)
+- Recordings exist independently of cravings (created during sober moments, not tied to specific craving events)
+
+**Delete Behavior:**
+1. **When user deletes a craving:**
+   - Associated recording is NOT deleted (preserved for future use)
+   - If recording was referenced by the craving, it remains accessible in Recordings library
+
+2. **When user deletes a recording:**
+   - Craving entries that referenced it remain intact
+   - Craving data (intensity, trigger, outcome) is preserved
+   - No cascading deletes
+
+3. **When user selects "Delete All Data":**
+   - All cravings, usage logs, AND recordings are permanently deleted
+   - App resets to first-launch state
+
+**Why These Rules:**
+- **User Intent:** Deleting a craving log means "I want to remove this data point," not "delete my motivational content"
+- **Data Integrity:** Recordings are valuable assets created intentionally, separate from spontaneous craving logs
+- **Flexibility:** User can curate recordings independently without affecting historical logs
+
+### Usage ↔ Craving Relationship
+**Structure:**
+- Usage logs can optionally link back to a craving (if user followed "Log what you used?" prompt)
+- One-way reference: Usage → Craving (for context: "This usage followed a craving")
+
+**Delete Behavior:**
+1. **When user deletes a usage log:**
+   - Original craving entry remains intact with "Used" outcome
+   - Removing usage detail doesn't change craving history
+
+2. **When user deletes a craving that has linked usage:**
+   - Prompt: "This craving has a linked usage log. Delete both?" (Yes / No / Cancel)
+   - If Yes: Both deleted
+   - If No: Only craving deleted, usage log preserved with no craving reference
+
+**Why These Rules:**
+- **User Control:** Clear about what's being deleted
+- **Data Completeness:** Usage logs may have valuable context (method, amount, mood) worth preserving separately
+
+---
+
+**Status:** v1.1 LOCKED & READY FOR IMPLEMENTATION 🚀🔥
