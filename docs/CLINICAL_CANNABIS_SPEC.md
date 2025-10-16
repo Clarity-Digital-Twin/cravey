@@ -148,11 +148,13 @@ This doc is where the domain expert (you) validates that the tracking model is c
 ## 🤔 Open Questions (To Brainstorm)
 
 ### Routes of Administration (ROA) - Complete?
-- ✅ Smoke (Bowls, Joints, Blunts)
-- ✅ **Vape** - # of pulls (short/long)
-- ✅ **Dab** - Size (small/large) + count
-- 🚧 **Edible** - TO BRAINSTORM NEXT
-- ❓ **Other** - Tinctures, topicals, etc. (Relevant for MVP?)
+- ✅ **Smoke (Bowls)** - Incrementing by 0.5 (0.5, 1, 1.5, 2...)
+- ✅ **Smoke (Joints)** - Incrementing by 0.5 (0.5, 1, 1.5, 2...)
+- ✅ **Smoke (Blunts)** - Incrementing by 0.5 (0.5, 1, 1.5, 2...)
+- ✅ **Vape** - Incrementing by 1 (1, 2, 3, 4... pulls)
+- ✅ **Dab** - Incrementing by 1 (1, 2, 3... dabs)
+- ✅ **Edible** - Incrementing by 10mg (10mg, 20mg, 30mg...)
+- ❓ **Other** - Tinctures, topicals, etc. (Relevant for MVP? Likely out of scope)
 
 ### Craving Intensity Scale
 - ❓ Is **1-10 scale** validated? (Currently in MVP spec)
