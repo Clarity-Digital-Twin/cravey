@@ -200,11 +200,20 @@ This doc is where the domain expert (you) validates that the tracking model is c
 
 *(Keep adding thoughts here as you brainstorm)*
 
-**Initial Thoughts:**
-- "Half bowl / full bowl" is way more intuitive than "number of puffs"
-- Users in craving moments need FAST logging (<10 sec target)
-- Granularity should support harm reduction insights (e.g., "You're using less per session")
+**✅ ROA Tracking Model Validated (2025-10-12):**
+- Simple incrementing counts match user mental models
+- **Bowls/Joints/Blunts:** 0.5 increments (captures "half" vs "full")
+- **Vapes/Dabs:** Whole number increments (1, 2, 3...)
+- **Edibles:** 10mg increments (standard dispensary dosing)
+- No overly pedantic distinctions (no "short/long pulls", no "small/large dabs")
+- Fast to log (<5 sec target)
+- Supports harm reduction insights ("using 0.5 bowls vs 3 bowls")
 - Don't track data that won't inform clinical decisions
+
+**Key Principle:**
+- Users in vulnerable moments need FAST, SIMPLE logging
+- "Half bowl / full bowl" >> "number of puffs" (clinically useless)
+- Granularity supports behavioral tracking without being burdensome
 
 ---
 
