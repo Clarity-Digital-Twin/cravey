@@ -262,10 +262,10 @@ Map features to code (repos, use cases, views) and define build order.
 ## 🎯 Current Position: You Are Here
 
 ```
-✅ MVP_PRODUCT_SPEC.md (v1.1)
+✅ MVP_PRODUCT_SPEC.md (v1.2) - UPDATED with independent flows
     ↓
-🔴 CLINICAL_CANNABIS_SPEC.md ← YOU ARE HERE (about to start)
-    ↓
+🟡 CLINICAL_CANNABIS_SPEC.md ← YOU ARE HERE (40% complete - paused)
+    ↓  Next: Design Usage Logging UX flow
 🔴 UX_FLOW_SPEC.md
     ↓
 🔴 DATA_MODEL_SPEC.md
