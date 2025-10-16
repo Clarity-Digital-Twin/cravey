@@ -49,41 +49,41 @@
 
 ### 🚧 IN PROGRESS / NEXT UP
 
-#### 2. `CLINICAL_CANNABIS_SPEC.md` - **NEXT TO CREATE**
-**Status:** 🔴 Not Started
+#### 2. `CLINICAL_CANNABIS_SPEC.md` - **PARTIALLY COMPLETE**
+**Status:** 🟡 In Progress (40% complete)
+**Last Updated:** 2025-10-12
 **Priority:** HIGH (blocks accurate implementation)
 **Owner:** Ray (Domain Expert - Psychiatrist/Addiction Medicine)
 
 **Purpose:**
 Validate clinical accuracy of cannabis tracking model BEFORE building it.
 
-**What It Should Define:**
-1. **ROA Categories** - Are Smoke/Vape/Dab/Edible/Other clinically meaningful?
-2. **Amount Granularity** - Is "Half bowl / Full bowl" useful for harm reduction? Or do we need grams, mg THC, etc.?
-3. **Frequency Tracking** - What timeframes matter clinically? (Daily, weekly, per-session?)
-4. **Craving Intensity** - Is 1-10 scale validated? Or should it be 0-5, qualitative (Low/Med/High)?
-5. **Outcome Categories** - Is Resisted/Deciding/Used sufficient? Or too simplistic?
-6. **Trigger Categories** - Are Stress/Boredom/Social/Anxiety/Habit/Paraphernalia complete? Missing any?
-7. **THC Potency** - Should we track this? (Clinical concern: high-potency concentrates)
-8. **Medical vs. Recreational** - Does this distinction matter for MVP?
+**✅ What's Been Validated:**
+1. ✅ **ROA Categories & Amounts** - Simple incrementing counts validated
+   - Bowls/Joints/Blunts: 0.5 increments (0.5, 1, 1.5, 2...)
+   - Vapes: Whole number pulls (1, 2, 3...)
+   - Dabs: Whole number dabs (1, 2, 3...)
+   - Edibles: 10mg increments (10mg, 20mg, 30mg...)
+2. ✅ **Craving Intensity Scale** - 1-10 slider (standard pain scale model)
+3. ✅ **CRITICAL INSIGHT:** Independent flows (craving logging ≠ usage logging)
 
-**Why This Matters:**
-- You're the domain expert - your clinical judgment validates the model
-- Prevents building technically perfect but clinically useless features
-- Example: "Number of puffs" sounds quantitative but has no clinical utility
-- Example: "Half bowl vs. full bowl" matches user mental model and is actionable
+**🚧 What's Still To Do:**
+1. 🚧 **Hammer down Usage Logging UX** (ROA selection flow, amount input UX)
+2. 🚧 **Then Craving Logging UX** (intensity slider, trigger chips)
+3. 🚧 **Trigger Categories** - Validate current list (Stress, Boredom, Social, Anxiety, Habit, Paraphernalia - complete?)
+4. 🚧 **"Other" ROA** - Tinctures, topicals - MVP or post-MVP?
+5. 🚧 **THC Potency Tracking** - Is this MVP or post-MVP?
 
-**How to Write It:**
-- This is a brainstorming doc, not a formal spec
-- Write from clinical perspective: "What actually matters for harm reduction?"
-- Challenge existing decisions in MVP_PRODUCT_SPEC.md
-- Casual tone OK - you're validating with expertise, not writing for stakeholders
+**Next Step When You Return:**
+- Open CLINICAL_CANNABIS_SPEC.md
+- Read checkpoint at bottom
+- Start designing Usage Logging UX flow (step-by-step)
 
-**Output:**
-- Validates or revises Appendix A (ROA amounts)
-- May add new fields (e.g., THC potency tracking)
-- May remove fields (e.g., "Duration" for cravings might be clinically meaningless)
-- Feeds into DATA_MODEL_SPEC.md (so we build the right thing)
+**Output So Far:**
+- Validated simple incrementing model (no pedantic distinctions)
+- Updated MVP_PRODUCT_SPEC.md Appendix A to match
+- Removed "outcome" field from craving logging (independent flows)
+- Feeds into UX_FLOW_SPEC.md next
 
 ---
 
