@@ -6,36 +6,28 @@
 
 ---
 
-## 🔖 CHECKPOINT (2025-10-12)
+## 🔖 CHECKPOINT (2025-10-12 - UPDATED)
 
 **📋 For Full Project Status:** See `docs/CHECKPOINT_STATUS.md` (master doc tracking all planning docs)
 
 **This Document's Status:**
-- ✅ MVP_PRODUCT_SPEC.md v1.1 completed and locked
-- ✅ Added 5 critical improvements:
-  1. Permission denial fallback UX (line 75)
-  2. Craving→Usage link dismissal behavior (line 105)
-  3. "Days in Progress" reset clarification (line 181)
-  4. Accessibility timing wording (line 256)
-  5. **Appendix B: Data Relationships & Deletion Rules** (NEW - defines SwiftData relationship behavior)
+- ✅ MVP_PRODUCT_SPEC.md v1.2 - Updated with independent flow model
+- ✅ **CRITICAL CHANGE:** Craving logging and usage logging are now INDEPENDENT
+  - Removed "outcome" field from craving logging
+  - Removed forced link between craving → usage
+  - Users can track cravings only, usage only, or both
+- ✅ Updated ROA amounts to match validated clinical model (CLINICAL_CANNABIS_SPEC.md):
+  - Bowls/Joints/Blunts: 0.5 increments
+  - Vapes/Dabs: Whole number increments
+  - Edibles: 10mg increments
 
-**What's Next (Changed from Original Plan):**
-- ~~Original plan: Create DATA_MODEL_SPEC.md next~~
-- ✅ **New plan (correct order):** Create `CLINICAL_CANNABIS_SPEC.md` FIRST
-  - Domain expert (Ray - psychiatrist) validates clinical accuracy
-  - Ensures ROA/amounts/intensity scales are clinically meaningful
-  - Prevents building technically perfect but clinically useless features
-  - Then UX_FLOW_SPEC.md → Then DATA_MODEL_SPEC.md
-
-**Why the Change:**
-- Ray's instinct: "I need to validate the cannabis tracking model clinically before we build it"
-- This is correct: Domain-Driven Design says validate the model with domain expert BEFORE implementation
-- Example: "Half bowl vs. full bowl" might be more clinically useful than "number of puffs"
+**What's Next:**
+- 🚧 **Continue CLINICAL_CANNABIS_SPEC.md** - Hammer down Usage Logging UX first, then Craving Logging
+- Then UX_FLOW_SPEC.md → Then DATA_MODEL_SPEC.md
 
 **When You Return:**
-- Read `docs/CHECKPOINT_STATUS.md` for full project roadmap
-- See "YOU ARE HERE" marker (currently: CLINICAL_CANNABIS_SPEC.md)
-- Start validating cannabis tracking model with clinical expertise
+- Read `docs/CLINICAL_CANNABIS_SPEC.md` checkpoint to see where we left off
+- Next: Design Usage Logging UX flow step-by-step
 
 ---
 
@@ -117,32 +109,24 @@ Sets user expectations, builds trust around privacy, and personalizes the experi
 
 ### 1. Craving Logging
 **User Story:**
-*"I want to log when I experience a craving—whether I resist it or give in—so I can understand triggers and celebrate moments of resistance."*
+*"I want to log when I experience a craving so I can understand triggers and track patterns."*
 
 **Functionality:**
-- **Ultra-Fast Input** - Log in <5 seconds (faster than usage logging)
-  - Big red "Log Craving" button on home screen
+- **Ultra-Fast Input** - Log in <5 seconds
+  - Big "Log Craving" button on home screen
   - Opens quick form with minimal fields
 - **Data Captured:**
   - **Timestamp** - Auto-populated (not editable)
   - **Intensity** - 1-10 slider (required)
   - **Trigger** - Quick-select chips (optional)
-    - Stress, Boredom, Social, Anxiety, Habit, Seeing Paraphernalia, Other
-  - **Outcome** - Single-tap choice (required)
-    - ✅ Resisted (green) - "I didn't use"
-    - ⏸️ Still Deciding (yellow) - "I'm working through it"
-    - 🔗 Used (blue) - "I used" (links to usage log if user taps)
-  - **Duration** - Optional timer or manual input ("How long did it last?")
+    - Stress, Boredom, Social, Anxiety, Habit, Paraphernalia, Other
   - **Notes** - Optional freeform text
-- **Link to Usage Log** - If outcome = "Used," prompt: "Log what you used?" (opens usage form with pre-filled timestamp)
-  - If user dismisses prompt: Craving saved with "Used" outcome, no usage log created. User can manually log usage later if desired.
+- **NO "outcome" field** - Craving is logged, that's it. No forced link to usage.
 - **Instant Feedback** - After logging:
-  - If Resisted: "💪 That's strength. Every moment counts."
-  - If Still Deciding: "🤝 Take your time. You've got this."
-  - If Used: "📊 Thanks for logging. Patterns help."
+  - "💪 Logged. Every moment of awareness counts."
 
 **Why It Matters:**
-**Logging cravings—especially resisted ones—is THE core feature.** It reframes urges as *data points*, not failures. A resisted craving is a WIN to celebrate. This builds self-efficacy and helps users identify triggers before they use.
+**Logging cravings reframes urges as *data points*, not failures.** Users track patterns without judgment. Some users track cravings to understand triggers (quit-focused), others don't track them at all (usage monitoring only). This feature is optional and independent from usage logging.
 
 ---
 
@@ -154,25 +138,28 @@ Sets user expectations, builds trust around privacy, and personalizes the experi
 - **Fast input form** - Log in <10 seconds
 - **Data Captured:**
   - **Date/Time** - Auto-populated, editable
-  - **Method (ROA)** - Single-tap selection (simplified to 5 categories)
-    - 💨 **Smoke** (joint, blunt, bowl, bong, pipe)
-    - 🌬️ **Vape** (concentrate pen, cartridge)
-    - 💎 **Dab** (rig, e-nail)
+  - **Method (ROA)** - Single-tap selection
+    - 💨 **Bowls** (pipes, bongs)
+    - 🚬 **Joints**
+    - 🌿 **Blunts**
+    - 🌬️ **Vape** (pens, cartridges)
+    - 💎 **Dab** (rigs, concentrates)
     - 🍫 **Edible** (gummies, brownies, drinks)
-    - ➕ **Other** (custom, e.g., tincture, topical)
-  - **Amount** - Context-aware based on method (see Data Dictionary in Appendix A)
-    - *Smoke:* Half / Full (bowl, joint, etc.)
-    - *Vape:* Short Hit / Long Hit / Multiple Hits
-    - *Dab:* Small / Medium / Large
-    - *Edible:* Dose in mg (e.g., 5mg, 10mg) or "Unknown"
-    - *Other:* Freeform text
+  - **Amount** - Simple incrementing count (see CLINICAL_CANNABIS_SPEC.md for validation)
+    - *Bowls:* 0.5, 1, 1.5, 2, 2.5, 3... (half-increments)
+    - *Joints:* 0.5, 1, 1.5, 2, 2.5, 3... (half-increments)
+    - *Blunts:* 0.5, 1, 1.5, 2, 2.5, 3... (half-increments)
+    - *Vape:* 1, 2, 3, 4, 5... pulls (whole numbers)
+    - *Dab:* 1, 2, 3, 4... dabs (whole numbers)
+    - *Edible:* 10mg, 20mg, 30mg, 40mg... (10mg increments)
   - **Context/Trigger** - Optional quick-select chips
     - Stress, Social, Boredom, Anxiety, Celebration, Habit, Other
   - **Mood After** - Optional 1-10 slider ("How do you feel now?")
   - **Notes** - Optional freeform text
+- **NO forced link to cravings** - Usage is logged independently
 
 **Why It Matters:**
-Understanding *when*, *how*, and *why* they use helps users identify patterns and make informed decisions about their consumption. Simplified ROA reduces friction while capturing meaningful data.
+Understanding *when*, *how*, and *why* they use helps users identify patterns and make informed decisions about their consumption. Simple incrementing counts match user mental models and reduce friction.
 
 ---
 
@@ -403,26 +390,32 @@ v1.0 MVP is ethically successful if:
 
 ### ROA (Route of Administration) Amount Details
 
-#### 💨 Smoke
-- **Half** - Half bowl, half joint, few puffs
-- **Full** - Full bowl, full joint, full blunt
+**See `docs/CLINICAL_CANNABIS_SPEC.md` for full clinical validation.**
 
-#### 🌬️ Vape
-- **Short Hit** - 1-2 second inhale
-- **Long Hit** - 3-5+ second inhale
-- **Multiple Hits** - Several consecutive hits
+#### 💨 Bowls (Pipes / Bongs)
+- **Incrementing by 0.5** (0.5, 1, 1.5, 2, 2.5, 3...)
+- Examples: 0.5 bowls (half bowl), 1 bowl (full bowl), 1.5 bowls
 
-#### 💎 Dab
-- **Small** - Rice grain size
-- **Medium** - Pea size
-- **Large** - Larger than pea
+#### 🚬 Joints
+- **Incrementing by 0.5** (0.5, 1, 1.5, 2, 2.5, 3...)
+- Examples: 0.5 joints (half joint), 1 joint (full joint), 2 joints
 
-#### 🍫 Edible
-- **Dose (mg)** - Numeric input (e.g., 5mg, 10mg, 25mg)
-- **Unknown** - User doesn't know dosage
+#### 🌿 Blunts
+- **Incrementing by 0.5** (0.5, 1, 1.5, 2, 2.5, 3...)
+- Examples: 0.5 blunts (half blunt), 1 blunt (full blunt)
 
-#### ➕ Other
-- **Freeform Text** - User describes (e.g., "1 dropper tincture," "topical cream")
+#### 🌬️ Vape (Pens / Cartridges)
+- **Incrementing by 1** (1, 2, 3, 4, 5... pulls)
+- Examples: 1 pull, 3 pulls, 10 pulls
+
+#### 💎 Dab (Concentrates)
+- **Incrementing by 1** (1, 2, 3, 4... dabs)
+- Examples: 1 dab, 2 dabs, 3 dabs
+
+#### 🍫 Edible (Gummies / Brownies / Drinks)
+- **Incrementing by 10mg THC** (10mg, 20mg, 30mg, 40mg, 50mg...)
+- Examples: 10mg (one standard gummy), 20mg, 50mg
+- **Edge case:** If user doesn't know dosage, allow "Unknown" or freeform text
 
 ### Craving Trigger Categories
 - **Stress** - Work, family, finances, health

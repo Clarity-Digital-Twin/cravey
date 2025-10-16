@@ -5,11 +5,11 @@
 
 ---
 
-## 📊 Overall Status: 25% Complete (1/4 Planning Docs Done)
+## 📊 Overall Status: 40% Complete (1.5/4 Planning Docs Done)
 
 | Phase | Status | Progress |
 |-------|--------|----------|
-| **Phase 1: Planning & Validation** | 🟡 In Progress | 25% (1/4 docs) |
+| **Phase 1: Planning & Validation** | 🟡 In Progress | 40% (1.5/4 docs) |
 | **Phase 2: Implementation** | ⚪ Not Started | 0% |
 | **Phase 3: Testing & Launch** | ⚪ Not Started | 0% |
 
@@ -19,29 +19,31 @@
 
 ### ✅ COMPLETED
 
-#### 1. `MVP_PRODUCT_SPEC.md` (v1.1) - **LOCKED**
+#### 1. `MVP_PRODUCT_SPEC.md` (v1.2) - **UPDATED**
 **Status:** ✅ Complete
-**Last Updated:** 2025-10-12
+**Last Updated:** 2025-10-12 (Updated after clinical validation session)
 **What It Defines:**
 - Vision, target users, core problems solved
 - 6 MVP features (Onboarding, Craving Logging, Usage Logging, Recordings, Dashboard, AI Chat, Data Management)
 - Success criteria (Technical, User, Ethical)
 - Out of scope items
-- **Appendix A:** ROA amounts & trigger categories
+- **Appendix A:** ROA amounts & trigger categories (UPDATED to match clinical model)
 - **Appendix B:** Data relationship & deletion rules
 
 **Key Decisions Made:**
 - iOS 18+ only (initial release)
 - Local-only storage (SwiftData with `.none` CloudKit)
 - <5 sec craving log, <10 sec usage log
-- 5 ROA categories (Smoke/Vape/Dab/Edible/Other)
+- **CRITICAL:** Craving and usage logging are INDEPENDENT (no forced link)
+- 6 ROA categories (Bowls/Joints/Blunts/Vape/Dab/Edible)
+- Simple incrementing counts validated (0.5 increments for smoke, whole numbers for vape/dab, 10mg for edibles)
 - Permission denial fallbacks documented
 - Delete behavior for all relationships defined
 
 **Why It's Done:**
 - Provides north star for all other docs
 - Defines product-level "what" before technical "how"
-- Ready for clinical validation and UX mapping
+- Now aligned with clinically validated tracking model
 
 ---
 
