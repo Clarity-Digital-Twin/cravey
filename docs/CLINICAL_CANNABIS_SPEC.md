@@ -17,119 +17,131 @@ This doc is where the domain expert (you) validates that the tracking model is c
 
 ## 📊 Cannabis Quantity Tracking (Routes of Administration)
 
+**✅ VALIDATED MODEL - Simple Incrementing Counts (Clinically Useful, Fast to Log)**
+
 ### 1. **SMOKE - Bowls** (Pipes / Bongs)
 
-**Three-Step Selection:**
-1. **Size Picker:** Small / Large
-2. **Amount Picker:** Half / Full
-3. **Count Picker:** # of bowls (incrementing count)
+**Tracking Method:**
+- **Incrementing by 0.5** (0.5, 1, 1.5, 2, 2.5, 3...)
 
 **Examples:**
-- 1 small bowl, half smoked
-- 2 small bowls, full
-- 1 large bowl, half smoked
-- 3 large bowls, full
+- 0.5 bowls = half bowl
+- 1 bowl = full bowl
+- 1.5 bowls = one and a half bowls
+- 2 bowls = two full bowls
 
 **Why This Works:**
-- Matches user mental model ("I smoked 2 half bowls")
-- Actionable for harm reduction (tracking "3 large full bowls" vs "1 small half bowl")
-- Not overly precise (no "number of puffs" bullshit)
-- Quick to log (<10 sec)
-- Count allows tracking session intensity
+- Matches user mental model ("I smoked half a bowl" = 0.5)
+- Simple number incrementing
+- Actionable for harm reduction (track "3 bowls" vs "0.5 bowls")
+- Quick to log (<5 sec)
 
 ---
 
 ### 2. **SMOKE - Joints**
 
-**Two-Step Selection:**
-1. **Size Picker:** Small / Large
-2. **Amount Picker:** Half / Full
+**Tracking Method:**
+- **Incrementing by 0.5** (0.5, 1, 1.5, 2, 2.5, 3...)
 
 **Examples:**
-- Small joint, half smoked
-- Small joint, full
-- Large joint, half smoked
-- Large joint, full
+- 0.5 joints = half joint
+- 1 joint = full joint
+- 1.5 joints = one and a half joints
+- 2 joints = two full joints
 
-**Clinical Note:**
-- (To be validated) - Does joint size correlate with THC intake? Or too variable (depends on potency, packing)?
-- (To be validated) - Is this granularity useful? Or should we just track "joints smoked" (count)?
+**Why This Works:**
+- Same pattern as bowls - simple, fast, intuitive
+- Half joints are common (sharing, rationing)
 
 ---
 
 ### 3. **SMOKE - Blunts**
 
-**Two-Step Selection:**
-1. **Size Picker:** Small / Large
-2. **Amount Picker:** Half / Full
+**Tracking Method:**
+- **Incrementing by 0.5** (0.5, 1, 1.5, 2, 2.5, 3...)
 
 **Examples:**
-- Small blunt, half smoked
-- Small blunt, full
-- Large blunt, half smoked
-- Large blunt, full
+- 0.5 blunts = half blunt
+- 1 blunt = full blunt
+- 1.5 blunts = one and a half blunts
+
+**Why This Works:**
+- Consistent with bowls/joints pattern
+- Blunts often contain more cannabis than joints, but user knows their own context
 
 **Clinical Note:**
-- (To be validated) - Blunts typically have more cannabis than joints. Does this distinction matter?
-- (To be validated) - Should we track tobacco exposure from blunt wraps? (Out of scope for MVP?)
+- Blunts use tobacco wraps (nicotine exposure) - track this separately? Out of scope for MVP.
 
 ---
 
 ### 4. **VAPE - Pens / Cartridges**
 
-**Two-Step Selection:**
-1. **Pull Type:** Short / Long
-2. **Count Picker:** # of pulls (incrementing count)
+**Tracking Method:**
+- **Incrementing by 1** (1, 2, 3, 4, 5... pulls)
 
 **Examples:**
-- 3 short pulls
-- 5 long pulls
-- 10 short pulls
+- 1 pull
+- 3 pulls
+- 10 pulls
 
 **Why This Works:**
-- Matches user mental model ("I took 5 hits")
-- Short vs long distinguishes intensity (long pulls = more THC)
-- Simple incrementing counter
+- Simple whole number counting
+- No short/long distinction (too pedantic, hard to track accurately)
+- Users can easily count hits
 - Quick to log
 
 **Clinical Note:**
 - Vape cartridges vary wildly in THC % (300mg to 1000mg+)
-- Tracking pull count may not correlate directly with THC intake
-- But still useful for behavioral tracking (frequency patterns)
+- Pull count may not correlate directly with THC intake
+- But useful for behavioral tracking (frequency patterns, escalation over time)
 
 ---
 
 ### 5. **DAB - Concentrates**
 
-**Two-Step Selection:**
-1. **Size Picker:** Small / Large
-2. **Count Picker:** # of dabs (incrementing count)
+**Tracking Method:**
+- **Incrementing by 1** (1, 2, 3, 4... dabs)
 
 **Examples:**
-- 1 small dab
-- 2 large dabs
-- 3 small dabs
+- 1 dab
+- 2 dabs
+- 3 dabs
 
 **Why This Works:**
-- Matches user mental model ("I took 2 dabs")
-- Size matters (large dab = significantly more THC than small)
-- Count tracks session intensity
+- Simple whole number counting
+- No small/large distinction (half dabs are weird, users just count dabs)
 - Quick to log
 
 **Clinical Note:**
 - Dabs are high-potency (60-90% THC vs 15-25% flower)
-- Clinical concern: Tolerance escalation with concentrate use
-- Size + count gives rough intensity metric
+- **Clinical concern:** Tolerance escalation with concentrate use
+- Count alone is sufficient for behavioral tracking
 
 ---
 
-### 6. **EDIBLE - (TO BRAINSTORM NEXT)**
+### 6. **EDIBLE - Gummies / Brownies / Drinks**
 
-**Questions to answer:**
-- ❓ Track by **mg THC** (requires user to know dosage - often on packaging)
-- ❓ Track by **count** (gummies, brownies, cookies) + optional mg field?
-- ❓ Track by **qualitative** (Small dose / Medium dose / Large dose)?
-- ❓ Edibles are tricky: delayed onset, variable potency, homemade vs commercial
+**Tracking Method:**
+- **Incrementing by 10mg THC** (10mg, 20mg, 30mg, 40mg, 50mg...)
+
+**Examples:**
+- 10mg = one standard gummy
+- 20mg = two gummies or one strong gummy
+- 50mg = higher dose
+
+**Why This Works:**
+- Dispensaries standardize at 10mg doses
+- Users can read packaging
+- Matches real-world dosing (5mg = microdose, 10mg = standard, 25mg+ = strong)
+- Quick to log if they know dosage
+
+**Clinical Note:**
+- Edibles have delayed onset (1-3 hours)
+- **Clinical concern:** Overdosing from impatience ("not feeling it yet, eat more")
+- Tracking mg helps identify dose patterns and tolerance
+
+**Edge Case:**
+- If user doesn't know dosage: Allow "Unknown" or freeform text (e.g., "half brownie")
 
 ---
 
