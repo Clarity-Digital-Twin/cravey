@@ -49,9 +49,9 @@
 
 ### 🚧 IN PROGRESS / NEXT UP
 
-#### 2. `CLINICAL_CANNABIS_SPEC.md` - **PARTIALLY COMPLETE**
-**Status:** 🟡 In Progress (40% complete)
-**Last Updated:** 2025-10-12
+#### 2. `CLINICAL_CANNABIS_SPEC.md` - **MAJOR MILESTONE COMPLETE** ✅
+**Status:** ✅ 90% Complete (Usage Logging FULLY VALIDATED)
+**Last Updated:** 2025-10-18
 **Priority:** HIGH (blocks accurate implementation)
 **Owner:** Ray (Domain Expert - Psychiatrist/Addiction Medicine)
 
@@ -59,31 +59,42 @@
 Validate clinical accuracy of cannabis tracking model BEFORE building it.
 
 **✅ What's Been Validated:**
-1. ✅ **ROA Categories & Amounts** - Simple incrementing counts validated
-   - Bowls/Joints/Blunts: 0.5 increments (0.5, 1, 1.5, 2...)
-   - Vapes: Whole number pulls (1, 2, 3...)
-   - Dabs: Whole number dabs (1, 2, 3...)
-   - Edibles: 10mg increments (10mg, 20mg, 30mg...)
+1. ✅ **ROA Categories & Amounts with UX-ready picker ranges:**
+   - Bowls/Joints/Blunts: 0.5 → 5.0 (10 options)
+   - Vapes: 1 → 10 pulls (10 options)
+   - Dabs: 1 → 5 dabs (5 options)
+   - Edibles: 5mg → 100mg in 5mg increments (20 options)
 2. ✅ **Craving Intensity Scale** - 1-10 slider (standard pain scale model)
 3. ✅ **CRITICAL INSIGHT:** Independent flows (craving logging ≠ usage logging)
+4. ✅ **USAGE LOGGING UX FLOW - FULLY DESIGNED:**
+   - ROA selection: List UI (6 options)
+   - Amount input: Picker wheel (consistent across all ROAs)
+   - Timestamp: Auto "now", editable with >7 day warning
+   - UI pattern: Single scrollable form (Apple HIG)
+   - Optional fields: Trigger (HAALT multi-select), Location (GPS + presets), Notes (500 char)
+5. ✅ **TRIGGER CHIPS - HAALT-BASED:**
+   - Primary: Hungry, Angry, Anxious, Lonely, Tired, Sad
+   - Secondary: Bored, Social, Habit, Paraphernalia
+   - Multi-select enabled
+6. ✅ **LOCATION PRESETS:**
+   - Current Location (GPS auto-detect), Home, Work, Social, Outside, Car
+   - Single-select, privacy notice on first GPS use
+7. ✅ **Removed "Mood After"** field (redundant with triggers)
 
-**🚧 What's Still To Do:**
-1. 🚧 **Hammer down Usage Logging UX** (ROA selection flow, amount input UX)
-2. 🚧 **Then Craving Logging UX** (intensity slider, trigger chips)
-3. 🚧 **Trigger Categories** - Validate current list (Stress, Boredom, Social, Anxiety, Habit, Paraphernalia - complete?)
-4. 🚧 **"Other" ROA** - Tinctures, topicals - MVP or post-MVP?
-5. 🚧 **THC Potency Tracking** - Is this MVP or post-MVP?
+**🚧 What's Still To Do (10%):**
+1. 🚧 **Craving Logging UX flow** (similar detail as usage logging)
+2. 🚧 **"Other" ROA decision** - Tinctures, topicals - MVP or post-MVP?
+3. 🚧 **THC Potency Tracking** - MVP or post-MVP?
 
 **Next Step When You Return:**
-- Open CLINICAL_CANNABIS_SPEC.md
-- Read checkpoint at bottom
-- Start designing Usage Logging UX flow (step-by-step)
+- Design Craving Logging UX flow (intensity slider, trigger chips, optional recordings integration)
+- OR move to UX_FLOW_SPEC.md to document screen-by-screen flows
 
 **Output So Far:**
-- Validated simple incrementing model (no pedantic distinctions)
-- Updated MVP_PRODUCT_SPEC.md Appendix A to match
-- Removed "outcome" field from craving logging (independent flows)
-- Feeds into UX_FLOW_SPEC.md next
+- Usage logging is **BUILD-READY** 🔥
+- All UX decisions validated with clinical reasoning
+- Updated MVP_PRODUCT_SPEC.md with complete validated data
+- Feeds into UX_FLOW_SPEC.md and DATA_MODEL_SPEC.md next
 
 ---
 
@@ -262,11 +273,11 @@ Map features to code (repos, use cases, views) and define build order.
 ## 🎯 Current Position: You Are Here
 
 ```
-✅ MVP_PRODUCT_SPEC.md (v1.2) - UPDATED with independent flows
+✅ MVP_PRODUCT_SPEC.md (v1.2) - UPDATED with validated UX data
     ↓
-🟡 CLINICAL_CANNABIS_SPEC.md ← YOU ARE HERE (40% complete - paused)
-    ↓  Next: Design Usage Logging UX flow
-🔴 UX_FLOW_SPEC.md
+✅ CLINICAL_CANNABIS_SPEC.md (90% complete) ← USAGE LOGGING VALIDATED 🔥
+    ↓  Remaining: Craving Logging UX flow (10%)
+🔴 UX_FLOW_SPEC.md ← NEXT (after finalizing craving logging)
     ↓
 🔴 DATA_MODEL_SPEC.md
     ↓
@@ -302,24 +313,27 @@ Map features to code (repos, use cases, views) and define build order.
 ### When You Return to This Project:
 
 1. **Read this file** (`CHECKPOINT_STATUS.md`)
-2. **Check the "YOU ARE HERE" marker** (currently: CLINICAL_CANNABIS_SPEC.md)
-3. **Open the "NEXT TO CREATE" section** (currently: CLINICAL_CANNABIS_SPEC.md)
-4. **Start brainstorming/writing** that doc
-5. **Update this file** when you complete a doc (move ✅, update "YOU ARE HERE")
+2. **Check the "YOU ARE HERE" marker** (currently: CLINICAL_CANNABIS_SPEC.md - 90% done)
+3. **Choose your path:**
+   - **Option A:** Finish Craving Logging UX flow in CLINICAL_CANNABIS_SPEC.md (10% remaining)
+   - **Option B:** Move to UX_FLOW_SPEC.md and document screen-by-screen flows (can finish craving UX later)
+4. **Update this file** when you complete a doc (move ✅, update "YOU ARE HERE")
 
 ---
 
-## 🚀 Immediate Next Step: Clinical Validation
+## 🚀 Immediate Next Step: Choose Your Path
 
-**Your instinct was correct:** You need to validate the cannabis tracking model with your clinical expertise BEFORE building it.
+**Option A: Finish CLINICAL_CANNABIS_SPEC.md (Recommended)**
+- Design Craving Logging UX flow with same detail as usage logging
+- Answer remaining questions (THC potency, "Other" ROA)
+- Achieve 100% clinical validation before moving to UX/technical specs
 
-**Create `CLINICAL_CANNABIS_SPEC.md` now** to answer:
-- Is "Half bowl / Full bowl" clinically useful?
-- Should we track THC potency?
-- Is 1-10 craving intensity validated?
-- Are the trigger categories complete?
+**Option B: Start UX_FLOW_SPEC.md**
+- Document Usage Logging screen-by-screen flow (validated data ready)
+- Build momentum with tangible wireframes
+- Return to finish craving logging UX later
 
-**Why this matters:** You'd waste weeks building a technically perfect app that tracks clinically meaningless data.
+**Either path is valid.** You've already achieved a MAJOR MILESTONE with usage logging. 🔥
 
 ---
 
