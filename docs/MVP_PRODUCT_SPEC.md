@@ -134,32 +134,39 @@ Sets user expectations, builds trust around privacy, and personalizes the experi
 **User Story:**
 *"I want to quickly log when and how I use cannabis so I can see patterns over time."*
 
-**Functionality:**
+**Functionality (✅ FULLY VALIDATED 2025-10-18):**
 - **Fast input form** - Log in <10 seconds
-- **Data Captured:**
-  - **Date/Time** - Auto-populated, editable
-  - **Method (ROA)** - Single-tap selection
-    - 💨 **Bowls** (pipes, bongs)
-    - 🚬 **Joints**
-    - 🌿 **Blunts**
-    - 🌬️ **Vape** (pens, cartridges)
-    - 💎 **Dab** (rigs, concentrates)
-    - 🍫 **Edible** (gummies, brownies, drinks)
-  - **Amount** - Simple incrementing count (see CLINICAL_CANNABIS_SPEC.md for validation)
-    - *Bowls:* 0.5, 1, 1.5, 2, 2.5, 3... (half-increments)
-    - *Joints:* 0.5, 1, 1.5, 2, 2.5, 3... (half-increments)
-    - *Blunts:* 0.5, 1, 1.5, 2, 2.5, 3... (half-increments)
-    - *Vape:* 1, 2, 3, 4, 5... pulls (whole numbers)
-    - *Dab:* 1, 2, 3, 4... dabs (whole numbers)
-    - *Edible:* 10mg, 20mg, 30mg, 40mg... (10mg increments)
-  - **Context/Trigger** - Optional quick-select chips
-    - Stress, Social, Boredom, Anxiety, Celebration, Habit, Other
-  - **Mood After** - Optional 1-10 slider ("How do you feel now?")
-  - **Notes** - Optional freeform text
-- **NO forced link to cravings** - Usage is logged independently
+- **UI Pattern:** Single scrollable form (Apple Health/Calendar style)
+  - Core fields at top (no scrolling needed for quick log)
+  - Optional fields below divider ("Details" section)
+
+**REQUIRED FIELDS:**
+- **Date/Time** - Auto "now", editable to any past date/time (warning if >7 days)
+- **Method (ROA)** - List selection
+  - 💨 **Bowls** (pipes, bongs)
+  - 🚬 **Joints**
+  - 🌿 **Blunts**
+  - 🌬️ **Vape** (pens, cartridges)
+  - 💎 **Dab** (rigs, concentrates)
+  - 🍫 **Edible** (gummies, brownies, drinks)
+- **Amount** - Picker wheel (context-aware per ROA)
+  - *Bowls/Joints/Blunts:* 0.5 → 5.0 in 0.5 increments (10 options)
+  - *Vape:* 1 → 10 pulls (10 options)
+  - *Dab:* 1 → 5 dabs (5 options)
+  - *Edible:* 5mg → 100mg in 5mg increments (20 options)
+
+**OPTIONAL FIELDS (Below divider):**
+- **Trigger** - Multi-select HAALT chips (see Appendix A)
+  - Primary: Hungry, Angry, Anxious, Lonely, Tired, Sad
+  - Secondary: Bored, Social, Habit, Paraphernalia
+- **Location** - Single-select chips (GPS + presets, see Appendix A)
+  - Current Location (GPS), Home, Work, Social, Outside, Car
+- **Notes** - Freeform text (500 character limit)
+
+**NO forced link to cravings** - Usage is logged independently
 
 **Why It Matters:**
-Understanding *when*, *how*, and *why* they use helps users identify patterns and make informed decisions about their consumption. Simple incrementing counts match user mental models and reduce friction.
+Understanding *when*, *how*, and *why* they use helps users identify patterns and make informed decisions about their consumption. Picker wheels are fast, consistent, and match user mental models. HAALT-based triggers capture clinically meaningful data.
 
 ---
 
