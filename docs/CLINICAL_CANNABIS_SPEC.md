@@ -22,7 +22,7 @@ This doc is where the domain expert (you) validates that the tracking model is c
 ### 1. **SMOKE - Bowls** (Pipes / Bongs)
 
 **Tracking Method:**
-- **Incrementing by 0.5** (0.5, 1, 1.5, 2, 2.5, 3...)
+- **Incrementing by 0.5** (0.5, 1, 1.5, 2... up to 5.0)
 
 **Examples:**
 - 0.5 bowls = half bowl
@@ -32,7 +32,8 @@ This doc is where the domain expert (you) validates that the tracking model is c
 
 **Why This Works:**
 - Matches user mental model ("I smoked half a bowl" = 0.5)
-- Simple number incrementing
+- Simple number incrementing (10 picker options: 0.5 → 5.0)
+- Max 5 bowls covers heavy sessions (outliers rare)
 - Actionable for harm reduction (track "3 bowls" vs "0.5 bowls")
 - Quick to log (<5 sec)
 
@@ -41,7 +42,7 @@ This doc is where the domain expert (you) validates that the tracking model is c
 ### 2. **SMOKE - Joints**
 
 **Tracking Method:**
-- **Incrementing by 0.5** (0.5, 1, 1.5, 2, 2.5, 3...)
+- **Incrementing by 0.5** (0.5, 1, 1.5, 2... up to 5.0)
 
 **Examples:**
 - 0.5 joints = half joint
@@ -50,15 +51,16 @@ This doc is where the domain expert (you) validates that the tracking model is c
 - 2 joints = two full joints
 
 **Why This Works:**
-- Same pattern as bowls - simple, fast, intuitive
+- Same pattern as bowls - simple, fast, intuitive (10 picker options)
 - Half joints are common (sharing, rationing)
+- Max 5 joints covers heavy sessions
 
 ---
 
 ### 3. **SMOKE - Blunts**
 
 **Tracking Method:**
-- **Incrementing by 0.5** (0.5, 1, 1.5, 2, 2.5, 3...)
+- **Incrementing by 0.5** (0.5, 1, 1.5, 2... up to 5.0)
 
 **Examples:**
 - 0.5 blunts = half blunt
@@ -66,7 +68,8 @@ This doc is where the domain expert (you) validates that the tracking model is c
 - 1.5 blunts = one and a half blunts
 
 **Why This Works:**
-- Consistent with bowls/joints pattern
+- Consistent with bowls/joints pattern (10 picker options)
+- Max 5 blunts covers heavy sessions
 - Blunts often contain more cannabis than joints, but user knows their own context
 
 **Clinical Note:**
@@ -77,7 +80,7 @@ This doc is where the domain expert (you) validates that the tracking model is c
 ### 4. **VAPE - Pens / Cartridges**
 
 **Tracking Method:**
-- **Incrementing by 1** (1, 2, 3, 4, 5... pulls)
+- **Incrementing by 1** (1, 2, 3, 4... up to 10 pulls)
 
 **Examples:**
 - 1 pull
@@ -87,20 +90,21 @@ This doc is where the domain expert (you) validates that the tracking model is c
 **Why This Works:**
 - Simple whole number counting
 - No short/long distinction (too pedantic, hard to track accurately)
-- Users can easily count hits
+- Max 10 pulls covers typical sessions (users lose count beyond that)
 - Quick to log
 
 **Clinical Note:**
 - Vape cartridges vary wildly in THC % (300mg to 1000mg+)
 - Pull count may not correlate directly with THC intake
 - But useful for behavioral tracking (frequency patterns, escalation over time)
+- Pull counting is inherently imprecise but captures pattern (light vs heavy use)
 
 ---
 
 ### 5. **DAB - Concentrates**
 
 **Tracking Method:**
-- **Incrementing by 1** (1, 2, 3, 4... dabs)
+- **Incrementing by 1** (1, 2, 3, 4, 5 dabs)
 
 **Examples:**
 - 1 dab
@@ -108,7 +112,8 @@ This doc is where the domain expert (you) validates that the tracking model is c
 - 3 dabs
 
 **Why This Works:**
-- Simple whole number counting
+- Simple whole number counting (5 picker options)
+- Max 5 dabs covers heavy sessions (dabs are potent)
 - No small/large distinction (half dabs are weird, users just count dabs)
 - Quick to log
 
@@ -122,26 +127,27 @@ This doc is where the domain expert (you) validates that the tracking model is c
 ### 6. **EDIBLE - Gummies / Brownies / Drinks**
 
 **Tracking Method:**
-- **Incrementing by 10mg THC** (10mg, 20mg, 30mg, 40mg, 50mg...)
+- **Incrementing by 5mg THC** (5mg, 10mg, 15mg, 20mg... up to 100mg)
 
 **Examples:**
+- 5mg = microdose
 - 10mg = one standard gummy
 - 20mg = two gummies or one strong gummy
 - 50mg = higher dose
+- 100mg = very high dose
 
 **Why This Works:**
-- Dispensaries standardize at 10mg doses
+- 5mg increments capture microdosing (clinically important)
+- Dispensaries standardize at 5mg/10mg doses
 - Users can read packaging
-- Matches real-world dosing (5mg = microdose, 10mg = standard, 25mg+ = strong)
+- 20 picker options (5mg → 100mg) = scrollable but not overwhelming
 - Quick to log if they know dosage
 
 **Clinical Note:**
 - Edibles have delayed onset (1-3 hours)
 - **Clinical concern:** Overdosing from impatience ("not feeling it yet, eat more")
 - Tracking mg helps identify dose patterns and tolerance
-
-**Edge Case:**
-- If user doesn't know dosage: Allow "Unknown" or freeform text (e.g., "half brownie")
+- 5mg increments support harm reduction tracking for low-dose users
 
 ---
 
@@ -183,27 +189,64 @@ This doc is where the domain expert (you) validates that the tracking model is c
 - **Notes** (optional freeform text)
 - **NO "outcome" field** - craving is logged, that's it
 
-#### Flow 2: Log Usage
-- **Timestamp** (auto-populated, editable)
-- **ROA** (Bowl/Joint/Blunt/Vape/Dab/Edible)
-- **Amount** (0.5/1/1.5... or pulls, or mg - per validated ROA model)
-- **Context/Trigger** (optional - same chips as craving triggers)
-- **Mood After** (optional 1-10 slider)
-- **Notes** (optional freeform text)
-- **NO forced link to cravings**
+#### Flow 2: Log Usage (✅ FULLY VALIDATED 2025-10-18)
+
+**REQUIRED FIELDS (Top of Form - <10 sec logging):**
+1. **ROA** (List selection: Bowls/Joints/Blunts/Vape/Dab/Edible)
+2. **Amount** (Picker wheel - context-aware per ROA):
+   - Bowls/Joints/Blunts: 0.5 → 5.0 in 0.5 increments (10 options)
+   - Vape: 1 → 10 pulls (10 options)
+   - Dab: 1 → 5 dabs (5 options)
+   - Edible: 5mg → 100mg in 5mg increments (20 options)
+3. **Timestamp** (Auto "now", editable to any past date/time with warning if >7 days)
+
+**OPTIONAL FIELDS (Below divider - "Details" section):**
+4. **Trigger** (Multi-select chips - HAALT-based):
+   - Primary: Hungry, Angry, Anxious, Lonely, Tired, Sad
+   - Secondary: Bored, Social, Habit, Paraphernalia
+5. **Location** (Single-select chips with GPS option):
+   - Current Location (GPS auto-detect via CoreLocation, local storage only)
+   - Home, Work, Social, Outside, Car
+6. **Notes** (Freeform text, 500 character limit)
+
+**UI Pattern:**
+- Single scrollable form (Apple Health/Calendar style)
+- Core fields visible at top (no scrolling needed for quick log)
+- Optional fields below divider (scroll down to add details)
+- Privacy notice on first GPS use: "Location data never leaves your device"
+
+**NO forced link to cravings** - completely independent flow
 
 **Optional Enhancement (Post-MVP):**
-- In Usage Log, add checkbox: "Was this preceded by a craving?" (yes/no)
+- Add checkbox: "Was this preceded by a craving?" (yes/no)
 - If yes, could link to recent craving entry (but NOT required)
 
-### Trigger Categories
-**Currently in MVP spec:**
-- Stress, Boredom, Social, Anxiety, Habit, Paraphernalia
+### ✅ Trigger Categories - VALIDATED (2025-10-18)
 
-**Questions:**
-- ❓ Missing any major triggers? (Pain? Insomnia? PTSD symptoms?)
-- ❓ Too many options = analysis paralysis?
-- ❓ Should we allow multiple trigger selection? (Stress + Anxiety)
+**HAALT-Based Multi-Select Chips:**
+
+**Primary Triggers (Evidence-Based HAALT Model):**
+- Hungry
+- Angry
+- Anxious
+- Lonely
+- Tired
+- Sad (added for clinical completeness)
+
+**Secondary Triggers:**
+- Bored
+- Social (context, not necessarily negative)
+- Habit (automatic/routine use)
+- Paraphernalia (cue-induced)
+
+**Multi-select enabled** - users can select multiple simultaneous triggers (e.g., Tired + Lonely + Bored)
+
+**Rationale:**
+- HAALT is evidence-based relapse prevention framework
+- Covers physiological (Hungry, Tired), emotional (Angry, Sad, Anxious, Lonely), and situational triggers
+- "Sad" complements emotional spectrum (distinct from Anxious/Angry)
+- Removed "Other" to eliminate decision fatigue - current triggers cover 95%+ of use cases
+- Multi-select captures reality (triggers rarely singular)
 
 ### THC Potency Tracking
 - ❓ Should we track **THC %** or **mg THC**?
@@ -270,28 +313,36 @@ Once validated, this doc feeds into:
 
 ---
 
-## 🔖 CHECKPOINT (2025-10-12)
+## 🔖 CHECKPOINT (2025-10-18)
 
-**Status:** ✅ PARTIAL VALIDATION COMPLETE - Core tracking model validated
+**Status:** ✅ USAGE LOGGING FULLY VALIDATED - Ready for UX_FLOW_SPEC.md
 
 **What's Validated:**
-1. ✅ ROA amounts (bowls/joints/blunts 0.5 increments, vapes/dabs whole numbers, edibles 10mg)
+1. ✅ ROA amounts with picker wheel ranges:
+   - Bowls/Joints/Blunts: 0.5 → 5.0 (10 options)
+   - Vape: 1 → 10 pulls (10 options)
+   - Dab: 1 → 5 dabs (5 options)
+   - Edible: 5mg → 100mg in 5mg increments (20 options)
 2. ✅ Craving intensity scale (1-10 slider)
 3. ✅ **CRITICAL:** Independent flows (craving logging ≠ usage logging)
+4. ✅ **USAGE LOGGING UX FLOW:**
+   - ROA selection (List UI)
+   - Amount input (Picker wheel, consistent across all ROAs)
+   - Timestamp (auto "now", editable with >7 day warning)
+   - Optional fields: Trigger (HAALT multi-select), Location (GPS + presets), Notes (500 char)
+   - UI pattern: Single scrollable form (Apple HIG)
+5. ✅ **TRIGGER CHIPS:** HAALT-based (Hungry/Angry/Anxious/Lonely/Tired/Sad + Bored/Social/Habit/Paraphernalia)
+6. ✅ **LOCATION PRESETS:** Current Location (GPS), Home, Work, Social, Outside, Car
+7. ✅ Removed "Mood After" field (redundant with triggers)
 
 **What's Next (When You Return):**
-1. 🚧 **Hammer down Usage Logging first** (ROA selection UX, amount input UX)
-2. 🚧 **Then Craving Logging** (intensity slider, trigger chips)
-3. 🚧 Finalize trigger categories (current: Stress, Boredom, Social, Anxiety, Habit, Paraphernalia - good enough?)
-4. 🚧 Decide on "Other" ROA (tinctures, topicals - MVP or post-MVP?)
-
-**Why This Order:**
-- Usage logging is simpler (just data entry, no emotional state)
-- Get usage flow perfect FIRST
-- Then tackle craving logging (more nuanced, emotional)
+1. 🚧 **Design Craving Logging UX flow** (similar detail as usage logging)
+2. 🚧 **Create UX_FLOW_SPEC.md** - Map complete screen-by-screen flows
+3. 🚧 Decide on "Other" ROA (tinctures, topicals - MVP or post-MVP?)
+4. 🚧 THC potency tracking - MVP or post-MVP?
 
 **When You Resume:**
-- Start with: "Let's design the Usage Logging UX flow step-by-step"
-- Read this doc first to remember what we validated
+- Start with: "Let's design the Craving Logging UX flow step-by-step" (intensity slider, trigger chips, recordings integration)
+- OR move to UX_FLOW_SPEC.md if you want to document flows now
 
-**Status:** PAUSED - Resume when motivated. Solid foundation validated. 🔥
+**Status:** MAJOR MILESTONE - Usage logging is build-ready! 🔥

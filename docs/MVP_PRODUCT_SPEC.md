@@ -393,29 +393,34 @@ v1.0 MVP is ethically successful if:
 **See `docs/CLINICAL_CANNABIS_SPEC.md` for full clinical validation.**
 
 #### 💨 Bowls (Pipes / Bongs)
-- **Incrementing by 0.5** (0.5, 1, 1.5, 2, 2.5, 3...)
+- **Incrementing by 0.5** (0.5, 1, 1.5, 2... up to 5.0)
+- **Picker wheel:** 10 options (0.5 → 5.0)
 - Examples: 0.5 bowls (half bowl), 1 bowl (full bowl), 1.5 bowls
 
 #### 🚬 Joints
-- **Incrementing by 0.5** (0.5, 1, 1.5, 2, 2.5, 3...)
+- **Incrementing by 0.5** (0.5, 1, 1.5, 2... up to 5.0)
+- **Picker wheel:** 10 options (0.5 → 5.0)
 - Examples: 0.5 joints (half joint), 1 joint (full joint), 2 joints
 
 #### 🌿 Blunts
-- **Incrementing by 0.5** (0.5, 1, 1.5, 2, 2.5, 3...)
+- **Incrementing by 0.5** (0.5, 1, 1.5, 2... up to 5.0)
+- **Picker wheel:** 10 options (0.5 → 5.0)
 - Examples: 0.5 blunts (half blunt), 1 blunt (full blunt)
 
 #### 🌬️ Vape (Pens / Cartridges)
-- **Incrementing by 1** (1, 2, 3, 4, 5... pulls)
+- **Incrementing by 1** (1, 2, 3, 4... up to 10 pulls)
+- **Picker wheel:** 10 options (1 → 10)
 - Examples: 1 pull, 3 pulls, 10 pulls
 
 #### 💎 Dab (Concentrates)
-- **Incrementing by 1** (1, 2, 3, 4... dabs)
+- **Incrementing by 1** (1, 2, 3, 4, 5 dabs)
+- **Picker wheel:** 5 options (1 → 5)
 - Examples: 1 dab, 2 dabs, 3 dabs
 
 #### 🍫 Edible (Gummies / Brownies / Drinks)
-- **Incrementing by 10mg THC** (10mg, 20mg, 30mg, 40mg, 50mg...)
-- Examples: 10mg (one standard gummy), 20mg, 50mg
-- **Edge case:** If user doesn't know dosage, allow "Unknown" or freeform text
+- **Incrementing by 5mg THC** (5mg, 10mg, 15mg, 20mg... up to 100mg)
+- **Picker wheel:** 20 options (5mg → 100mg)
+- Examples: 5mg (microdose), 10mg (one standard gummy), 20mg, 50mg
 
 ### Craving Trigger Categories
 - **Stress** - Work, family, finances, health
