@@ -422,18 +422,41 @@ v1.0 MVP is ethically successful if:
 - **Picker wheel:** 20 options (5mg → 100mg)
 - Examples: 5mg (microdose), 10mg (one standard gummy), 20mg, 50mg
 
-### Craving Trigger Categories
-- **Stress** - Work, family, finances, health
-- **Boredom** - Nothing to do, understimulated
-- **Social** - Friends using, peer pressure, FOMO
-- **Anxiety** - Worry, panic, unease
-- **Habit** - Routine, automatic behavior (e.g., "always smoke at 8pm")
-- **Seeing Paraphernalia** - Visual cue (bong, lighter, dealer's contact)
-- **Other** - Freeform text
+### Trigger Categories (Craving & Usage)
 
-### Usage Context/Trigger Categories
-(Same as Craving Triggers, plus:)
-- **Celebration** - Good news, achievement, party
+**✅ VALIDATED 2025-10-18** - See `CLINICAL_CANNABIS_SPEC.md` for full rationale
+
+**HAALT-Based Multi-Select Chips:**
+
+**Primary Triggers (Evidence-Based HAALT Model):**
+- **Hungry** - Physiological hunger
+- **Angry** - Irritability, frustration, resentment
+- **Anxious** - Worry, panic, unease
+- **Lonely** - Isolation, disconnection
+- **Tired** - Fatigue, exhaustion, low energy
+- **Sad** - Depression, grief, emotional pain
+
+**Secondary Triggers:**
+- **Bored** - Understimulated, nothing to do
+- **Social** - Friends using, social context (not necessarily negative)
+- **Habit** - Routine, automatic behavior (e.g., "always smoke at 8pm")
+- **Paraphernalia** - Visual cue (bong, lighter, dealer's contact)
+
+**Multi-select enabled** - users can select multiple simultaneous triggers
+
+### Location Presets (Usage Logging Only)
+
+**✅ VALIDATED 2025-10-18**
+
+**Single-Select Chips:**
+- **Current Location** - GPS auto-detect via CoreLocation (local storage only)
+- **Home**
+- **Work**
+- **Social** - Friend's house, party, gathering
+- **Outside** - Park, street, outdoors
+- **Car**
+
+**Privacy:** First-time GPS use shows tooltip: "Location data never leaves your device"
 
 ---
 
