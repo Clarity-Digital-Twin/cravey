@@ -182,12 +182,36 @@ This doc is where the domain expert (you) validates that the tracking model is c
 
 **Two Independent Flows:**
 
-#### Flow 1: Log Craving
-- **Timestamp** (auto-populated)
-- **Intensity** (1-10 slider)
-- **Trigger** (optional quick-select chips: Stress, Boredom, Social, Anxiety, Habit, Paraphernalia, Other)
-- **Notes** (optional freeform text)
-- **NO "outcome" field** - craving is logged, that's it
+#### Flow 1: Log Craving (✅ FULLY VALIDATED 2025-10-18)
+
+**REQUIRED FIELDS (Top of Form - <10 sec logging):**
+1. **Intensity** (1-10 slider - validated pain scale model)
+   - 1-3: Mild (manageable, background)
+   - 4-6: Moderate (uncomfortable, requires coping)
+   - 7-9: Strong (urgent, high risk)
+   - 10: Overwhelming (crisis)
+2. **Timestamp** (Auto "now", editable to any past date/time with warning if >7 days)
+
+**OPTIONAL FIELDS (Below divider - "Details" section):**
+3. **Trigger** (Multi-select chips - HAALT-based):
+   - Primary: Hungry, Angry, Anxious, Lonely, Tired, Sad
+   - Secondary: Bored, Social, Habit, Paraphernalia
+4. **Location** (Single-select chips with GPS option):
+   - Current Location (GPS auto-detect via CoreLocation, local storage only)
+   - Home, Work, Social, Outside, Car
+   - **Clinical rationale:** Environmental cues ("people, places, things") are relapse predictors. Location patterns reveal high-risk scenarios (e.g., "8/10 cravings at Car 5:30 PM" = commute trigger).
+5. **Notes** (Freeform text, 500 character limit)
+
+**UI Pattern:**
+- Single scrollable form (Apple Health/Calendar style) - SAME as Usage Logging
+- Core fields visible at top (no scrolling needed for quick log)
+- Optional fields below divider (scroll down to add details)
+- Privacy notice on first GPS use: "Location data never leaves your device"
+
+**NO "outcome" field** - craving is logged independently, NOT linked to usage
+
+**Optional Enhancement (Post-MVP):**
+- Add "Attach Recording" button to link to motivational video/audio (helps users self-soothe during craving)
 
 #### Flow 2: Log Usage (✅ FULLY VALIDATED 2025-10-18)
 
