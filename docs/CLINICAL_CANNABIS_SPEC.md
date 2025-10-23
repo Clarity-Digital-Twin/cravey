@@ -339,34 +339,46 @@ Once validated, this doc feeds into:
 
 ## 🔖 CHECKPOINT (2025-10-18)
 
-**Status:** ✅ USAGE LOGGING FULLY VALIDATED - Ready for UX_FLOW_SPEC.md
+**Status:** ✅ 100% COMPLETE - BOTH LOGGING FLOWS FULLY VALIDATED 🔥
 
 **What's Validated:**
-1. ✅ ROA amounts with picker wheel ranges:
-   - Bowls/Joints/Blunts: 0.5 → 5.0 (10 options)
-   - Vape: 1 → 10 pulls (10 options)
-   - Dab: 1 → 5 dabs (5 options)
-   - Edible: 5mg → 100mg in 5mg increments (20 options)
-2. ✅ Craving intensity scale (1-10 slider)
-3. ✅ **CRITICAL:** Independent flows (craving logging ≠ usage logging)
-4. ✅ **USAGE LOGGING UX FLOW:**
+1. ✅ **CRAVING LOGGING UX FLOW (Flow 1):**
+   - Intensity (1-10 slider with clinical ranges)
+   - Timestamp (auto "now", editable with >7 day warning)
+   - Optional fields: Trigger (HAALT multi-select), Location (GPS + presets), Notes (500 char)
+   - UI pattern: Single scrollable form (Apple HIG) - SAME as Usage Logging
+   - Location included for cravings (environmental cue tracking = relapse prevention)
+
+2. ✅ **USAGE LOGGING UX FLOW (Flow 2):**
    - ROA selection (List UI)
-   - Amount input (Picker wheel, consistent across all ROAs)
+   - Amount input (Picker wheel, context-aware per ROA):
+     - Bowls/Joints/Blunts: 0.5 → 5.0 (10 options)
+     - Vape: 1 → 10 pulls (10 options)
+     - Dab: 1 → 5 dabs (5 options)
+     - Edible: 5mg → 100mg in 5mg increments (20 options)
    - Timestamp (auto "now", editable with >7 day warning)
    - Optional fields: Trigger (HAALT multi-select), Location (GPS + presets), Notes (500 char)
    - UI pattern: Single scrollable form (Apple HIG)
-5. ✅ **TRIGGER CHIPS:** HAALT-based (Hungry/Angry/Anxious/Lonely/Tired/Sad + Bored/Social/Habit/Paraphernalia)
-6. ✅ **LOCATION PRESETS:** Current Location (GPS), Home, Work, Social, Outside, Car
-7. ✅ Removed "Mood After" field (redundant with triggers)
+
+3. ✅ **TRIGGER CHIPS (Both Flows):** HAALT-based multi-select
+   - Primary: Hungry, Angry, Anxious, Lonely, Tired, Sad
+   - Secondary: Bored, Social, Habit, Paraphernalia
+
+4. ✅ **LOCATION PRESETS (Both Flows):** Single-select with GPS
+   - Current Location (GPS), Home, Work, Social, Outside, Car
+
+5. ✅ **CRITICAL:** Independent flows (craving logging ≠ usage logging)
+
+6. ✅ **Design Principle:** UX parity between both flows (learn once, use everywhere)
 
 **What's Next (When You Return):**
-1. 🚧 **Design Craving Logging UX flow** (similar detail as usage logging)
-2. 🚧 **Create UX_FLOW_SPEC.md** - Map complete screen-by-screen flows
-3. 🚧 Decide on "Other" ROA (tinctures, topicals - MVP or post-MVP?)
-4. 🚧 THC potency tracking - MVP or post-MVP?
+1. 🚧 **Create UX_FLOW_SPEC.md** - Map complete screen-by-screen flows (wireframes)
+2. 🚧 Decide on "Other" ROA (tinctures, topicals - MVP or post-MVP?)
+3. 🚧 THC potency tracking - MVP or post-MVP?
+4. 🚧 Create DATA_MODEL_SPEC.md (SwiftData schemas)
 
 **When You Resume:**
-- Start with: "Let's design the Craving Logging UX flow step-by-step" (intensity slider, trigger chips, recordings integration)
-- OR move to UX_FLOW_SPEC.md if you want to document flows now
+- Move to UX_FLOW_SPEC.md to document screen-by-screen flows
+- OR continue validating remaining open questions (see below)
 
-**Status:** MAJOR MILESTONE - Usage logging is build-ready! 🔥
+**Status:** CLINICAL VALIDATION COMPLETE - Ready for UX/Data specs! 🔥

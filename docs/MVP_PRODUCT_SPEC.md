@@ -111,22 +111,36 @@ Sets user expectations, builds trust around privacy, and personalizes the experi
 **User Story:**
 *"I want to log when I experience a craving so I can understand triggers and track patterns."*
 
-**Functionality:**
-- **Ultra-Fast Input** - Log in <5 seconds
-  - Big "Log Craving" button on home screen
-  - Opens quick form with minimal fields
-- **Data Captured:**
-  - **Timestamp** - Auto-populated (not editable)
-  - **Intensity** - 1-10 slider (required)
-  - **Trigger** - Quick-select chips (optional)
-    - Stress, Boredom, Social, Anxiety, Habit, Paraphernalia, Other
-  - **Notes** - Optional freeform text
-- **NO "outcome" field** - Craving is logged, that's it. No forced link to usage.
-- **Instant Feedback** - After logging:
-  - "💪 Logged. Every moment of awareness counts."
+**Functionality (✅ FULLY VALIDATED 2025-10-18):**
+- **Fast input form** - Log in <10 seconds
+- **UI Pattern:** Single scrollable form (Apple Health/Calendar style) - SAME as Usage Logging
+  - Core fields at top (no scrolling needed for quick log)
+  - Optional fields below divider ("Details" section)
+
+**REQUIRED FIELDS:**
+- **Intensity** - 1-10 slider
+  - 1-3: Mild (manageable, background)
+  - 4-6: Moderate (uncomfortable, requires coping)
+  - 7-9: Strong (urgent, high risk)
+  - 10: Overwhelming (crisis)
+- **Timestamp** - Auto "now", editable to any past date/time (warning if >7 days)
+
+**OPTIONAL FIELDS (Below divider):**
+- **Trigger** - Multi-select HAALT chips (see Appendix A)
+  - Primary: Hungry, Angry, Anxious, Lonely, Tired, Sad
+  - Secondary: Bored, Social, Habit, Paraphernalia
+- **Location** - Single-select chips (GPS + presets, see Appendix A)
+  - Current Location (GPS), Home, Work, Social, Outside, Car
+  - **Clinical rationale:** Environmental cues are relapse predictors. Location patterns reveal high-risk scenarios for intervention.
+- **Notes** - Freeform text (500 character limit)
+
+**NO "outcome" field** - Craving is logged independently, NOT linked to usage
+
+**Instant Feedback** - After logging:
+- "💪 Logged. Every moment of awareness counts."
 
 **Why It Matters:**
-**Logging cravings reframes urges as *data points*, not failures.** Users track patterns without judgment. Some users track cravings to understand triggers (quit-focused), others don't track them at all (usage monitoring only). This feature is optional and independent from usage logging.
+**Logging cravings reframes urges as *data points*, not failures.** Users track patterns without judgment. Location + trigger data reveals environmental cues ("people, places, things") for targeted behavioral interventions. UX parity with Usage Logging reduces cognitive load.
 
 ---
 
