@@ -77,33 +77,30 @@ Someone who uses cannabis and wants to:
 
 ## MVP Features (v1.0)
 
-### 0. First Launch & Goal Setting
+### 0. First Launch & Onboarding
 **User Story:**
-*"When I open the app for the first time, I want to understand what it does, set my personal goal, and grant only the permissions I'm comfortable with."*
+*"When I open the app for the first time, I want to understand what it does and grant only the permissions I'm comfortable with."*
 
-**Functionality:**
+**Functionality (✅ UPDATED 2025-10-18):**
 - **Welcome Screen**
   - Brief intro: "Private, local-only cannabis tracking and support"
   - Privacy guarantee: "No cloud sync, no analytics, no data collection"
-- **Goal Selection**
-  - "What brings you here today?"
-    - 🎯 **Quit Completely** - "I want to stop using cannabis"
-    - 📉 **Cut Down** - "I want to reduce my usage"
-    - 📊 **Monitor Use** - "I want to understand my patterns"
-    - 🤝 **Harm Reduction** - "I want to use more intentionally"
-    - 👀 **Just Exploring** - "I'm checking this out"
-  - User can change goal later in Settings
+  - Clear value proposition: "Track patterns. Understand triggers. Make informed decisions."
 - **Permission Requests**
   - Camera/Microphone (for motivational recordings)
+  - Location Services (for environmental cue tracking)
   - Explained with clear "Why we need this" text
   - All permissions optional (app works without them)
-  - **If denied:** Recording feature shows "Enable camera/mic in Settings to record" message. User can still use all other features (logging, dashboard, AI chat).
+  - **If denied:** Recording feature shows "Enable camera/mic in Settings to record" message. Location defaults to manual presets (Home/Work/Car/etc). User can still use all other features (logging, dashboard, AI chat).
 - **Quick Tour** (Optional, Skippable)
   - 3-screen walkthrough of core features
-  - "Log Cravings → Record Motivational Videos → See Your Progress"
+  - "Log Cravings & Usage → Record Motivational Videos → See Your Patterns"
+
+**Deferred to Post-MVP:**
+- **Goal Setting** - Removed from onboarding to reduce friction and focus on polished logging experience first. Users simply start tracking, and patterns naturally emerge. Goals can be added in v1.1 once users are already engaged with core tracking.
 
 **Why It Matters:**
-Sets user expectations, builds trust around privacy, and personalizes the experience from Day 1. Users feel in control.
+Sets user expectations, builds trust around privacy, and removes commitment pressure. Users can explore their patterns without declaring a goal upfront. **"Just track" is a valid use case** - reduces barrier to entry.
 
 ---
 
@@ -212,23 +209,67 @@ Hearing your own voice/seeing your own face when you're clear-headed is more pow
 **User Story:**
 *"I want to see my usage and craving trends over time so I can understand my progress."*
 
-**Functionality:**
-- **Visual Charts** (Swift Charts) - Minimum 7 days of data to display meaningful trends
-  - **Usage Frequency** - Bar chart showing daily/weekly usage count
-  - **Craving Patterns** - Line chart showing craving count and intensity over time
-  - **Resistance Rate** - Percentage of cravings resisted vs. used (pie chart or percentage)
-  - **Method Breakdown** - Donut chart showing ROA distribution (e.g., "60% Smoke, 30% Vape, 10% Edible")
-- **Progress Stats** (at-a-glance cards)
-  - **Days in Progress** - Total days using the app (never resets from setbacks, always counts up; only resets if user manually deletes all data)
-  - **Days Since Last Use** - Factual counter (if quitting)
-  - **Cravings Resisted** - Total count of ✅ Resisted outcomes
-  - **Total Sessions Logged** - Combined usage + craving entries
-  - **Reduction %** - Comparison of usage frequency (this week vs. first week)
-- **Empty States** - If <7 days of data: "Keep logging! You'll see trends after 7 days."
+**Functionality (✅ FULLY VALIDATED 2025-10-18):**
+
+**Summary Card (Top of Dashboard):**
+- Weekly high-level stats at a glance
+  - "This week: 12 uses, 3 cravings"
+  - "Top trigger: Bored"
+  - Quick reference without scrolling
+
+**Visual Charts & Metrics (Swift Charts):**
+
+1. **Amount Trend Over Time** - Line chart
+   - Shows if using more or less week-over-week
+   - Reveals escalation or reduction patterns
+
+2. **Usage Reduction/Change** - Comparison metric card
+   - "Using 30% less than last month" OR "Usage increased 15%"
+   - Context-aware (shows reduction or increase based on actual data)
+
+3. **Trigger Breakdown** - Pie chart
+   - Shows proportion of each trigger (40% Bored, 30% Anxious, 20% Habit...)
+   - Applies to both usage and craving triggers combined
+
+4. **Location Patterns** - Bar chart or list
+   - Where use/cravings occur most (Home 40%, Car 30%, Work 20%...)
+   - Reveals high-risk environmental cues
+
+5. **Time of Day Patterns** - Bar chart
+   - Morning vs afternoon vs evening distribution
+   - Identifies temporal patterns
+
+6. **Weekly Patterns** - Bar chart
+   - Usage by day of week (Mon: 2, Tue: 1, Wed: 3...)
+   - Shows which days are highest risk
+
+7. **ROA Breakdown** - Pie chart
+   - Method distribution (50% Bowls, 30% Vape, 20% Edibles...)
+   - Tracks ROA switching (escalation indicator)
+
+8. **Consecutive Days Tracking** - Streak card
+   - Context-aware: "7 days used in a row" OR "5 days abstinent"
+   - Shows current streak based on user's pattern
+
+9. **Longest Abstinence Streak** - Milestone card
+   - "Your best: 14 days"
+   - Never resets, celebrates historical achievement
+
+10. **Average Craving Intensity Over Time** - Line chart
+    - Shows if cravings getting weaker/stronger week-over-week
+    - Tracks improvement in craving severity
+
+**UI/UX Details:**
+- **Empty States** - If <7 days of data: "Keep logging! You'll see patterns after 7 days."
 - **Date Range Filter** - Toggle between 7 days / 30 days / 90 days / All Time
+- **Scrollable Dashboard** - Metrics organized by priority (summary card first)
+- **Direct Log Access** - Tap any metric to view detailed logs (no daily count clutter on dashboard)
+
+**Future Consideration:**
+- Heatmap visualization (time-of-day + day-of-week combined - GitHub-style)
 
 **Why It Matters:**
-Seeing patterns helps users make intentional changes. Visual feedback motivates continued progress. **Tracking resistance rate celebrates wins and builds self-efficacy.** "Days in Progress" never resets—avoiding the psychological harm of "broken streaks."
+Seeing patterns over time helps users make intentional changes. **Environmental context** (location, time, triggers) reveals high-risk scenarios for intervention. **Behavioral tracking** (streaks, ROA switching, amount trends) shows escalation or improvement. Visual simplicity (pie/line/bar charts) provides quick insights without cognitive load. Focus on **trends, not single data points**.
 
 ---
 
@@ -280,17 +321,19 @@ Data transparency builds trust. Users feel in control, reducing anxiety about pr
 
 ## Out of Scope for MVP
 
-### Not Included in v1.0:
+### Not Included in v1.0 (Deferred to Post-MVP):
 - **Cloud sync** - 100% local-only for privacy
 - **Push notifications** - No reminders, no check-ins (reduces complexity, maintains privacy)
-- **Location tracking** - No GPS logging (use freeform notes for context instead)
-- **Time-of-day insights** - No "you use most at 7pm" analytics (defer to v2)
 - **Persistent AI chat history** - Ephemeral sessions only for MVP
 - **Customizable AI prompts** - Fixed, tested MI prompt only
-- **Granular ROA subcategories** - 5 main categories only (no "joint vs. blunt" distinction)
-- **Mood tracking before use** - Only "Mood After" (optional)
+- **Goal tracking** - Focus on polished logging + dashboard first; goals = v1.1 enhancement
+- **Craving vs usage ratio** - Too granular, needs bulk data for meaningful patterns
+- **Trigger combinations** - Trigger breakdown pie chart sufficient for MVP
+- **Heatmap visualization** - GitHub-style contribution graph (time + day combined) = future enhancement
 - **Social features** - No sharing, no community forums
 - **Prescription tracking** - Medical cannabis features (future consideration)
+- **THC potency tracking** - False precision, clinically useless (see CLINICAL_CANNABIS_SPEC.md)
+- **Medical vs recreational distinction** - Triggers already capture "why" without stigma/judgment
 - **macOS version** - iOS-only first (macOS planned for future)
 - **Pre-populated motivational quotes** - User-generated content only (may add later)
 - **Integration with other apps** - No HealthKit, no calendar sync (future consideration)

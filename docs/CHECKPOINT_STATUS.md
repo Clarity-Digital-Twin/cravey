@@ -19,36 +19,43 @@
 
 ### ✅ COMPLETED
 
-#### 1. `MVP_PRODUCT_SPEC.md` (v1.2) - **UPDATED**
+#### 1. `MVP_PRODUCT_SPEC.md` (v1.3) - **FULLY UPDATED** ✅
 **Status:** ✅ Complete
-**Last Updated:** 2025-10-12 (Updated after clinical validation session)
+**Last Updated:** 2025-10-18 (Comprehensive update with all validated UX/dashboard decisions)
 **What It Defines:**
 - Vision, target users, core problems solved
-- 6 MVP features (Onboarding, Craving Logging, Usage Logging, Recordings, Dashboard, AI Chat, Data Management)
+- 7 MVP features (Onboarding, Craving Logging, Usage Logging, Recordings, Dashboard, AI Chat, Data Management)
 - Success criteria (Technical, User, Ethical)
-- Out of scope items
-- **Appendix A:** ROA amounts & trigger categories (UPDATED to match clinical model)
+- Out of scope items (UPDATED with all deferred features)
+- **Appendix A:** ROA amounts, HAALT trigger categories, location presets (FULLY VALIDATED)
 - **Appendix B:** Data relationship & deletion rules
 
 **Key Decisions Made:**
 - iOS 18+ only (initial release)
 - Local-only storage (SwiftData with `.none` CloudKit)
-- <5 sec craving log, <10 sec usage log
+- <10 sec for both craving and usage logging
 - **CRITICAL:** Craving and usage logging are INDEPENDENT (no forced link)
-- 6 ROA categories (Bowls/Joints/Blunts/Vape/Dab/Edible)
-- Simple incrementing counts validated (0.5 increments for smoke, whole numbers for vape/dab, 10mg for edibles)
+- **UX Parity:** Both flows use same UI pattern (single scrollable form, Apple HIG)
+- 6 ROA categories with validated picker ranges (Bowls/Joints/Blunts: 0.5→5.0, Vape: 1→10, Dab: 1→5, Edible: 5→100mg)
+- HAALT-based triggers (Hungry/Angry/Anxious/Lonely/Tired/Sad + Bored/Social/Habit/Paraphernalia)
+- Location tracking for BOTH craving & usage (GPS + 6 presets)
+- **11 validated dashboard metrics** (summary card, amount trends, trigger/location/time/ROA breakdowns, streaks, craving intensity)
+- **Goal tracking DEFERRED to post-MVP** (focus on polished logging first)
+- **THC potency tracking SKIPPED** (false precision, clinically useless)
+- **Medical vs recreational distinction SKIPPED** (triggers capture "why" without stigma)
 - Permission denial fallbacks documented
 - Delete behavior for all relationships defined
 
 **Why It's Done:**
 - Provides north star for all other docs
 - Defines product-level "what" before technical "how"
-- Now aligned with clinically validated tracking model
+- 100% aligned with clinically validated tracking model
+- All UX decisions documented with clinical rationale
 
 ---
 
-#### 2. `CLINICAL_CANNABIS_SPEC.md` - **COMPLETE** ✅
-**Status:** ✅ 100% Complete (Both Logging Flows FULLY VALIDATED)
+#### 2. `CLINICAL_CANNABIS_SPEC.md` - **100% COMPLETE** ✅🔥
+**Status:** ✅ All Clinical Validations Done
 **Last Updated:** 2025-10-18
 **Owner:** Ray (Domain Expert - Psychiatrist/Addiction Medicine)
 
@@ -61,6 +68,8 @@
 - HAALT-based trigger chips (multi-select, evidence-based)
 - Location presets with GPS (single-select, privacy-first)
 - UI pattern: Single scrollable form (Apple HIG) for both flows
+- **Dashboard metrics validated** (11 metrics for MVP, 3 deferred to post-MVP)
+- **Scope decisions resolved** (THC potency, medical/rec distinction, goal tracking)
 
 **Key Decisions Made:**
 - UX parity between craving & usage logging (learn once, use everywhere)
@@ -69,15 +78,15 @@
 - 500 char limit on notes (focused reflection, not journaling)
 - Removed "Mood After" from usage logging (redundant with triggers)
 - Picker wheel consistency across all ROAs (simpler UX, less code)
+- Dashboard focuses on patterns over time (trends, not single data points)
+- Visual simplicity (pie/line/bar charts) for quick insights
 
 **Why It's Done:**
-- All core logging flows are clinically validated and build-ready
+- ALL core logging flows clinically validated and build-ready
+- ALL dashboard metrics validated with clinical rationale
+- ALL open questions resolved (THC potency, medical/rec, goals = deferred/skipped)
 - Feeds into UX_FLOW_SPEC.md (wireframes) and DATA_MODEL_SPEC.md (SwiftData schemas)
-- Domain expert validation complete - ready for implementation
-
-**Remaining Open Questions (Post-MVP scope):**
-- "Other" ROA (tinctures, topicals) - defer to post-MVP
-- THC potency tracking - defer to post-MVP
+- Domain expert validation 100% complete - ready for implementation
 
 ---
 

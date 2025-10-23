@@ -385,9 +385,11 @@ Once validated, this doc feeds into:
 
 ## 🔖 CHECKPOINT (2025-10-18)
 
-**Status:** ✅ 100% COMPLETE - BOTH LOGGING FLOWS FULLY VALIDATED 🔥
+**Status:** ✅ 100% COMPLETE - ALL CLINICAL VALIDATIONS DONE 🔥🔥🔥
 
 **What's Validated:**
+
+### Core Logging Flows:
 1. ✅ **CRAVING LOGGING UX FLOW (Flow 1):**
    - Intensity (1-10 slider with clinical ranges)
    - Timestamp (auto "now", editable with >7 day warning)
@@ -417,14 +419,21 @@ Once validated, this doc feeds into:
 
 6. ✅ **Design Principle:** UX parity between both flows (learn once, use everywhere)
 
+### Dashboard & Analytics:
+7. ✅ **DASHBOARD METRICS VALIDATED:** 11 metrics for MVP (summary card, trends, breakdowns, streaks)
+
+### Scope Decisions:
+8. ✅ **THC Potency Tracking:** SKIP (false precision, bogus data)
+9. ✅ **Medical vs Recreational:** SKIP (triggers capture "why" better, reduces stigma)
+10. ✅ **Goal Tracking:** DEFER TO POST-MVP (focus on polished logging first)
+
 **What's Next (When You Return):**
 1. 🚧 **Create UX_FLOW_SPEC.md** - Map complete screen-by-screen flows (wireframes)
-2. 🚧 Decide on "Other" ROA (tinctures, topicals - MVP or post-MVP?)
-3. 🚧 THC potency tracking - MVP or post-MVP?
-4. 🚧 Create DATA_MODEL_SPEC.md (SwiftData schemas)
+2. 🚧 **Create DATA_MODEL_SPEC.md** (SwiftData schemas for all models)
+3. 🚧 **Create TECHNICAL_IMPLEMENTATION.md** (map features to repos/use cases/views)
 
 **When You Resume:**
-- Move to UX_FLOW_SPEC.md to document screen-by-screen flows
-- OR continue validating remaining open questions (see below)
+- Move to UX_FLOW_SPEC.md to document screen-by-screen flows with all validated data
+- All clinical questions resolved - ready for technical specs!
 
-**Status:** CLINICAL VALIDATION COMPLETE - Ready for UX/Data specs! 🔥
+**Status:** CLINICAL SPEC 100% COMPLETE - Build-ready! 🔥🔥🔥
