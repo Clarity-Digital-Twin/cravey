@@ -272,22 +272,68 @@ This doc is where the domain expert (you) validates that the tracking model is c
 - Removed "Other" to eliminate decision fatigue - current triggers cover 95%+ of use cases
 - Multi-select captures reality (triggers rarely singular)
 
-### THC Potency Tracking
-- ❓ Should we track **THC %** or **mg THC**?
-- ❓ Clinical concern: High-potency concentrates (dabs) vs flower
-- ❓ Is this MVP or post-MVP?
-- ❓ Too burdensome for users to track?
+### ✅ THC Potency Tracking - RESOLVED (2025-10-18)
 
-### Medical vs. Recreational Distinction
-- ❓ Does this matter for harm reduction?
-- ❓ Or is "why you use" captured well enough by triggers/goals?
+**Decision: SKIP ENTIRELY (Post-MVP, likely never)**
 
-### Frequency Metrics
-- ❓ What timeframes matter clinically?
-  - Daily usage count?
-  - Weekly patterns?
-  - Time of day patterns? (Morning use = different concern than evening?)
-  - Consecutive days of use? (Tolerance/dependence indicator)
+**Clinical Rationale:**
+- **False precision for smoked/vaped ROAs:** Combustion destroys unknown % THC, bioavailability varies wildly (10-30%), impossible to calculate actual intake from "3 pulls" or "2 bowls"
+- **Edibles already captured:** We track mg THC directly (5mg, 10mg, 15mg...) - no separate potency field needed
+- **Real escalation signals already tracked:**
+  - ROA switching (flower → vape → dab = tolerance escalation)
+  - Increasing amount over time (1 bowl/day → 4 bowls/day)
+  - Frequency increase (daily → multiple times/day via timestamps)
+- **Bogus data worse than no data:** Asking users to guess THC % creates garbage data that burdens users without clinical value
+
+**Conclusion:** App already captures everything clinically meaningful. Potency tracking adds friction without insight.
+
+---
+
+### ✅ Medical vs. Recreational Distinction - RESOLVED (2025-10-18)
+
+**Decision: SKIP ENTIRELY**
+
+**Clinical Rationale:**
+- **False binary:** Real-world use is nuanced (pain + boredom + habit simultaneously)
+- **Stigma/shame:** Forcing "good reason vs bad reason" judgment reduces honesty
+- **Already captured by triggers:** Anxious/Sad/Tired = therapeutic intent, Bored/Social = recreational context, Habit/Paraphernalia = compulsive use
+- **Harm reduction doesn't care about intent:** Outcomes matter (escalation patterns, functional impairment), not labels
+- **"Medical card" ≠ medical use:** Many get cards for legal dispensary access, doesn't reflect actual therapeutic use
+
+**Conclusion:** Triggers + usage patterns tell the complete story without reductive labels. Non-judgmental approach maximizes honest data.
+
+---
+
+### ✅ Dashboard Metrics - FULLY VALIDATED (2025-10-18)
+
+**What timeframes/metrics matter clinically for Progress Dashboard:**
+
+**INCLUDE IN MVP:**
+1. **Summary Card (Top)** - Weekly high-level stats (X uses, Y cravings, top trigger)
+2. **Amount Trend Over Time** - Line chart showing usage increasing/decreasing week-over-week
+3. **Usage Reduction/Change** - Comparison metric ("Using 30% less than last month")
+4. **Trigger Breakdown** - Pie chart showing proportion of each trigger (40% Bored, 30% Anxious...)
+5. **Location Patterns** - Where use/cravings occur most (Home 40%, Car 30%...)
+6. **Time of Day Patterns** - Morning vs afternoon vs evening use distribution
+7. **Weekly Patterns** - Bar chart showing usage by day of week (Mon: 2, Tue: 1, Wed: 3...)
+8. **ROA Breakdown** - Pie chart showing method distribution (50% Bowls, 30% Vape, 20% Edibles...)
+9. **Consecutive Days Tracking** - Current streak (context-aware: "7 days used" OR "5 days abstinent")
+10. **Longest Abstinence Streak** - Milestone tracker ("Your best: 14 days")
+11. **Average Craving Intensity Over Time** - Line chart showing if cravings getting weaker/stronger
+
+**SKIP FOR MVP (Reduces Clutter):**
+- Daily usage count (accessible via log view instead)
+- Craving vs usage ratio (too granular, needs bulk data for patterns)
+- Trigger combinations (trigger breakdown sufficient)
+
+**FUTURE CONSIDERATION:**
+- Heatmap visualization (time-of-day + day-of-week combined - GitHub-style contribution graph)
+
+**Clinical Rationale:**
+- Focus on **patterns over time** (trends, not single data points)
+- **Environmental context** (location, time, triggers) reveals high-risk scenarios
+- **Behavioral tracking** (streaks, ROA switching) shows escalation/improvement
+- **Visual simplicity** (pie charts, line charts, bar charts) = quick insights without cognitive load
 
 ---
 
