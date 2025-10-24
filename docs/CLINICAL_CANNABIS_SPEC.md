@@ -1,8 +1,8 @@
 # Clinical Cannabis Tracking Specification
 
 **Author:** Ray (Psychiatrist / Addiction Medicine)
-**Last Updated:** 2025-10-12
-**Status:** 🚧 Brainstorming / Draft
+**Last Updated:** 2025-10-18
+**Status:** ✅ Complete - All Clinical Validations Done
 **Purpose:** Validate clinical accuracy of cannabis tracking model BEFORE implementation
 
 ---
@@ -154,13 +154,13 @@ This doc is where the domain expert (you) validates that the tracking model is c
 ## 🤔 Open Questions (To Brainstorm)
 
 ### Routes of Administration (ROA) - Complete?
-- ✅ **Smoke (Bowls)** - Incrementing by 0.5 (0.5, 1, 1.5, 2...)
-- ✅ **Smoke (Joints)** - Incrementing by 0.5 (0.5, 1, 1.5, 2...)
-- ✅ **Smoke (Blunts)** - Incrementing by 0.5 (0.5, 1, 1.5, 2...)
-- ✅ **Vape** - Incrementing by 1 (1, 2, 3, 4... pulls)
-- ✅ **Dab** - Incrementing by 1 (1, 2, 3... dabs)
-- ✅ **Edible** - Incrementing by 10mg (10mg, 20mg, 30mg...)
-- ❓ **Other** - Tinctures, topicals, etc. (Relevant for MVP? Likely out of scope)
+- ✅ **Smoke (Bowls)** - Incrementing by 0.5 (0.5, 1, 1.5, 2... up to 5.0)
+- ✅ **Smoke (Joints)** - Incrementing by 0.5 (0.5, 1, 1.5, 2... up to 5.0)
+- ✅ **Smoke (Blunts)** - Incrementing by 0.5 (0.5, 1, 1.5, 2... up to 5.0)
+- ✅ **Vape** - Incrementing by 1 (1, 2, 3, 4... up to 10 pulls)
+- ✅ **Dab** - Incrementing by 1 (1, 2, 3, 4, 5 dabs)
+- ✅ **Edible** - Incrementing by 5mg (5mg, 10mg, 15mg, 20mg... up to 100mg)
+- ❌ **Other** - Tinctures, topicals, etc. (DEFERRED to post-MVP - users can log as edible with notes workaround)
 
 ### Craving Intensity Scale
 - ✅ **1-10 scale** - VALIDATED (standard medical pain scale model)
@@ -345,9 +345,9 @@ This doc is where the domain expert (you) validates that the tracking model is c
 
 **1. ROA Tracking Model - VALIDATED**
 - Simple incrementing counts match user mental models
-- **Bowls/Joints/Blunts:** 0.5 increments (0.5, 1, 1.5, 2...)
-- **Vapes/Dabs:** Whole number increments (1, 2, 3... pulls/dabs)
-- **Edibles:** 10mg increments (10mg, 20mg, 30mg...)
+- **Bowls/Joints/Blunts:** 0.5 increments (0.5 → 5.0)
+- **Vapes/Dabs:** Whole number increments (1 → 10 for vapes, 1 → 5 for dabs)
+- **Edibles:** 5mg increments (5mg, 10mg, 15mg, 20mg... up to 100mg)
 - No overly pedantic distinctions (no "short/long pulls", no "small/large dabs")
 - Fast to log (<5 sec target)
 - Supports harm reduction insights ("using 0.5 bowls vs 3 bowls")

@@ -101,19 +101,23 @@ Map user journeys and screen flows to understand how the app FEELS to use.
 
 **What It Should Define:**
 1. **Onboarding Flow**
-   - Welcome screen → Goal selection → Permissions → Tour → Home
+   - Welcome screen → Permissions (contextual) → Tour (optional) → Home
    - What if user denies camera? Denies mic? Denies both?
+   - **Note:** Goal setting removed for MVP (deferred to v1.1)
 
 2. **Craving Logging Flow**
-   - Home → "Log Craving" button → Quick form (<5 sec)
-   - Outcome = "Used" → "Log what you used?" prompt → Dismiss vs. Continue
+   - Home → "Log Craving" button → Quick form (<10 sec)
+   - Required: Intensity (1-10 slider), Timestamp (auto "now", editable)
+   - Optional: Trigger (HAALT chips), Location (GPS + presets), Notes
    - Return to home with feedback message
+   - **Note:** Independent from usage logging (no "outcome" field)
 
 3. **Usage Logging Flow**
    - Home → "Log Usage" → Form (<10 sec)
-   - ROA selection → Amount selection (context-aware)
-   - Optional fields (trigger, mood, notes)
+   - Required: ROA selection, Amount (picker wheel), Timestamp (auto "now", editable)
+   - Optional: Trigger (HAALT chips), Location (GPS + presets), Notes
    - Save → Return to home
+   - **Note:** Mood field removed (redundant with triggers)
 
 4. **Recording Flow**
    - Home → "Recordings" → Record new (camera/mic permissions required)
@@ -143,7 +147,7 @@ Map user journeys and screen flows to understand how the app FEELS to use.
 **Why This Matters:**
 - Forces you to think through every user decision point
 - Catches UX ambiguities before coding
-- Example: "What happens if user logs craving with 'Used' outcome but dismisses the usage prompt?" (Answered in v1.1: craving saved, no usage log)
+- Example: "What happens if user denies location permission but taps 'Current Location'?" (Fallback: Show alert, require manual selection from presets)
 
 **How to Write It:**
 - Casual wireframe descriptions (not pixel-perfect designs)
@@ -172,11 +176,11 @@ Define exact SwiftData schemas, relationships, and persistence logic.
    - `UsageModel` - All fields, types, optionality
    - `RecordingModel` - All fields, types, optionality
    - `MotivationalMessageModel` (if needed for v1)
-   - `UserGoalModel` - Track goal changes over time
+   - **Note:** `UserGoalModel` deferred to post-MVP (v1.1)
 
 2. **Relationships**
    - Craving ↔ Recording (many-to-one, `.nullify` delete rule)
-   - Usage ↔ Craving (one-to-one optional, prompt on delete)
+   - **Craving and Usage are INDEPENDENT** (no relationship, separate logs)
    - Validation of Appendix B delete rules
 
 3. **Performance Constraints**

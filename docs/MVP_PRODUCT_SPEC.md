@@ -1,25 +1,25 @@
 # Cravey MVP Product Specification
 
-**Version:** 1.1
-**Last Updated:** 2025-10-12
-**Status:** v1.1 - Final Product Specification
+**Version:** 1.3
+**Last Updated:** 2025-10-18
+**Status:** v1.3 - Final Product Specification (All Clinical Validations Complete)
 
 ---
 
-## 🔖 CHECKPOINT (2025-10-12 - UPDATED)
+## 🔖 CHECKPOINT (2025-10-18 - FULLY VALIDATED)
 
 **📋 For Full Project Status:** See `docs/CHECKPOINT_STATUS.md` (master doc tracking all planning docs)
 
 **This Document's Status:**
-- ✅ MVP_PRODUCT_SPEC.md v1.2 - Updated with independent flow model
+- ✅ MVP_PRODUCT_SPEC.md v1.3 - All clinical validations complete, independent flow model finalized
 - ✅ **CRITICAL CHANGE:** Craving logging and usage logging are now INDEPENDENT
   - Removed "outcome" field from craving logging
   - Removed forced link between craving → usage
   - Users can track cravings only, usage only, or both
 - ✅ Updated ROA amounts to match validated clinical model (CLINICAL_CANNABIS_SPEC.md):
-  - Bowls/Joints/Blunts: 0.5 increments
-  - Vapes/Dabs: Whole number increments
-  - Edibles: 10mg increments
+  - Bowls/Joints/Blunts: 0.5 increments (0.5 → 5.0)
+  - Vapes/Dabs: Whole number increments (1 → 10 for vapes, 1 → 5 for dabs)
+  - Edibles: 5mg increments (5mg → 100mg)
 
 **What's Next:**
 - 🚧 **Continue CLINICAL_CANNABIS_SPEC.md** - Hammer down Usage Logging UX first, then Craving Logging
@@ -419,7 +419,7 @@ v1.0 MVP is ethically successful if:
 ### Immediate (Planning Phase)
 1. ✅ **AI Agent Review** - Completed (agent provided critical feedback)
 2. ✅ **Converge on Final Version** - Incorporated all must-have changes
-3. ✅ **Lock v1.1 Spec** - This document is now locked and ready for implementation (added permission fallbacks, link dismissal behavior, data relationship rules)
+3. ✅ **Lock v1.3 Spec** - This document is now locked and ready for implementation (all clinical validations complete, independent logging flows validated, dashboard metrics finalized)
 4. **Create `DATA_MODEL_SPEC.md`** - Define exact SwiftData schemas for CravingModel, UsageModel, RecordingModel, MotivationalMessageModel
 5. **Create `UX_FLOW_SPEC.md`** - Wireframe user journeys (onboarding, logging flows, dashboard navigation)
 6. **Create `TECHNICAL_IMPLEMENTATION.md`** - Map features to repos/use cases/views, define implementation order
@@ -427,7 +427,7 @@ v1.0 MVP is ethically successful if:
 ### Phase 1: Core Functionality (Weeks 1-4)
 1. Implement Craving Logging (View + ViewModel + Use Cases)
 2. Implement Usage Logging (View + ViewModel + Use Cases)
-3. Implement Goal Setting & Onboarding Flow
+3. Implement Onboarding Flow (Welcome, Permissions, Tour)
 4. Implement Data Management (export/delete)
 
 ### Phase 2: Recordings & Dashboard (Weeks 5-8)
@@ -538,7 +538,7 @@ v1.0 MVP is ethically successful if:
 
 2. **When user deletes a recording:**
    - Craving entries that referenced it remain intact
-   - Craving data (intensity, trigger, outcome) is preserved
+   - Craving data (intensity, timestamp, trigger, location, notes) is preserved
    - No cascading deletes
 
 3. **When user selects "Delete All Data":**
@@ -550,25 +550,33 @@ v1.0 MVP is ethically successful if:
 - **Data Integrity:** Recordings are valuable assets created intentionally, separate from spontaneous craving logs
 - **Flexibility:** User can curate recordings independently without affecting historical logs
 
-### Usage ↔ Craving Relationship
+### Usage ↔ Craving Relationship (v1.3 UPDATE)
 **Structure:**
-- Usage logs can optionally link back to a craving (if user followed "Log what you used?" prompt)
-- One-way reference: Usage → Craving (for context: "This usage followed a craving")
+- **Craving and Usage are INDEPENDENT logs** (no relationship, separate tracking)
+- Users can log cravings only, usage only, or both - no forced connection
+- No "outcome" field on cravings (removed to eliminate forced linkage)
+- Supports all real-world patterns:
+  - "I had a craving and didn't use" (log craving only)
+  - "I used without a conscious craving" (log usage only)
+  - "I tracked both" (log craving, then separately log usage)
 
 **Delete Behavior:**
 1. **When user deletes a usage log:**
-   - Original craving entry remains intact with "Used" outcome
-   - Removing usage detail doesn't change craving history
+   - Only that usage log is deleted
+   - No impact on craving logs (separate data)
 
-2. **When user deletes a craving that has linked usage:**
-   - Prompt: "This craving has a linked usage log. Delete both?" (Yes / No / Cancel)
-   - If Yes: Both deleted
-   - If No: Only craving deleted, usage log preserved with no craving reference
+2. **When user deletes a craving log:**
+   - Only that craving log is deleted
+   - No impact on usage logs (separate data)
+   - Recordings associated with that craving remain intact (see above)
 
 **Why These Rules:**
-- **User Control:** Clear about what's being deleted
-- **Data Completeness:** Usage logs may have valuable context (method, amount, mood) worth preserving separately
+- **Clinical Accuracy:** Many users experience cravings without using, or use without recognizing a craving
+- **User Autonomy:** No forced decisions ("Did you use?" prompt creates pressure/shame)
+- **Data Integrity:** Clean separation allows accurate tracking of both phenomena independently
 
 ---
 
-**Status:** v1.1 LOCKED & READY FOR IMPLEMENTATION 🚀🔥
+**Status:** v1.3 LOCKED & READY FOR IMPLEMENTATION 🚀🔥
+
+**Last Validated:** 2025-10-18 (All clinical models finalized, independent logging flows confirmed, dashboard metrics locked)
