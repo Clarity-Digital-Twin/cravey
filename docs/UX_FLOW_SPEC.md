@@ -1,8 +1,8 @@
 # Cravey UX Flow Specification
 
-**Version:** 1.0
-**Last Updated:** 2025-10-24
-**Status:** 🚧 In Progress - Mapping User Journeys
+**Version:** 1.1
+**Last Updated:** 2025-10-25
+**Status:** 🚧 In Progress - Mapping User Journeys (5/7 flows complete)
 
 ---
 
@@ -509,13 +509,485 @@ ELSE (permissions already granted):
 
 ---
 
-**Screen 5.3: Recording Screen (Video/Audio Choice)**
+**Screen 5.3: Recording Mode Choice Modal**
+
+User has completed permission checks. Now they choose video or audio recording.
+
 **Layout:**
-- [ ] TO BE DESIGNED SOCRATICALLY (remaining questions: video vs audio toggle, recording UI, preview, save flow)
+```
+┌─────────────────────────────────┐
+│  Choose Recording Type          │  ← Header
+│                                 │
+│     [🎥 RECORD VIDEO]           │  ← Full width button
+│                                 │
+│     [🎙️ RECORD AUDIO]           │  ← Full width button
+│                                 │
+│     [Cancel]                    │  ← Text button (bottom)
+└─────────────────────────────────┘
+```
+
+**Components:**
+- Modal sheet (not full-screen)
+- Two `PrimaryActionButton` instances
+- Cancel text button
+
+**Navigation:**
+```
+Tap [RECORD VIDEO] → Screen 5.3.1 (Video Recording Screen)
+Tap [RECORD AUDIO] → Screen 5.3.2 (Audio Recording Screen)
+Tap [Cancel] → Return to Screen 5.1 (Library)
+```
+
+**Design Rationale:**
+- Upfront choice prevents accidental wrong-mode recording
+- Clear visual distinction (video emoji vs audio emoji)
+- Prevents camera preview loading for audio-only users (privacy)
+- Simple, one-time decision (mode locked once chosen)
+
+---
+
+**Screen 5.3.1: Video Recording Screen**
+
+User tapped [RECORD VIDEO]. Camera preview active.
+
+**Layout (Before Recording):**
+```
+┌─────────────────────────────────┐
+│  ✕                              │  ← Cancel (top left)
+│                                 │
+│  [Camera preview - full screen] │  ← Live camera feed
+│                                 │
+│                                 │
+│                                 │
+│     00:00                       │  ← Timer (center bottom)
+│                                 │
+│     [⏺ RECORD]                  │  ← Big red button
+└─────────────────────────────────┘
+```
+
+**Layout (During Recording):**
+```
+┌─────────────────────────────────┐
+│  ✕                              │  ← Cancel (disabled during recording)
+│                                 │
+│  [Camera preview - recording]   │  ← Red border or indicator
+│                                 │
+│                                 │
+│                                 │
+│     ⏺ 00:23                     │  ← Timer (incrementing)
+│                                 │
+│     [⏹ STOP]                    │  ← Stop button (red square)
+└─────────────────────────────────┘
+```
+
+**Interaction Details:**
+- Camera preview shows front-facing camera by default (user sees themselves)
+- Timer shows 00:00 before recording starts
+- Tap [⏺ RECORD] → Recording starts immediately, button changes to [⏹ STOP], timer increments
+- Tap [⏹ STOP] → Recording stops, navigate to Screen 5.3.3 (Preview)
+- Tap ✕ (before recording) → Confirm "Discard and return to library?" → Yes/No
+- During recording, ✕ is disabled (must stop recording first)
+
+**Technical Notes:**
+- Uses AVCaptureSession for video recording
+- Front camera default (user records message to themselves)
+- Saves to .mov file in Documents/Recordings/
+- No pause/resume (keeps it simple for MVP)
+
+---
+
+**Screen 5.3.2: Audio Recording Screen**
+
+User tapped [RECORD AUDIO]. Audio-only mode.
+
+**Layout (Before Recording):**
+```
+┌─────────────────────────────────┐
+│  ✕                              │  ← Cancel (top left)
+│                                 │
+│     🎙️                          │  ← Microphone icon (large)
+│                                 │
+│  [Animated waveform - idle]     │  ← Audio visualization (flat)
+│                                 │
+│     00:00                       │  ← Timer (center bottom)
+│                                 │
+│     [⏺ RECORD]                  │  ← Big red button
+└─────────────────────────────────┘
+```
+
+**Layout (During Recording):**
+```
+┌─────────────────────────────────┐
+│  ✕                              │  ← Cancel (disabled)
+│                                 │
+│     🎙️                          │  ← Mic icon (pulsing red)
+│                                 │
+│  [Animated waveform - active]   │  ← Waveform reacts to voice
+│                                 │
+│     ⏺ 00:15                     │  ← Timer (incrementing)
+│                                 │
+│     [⏹ STOP]                    │  ← Stop button
+└─────────────────────────────────┘
+```
+
+**Interaction Details:**
+- Waveform shows audio levels in real-time (visual feedback that mic is working)
+- Mic icon pulses red during recording
+- Tap [⏺ RECORD] → Recording starts, waveform animates, timer increments
+- Tap [⏹ STOP] → Recording stops, navigate to Screen 5.3.3 (Preview)
+- Tap ✕ (before recording) → Confirm "Discard and return to library?" → Yes/No
+
+**Technical Notes:**
+- Uses AVAudioRecorder for audio recording
+- Saves to .m4a file in Documents/Recordings/
+- Waveform uses audio meter levels from AVAudioRecorder
+- No pause/resume (UX parity with video)
+
+---
+
+**Screen 5.3.3: Post-Recording Preview & Save**
+
+User tapped [⏹ STOP]. Recording complete. Preview before saving.
+
+**Layout (Video Preview):**
+```
+┌─────────────────────────────────┐
+│  ✕                     [SAVE]   │  ← Cancel / Save (top)
+│                                 │
+│  [Video player - paused]        │  ← First frame shown
+│  [▶ Play]    2:34               │  ← Play button + duration
+│                                 │
+│  Title (Optional):              │  ← Text field
+│  [                          ]   │     Placeholder: "Add a title..."
+│  (40 char max)                  │
+│                                 │
+│  Notes (Optional):              │  ← Text field
+│  [                          ]   │     Placeholder: "Add notes..."
+│  (200 char max)                 │
+│                                 │
+│  Purpose (Optional):            │  ← Chip selector
+│  [Motivational][Craving]        │  ← Single-select chips
+│  [Reflection][Milestone]        │
+└─────────────────────────────────┘
+```
+
+**Layout (Audio Preview):**
+```
+┌─────────────────────────────────┐
+│  ✕                     [SAVE]   │
+│                                 │
+│     🎙️                          │  ← Audio icon
+│  [Waveform visualization]       │
+│  [▶ Play]    1:15               │  ← Play button + duration
+│                                 │
+│  Title (Optional):              │
+│  [                          ]   │
+│  (40 char max)                  │
+│                                 │
+│  Notes (Optional):              │
+│  [                          ]   │
+│  (200 char max)                 │
+│                                 │
+│  Purpose (Optional):            │
+│  [Motivational][Craving]        │
+│  [Reflection][Milestone]        │
+└─────────────────────────────────┘
+```
+
+**Components:**
+- Native video/audio player (inline preview, not full-screen)
+- Text fields for title and notes
+- `ChipSelector` for purpose (single-select, optional)
+- Cancel button (✕)
+- `PrimaryActionButton` (SAVE)
+
+**Interaction Details:**
+- Preview player loads automatically (paused state)
+- Tap [▶ Play] → Plays recording in preview (user can verify it worked)
+- Title field is optional, blank by default
+- Notes field is optional, blank by default
+- Purpose chips are optional, none selected by default
+- All fields are scrollable (form scrolls vertically)
+
+**Save Logic:**
+```
+Tap [SAVE]:
+  IF title field has text:
+    → Save with custom title
+  ELSE (title blank):
+    → Auto-generate title: "Recording Oct 25, 2025 3:42 PM"
+
+  Save recording metadata to SwiftData:
+    - RecordingModel.title (custom or auto-generated)
+    - RecordingModel.notes (if entered)
+    - RecordingModel.purpose (if selected)
+    - RecordingModel.timestamp (now)
+    - RecordingModel.duration (calculated from file)
+    - RecordingModel.filePath (relative path to .mov or .m4a)
+    - RecordingModel.type ("video" or "audio")
+    - RecordingModel.playCount = 0
+
+  File already saved during recording:
+    - Documents/Recordings/video_[UUID].mov OR
+    - Documents/Recordings/audio_[UUID].m4a
+
+  → Toast: "Recording saved ✓" (2s)
+  → Navigate to Screen 5.4 (Library with recordings)
+```
+
+**Cancel Flow:**
+```
+Tap ✕:
+  → Show alert: "Discard recording? This cannot be undone."
+     [Cancel] [Discard]
+
+  IF [Discard]:
+    → Delete file from Documents/Recordings/
+    → Return to Screen 5.1 (Library)
+
+  IF [Cancel]:
+    → Return to preview screen (no action)
+```
+
+**Edge Cases:**
+- Title max 40 characters (enforced by text field)
+- Notes max 200 characters (character counter appears at 150 chars)
+- If user replays recording multiple times before saving, playCount stays 0 (increments only from library)
+- Purpose chips: Tap to select, tap again to deselect (optional = can save with none selected)
+
+---
 
 **Screen 5.4: Recordings Library (With Recordings)**
+
+User has saved recordings. Main library view.
+
 **Layout:**
-- [ ] TO BE DESIGNED SOCRATICALLY (remaining questions: list vs grid, sorting, playback UI)
+```
+┌─────────────────────────────────┐
+│  Recordings            [+ NEW]  │  ← Header with new recording button
+│─────────────────────────────────│
+│  🎥 Don't Fucking Do It         │  ← Video, tap to play
+│     Oct 25, 3:42 PM • 2:34      │     (most recent at top)
+│     ▶ 12 plays                  │
+│                                 │
+│  🎙️ Remember Your Goals         │  ← Audio, tap to play
+│     Oct 24, 8:15 PM • 1:15      │
+│     ▶ 8 plays                   │
+│                                 │
+│  🎥 Why I'm Taking a Break      │  ← Video
+│     Oct 23, 2:10 PM • 5:02      │
+│     ▶ 5 plays                   │
+│                                 │
+│  🎙️ You Got This                │  ← Audio
+│     Oct 22, 9:30 AM • 0:45      │
+│     ▶ 2 plays                   │
+│                                 │
+│  🎥 Recording Oct 21, 1:05 PM   │  ← Auto-generated title (no custom)
+│     Oct 21, 1:05 PM • 3:12      │
+│     ▶ 0 plays                   │
+└─────────────────────────────────┘
+```
+
+**Components:**
+- Header with [+ NEW] button (tap → Screen 5.3, mode choice modal)
+- List of recording rows (chronological, newest first)
+- Each row shows:
+  - Icon (🎥 video or 🎙️ audio)
+  - Title (custom or auto-generated)
+  - Timestamp + Duration
+  - Play count
+
+**Interaction Details:**
+- **Tap row anywhere** → Play recording immediately (Screen 5.4.1, playback)
+- **Swipe left on row** → [🗑️ Delete] button appears
+- **Long-press on row** → Context menu appears:
+  - "Edit Title & Notes"
+  - "Delete"
+  - "Cancel"
+- **Tap [+ NEW]** → Navigate to Screen 5.3 (mode choice modal)
+
+**Sorting:**
+- Default: Chronological DESC (newest first)
+- **MVP Note:** No sorting UI (tabs, filters). This can be added in v2 if users have 20+ recordings.
+  - Potential v2: Tabs for "Most Played" / "Recent" / "All"
+  - Data model already tracks playCount and timestamp, so sorting is trivial to add
+
+---
+
+**Screen 5.4.1: Recording Playback (Video)**
+
+User tapped a video recording from library.
+
+**Playback Experience:**
+```
+Full-screen native video player (AVPlayerViewController)
+  - Standard iOS video controls (play/pause, scrub, volume, AirPlay)
+  - Swipe down to dismiss
+  - Tap anywhere → Show/hide controls
+  - Rotate to landscape (automatic, if supported)
+  - Native picture-in-picture support (iOS default)
+```
+
+**Post-Playback Actions:**
+```
+On dismiss (swipe down or tap Done):
+  → Increment RecordingModel.playCount += 1
+  → Update RecordingModel.lastPlayedAt = now
+  → Save to SwiftData
+  → Return to Screen 5.4 (Library)
+```
+
+**Technical Implementation:**
+- Use `AVPlayerViewController` (native iOS)
+- Load video from `Documents/Recordings/video_[UUID].mov`
+- Zero custom UI needed (iOS handles everything)
+- Playback increments play count (feeds Top 3 Most Played algorithm for home screen)
+
+---
+
+**Screen 5.4.2: Recording Playback (Audio)**
+
+User tapped an audio recording from library.
+
+**Playback Experience:**
+```
+Bottom sheet mini-player (overlays library screen)
+┌─────────────────────────────────┐
+│  🎙️ Remember Your Goals         │  ← Title (top)
+│                                 │
+│  [Waveform animation]           │  ← Audio visualization
+│                                 │
+│  ━━━━━●━━━━━━ 0:23 / 1:15      │  ← Progress bar + time
+│                                 │
+│  [⏮ 15s] [⏸] [⏭ 15s]           │  ← Skip back/pause/skip forward
+│                                 │
+│  Swipe down to close            │  ← Helper text
+└─────────────────────────────────┘
+```
+
+**Interaction Details:**
+- Audio plays in bottom sheet (user can navigate app while listening)
+- Waveform animates based on audio amplitude
+- Progress bar shows current position (draggable to scrub)
+- [⏮ 15s] = Skip back 15 seconds
+- [⏸] = Pause (changes to [▶] when paused)
+- [⏭ 15s] = Skip forward 15 seconds
+- Swipe down anywhere → Dismiss player, stop playback
+
+**Post-Playback Actions:**
+```
+On dismiss (swipe down or playback complete):
+  → Increment RecordingModel.playCount += 1
+  → Update RecordingModel.lastPlayedAt = now
+  → Save to SwiftData
+  → Return to Screen 5.4 (Library)
+```
+
+**Technical Implementation:**
+- Use AVPlayer with custom UI (bottom sheet)
+- Load audio from `Documents/Recordings/audio_[UUID].m4a`
+- Waveform visualization using audio meter levels
+- Background playback NOT enabled (user must keep app open)
+
+---
+
+**Screen 5.4.3: Edit Recording (Title & Notes)**
+
+User long-pressed recording row → Tapped "Edit Title & Notes" from context menu.
+
+**Layout:**
+```
+┌─────────────────────────────────┐
+│  Edit Recording        ✕        │  ← Header with close button
+│─────────────────────────────────│
+│  Title:                         │
+│  [Don't Fucking Do It]          │  ← Pre-filled with existing title
+│  (40 char max)                  │
+│                                 │
+│  Notes:                         │
+│  [This was hard to record but   │  ← Pre-filled with existing notes
+│   I needed to say it.]          │     (if exists, else blank)
+│  (200 char max)                 │
+│                                 │
+│  Purpose:                       │
+│  [●Motivational][○Craving]      │  ← Pre-selected if exists
+│  [○Reflection][○Milestone]      │     (● = selected, ○ = unselected)
+│                                 │
+│─────────────────────────────────│
+│     [SAVE CHANGES]              │  ← Primary CTA button
+└─────────────────────────────────┘
+```
+
+**Components:**
+- Bottom sheet (similar to post-recording preview)
+- Text fields pre-filled with existing data
+- `ChipSelector` for purpose (single-select, shows current selection)
+- `PrimaryActionButton` (SAVE CHANGES)
+
+**Interaction Details:**
+- Sheet slides up from bottom
+- Title field pre-filled (user can edit)
+- Notes field pre-filled if exists, else blank
+- Purpose chips show current selection (if exists)
+- Tap [SAVE CHANGES] → Update RecordingModel → Toast "Updated ✓" → Dismiss sheet
+- Tap ✕ → Dismiss sheet without saving (no confirmation needed)
+- Swipe down → Dismiss sheet without saving
+
+**Save Logic:**
+```
+Tap [SAVE CHANGES]:
+  Update RecordingModel:
+    - title (new value from text field)
+    - notes (new value from text field, can be blank)
+    - purpose (new selection from chips, can be none)
+
+  Save to SwiftData
+  → Toast: "Recording updated ✓" (2s)
+  → Dismiss sheet
+  → Return to Screen 5.4 (Library, updated row visible)
+```
+
+**Edge Cases:**
+- If user clears title field (makes it blank), revert to auto-generated title on save
+- Character limits enforced by text fields (40 title, 200 notes)
+- Purpose can be deselected (tap selected chip to unselect)
+
+---
+
+**Screen 5.4.4: Delete Recording Confirmation**
+
+User swiped left on recording row → Tapped [🗑️ Delete] OR long-pressed → Tapped "Delete".
+
+**Layout:**
+```
+Alert (system iOS alert):
+
+"Delete 'Don't Fucking Do It'?"
+"This recording will be permanently deleted. This cannot be undone."
+
+[Cancel]  [Delete]
+          ↑ Red destructive button
+```
+
+**Interaction Flow:**
+```
+Tap [Delete]:
+  → Delete RecordingModel from SwiftData
+  → Delete file from Documents/Recordings/video_[UUID].mov (or .m4a)
+  → Toast: "Recording deleted" (2s)
+  → Row animates out of list
+  → If library now empty, show Screen 5.1 (empty state)
+
+Tap [Cancel]:
+  → Dismiss alert
+  → Return to Screen 5.4 (Library, no changes)
+```
+
+**Technical Notes:**
+- Alert uses custom title (interpolates recording.title)
+- Deletion is atomic: Both database record AND file must be deleted
+- If file deletion fails, rollback database deletion (maintain consistency)
+- If last recording deleted, library reverts to empty state (Screen 5.1)
 
 ---
 
@@ -558,9 +1030,7 @@ ELSE (permissions already granted):
 - ✅ Flow 2: Home Tab (Primary actions + Quick Play recordings)
 - ✅ Flow 3: Log Craving (Bottom sheet form, full spec)
 - ✅ Flow 4: Log Usage (Bottom sheet form, full spec with UX parity)
-
-**In Progress:**
-- 🚧 Flow 5: Recordings Tab (Empty state + permission flow done; recording UI + library pending)
+- ✅ Flow 5: Recordings Tab (Complete: Empty state, permissions, mode choice, recording screens, preview/save, library, playback, edit, delete)
 
 **Not Started:**
 - 🔴 Flow 6: Progress Dashboard Tab
@@ -568,6 +1038,6 @@ ELSE (permissions already granted):
 
 ---
 
-**Progress:** 4.5/7 flows complete (64%)
+**Progress:** 5/7 flows complete (71%)
 
-**Next Step:** Complete Flow 5 (Recordings Tab) - recording UI, video/audio choice, playback, library view
+**Next Step:** Complete Flow 6 (Progress Dashboard Tab) - empty state, chart layouts, metrics visualization
