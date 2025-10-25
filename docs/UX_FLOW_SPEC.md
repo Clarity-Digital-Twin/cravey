@@ -558,10 +558,9 @@ ELSE (permissions already granted):
 - ✅ Flow 2: Home Tab (Primary actions + Quick Play recordings)
 - ✅ Flow 3: Log Craving (Bottom sheet form, full spec)
 - ✅ Flow 4: Log Usage (Bottom sheet form, full spec with UX parity)
-- ✅ Flow 5: Recordings Tab (Empty state only)
 
 **In Progress:**
-- 🚧 Flow 5: Recordings Tab (Recording screen + library with recordings)
+- 🚧 Flow 5: Recordings Tab (Empty state + permission flow done; recording UI + library pending)
 
 **Not Started:**
 - 🔴 Flow 6: Progress Dashboard Tab
