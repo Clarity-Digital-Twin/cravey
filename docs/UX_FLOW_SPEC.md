@@ -50,7 +50,7 @@ This document maps **screen-by-screen user flows** for all 7 MVP features. It tr
 
 **Purpose:** Consistent UI, less code, easier maintenance. Build once, use everywhere.
 
-#### **Core Components:**
+#### **Core Components (8 Total):**
 
 1. **`LogFormSheet`** - Bottom sheet wrapper
    - Single scrollable `Form { }` (Apple Health style)
@@ -59,7 +59,7 @@ This document maps **screen-by-screen user flows** for all 7 MVP features. It tr
 
 2. **`ChipSelector`** - Multi-select or single-select chips
    - Horizontal scrolling row of tappable pills
-   - Used by: Triggers (multi-select), Location (single-select), ROA (single-select)
+   - Used by: Triggers (multi-select), Location (single-select)
 
 3. **`PickerWheelInput`** - Context-aware amount picker
    - SwiftUI `Picker` with `.wheel` style
@@ -89,6 +89,8 @@ This document maps **screen-by-screen user flows** for all 7 MVP features. It tr
    - Minimum 44x44pt tap target (Apple HIG)
    - High contrast, accessible
    - Used by: "Log Craving", "Log Usage", "Record" buttons
+
+**Note on ROA Selection:** Uses native SwiftUI `List` with radio buttons (not a custom component). Single-select vertical list pattern - all 6 options visible, large tap targets, clear "pick one" affordance.
 
 ---
 
@@ -445,15 +447,73 @@ User back on Home tab
 - `PrimaryActionButton` (RECORD YOUR FIRST)
 
 **Navigation:**
-- Tap [RECORD YOUR FIRST] → Screen 5.2 (Recording Screen)
+- Tap [RECORD YOUR FIRST] → Screen 5.2 (Permission Request Flow)
 
 ---
 
-**Screen 5.2: Recording Screen (Video/Audio Choice)**
-**Layout:**
-- [ ] TO BE DESIGNED SOCRATICALLY (remaining questions: video vs audio choice, recording UI, save flow)
+**Screen 5.2: Permission Request Flow (Contextual)**
 
-**Screen 5.3: Recordings Library (With Recordings)**
+**First-Time Flow:**
+```
+User taps [RECORD YOUR FIRST]
+  ↓
+Check camera permission status
+  ↓
+IF permission NOT determined (first time):
+  Show iOS system alert:
+  "Cravey would like to access the camera"
+  [Don't Allow] [OK]
+  ↓
+  IF user taps [OK]:
+    Check microphone permission status
+    ↓
+    IF mic permission NOT determined:
+      Show iOS system alert:
+      "Cravey would like to access the microphone"
+      [Don't Allow] [OK]
+      ↓
+      IF user taps [OK]:
+        → Screen 5.3 (Recording Screen)
+      ELSE (mic denied):
+        Show alert: "Microphone required for recordings.
+                     You can still record video-only in Settings."
+        [Go to Settings] [Cancel]
+        → Return to Screen 5.1
+    ELSE (mic already granted):
+      → Screen 5.3 (Recording Screen)
+  ELSE (camera denied):
+    Show alert: "Camera required for video recordings.
+                 Enable in Settings to record video,
+                 or record audio-only instead."
+    [Go to Settings] [Record Audio Only] [Cancel]
+    ↓
+    IF [Record Audio Only]:
+      Check mic permission (follow mic flow above)
+    ELSE:
+      → Return to Screen 5.1
+
+ELSE (permissions already granted):
+  → Screen 5.3 (Recording Screen)
+```
+
+**Permission States:**
+- **Both granted:** Go straight to recording screen
+- **Camera denied, mic granted:** Offer audio-only recording
+- **Camera granted, mic denied:** Offer video-only recording (silent)
+- **Both denied:** Show "Enable in Settings" with deep link
+
+**Edge Cases:**
+- User can record audio-only without camera permission
+- User can record video-only (silent) without mic permission (edge case, probably not useful clinically)
+- "Go to Settings" button deep-links to app settings page
+
+---
+
+**Screen 5.3: Recording Screen (Video/Audio Choice)**
+**Layout:**
+- [ ] TO BE DESIGNED SOCRATICALLY (remaining questions: video vs audio toggle, recording UI, preview, save flow)
+
+**Screen 5.4: Recordings Library (With Recordings)**
 **Layout:**
 - [ ] TO BE DESIGNED SOCRATICALLY (remaining questions: list vs grid, sorting, playback UI)
 
@@ -493,7 +553,7 @@ User back on Home tab
 
 **Completed:**
 - ✅ General design guidelines (SwiftUI 2025 best practices)
-- ✅ Component library defined (7 reusable components)
+- ✅ Component library defined (8 reusable components)
 - ✅ Flow 1: Onboarding (Welcome + Optional Tour)
 - ✅ Flow 2: Home Tab (Primary actions + Quick Play recordings)
 - ✅ Flow 3: Log Craving (Bottom sheet form, full spec)
