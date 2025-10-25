@@ -175,12 +175,70 @@ This document maps **screen-by-screen user flows** for all 7 MVP features. It tr
 
 **Goal:** Fast access to primary actions (log craving, log usage, record)
 
-**Screen 2.1: Home**
+**Screen 2.1: Home (With Recordings)**
 **Layout:**
-- [ ] TO BE DESIGNED SOCRATICALLY
+```
+┌─────────────────────────────────┐
+│                                 │
+│     [LOG CRAVING] 🧠            │  ← Full width, primary action
+│                                 │
+│     [LOG USAGE]   💨            │  ← Full width, primary action
+│                                 │
+│─────────────────────────────────│
+│  Quick Play:                    │  ← Section header
+│  🎥 Don't Fucking Do It         │  ← Video (user titled, tap to play)
+│  🎙️ Remember Your Goals         │  ← Audio (user titled, tap to play)
+│  🎥 Why I'm Taking a Break      │  ← Video (user titled, tap to play)
+│                                 │
+│     [+ RECORD NEW]              │  ← Tertiary action button
+│                                 │
+└─────────────────────────────────┘
+```
+
+**Components:**
+- `PrimaryActionButton` (LOG CRAVING, LOG USAGE)
+- Recording list items (tappable, show icon for video/audio)
+- Secondary button (+ RECORD NEW)
+
+**Interaction Details:**
+- Quick Play section shows **Top 3 Most Played** recordings (sorted by `playCount` DESC)
+- 🎥 icon = video recording, 🎙️ icon = audio recording
+- Tap recording → Plays immediately (full-screen video player or audio overlay)
+- Tap [+ RECORD NEW] → Navigate to Recordings tab (Flow 5)
 
 **Navigation:**
-- [ ] TO BE MAPPED SOCRATICALLY
+- Tap [LOG CRAVING] → Haptic feedback + button animation (0.1s) → Bottom sheet slides up (Flow 3)
+- Tap [LOG USAGE] → Haptic feedback + button animation (0.1s) → Bottom sheet slides up (Flow 4)
+- Tap recording → Open native video/audio player
+- Tap [+ RECORD NEW] → Switch to Recordings tab (Tab 3)
+
+---
+
+**Screen 2.2: Home (Empty State - No Recordings Yet)**
+**Layout:**
+```
+┌─────────────────────────────────┐
+│                                 │
+│     [LOG CRAVING] 🧠            │  ← Full width
+│                                 │
+│     [LOG USAGE]   💨            │  ← Full width
+│                                 │
+│─────────────────────────────────│
+│  💡 Tip: Record motivational    │  ← Helper card
+│     content to play during      │
+│     cravings                    │
+│                                 │
+│  → Go to Recordings tab         │  ← Tappable link
+│                                 │
+└─────────────────────────────────┘
+```
+
+**Components:**
+- `PrimaryActionButton` (LOG CRAVING, LOG USAGE)
+- `EmptyStateView` (contextual tip + navigation link)
+
+**Navigation:**
+- Tap "Go to Recordings tab" → Switch to Recordings tab (Tab 3)
 
 ---
 
@@ -190,10 +248,72 @@ This document maps **screen-by-screen user flows** for all 7 MVP features. It tr
 
 **Screen 3.1: Craving Log Form**
 **Layout:**
-- [ ] TO BE DESIGNED SOCRATICALLY
+```
+┌─────────────────────────────────┐
+│  Log Craving                    │  ← Header
+│─────────────────────────────────│
+│  Intensity: [1-10 slider]  7    │  ← REQUIRED (color-coded slider)
+│  Timestamp: Now ▼               │  ← REQUIRED (editable, auto "now")
+│─────────────────────────────────│  ← Visual divider
+│  Trigger (Optional)             │  ← OPTIONAL section header
+│  [Hungry][Angry][Anxious]       │  ← Multi-select chips (HAALT)
+│  [Lonely][Tired][Sad]           │
+│  [Bored][Social][Habit]         │
+│  [Paraphernalia]                │
+│                                 │
+│  Location (Optional)            │  ← OPTIONAL section header
+│  [Current][Home][Work]          │  ← Single-select chips
+│  [Social][Outside][Car]         │
+│                                 │
+│  Notes (Optional)               │  ← OPTIONAL section header
+│  [Text field - 500 char limit] │  ← Freeform text
+│                                 │
+│─────────────────────────────────│
+│        [SAVE CRAVING]           │  ← Primary CTA button
+└─────────────────────────────────┘
+```
+
+**Components:**
+- `LogFormSheet` (bottom sheet wrapper)
+- `IntensitySlider` (1-10 slider with color coding)
+  - 1-3: Green (mild)
+  - 4-6: Yellow (moderate)
+  - 7-9: Orange (strong)
+  - 10: Red (overwhelming)
+- `TimestampPicker` (auto "now", editable, shows warning if >7 days)
+- `ChipSelector` (triggers: multi-select, location: single-select)
+- Text field for notes
+- `PrimaryActionButton` (SAVE CRAVING)
+
+**Interaction Details:**
+- Form scrolls vertically (all fields accessible)
+- Required fields at top (progressive disclosure)
+- Visual divider separates required from optional
+- Intensity slider provides haptic feedback on value change
+- Timestamp defaults to "Now", tap to edit (date/time picker)
+- If timestamp >7 days: Show warning "Memory may be less reliable for events >7 days ago"
+- Trigger chips: Multi-select (tap to toggle, can select multiple)
+- Location chips: Single-select (tap to select, previous selection deselects)
+- Notes field: 500 character limit, character counter appears at 400 chars
+- Swipe down anywhere → Dismiss sheet (data not saved, no confirmation)
 
 **Navigation:**
-- [ ] TO BE MAPPED SOCRATICALLY
+```
+User taps [SAVE CRAVING]
+  ↓
+Haptic feedback (success vibration)
+  ↓
+Bottom sheet dismisses (slides down, 0.3s)
+  ↓
+Toast appears: "Craving logged ✓" (2s auto-dismiss, top of screen)
+  ↓
+User back on Home tab
+```
+
+**Edge Cases:**
+- If intensity not set (default 5) → Save anyway (required but has default)
+- If timestamp not edited → Uses "Now" (default)
+- If location "Current" tapped but permission denied → Show alert "Location permission required. Enable in Settings?" (Yes/No)
 
 ---
 
@@ -203,10 +323,99 @@ This document maps **screen-by-screen user flows** for all 7 MVP features. It tr
 
 **Screen 4.1: Usage Log Form**
 **Layout:**
-- [ ] TO BE DESIGNED SOCRATICALLY
+```
+┌─────────────────────────────────┐
+│  Log Usage                      │  ← Header
+│─────────────────────────────────│
+│  ROA:                           │  ← REQUIRED (single-select list)
+│  ○ Bowls / Joints / Blunts      │  ← Radio button list
+│  ● Vape                         │  ← Selected (filled)
+│  ○ Dab                          │
+│  ○ Edible                       │
+│                                 │
+│  Amount: [Picker wheel] 5       │  ← REQUIRED (context-aware)
+│  (pulls)                        │     Shows: 1, 2, 3... 10
+│                                 │
+│  Timestamp: Now ▼               │  ← REQUIRED (editable, auto "now")
+│─────────────────────────────────│  ← Visual divider
+│  Trigger (Optional)             │  ← OPTIONAL section header
+│  [Hungry][Angry][Anxious]       │  ← Multi-select chips (HAALT)
+│  [Lonely][Tired][Sad]           │
+│  [Bored][Social][Habit]         │
+│  [Paraphernalia]                │
+│                                 │
+│  Location (Optional)            │  ← OPTIONAL section header
+│  [Current][Home][Work]          │  ← Single-select chips
+│  [Social][Outside][Car]         │
+│                                 │
+│  Notes (Optional)               │  ← OPTIONAL section header
+│  [Text field - 500 char limit] │  ← Freeform text
+│                                 │
+│─────────────────────────────────│
+│        [SAVE USAGE]             │  ← Primary CTA button
+└─────────────────────────────────┘
+```
+
+**Components:**
+- `LogFormSheet` (bottom sheet wrapper - SAME as craving)
+- Radio button list for ROA (vertical list, single-select)
+- `PickerWheelInput` (context-aware amount picker)
+- `TimestampPicker` (auto "now", editable - SAME as craving)
+- `ChipSelector` (triggers: multi-select, location: single-select - SAME as craving)
+- Text field for notes (SAME as craving)
+- `PrimaryActionButton` (SAVE USAGE)
+
+**ROA → Amount Picker Mapping:**
+- **Bowls/Joints/Blunts:** 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0 (10 options)
+- **Vape:** 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 pulls (10 options)
+- **Dab:** 1, 2, 3, 4, 5 dabs (5 options)
+- **Edible:** 5, 10, 15, 20, 25, 30... 95, 100 mg (20 options)
+
+**Interaction Details:**
+- Form scrolls vertically (all fields accessible)
+- Required fields at top (progressive disclosure - UX PARITY with craving)
+- Visual divider separates required from optional (UX PARITY)
+- ROA radio buttons: Tap to select, auto-deselects previous
+- **When ROA changes:** Amount picker fades out (0.1s) → New range fades in (0.1s)
+- Amount picker shows unit label based on ROA:
+  - Bowls/Joints/Blunts → "(bowls/joints)"
+  - Vape → "(pulls)"
+  - Dab → "(dabs)"
+  - Edible → "(mg THC)"
+- Timestamp defaults to "Now", tap to edit (date/time picker)
+- If timestamp >7 days: Show warning "Memory may be less reliable for events >7 days ago"
+- Trigger chips: Multi-select (SAME behavior as craving)
+- Location chips: Single-select (SAME behavior as craving)
+- Notes field: 500 character limit, character counter at 400 chars (SAME as craving)
+- Swipe down anywhere → Dismiss sheet (data not saved, no confirmation)
 
 **Navigation:**
-- [ ] TO BE MAPPED SOCRATICALLY
+```
+User taps [SAVE USAGE]
+  ↓
+Haptic feedback (success vibration)
+  ↓
+Bottom sheet dismisses (slides down, 0.3s)
+  ↓
+Toast appears: "Usage logged ✓" (2s auto-dismiss, top of screen)
+  ↓
+User back on Home tab
+```
+
+**Edge Cases:**
+- If ROA not selected → Default to first option (Bowls/Joints/Blunts)
+- If amount not set → Default to first value in picker range
+- If timestamp not edited → Uses "Now" (default)
+- If location "Current" tapped but permission denied → Show alert "Location permission required. Enable in Settings?" (Yes/No)
+
+**UX Parity Notes:**
+- ✅ Same `LogFormSheet` component as craving
+- ✅ Same divider pattern (required | optional)
+- ✅ Same trigger/location chips (multi/single-select)
+- ✅ Same timestamp picker behavior
+- ✅ Same notes field (500 char limit)
+- ✅ Same save feedback (haptic + toast)
+- **Difference:** ROA + Amount fields (unique to usage logging)
 
 ---
 
@@ -214,12 +423,39 @@ This document maps **screen-by-screen user flows** for all 7 MVP features. It tr
 
 **Goal:** Record motivational content, play during cravings
 
-**Screen 5.1: Recordings Library**
+**Screen 5.1: Recordings Library (Empty State)**
 **Layout:**
-- [ ] TO BE DESIGNED SOCRATICALLY
+```
+┌─────────────────────────────────┐
+│                                 │
+│       🎥                        │  ← Icon
+│                                 │
+│  "No recordings yet"            │  ← Header
+│                                 │
+│  "Create motivational content   │  ← Description
+│   to play during cravings"      │
+│                                 │
+│     [RECORD YOUR FIRST]         │  ← Primary CTA button
+│                                 │
+└─────────────────────────────────┘
+```
+
+**Components:**
+- `EmptyStateView` (icon + message + CTA)
+- `PrimaryActionButton` (RECORD YOUR FIRST)
 
 **Navigation:**
-- [ ] TO BE MAPPED SOCRATICALLY
+- Tap [RECORD YOUR FIRST] → Screen 5.2 (Recording Screen)
+
+---
+
+**Screen 5.2: Recording Screen (Video/Audio Choice)**
+**Layout:**
+- [ ] TO BE DESIGNED SOCRATICALLY (remaining questions: video vs audio choice, recording UI, save flow)
+
+**Screen 5.3: Recordings Library (With Recordings)**
+**Layout:**
+- [ ] TO BE DESIGNED SOCRATICALLY (remaining questions: list vs grid, sorting, playback UI)
 
 ---
 
@@ -256,20 +492,23 @@ This document maps **screen-by-screen user flows** for all 7 MVP features. It tr
 ## 🚧 Status
 
 **Completed:**
-- ✅ General design guidelines
-- ✅ Component library defined
-- ✅ Onboarding flow (Screen 1.1, 1.2)
+- ✅ General design guidelines (SwiftUI 2025 best practices)
+- ✅ Component library defined (7 reusable components)
+- ✅ Flow 1: Onboarding (Welcome + Optional Tour)
+- ✅ Flow 2: Home Tab (Primary actions + Quick Play recordings)
+- ✅ Flow 3: Log Craving (Bottom sheet form, full spec)
+- ✅ Flow 4: Log Usage (Bottom sheet form, full spec with UX parity)
+- ✅ Flow 5: Recordings Tab (Empty state only)
 
 **In Progress:**
-- 🚧 Flow 2: Home Tab
+- 🚧 Flow 5: Recordings Tab (Recording screen + library with recordings)
 
 **Not Started:**
-- 🔴 Flow 3: Log Craving
-- 🔴 Flow 4: Log Usage
-- 🔴 Flow 5: Recordings Tab
 - 🔴 Flow 6: Progress Dashboard Tab
 - 🔴 Flow 7: Settings Tab
 
 ---
 
-**Next Step:** Design Home Tab (Flow 2) - the daily hub users return to 10x/day
+**Progress:** 4.5/7 flows complete (64%)
+
+**Next Step:** Complete Flow 5 (Recordings Tab) - recording UI, video/audio choice, playback, library view
