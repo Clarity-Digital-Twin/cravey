@@ -230,7 +230,7 @@ Map features to code (repos, use cases, views) and define build order.
 2. **Implementation Order** (16-week plan from MVP spec)
    - Phase 1 (Weeks 1-4): Craving, Usage, Onboarding, Data Management
    - Phase 2 (Weeks 5-8): Recordings, Dashboard
-   - Phase 3 (Weeks 9-12): AI Chat, Polish
+   - Phase 3 (Weeks 9-12): Polish & Testing (UI/UX refinements, performance optimization)
    - Phase 4 (Weeks 13-16): TestFlight, Launch
 
 3. **Module Boundaries**
