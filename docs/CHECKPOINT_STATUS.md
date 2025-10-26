@@ -5,11 +5,11 @@
 
 ---
 
-## 📊 Overall Status: 100% Complete (4/4 Planning Docs Done) 🎉
+## 📊 Overall Status: 60% Complete (3/5 Planning Docs Done)
 
 | Phase | Status | Progress |
 |-------|--------|----------|
-| **Phase 1: Planning & Validation** | ✅ COMPLETE | 100% (4/4 docs) |
+| **Phase 1: Planning & Validation** | 🚧 IN PROGRESS | 60% (3/5 docs) |
 | **Phase 2: Implementation** | ⚪ Not Started | 0% |
 | **Phase 3: Testing & Launch** | ⚪ Not Started | 0% |
 
@@ -295,9 +295,9 @@ Map features to code (repos, use cases, views) and define build order.
 1. ✅ **Product spec** (what are we building?)
 2. ✅ **Clinical validation** (is the model correct?)
 3. ✅ **UX flows** (how does it feel to use?)
-4. ✅ **Technical spec** (how do we build it?)
-5. ✅ **Implementation plan** (in what order?)
-6. ✅ Start coding (with confidence)
+4. 🔴 **Technical spec** (how do we build it?) ← DATA_MODEL_SPEC.md
+5. 🔴 **Implementation plan** (in what order?) ← TECHNICAL_IMPLEMENTATION.md
+6. ⚪ Start coding (with confidence)
 
 **This is called "Domain-Driven Design"** - the domain expert (you) validates the model before engineers build it.
 
