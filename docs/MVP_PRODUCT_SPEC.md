@@ -354,12 +354,12 @@ v1.0 MVP is ethically successful if:
 
 ## Privacy & Ethics Commitments
 
-1. **No Data Collection** - App never sends usage data to any server (except user's own AI API)
+1. **No Data Collection** - App never sends any data to any server (100% local-only)
 2. **No Analytics** - No Firebase, no Mixpanel, no tracking SDKs
 3. **No Ads** - Never monetized via ads or data sales
 4. **Local-Only Storage** - SwiftData with CloudKit disabled (`.none`)
-5. **API Key Security** - User's AI keys stored in iOS Keychain with biometric protection
-6. **No Push Notifications** - No reminders or check-ins (privacy + simplicity)
+5. **No Push Notifications** - No reminders or check-ins (privacy + simplicity)
+6. **No Network Calls** - Zero API calls, zero cloud services (verified via Xcode Network Debug)
 7. **Motivational Interviewing Language** - No shame, no punishment, no "failure" framing
 8. **No Broken Streaks** - "Days in Progress" never resets; setbacks are normalized
 
@@ -382,11 +382,11 @@ v1.0 MVP is ethically successful if:
 
 - **Platform:** iOS 18+ only (initial release)
 - **Architecture:** Clean Architecture + MVVM
-- **Storage:** SwiftData (local-only)
-- **UI:** SwiftUI
+- **Storage:** SwiftData (local-only, CloudKit `.none`)
+- **UI:** SwiftUI (iOS 18+)
 - **Recording:** AVFoundation
 - **Charts:** Swift Charts
-- **AI:** User's own API key (OpenAI/Anthropic)
+- **Network:** Zero network calls (100% offline)
 
 ---
 
