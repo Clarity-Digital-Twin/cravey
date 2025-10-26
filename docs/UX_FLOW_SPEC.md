@@ -993,51 +993,476 @@ Tap [Cancel]:
 
 ### **Flow 6: Progress Dashboard Tab**
 
-**Goal:** Show patterns after 7 days of data
+**Goal:** Visualize patterns and progress through data-driven insights
 
-**Screen 6.1: Dashboard (Empty State)**
-**Layout:**
-- [ ] TO BE DESIGNED SOCRATICALLY
+**Key Design Decisions:**
+- ✅ Show all metrics from Day 1 (no "7 days required" gating)
+- ✅ Single scrollable feed (all 11 metrics, prioritized order)
+- ✅ Sticky date filter (always visible when scrolling)
+- ✅ Static charts for MVP (no tap interactions, defer to v2)
+- ✅ Contextual insights even with sparse data (2 data points = actionable feedback)
 
-**Screen 6.2: Dashboard (With Data)**
-**Layout:**
-- [ ] TO BE DESIGNED SOCRATICALLY
+---
+
+#### **Screen 6.1: Progress Dashboard (Single Screen)**
+
+**Layout (Top Section - Always Visible):**
+```
+┌─────────────────────────────────┐
+│  📊 Progress                    │  ← Nav title
+│─────────────────────────────────│
+│  [7D] [30D] [90D] [All]         │  ← Sticky date filter (single-select chips)
+│─────────────────────────────────│  ← This bar STICKS when scrolling (pinnedViews)
+```
+
+**Layout (Scrollable Content - Prioritized Order):**
+```
+│  Summary                        │  ← Section 1: Quick Overview
+│  3 Cravings • 1 Usage Event     │
+│  You're building awareness! 💪  │
+│─────────────────────────────────│
+│  🔥 Current Streak              │  ← Section 2: Motivation
+│  3 Days                         │
+│  Keep going!                    │
+│─────────────────────────────────│
+│  📏 Longest Abstinence Streak   │
+│  7 Days (Oct 10-17)             │
+│─────────────────────────────────│
+│  📈 Craving Intensity Over Time │  ← Section 3: Trends
+│  [Line chart with data points]  │
+│  Your intensity dropped from    │  ← Contextual insight (even with 2 points)
+│  8/10 to 6/10. That's progress!│
+│─────────────────────────────────│
+│  📊 Amount Trends               │
+│  [Line chart: usage over time]  │
+│  You used 23% less this week    │  ← Insight (if data available)
+│  compared to baseline. 📉       │
+│─────────────────────────────────│
+│  🧩 Trigger Breakdown           │  ← Section 4: Pattern Insights
+│  [Pie chart]                    │
+│  Anxiety: 67%                   │  ← Contextual insight
+│  Social: 33%                    │
+│  💡 Anxiety is your main trigger│
+│─────────────────────────────────│
+│  📍 Location Patterns           │
+│  [Horizontal bar chart]         │
+│  Home: 60%                      │
+│  Work: 40%                      │
+│  Both cravings at Home.         │  ← Pattern recognition (even 2 points)
+│  Environmental cues matter! 🏠  │
+│─────────────────────────────────│
+│  🕐 Time of Day Patterns        │
+│  [Bar chart or heatmap]         │
+│  Most cravings: 8-11 PM         │
+│─────────────────────────────────│
+│  📅 Weekly Patterns             │
+│  [Bar chart by day of week]     │
+│  Highest: Friday, Saturday      │
+│─────────────────────────────────│
+│  🌿 ROA Breakdown               │
+│  [Pie chart]                    │
+│  Bowls: 70%                     │
+│  Vape: 30%                      │
+│─────────────────────────────────│
+│  📉 Usage Reduction             │
+│  -23% vs. baseline              │  ← Section 5: Bottom Metrics
+│  You're making real progress!   │
+└─────────────────────────────────┘
+```
+
+**Date Filter Interaction:**
+```
+User taps [30D]:
+  → Chip highlights (fills with accent color)
+  → Previously selected chip ([7D]) unhighlights
+  → ALL charts below reload with 30-day data
+  → Filter bar stays visible when scrolling (sticky behavior)
+  → User can change filter mid-scroll without scrolling back to top
+```
+
+**Chart Rendering (Static for MVP):**
+```
+- Charts render data visually (line charts, pie charts, bar charts)
+- No tap interactions, no tooltips, no zoom (static images)
+- User scrolls past charts to consume at a glance
+- Trends visible in visual SHAPE (slope, dominant slice, tall bars)
+- Defer interactivity to v2 (Swift Charts makes this 1-line upgrade)
+```
+
+**Sparse Data Handling (Contextual Insights):**
+```
+EXAMPLE 1: User has 2 cravings logged (Day 2)
+
+Craving Intensity Chart:
+  [Line chart with 2 points: 8/10, 6/10]
+
+  IF last < first:
+    → "Your intensity dropped from 8/10 to 6/10. That's progress! 📉"
+  ELSE IF last > first:
+    → "Intensity increased to 6/10. Recovery isn't linear - you're learning. 💪"
+  ELSE:
+    → "Consistent intensity (8/10). Tracking helps you spot patterns over time."
+
+Location Patterns:
+  [2 points, both "Home"]
+
+  → "Both cravings at Home. Environmental cues matter! 🏠"
+
+Trigger Patterns:
+  [2 points, both "Anxiety"]
+
+  → "Anxiety triggered both cravings. This is your main pattern right now."
+
+---
+
+EXAMPLE 2: User has 0 logs (Day 1, fresh install)
+
+Summary Card:
+  → "0 Cravings • 0 Usage Events"
+  → "Start logging to see your patterns! 💪"
+
+Charts:
+  → Render empty chart frames with encouraging messages:
+  → "Log your first craving to see intensity trends! 📈"
+  → "Track usage to see your reduction over time! 📉"
+```
+
+**Technical Implementation:**
+```swift
+ScrollView {
+    LazyVStack(pinnedViews: [.sectionHeaders]) {  // ← Sticky filter
+        Section(header: DateRangeFilter()) {       // ← [7D] [30D] [90D] [All]
+
+            // Summary Card
+            SummaryCard(cravings: cravingCount, usage: usageCount)
+
+            // Streaks (high priority, motivational)
+            CurrentStreakCard(days: currentStreak)
+            LongestStreakCard(days: longestStreak, dateRange: ...)
+
+            // Trends (line charts)
+            CravingIntensityChart(data: filteredData)
+                .overlay(alignment: .bottom) {
+                    Text(contextualInsight(for: data))  // ← Smart messaging
+                }
+
+            AmountTrendsChart(data: filteredData)
+
+            // Breakdowns (pies/bars)
+            TriggerBreakdownChart(data: filteredData)
+            LocationPatternsChart(data: filteredData)
+            TimeOfDayChart(data: filteredData)
+            WeeklyPatternsChart(data: filteredData)
+            ROABreakdownChart(data: filteredData)
+
+            // Bottom metrics
+            UsageReductionCard(percentage: reductionPercent)
+        }
+    }
+}
+
+// Contextual Insight Logic (~50 lines total across all metrics)
+func contextualInsight(for data: [CravingData]) -> String {
+    guard data.count >= 2 else {
+        return "Keep logging! Trends become clearer with more data. 💪"
+    }
+
+    let first = data.first!.intensity
+    let last = data.last!.intensity
+
+    if last < first {
+        return "Your intensity dropped from \(first)/10 to \(last)/10. That's progress! 📉"
+    } else if last > first {
+        return "Intensity increased to \(last)/10. Recovery isn't linear - you're learning. 💪"
+    } else {
+        return "Consistent intensity (\(first)/10). Tracking helps you spot patterns."
+    }
+}
+```
 
 **Navigation:**
-- [ ] TO BE MAPPED SOCRATICALLY
+```
+- No drill-down screens (all metrics on one scrollable page)
+- Tap date filter chip → Charts reload
+- No other interactions (charts are static)
+```
+
+**Design Rationale:**
+- **Single feed:** User sees all progress in one scroll (Apple Health pattern)
+- **Sticky filter:** Always know what date range is active, change mid-scroll
+- **Static charts:** 90% of value (visual trends) for 10% complexity (no gestures)
+- **Contextual insights:** Even 2 data points reveal patterns (clinically sound)
+- **Show from Day 1:** Validates user effort immediately, no "come back later" gating
 
 ---
 
 ### **Flow 7: Settings Tab**
 
-**Goal:** Data export, AI chat setup, permissions management
+**Goal:** Data management, export, and app information
 
-**Screen 7.1: Settings**
-**Layout:**
-- [ ] TO BE DESIGNED SOCRATICALLY
-
-**Navigation:**
-- [ ] TO BE MAPPED SOCRATICALLY
+**Key Design Decisions:**
+- ✅ Simple iOS list pattern (native, familiar, boring = good for Settings)
+- ✅ Data export via Share Sheet (maximum flexibility: email, AirDrop, Files)
+- ✅ Single confirmation for Delete All Data (clear warning, iOS standard)
+- ✅ **AI Chat REMOVED from MVP** (gimmicky, requires API keys, user already has ChatGPT/Claude)
 
 ---
 
-## 🚧 Status
+#### **Screen 7.1: Main Settings Screen**
 
-**Completed:**
+**Layout:**
+```
+┌─────────────────────────────────┐
+│  Settings                       │  ← Nav title
+│─────────────────────────────────│
+│  DATA MANAGEMENT                │  ← Section header
+│  Export Data                >   │  ← Tappable row
+│  Delete All Data            >   │
+│─────────────────────────────────│
+│  SUPPORT                        │
+│  Contact & Feedback         >   │
+│  Privacy Policy             >   │
+│─────────────────────────────────│
+│  ABOUT                          │
+│  Version 1.0 (Build 1)          │  ← Not tappable, just info text
+└─────────────────────────────────┘
+```
+
+**Interaction Details:**
+```
+Tap "Export Data":
+  → Navigate to Screen 7.2 (Export Data flow)
+
+Tap "Delete All Data":
+  → Navigate to Screen 7.3 (Delete confirmation)
+
+Tap "Contact & Feedback":
+  → Opens mailto: link or web form (TBD)
+
+Tap "Privacy Policy":
+  → Opens in-app WebView or Safari (TBD)
+
+"Version 1.0 (Build 1)":
+  → Not tappable, static text for debugging/support reference
+```
+
+**Technical Notes:**
+- Standard SwiftUI `List` with `Section` headers
+- Destructive row ("Delete All Data") uses red text color
+- Matches iOS Settings app pattern exactly (zero learning curve)
+
+---
+
+#### **Screen 7.2: Export Data Flow**
+
+**Layout (Modal Sheet):**
+```
+┌─────────────────────────────────┐
+│  ✕                 Export Data  │  ← Sheet header with close button
+│─────────────────────────────────│
+│  Choose format:                 │
+│                                 │
+│  ● CSV                          │  ← Radio buttons (single-select)
+│  ○ JSON                         │
+│                                 │
+│  [Export]                       │  ← Primary button (bottom)
+└─────────────────────────────────┘
+```
+
+**Interaction Flow:**
+```
+User taps "Export Data" from Settings (Screen 7.1):
+  → Modal sheet appears (Screen 7.2)
+
+User selects format (CSV or JSON):
+  → Radio button fills
+  → [Export] button remains enabled
+
+User taps [Export]:
+  → App generates file:
+      - CSV: cravey_export_2025-10-25.csv
+      - JSON: cravey_export_2025-10-25.json
+
+  → File includes:
+      - All craving logs (timestamp, intensity, triggers, location, notes, etc.)
+      - All usage logs (timestamp, ROA, amount, triggers, location, notes, etc.)
+      - Recording metadata (title, timestamp, duration, type, purpose, playCount)
+      - NOTE: Recording FILES not included (just metadata)
+
+  → iOS Share Sheet opens immediately
+  → User can:
+      - Save to Files app
+      - Email to self (or therapist)
+      - AirDrop to another device
+      - Save to Dropbox/Google Drive/iCloud
+      - Copy
+      - Message
+
+  → User completes share action
+  → Sheet dismisses
+  → Toast: "Data exported ✓" (2 seconds)
+  → Return to Screen 7.1 (Settings)
+
+User taps ✕ (close):
+  → Sheet dismisses without exporting
+  → Return to Screen 7.1 (Settings)
+```
+
+**Technical Implementation:**
+```swift
+// Format selection state
+@State private var selectedFormat: ExportFormat = .csv
+
+// Export button action
+func exportData() {
+    // Generate file
+    let fileURL = FileManager.generateExport(
+        format: selectedFormat,
+        cravings: cravingData,
+        usage: usageData,
+        recordings: recordingMetadata
+    )
+
+    // Show Share Sheet (ONE LINE)
+    showingShareSheet = true
+    shareItems = [fileURL]
+}
+
+// Share Sheet
+.sheet(isPresented: $showingShareSheet) {
+    ShareSheet(items: shareItems)
+}
+```
+
+**Design Rationale:**
+- Share Sheet = iOS-native "do whatever" interface
+- Handles all use cases (email, AirDrop, save to Files) without custom code
+- Prevents "where did my file go?" confusion
+- Fewer steps than saving to Files then manually sharing (4 steps vs 9)
+
+---
+
+#### **Screen 7.3: Delete All Data Confirmation**
+
+**Layout (Alert):**
+```
+┌─────────────────────────────────┐
+│                                 │
+│  Delete All Data?               │  ← Alert title
+│                                 │
+│  This will permanently delete   │  ← Alert message
+│  all cravings, usage logs, and  │     (clear consequences)
+│  recordings. This cannot be     │
+│  undone.                        │
+│                                 │
+│  [Cancel]  [Delete]             │  ← Buttons (Delete = destructive red)
+└─────────────────────────────────┘
+```
+
+**Interaction Flow:**
+```
+User taps "Delete All Data" from Settings (Screen 7.1):
+  → Alert appears (Screen 7.3)
+
+User taps [Delete]:
+  → Delete ALL data:
+      - All CravingModel records (SwiftData)
+      - All UsageModel records (SwiftData)
+      - All RecordingModel records (SwiftData)
+      - All recording FILES (*.mov, *.m4a in Documents/Recordings/)
+      - All MotivationalMessageModel custom messages (keep defaults)
+
+  → Deletion is atomic (all-or-nothing, no partial state)
+
+  → Alert dismisses
+  → Toast: "All data deleted" (2 seconds)
+  → Return to Screen 7.1 (Settings)
+  → App state resets to "Day 1" (empty dashboard, empty recordings, etc.)
+
+User taps [Cancel]:
+  → Alert dismisses
+  → No changes
+  → Return to Screen 7.1 (Settings)
+```
+
+**Technical Implementation:**
+```swift
+// Single confirmation alert (iOS standard)
+Alert(
+    title: "Delete All Data?",
+    message: "This will permanently delete all cravings, usage logs, and recordings. This cannot be undone.",
+    primaryButton: .destructive(Text("Delete")) {
+        deleteAllData()
+    },
+    secondaryButton: .cancel()
+)
+
+// Deletion logic
+func deleteAllData() {
+    // Delete SwiftData models
+    try? modelContext.delete(model: CravingModel.self)
+    try? modelContext.delete(model: UsageModel.self)
+    try? modelContext.delete(model: RecordingModel.self)
+
+    // Delete recording files
+    FileStorageManager.shared.deleteAllRecordings()
+
+    // Save context
+    try? modelContext.save()
+
+    // Show confirmation
+    showToast("All data deleted")
+}
+```
+
+**Design Rationale:**
+- Single confirmation = sufficient (user navigated deliberately, 6 steps to get here)
+- Clear message = explicit consequences (not vague "delete everything?")
+- Fresh start is VALID use case (relapse recovery, device switching)
+- iOS standard pattern (Apple uses this for "Erase All Content and Settings")
+- Atomic deletion = no partial state bugs
+
+---
+
+## ✅ Status: 100% COMPLETE
+
+**Last Updated:** 2025-10-25
+**Version:** 1.2
+
+**All Flows Designed (7/7):**
 - ✅ General design guidelines (SwiftUI 2025 best practices)
 - ✅ Component library defined (8 reusable components)
-- ✅ Flow 1: Onboarding (Welcome + Optional Tour)
-- ✅ Flow 2: Home Tab (Primary actions + Quick Play recordings)
-- ✅ Flow 3: Log Craving (Bottom sheet form, full spec)
-- ✅ Flow 4: Log Usage (Bottom sheet form, full spec with UX parity)
-- ✅ Flow 5: Recordings Tab (Complete: Empty state, permissions, mode choice, recording screens, preview/save, library, playback, edit, delete)
+- ✅ Flow 1: Onboarding (2 screens - Welcome + Optional Tour)
+- ✅ Flow 2: Home Tab (2 screens - Primary actions + Quick Play recordings)
+- ✅ Flow 3: Log Craving (1 screen - Bottom sheet form, full spec)
+- ✅ Flow 4: Log Usage (1 screen - Bottom sheet form, full spec with UX parity)
+- ✅ Flow 5: Recordings Tab (10 screens - Complete: Empty state, permissions, mode choice, recording screens, preview/save, library, playback, edit, delete)
+- ✅ Flow 6: Progress Dashboard Tab (1 screen - Single scrollable feed with 11 metrics, sticky filters, contextual insights)
+- ✅ Flow 7: Settings Tab (3 screens - Main settings, export via Share Sheet, delete confirmation)
 
-**Not Started:**
-- 🔴 Flow 6: Progress Dashboard Tab
-- 🔴 Flow 7: Settings Tab
+**Total Screens Designed:** 19 screens fully specified
+
+**Progress:** 7/7 flows complete (100%) 🎉
 
 ---
 
-**Progress:** 5/7 flows complete (71%)
+**Major Design Decisions Locked:**
+1. ✅ Crisis-optimized UX (large tap targets, minimal decisions, quick escape)
+2. ✅ UX parity between craving/usage logging (same form pattern, learn once)
+3. ✅ Progressive disclosure (required → divider → optional fields)
+4. ✅ Independent craving and usage flows (no forced linking)
+5. ✅ Upfront video/audio mode choice (prevents accidents)
+6. ✅ Simple record/stop (no pause, encourages re-recording authenticity)
+7. ✅ Optional recording titles with smart defaults (auto-generate if blank)
+8. ✅ Native players (AVPlayerViewController, reliable MVP)
+9. ✅ Chronological library (sorting deferred to v2)
+10. ✅ Dashboard shows from Day 1 (no gating, contextual insights even with 2 data points)
+11. ✅ Single scrollable feed (Apple Health pattern, sticky date filters)
+12. ✅ Static charts for MVP (defer interactivity to v2)
+13. ✅ Share Sheet for export (native, flexible)
+14. ✅ Single confirmation for delete (iOS standard)
+15. ✅ **AI Chat REMOVED from MVP** (gimmicky, API cost unsustainable, recordings are better)
 
-**Next Step:** Complete Flow 6 (Progress Dashboard Tab) - empty state, chart layouts, metrics visualization
+---
+
+**Next Step:** Move to `DATA_MODEL_SPEC.md` - Define SwiftData schemas, relationships, and persistence logic

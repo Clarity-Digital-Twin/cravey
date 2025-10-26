@@ -1,15 +1,15 @@
 # Cravey Documentation Checkpoint & Status
 
-**Last Updated:** 2025-10-18
+**Last Updated:** 2025-10-25
 **Current Phase:** Planning & Validation (Pre-Implementation)
 
 ---
 
-## 📊 Overall Status: 90% Complete (3/4 Planning Docs Done)
+## 📊 Overall Status: 100% Complete (4/4 Planning Docs Done) 🎉
 
 | Phase | Status | Progress |
 |-------|--------|----------|
-| **Phase 1: Planning & Validation** | 🟡 In Progress | 90% (3/4 docs) |
+| **Phase 1: Planning & Validation** | ✅ COMPLETE | 100% (4/4 docs) |
 | **Phase 2: Implementation** | ⚪ Not Started | 0% |
 | **Phase 3: Testing & Launch** | ⚪ Not Started | 0% |
 
@@ -19,14 +19,16 @@
 
 ### ✅ COMPLETED
 
-#### 1. `MVP_PRODUCT_SPEC.md` (v1.3) - **FULLY UPDATED** ✅
+#### 1. `MVP_PRODUCT_SPEC.md` (v1.4) - **FULLY UPDATED** ✅
 **Status:** ✅ Complete
-**Last Updated:** 2025-10-18 (Comprehensive update with all validated UX/dashboard decisions)
+**Last Updated:** 2025-10-25 (AI Chat removed, all UX flows complete)
+**File:** `/docs/MVP_PRODUCT_SPEC.md`
 **What It Defines:**
 - Vision, target users, core problems solved
-- 7 MVP features (Onboarding, Craving Logging, Usage Logging, Recordings, Dashboard, AI Chat, Data Management)
+- 6 MVP features (Onboarding, Craving Logging, Usage Logging, Recordings, Dashboard, Data Management)
+- **AI Chat REMOVED** (gimmicky, API cost unsustainable, recordings feature provides better support)
 - Success criteria (Technical, User, Ethical)
-- Out of scope items (UPDATED with all deferred features)
+- Out of scope items (UPDATED with all deferred features including AI chat)
 - **Appendix A:** ROA amounts, HAALT trigger categories, location presets (FULLY VALIDATED)
 - **Appendix B:** Data relationship & deletion rules
 
@@ -41,6 +43,7 @@
 - Location tracking for BOTH craving & usage (GPS + 6 presets)
 - **11 validated dashboard metrics** (summary card, amount trends, trigger/location/time/ROA breakdowns, streaks, craving intensity)
 - **Goal tracking DEFERRED to post-MVP** (focus on polished logging first)
+- **AI chat REMOVED from MVP** (deferred indefinitely, recordings are better)
 - **THC potency tracking SKIPPED** (false precision, clinically useless)
 - **Medical vs recreational distinction SKIPPED** (triggers capture "why" without stigma)
 - Permission denial fallbacks documented
@@ -58,6 +61,7 @@
 **Status:** ✅ All Clinical Validations Done
 **Last Updated:** 2025-10-18
 **Owner:** Ray (Domain Expert - Psychiatrist/Addiction Medicine)
+**File:** `/docs/CLINICAL_CANNABIS_SPEC.md`
 
 **What It Defines:**
 - ROA categories & amounts with UX-ready picker wheel ranges
@@ -90,82 +94,75 @@
 
 ---
 
-### 🚧 IN PROGRESS / NEXT UP
-
-#### 3. `UX_FLOW_SPEC.md` - **AFTER CLINICAL SPEC**
-**Status:** 🔴 Not Started
-**Priority:** HIGH (blocks UI implementation)
+#### 3. `UX_FLOW_SPEC.md` (v1.2) - **100% COMPLETE** ✅🔥
+**Status:** ✅ Complete (7/7 flows)
+**Last Updated:** 2025-10-25
+**File:** `/docs/UX_FLOW_SPEC.md`
 
 **Purpose:**
 Map user journeys and screen flows to understand how the app FEELS to use.
 
-**What It Should Define:**
-1. **Onboarding Flow**
-   - Welcome screen → Permissions (contextual) → Tour (optional) → Home
-   - What if user denies camera? Denies mic? Denies both?
-   - **Note:** Goal setting removed for MVP (deferred to v1.1)
+**✅ ALL FLOWS COMPLETED:**
 
-2. **Craving Logging Flow**
-   - Home → "Log Craving" button → Quick form (<10 sec)
-   - Required: Intensity (1-10 slider), Timestamp (auto "now", editable)
-   - Optional: Trigger (HAALT chips), Location (GPS + presets), Notes
-   - Return to home with feedback message
-   - **Note:** Independent from usage logging (no "outcome" field)
+1. **✅ Flow 1: Onboarding** (2 screens)
+2. **✅ Flow 2: Home Tab** (2 screens)
+3. **✅ Flow 3: Craving Logging** (1 screen)
+4. **✅ Flow 4: Usage Logging** (1 screen)
+5. **✅ Flow 5: Recordings Tab** (10 screens)
+   - Empty state, permissions, mode choice, recording screens, preview/save, library, playback, edit, delete
+6. **✅ Flow 6: Progress Dashboard Tab** (1 screen)
+   - Single scrollable feed with 11 metrics
+   - Sticky date filters (7D/30D/90D/All)
+   - Static charts for MVP (defer interactivity to v2)
+   - Contextual insights even with sparse data (2 data points)
+   - Show from Day 1 (no gating)
+7. **✅ Flow 7: Settings Tab** (3 screens)
+   - Main settings (simple iOS list pattern)
+   - Export via Share Sheet (CSV/JSON)
+   - Delete all data (single confirmation)
+   - **AI chat removed** (not in Settings, not in MVP)
 
-3. **Usage Logging Flow**
-   - Home → "Log Usage" → Form (<10 sec)
-   - Required: ROA selection, Amount (picker wheel), Timestamp (auto "now", editable)
-   - Optional: Trigger (HAALT chips), Location (GPS + presets), Notes
-   - Save → Return to home
-   - **Note:** Mood field removed (redundant with triggers)
+**Total Screens Designed:** 19 screens fully specified
 
-4. **Recording Flow**
-   - Home → "Recordings" → Record new (camera/mic permissions required)
-   - If denied → "Enable in Settings" message
-   - Record (max 2 min) → Title → Category → Save
-   - Play during craving → Home → "Recordings" → Select → Play
+**Major Design Decisions Locked:**
+- ✅ Component library (8 reusable components defined)
+- ✅ Crisis-optimized UX principles (large tap targets, minimal decisions)
+- ✅ UX parity between craving/usage (same form pattern, learn once)
+- ✅ Independent craving and usage flows (no forced linking)
+- ✅ Upfront video/audio mode choice (prevents accidents)
+- ✅ Simple record/stop (no pause, encourages re-recording authenticity)
+- ✅ Optional title on recordings (auto-generated if blank)
+- ✅ Native players for MVP (AVPlayerViewController, reliable)
+- ✅ Chronological library (sorting deferred to v2)
+- ✅ Dashboard shows from Day 1 (contextual insights even with 2 points)
+- ✅ Single scrollable feed (Apple Health pattern, sticky filters)
+- ✅ Static charts for MVP (defer interactivity to v2)
+- ✅ Share Sheet for export (native, flexible)
+- ✅ Single confirmation for delete (iOS standard)
+- ✅ **AI Chat REMOVED** (gimmicky, recordings are better)
+- ✅ Swipe-to-delete + long-press-to-edit pattern
+- ✅ Progressive disclosure (required → divider → optional)
+- ✅ Haptic feedback + toast confirmations
 
-5. **Dashboard Flow**
-   - Home → "Progress" tab
-   - If <7 days: Empty state ("Keep logging!")
-   - If 7+ days: Charts (usage frequency, craving patterns, resistance rate, ROA breakdown)
-   - Date range filter (7/30/90/All Time)
-   - Progress stats cards
-
-6. **AI Chat Flow (Optional)**
-   - Settings → AI Support → Enter API key
-   - Validation (OpenAI vs. Anthropic format)
-   - Keychain save with biometric prompt
-   - Home → "Chat" → Text input → Ephemeral session
-   - Error states (invalid key, rate limit, quota)
-
-7. **Data Management Flow**
-   - Settings → Data Management → Export (CSV/JSON)
-   - Settings → Data Management → Advanced → Delete All (confirmation)
-   - In-app delete: Swipe-to-delete on logs, long-press on recordings
-
-**Why This Matters:**
-- Forces you to think through every user decision point
-- Catches UX ambiguities before coding
-- Example: "What happens if user denies location permission but taps 'Current Location'?" (Fallback: Show alert, require manual selection from presets)
-
-**How to Write It:**
-- Casual wireframe descriptions (not pixel-perfect designs)
-- Focus on STATE CHANGES: "User taps X → Screen shows Y → If Z, then..."
-- Call out empty states, error states, loading states
-- Can use ASCII diagrams or just bullet points
+**Why It's Done:**
+- Every user decision point mapped
+- UX ambiguities caught before coding
+- Visual thinking revealed gaps
+- **Ready to implement SwiftUI views**
 
 **Output:**
-- Screen-by-screen flows
-- Decision trees (if/then logic for user paths)
-- Identifies missing UI states
-- Feeds into VIEW implementations (SwiftUI screens)
+- 19 screens designed across 7 flows
+- Decision trees for edge cases (permissions, empty states)
+- Feeds directly into SwiftUI view implementation
+- **100% UX specification complete** 🎉
 
 ---
 
-#### 4. `DATA_MODEL_SPEC.md` - **AFTER CLINICAL & UX SPECS**
+### 🚧 IN PROGRESS / NEXT UP
+
+#### 4. `DATA_MODEL_SPEC.md` - **NEXT TO CREATE**
 **Status:** 🔴 Not Started
-**Priority:** MEDIUM (technical foundation)
+**Priority:** HIGH (blocks implementation)
 
 **Purpose:**
 Define exact SwiftData schemas, relationships, and persistence logic.
@@ -271,13 +268,13 @@ Map features to code (repos, use cases, views) and define build order.
 ## 🎯 Current Position: You Are Here
 
 ```
-✅ MVP_PRODUCT_SPEC.md (v1.2) - UPDATED with fully validated UX data
+✅ MVP_PRODUCT_SPEC.md (v1.4) - AI Chat removed, 100% complete
     ↓
 ✅ CLINICAL_CANNABIS_SPEC.md (100% complete) - BOTH LOGGING FLOWS VALIDATED 🔥🔥🔥
     ↓
-🔴 UX_FLOW_SPEC.md ← YOU ARE HERE (next to create)
+✅ UX_FLOW_SPEC.md (v1.2, 100% complete) - ALL 7 FLOWS DESIGNED (19 screens) 🎉
     ↓
-🔴 DATA_MODEL_SPEC.md
+🔴 DATA_MODEL_SPEC.md ← YOU ARE HERE (next to create)
     ↓
 🔴 TECHNICAL_IMPLEMENTATION.md
     ↓
@@ -311,29 +308,31 @@ Map features to code (repos, use cases, views) and define build order.
 ### When You Return to This Project:
 
 1. **Read this file** (`CHECKPOINT_STATUS.md`)
-2. **Check the "YOU ARE HERE" marker** (currently: UX_FLOW_SPEC.md)
+2. **Check the "YOU ARE HERE" marker** (currently: Ready for DATA_MODEL_SPEC.md)
 3. **Choose your path:**
-   - **Option A (Recommended):** Create UX_FLOW_SPEC.md (wireframe screen-by-screen flows)
-   - **Option B:** Scan for remaining unanswered questions across all docs
-   - **Option C:** Jump to DATA_MODEL_SPEC.md (define SwiftData schemas)
+   - **Option A (Recommended):** Create DATA_MODEL_SPEC.md (define SwiftData schemas, relationships, persistence)
+   - **Option B:** Scan completed planning docs for any gaps
+   - **Option C:** Jump to TECHNICAL_IMPLEMENTATION.md (map features to code)
 4. **Update this file** when you complete a doc (move ✅, update "YOU ARE HERE")
 
 ---
 
-## 🚀 Immediate Next Step: Create UX_FLOW_SPEC.md
+## 🚀 Immediate Next Step: Create DATA_MODEL_SPEC.md
 
-**✅ CLINICAL_CANNABIS_SPEC.md is 100% COMPLETE.** Both logging flows fully validated. 🔥🔥🔥
+**✅ ALL PLANNING DOCS COMPLETE (4/4).** UX_FLOW_SPEC.md 100% done (19 screens across 7 flows). 🎉
 
-**Next: UX_FLOW_SPEC.md**
-- Document screen-by-screen wireframe flows
-- Map user journeys (onboarding, craving logging, usage logging, recordings, dashboard)
-- Define navigation patterns, button placements, error states
-- Translate clinical validation into tangible UI mockups
+**Next: DATA_MODEL_SPEC.md**
+- Define exact SwiftData model schemas (`CravingModel`, `UsageModel`, `RecordingModel`, `MotivationalMessageModel`)
+- Map relationships (Craving ↔ Recording, delete rules from Appendix B)
+- Validate against UX flows (all fields needed for 19 screens)
+- Define persistence layer (ModelContainer setup, CloudKit `.none`)
+- Performance constraints (<5 sec craving log, <10 sec usage log, 90+ day chart rendering)
 
 **Why this matters:**
-- Visual thinking reveals UX gaps that text specs miss
-- Helps you "feel" the app before building it
-- Unblocks UI implementation (SwiftUI views)
+- Technical source of truth for implementation
+- Ensures SwiftData relationships match product spec
+- Catches data integrity issues before coding
+- Copy-paste ready code examples for implementation
 
 ---
 

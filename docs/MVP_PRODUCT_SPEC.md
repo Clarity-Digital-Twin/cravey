@@ -1,17 +1,19 @@
 # Cravey MVP Product Specification
 
-**Version:** 1.3
-**Last Updated:** 2025-10-18
-**Status:** v1.3 - Final Product Specification (All Clinical Validations Complete)
+**Version:** 1.4
+**Last Updated:** 2025-10-25
+**Status:** v1.4 - Final Product Specification (AI Chat Removed, UX Flows 100% Complete)
 
 ---
 
-## 🔖 CHECKPOINT (2025-10-18 - FULLY VALIDATED)
+## 🔖 CHECKPOINT (2025-10-25 - ALL UX FLOWS COMPLETE)
 
 **📋 For Full Project Status:** See `docs/CHECKPOINT_STATUS.md` (master doc tracking all planning docs)
 
 **This Document's Status:**
-- ✅ MVP_PRODUCT_SPEC.md v1.3 - All clinical validations complete, independent flow model finalized
+- ✅ MVP_PRODUCT_SPEC.md v1.4 - **AI Chat REMOVED from MVP** (gimmicky, API cost unsustainable)
+- ✅ All clinical validations complete, independent flow model finalized
+- ✅ **UX_FLOW_SPEC.md 100% COMPLETE** - All 7 flows designed (19 screens total)
 - ✅ **CRITICAL CHANGE:** Craving logging and usage logging are now INDEPENDENT
   - Removed "outcome" field from craving logging
   - Removed forced link between craving → usage
@@ -22,12 +24,15 @@
   - Edibles: 5mg increments (5mg → 100mg)
 
 **What's Next:**
-- 🚧 **Continue CLINICAL_CANNABIS_SPEC.md** - Hammer down Usage Logging UX first, then Craving Logging
-- Then UX_FLOW_SPEC.md → Then DATA_MODEL_SPEC.md
+- 🚀 **Move to DATA_MODEL_SPEC.md** - Define SwiftData schemas, relationships, persistence logic
+- Then TECHNICAL_IMPLEMENTATION.md → Then START CODING
 
-**When You Return:**
-- Read `docs/CLINICAL_CANNABIS_SPEC.md` checkpoint to see where we left off
-- Next: Design Usage Logging UX flow step-by-step
+**v1.4 Changes (2025-10-25):**
+- ❌ Removed Feature #5 (AI Chat) - Deferred indefinitely (recordings feature is better support mechanism)
+- ✅ Feature #6 (Data Management) renumbered to Feature #5
+- ✅ Updated success criteria (removed AI-related tests)
+- ✅ Updated Phase 3 timeline (replaced "AI & Polish" with "Polish & Testing")
+- ✅ All AI Chat references removed from spec
 
 ---
 
@@ -52,7 +57,7 @@ Someone who uses cannabis and wants to:
 - Wants **self-compassion** - No shame, no streaks that "break," no punishment language
 - May be in **vulnerable moments** - Needs fast, simple UI during cravings
 - Wants **evidence-based support** - MI (Motivational Interviewing) principles, not lecturing
-- May be tech-savvy enough to use their own AI API key for coaching
+- Wants **self-directed tools** - Record motivational messages to themselves, see their own patterns
 
 ---
 
@@ -67,10 +72,7 @@ Someone who uses cannabis and wants to:
 3. **Hard to see patterns and progress over time**
    → Users want visual metrics (charts, trends) to understand their usage behavior and craving patterns.
 
-4. **Hard to access non-judgmental support**
-   → Users want an MI-trained AI coach available 24/7, but without sharing data with the app maker.
-
-5. **Hard to stay motivated without clear goals**
+4. **Hard to stay motivated without clear goals**
    → Users want to set their own goals (quit, reduce, monitor) and track progress toward them—without shame when goals shift.
 
 ---
@@ -91,7 +93,7 @@ Someone who uses cannabis and wants to:
   - Location Services (for environmental cue tracking)
   - Explained with clear "Why we need this" text
   - All permissions optional (app works without them)
-  - **If denied:** Recording feature shows "Enable camera/mic in Settings to record" message. Location defaults to manual presets (Home/Work/Car/etc). User can still use all other features (logging, dashboard, AI chat).
+  - **If denied:** Recording feature shows "Enable camera/mic in Settings to record" message. Location defaults to manual presets (Home/Work/Car/etc). User can still use all other features (logging, dashboard).
 - **Quick Tour** (Optional, Skippable)
   - 3-screen walkthrough of core features
   - "Log Cravings & Usage → Record Motivational Videos → See Your Patterns"
@@ -273,31 +275,7 @@ Seeing patterns over time helps users make intentional changes. **Environmental 
 
 ---
 
-### 5. Optional AI Support (Bring Your Own API Key)
-**User Story:**
-*"I want to chat with an MI-trained coach without sharing my data with the app developer."*
-
-**Functionality:**
-- **User Provides API Key** - OpenAI or Anthropic (user's own account)
-  - Stored securely in iOS Keychain with biometric protection
-  - Input validation detects key format (sk-... for OpenAI, sk-ant-... for Anthropic)
-- **Fixed MI System Prompt** - Pre-configured, tested prompt (not customizable in MVP)
-  - Motivational Interviewing expert for cannabis cravings
-  - Non-judgmental, reflective listening, open-ended questions
-  - Supports user autonomy and goal flexibility
-- **Simple Chat Interface**
-  - Text-only messages
-  - Ephemeral sessions (no persistent conversation history for MVP)
-  - Clear error messages for invalid keys, rate limits, or quota issues
-- **Local Storage Only** - No chat data sent to Cravey servers (only to user's chosen AI provider)
-- **Fully Optional** - Users can skip this feature entirely
-
-**Why It Matters:**
-24/7 access to evidence-based support without sacrificing privacy. Users control their own API costs and data. BYOK eliminates "free service = you're the product" problem.
-
----
-
-### 6. Data Management
+### 5. Data Management
 **User Story:**
 *"I want full control over my data—I should be able to export it or delete it anytime."*
 
@@ -324,8 +302,7 @@ Data transparency builds trust. Users feel in control, reducing anxiety about pr
 ### Not Included in v1.0 (Deferred to Post-MVP):
 - **Cloud sync** - 100% local-only for privacy
 - **Push notifications** - No reminders, no check-ins (reduces complexity, maintains privacy)
-- **Persistent AI chat history** - Ephemeral sessions only for MVP
-- **Customizable AI prompts** - Fixed, tested MI prompt only
+- **AI chat support** - Removed from MVP (gimmicky, API cost unsustainable, recordings feature provides better in-app support)
 - **Goal tracking** - Focus on polished logging + dashboard first; goals = v1.1 enhancement
 - **Craving vs usage ratio** - Too granular, needs bulk data for meaningful patterns
 - **Trigger combinations** - Trigger breakdown pie chart sufficient for MVP
@@ -351,10 +328,9 @@ v1.0 MVP is technically successful if:
 2. **User can log cannabis use in <10 seconds** - Timed via user testing
 3. **User can record 60-second video without crashes** - Tested on iPhone 17 Pro (iOS 18+)
 4. **User can view charts with 14+ days of data** - All charts render correctly with sample data
-5. **User with valid API key can send/receive AI messages** - Tested with OpenAI and Anthropic keys
-6. **Zero network calls except to user's AI endpoint** - Verified via Xcode Network Debug or proxy
-7. **Data persists across app restarts** - SwiftData persistence confirmed
-8. **Export produces valid CSV/JSON** - Files can be opened in Numbers/Excel or parsed programmatically
+5. **Zero network calls** - Verified via Xcode Network Debug or proxy (100% local-only)
+6. **Data persists across app restarts** - SwiftData persistence confirmed
+7. **Export produces valid CSV/JSON** - Files can be opened in Numbers/Excel or parsed programmatically
 
 ### User Success (Post-Launch)
 
@@ -436,11 +412,11 @@ v1.0 MVP is ethically successful if:
 3. Implement Progress Dashboard (Swift Charts)
 4. Implement Progress Stats calculations
 
-### Phase 3: AI & Polish (Weeks 9-12)
-1. Implement BYOK AI Chat
-2. Implement iOS Keychain integration
-3. UI/UX polish (animations, empty states, error handling)
-4. User testing and iteration
+### Phase 3: Polish & Testing (Weeks 9-12)
+1. UI/UX polish (animations, empty states, error handling, haptics)
+2. User testing and iteration
+3. Performance optimization (SwiftData queries, chart rendering)
+4. Accessibility improvements (VoiceOver, Dynamic Type)
 
 ### Phase 4: Launch Prep (Weeks 13-16)
 1. TestFlight beta with target users
