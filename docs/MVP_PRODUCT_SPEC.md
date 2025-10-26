@@ -394,11 +394,12 @@ v1.0 MVP is ethically successful if:
 
 ### Immediate (Planning Phase)
 1. ✅ **AI Agent Review** - Completed (agent provided critical feedback)
-2. ✅ **Converge on Final Version** - Incorporated all must-have changes
-3. ✅ **Lock v1.3 Spec** - This document is now locked and ready for implementation (all clinical validations complete, independent logging flows validated, dashboard metrics finalized)
-4. **Create `DATA_MODEL_SPEC.md`** - Define exact SwiftData schemas for CravingModel, UsageModel, RecordingModel, MotivationalMessageModel
-5. **Create `UX_FLOW_SPEC.md`** - Wireframe user journeys (onboarding, logging flows, dashboard navigation)
-6. **Create `TECHNICAL_IMPLEMENTATION.md`** - Map features to repos/use cases/views, define implementation order
+2. ✅ **Converge on Final Version** - All must-have changes incorporated
+3. ✅ **Lock MVP_PRODUCT_SPEC.md (v1.4)** - This document is locked (all clinical validations complete, AI chat removed, 6 features finalized)
+4. ✅ **Create CLINICAL_CANNABIS_SPEC.md** - Completed (cannabis-specific tracking requirements)
+5. ✅ **Create UX_FLOW_SPEC.md (v1.2)** - Completed (all 7 flows designed, 19 screens specified)
+6. **Create DATA_MODEL_SPEC.md** ← **NEXT** - Define exact SwiftData schemas for CravingModel, UsageModel, RecordingModel, MotivationalMessageModel
+7. **Create TECHNICAL_IMPLEMENTATION.md** - Map features to repos/use cases/views, define implementation order
 
 ### Phase 1: Core Functionality (Weeks 1-4)
 1. Implement Craving Logging (View + ViewModel + Use Cases)
