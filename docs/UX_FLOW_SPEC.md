@@ -1,8 +1,8 @@
 # Cravey UX Flow Specification
 
-**Version:** 1.1
+**Version:** 1.2
 **Last Updated:** 2025-10-25
-**Status:** 🚧 In Progress - Mapping User Journeys (5/7 flows complete)
+**Status:** ✅ Complete - All User Journeys Mapped (7/7 flows complete, 19 screens)
 
 ---
 
@@ -34,7 +34,7 @@ This document maps **screen-by-screen user flows** for all 7 MVP features. It tr
   - Tab 1: **Home** (Quick action hub)
   - Tab 2: **Progress** (Dashboard with charts)
   - Tab 3: **Recordings** (Video/audio library)
-  - Tab 4: **Settings** (Data management, AI chat, permissions)
+  - Tab 4: **Settings** (Data management, export, permissions)
 - **Bottom Sheets** - For contextual, dismissible actions (Log Craving/Usage forms)
 - **Full-Screen Modals** - For separate modes (Recording video/audio)
 - **Alerts** - For destructive actions (Delete All Data confirmation)
