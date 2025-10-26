@@ -319,7 +319,7 @@ Map features to code (repos, use cases, views) and define build order.
 
 ## 🚀 Immediate Next Step: Create DATA_MODEL_SPEC.md
 
-**✅ ALL PLANNING DOCS COMPLETE (4/4).** UX_FLOW_SPEC.md 100% done (19 screens across 7 flows). 🎉
+**🚧 3/5 PLANNING DOCS COMPLETE.** MVP, Clinical, and UX specs done. Data model and implementation plan remain.
 
 **Next: DATA_MODEL_SPEC.md**
 - Define exact SwiftData model schemas (`CravingModel`, `UsageModel`, `RecordingModel`, `MotivationalMessageModel`)
