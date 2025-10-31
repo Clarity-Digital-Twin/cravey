@@ -14,7 +14,7 @@ struct CravingLogViewModelTests {
         let viewModel = CravingLogViewModel(logCravingUseCase: mockUseCase)
 
         viewModel.intensity = 7
-        viewModel.trigger = "Stress"
+        viewModel.selectedTriggers = ["Anxious"]
 
         // Act
         await viewModel.logCraving()
@@ -33,14 +33,14 @@ struct CravingLogViewModelTests {
         let viewModel = CravingLogViewModel(logCravingUseCase: mockUseCase)
 
         viewModel.intensity = 8
-        viewModel.trigger = "Test"
+        viewModel.selectedTriggers = ["Bored"]
 
         // Act
         await viewModel.logCraving()
 
         // Assert
         #expect(viewModel.intensity == 5)  // Reset to default
-        #expect(viewModel.trigger == "")   // Cleared
+        #expect(viewModel.selectedTriggers == [])   // Cleared
     }
 }
 
@@ -51,7 +51,7 @@ actor MockLogCravingUseCase: LogCravingUseCase {
 
     func execute(
         intensity: Int,
-        trigger: String?,
+        triggers: [String],
         notes: String?,
         location: String?,
         wasManagedSuccessfully: Bool
@@ -59,7 +59,7 @@ actor MockLogCravingUseCase: LogCravingUseCase {
         executionCount += 1
         return CravingEntity(
             intensity: intensity,
-            trigger: trigger,
+            triggers: triggers,
             notes: notes,
             location: location,
             wasManagedSuccessfully: wasManagedSuccessfully

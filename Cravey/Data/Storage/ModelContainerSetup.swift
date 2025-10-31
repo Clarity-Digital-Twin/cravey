@@ -75,7 +75,7 @@ enum ModelContainerSetup {
         let craving = CravingModel(
             timestamp: Date().addingTimeInterval(-3600),
             intensity: 7,
-            trigger: "Stress at work",
+            triggers: ["Anxious", "Bored"],
             notes: "Had a rough meeting",
             wasManagedSuccessfully: true
         )

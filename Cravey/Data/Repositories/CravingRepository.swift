@@ -53,7 +53,7 @@ final class CravingRepository: CravingRepositoryProtocol {
         model.timestamp = craving.timestamp
         model.intensity = craving.intensity
         model.duration = craving.duration
-        model.trigger = craving.trigger
+        model.triggers = craving.triggers
         model.notes = craving.notes
         model.location = craving.location
         model.managementStrategy = craving.managementStrategy

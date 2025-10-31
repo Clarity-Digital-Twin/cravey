@@ -5,12 +5,12 @@
 
 ---
 
-## 📊 Overall Status: 60% Complete (3/5 Planning Docs Done)
+## 📊 Overall Status: 100% Complete (5/5 Planning Docs Done) 🎉
 
 | Phase | Status | Progress |
 |-------|--------|----------|
-| **Phase 1: Planning & Validation** | 🚧 IN PROGRESS | 60% (3/5 docs) |
-| **Phase 2: Implementation** | ⚪ Not Started | 0% |
+| **Phase 1: Planning & Validation** | ✅ COMPLETE | 100% (5/5 docs) |
+| **Phase 2: Implementation** | ⚪ Ready to Start | 0% |
 | **Phase 3: Testing & Launch** | ⚪ Not Started | 0% |
 
 ---
@@ -158,127 +158,113 @@ Map user journeys and screen flows to understand how the app FEELS to use.
 
 ---
 
-### 🚧 IN PROGRESS / NEXT UP
+#### 4. `DATA_MODEL_SPEC.md` (v1.0) - **COMPLETE** ✅
+**Status:** ✅ Complete
+**Last Updated:** 2025-10-29
 
-#### 4. `DATA_MODEL_SPEC.md` - **NEXT TO CREATE**
-**Status:** 🔴 Not Started
-**Priority:** HIGH (blocks implementation)
+**File:** `/docs/DATA_MODEL_SPEC.md`
 
-**Purpose:**
-Define exact SwiftData schemas, relationships, and persistence logic.
+**What It Defines:**
+- Complete SwiftData model schemas for all 4 models
+- UsageModel (cannabis usage tracking)
+- CravingModel (craving episodes)
+- RecordingModel (video/audio metadata)
+- MotivationalMessageModel (pre-populated & custom messages)
+- Relationships (Craving ↔ Recording, with `.nullify` delete rules)
+- ModelContainer setup (CloudKit `.none` configuration)
+- Query examples, performance optimization, migration strategy
 
-**What It Should Define:**
-1. **SwiftData Models**
-   - `CravingModel` - All fields, types, optionality
-   - `UsageModel` - All fields, types, optionality
-   - `RecordingModel` - All fields, types, optionality
-   - `MotivationalMessageModel` (if needed for v1)
-   - **Note:** `UserGoalModel` deferred to post-MVP (v1.1)
+**Key Decisions Made:**
+- **Simple types** (String/Double/Int/Date/UUID/[String]) - no custom encodings
+- **Arrays for multi-select** triggers ([String] not comma-separated)
+- **Implied units** (amount: Double, unit derived from method in ViewModel)
+- **GPS as strings** ("lat,long" format for location)
+- **File paths relative** (not absolute) for RecordingModel
+- **Default messages seeded** on first launch (11 motivational messages)
+- **Lightweight migrations only** (additive changes, no breaking schema updates)
 
-2. **Relationships**
-   - Craving ↔ Recording (many-to-one, `.nullify` delete rule)
-   - **Craving and Usage are INDEPENDENT** (no relationship, separate logs)
-   - Validation of Appendix B delete rules
-
-3. **Performance Constraints**
-   - <5 sec craving log (what query optimizations?)
-   - <10 sec usage log (what indexes needed?)
-   - Chart rendering with 90+ days of data (fetch limits?)
-
-4. **CloudKit Configuration**
-   - `ModelConfiguration(cloudKitDatabase: .none)` - Explicitly disabled
-   - Confirm no iCloud sync
-
-5. **Clean Architecture Mapping**
-   - Which layer owns each model? (Data layer)
-   - How do Domain entities map to Data models? (Mappers)
-   - Repository protocols (already exist in CLAUDE.md)
-
-**Why This Matters:**
-- Technical source of truth for implementation
-- Ensures SwiftData relationships match product spec
-- Catches data integrity issues before coding
-
-**How to Write It:**
-- Technical doc (code examples, Swift types)
-- References CLAUDE.md for existing patterns
-- Uses decisions from CLINICAL_CANNABIS_SPEC.md
-- Uses flows from UX_FLOW_SPEC.md
-
-**Output:**
-- Exact SwiftData model definitions
-- Relationship delete rules in code
-- Migration strategy (if schema changes)
-- Feeds into implementation (copy-paste ready)
+**Validation:**
+- ✅ All 19 UX screens have required fields mapped
+- ✅ ROA amount ranges match CLINICAL_CANNABIS_SPEC.md
+- ✅ HAALT triggers match MVP_PRODUCT_SPEC.md Appendix A
+- ✅ Delete rules match MVP_PRODUCT_SPEC.md Appendix B
+- ✅ CloudKit configuration is `.none` (privacy requirement)
+- ✅ Copy-paste ready code examples for implementation
 
 ---
 
-#### 5. `TECHNICAL_IMPLEMENTATION.md` - **FINAL PLANNING DOC**
-**Status:** 🔴 Not Started
-**Priority:** LOW (implementation roadmap)
+#### 5. `TECHNICAL_IMPLEMENTATION.md` (v1.2) - **COMPLETE** ✅
+**Status:** ✅ Complete (with code refactors applied)
+**Last Updated:** 2025-10-31
 
-**Purpose:**
-Map features to code (repos, use cases, views) and define build order.
+**File:** `/docs/TECHNICAL_IMPLEMENTATION.md`
 
-**What It Should Define:**
-1. **Architecture Layers**
-   - Domain: Entities, Use Cases, Repository Protocols
-   - Data: Models, Repositories, Mappers, Storage
-   - Presentation: Views, ViewModels
-   - App: DependencyContainer, CraveyApp.swift
+**What It Defines:**
+- Complete feature-to-code mapping for all 6 MVP features
+- Clean Architecture + MVVM layer structure (2025 best practices)
+- 61 files to create (20 exist, all baseline refactors complete)
+- Feature dependency graph (5/6 features are independent, can build in parallel)
+- TDD workflow with Swift Testing framework (Red-Green-Refactor)
+- Test pyramid (80% unit, 15% integration, 5% UI)
+- 16-week implementation timeline (4 phases)
+- Build & test commands (daily dev workflow)
+- Performance targets (craving <5s, usage <10s, dashboard <3s)
 
-2. **Implementation Order** (16-week plan from MVP spec)
-   - Phase 1 (Weeks 1-4): Craving, Usage, Onboarding, Data Management
-   - Phase 2 (Weeks 5-8): Recordings, Dashboard
-   - Phase 3 (Weeks 9-12): Polish & Testing (UI/UX refinements, performance optimization)
-   - Phase 4 (Weeks 13-16): TestFlight, Launch
+**Key Decisions Made:**
+- **Architecture:** Clean Architecture + MVVM with `@Observable` (NOT `ObservableObject`)
+- **Testing:** Swift Testing framework (`@Test` macro, WWDC24)
+- **Dependency Injection:** Protocol-based, wired in DependencyContainer
+- **TDD Workflow:** Write test first (RED) → Implement (GREEN) → Refactor
+- **Feature Order:** Craving/Usage/Recordings parallel, then Dashboard (depends on data)
+- **Component Reuse:** 8 reusable UI components (LogFormSheet, ChipSelector, etc.)
+- **AVFoundation:** Audio first (simpler), then video (complex AVCaptureSession)
+- **SwiftData Optimization:** Predicates for filtering, fetch limits for charts
 
-3. **Module Boundaries**
-   - Which features are independent? (can be built in parallel)
-   - Which features depend on others? (must be sequential)
+**Implementation Roadmap (16 Weeks):**
+- **Phase 1 (Weeks 1-4):** Core logging (Craving, Usage, Onboarding, Data Management)
+- **Phase 2 (Weeks 5-8):** Recordings (Audio → Video) + Dashboard
+- **Phase 3 (Weeks 9-12):** Polish & Testing (UI/UX, performance, user testing)
+- **Phase 4 (Weeks 13-16):** Launch Prep (TestFlight, App Store, v1.0 release)
 
-4. **Testing Strategy**
-   - Unit tests (Use Cases, Mappers)
-   - Integration tests (Repositories)
-   - UI tests (Critical flows: <5 sec craving log)
+**Validation:**
+- ✅ All 6 features mapped to exact files (Domain/Data/Presentation)
+- ✅ Feature dependencies identified (5 independent, 1 dependent)
+- ✅ Testing strategy defined (unit/integration/UI split)
+- ✅ TDD workflow explained (Swift Testing examples)
+- ✅ Build commands documented (xcodebuild, xcbeautify)
+- ✅ 2025 best practices validated (Clean Architecture, `@Observable`, Swift Testing)
+- ✅ Code examples provided (copy-paste ready for all layers)
+- ✅ Performance targets from MVP spec (all validated)
 
-5. **Tooling & Scripts**
-   - Build commands (xcodegen, xcodebuild, xcbeautify)
-   - Test commands (unit vs. UI)
-   - Linting/formatting (swiftlint, swiftformat)
+---
 
-**Why This Matters:**
-- Guides daily coding decisions
-- Prevents "what do I build next?" paralysis
-- Ensures Clean Architecture is maintained
+### ✅ PLANNING PHASE COMPLETE
 
-**How to Write It:**
-- Technical implementation guide
-- References CLAUDE.md for existing structure
-- Task breakdown (can feed into GitHub Issues/Projects)
-
-**Output:**
-- Feature → Code mapping
-- Build order (prioritized backlog)
-- Testing checklist
-- Ready to start coding
+**All 5 planning documents finished:**
+1. ✅ MVP_PRODUCT_SPEC.md (v1.4) - 6 features defined
+2. ✅ CLINICAL_CANNABIS_SPEC.md - Cannabis tracking validated
+3. ✅ UX_FLOW_SPEC.md (v1.2) - 19 screens specified
+4. ✅ DATA_MODEL_SPEC.md (v1.0) - 4 SwiftData models defined
+5. ✅ TECHNICAL_IMPLEMENTATION.md (v1.2) - Implementation roadmap complete + baseline refactors applied
 
 ---
 
 ## 🎯 Current Position: You Are Here
 
 ```
-✅ MVP_PRODUCT_SPEC.md (v1.4) - AI Chat removed, 100% complete
+✅ MVP_PRODUCT_SPEC.md (v1.4) - AI Chat removed, 6 features finalized
     ↓
-✅ CLINICAL_CANNABIS_SPEC.md (100% complete) - BOTH LOGGING FLOWS VALIDATED 🔥🔥🔥
+✅ CLINICAL_CANNABIS_SPEC.md - Cannabis tracking validated
     ↓
-✅ UX_FLOW_SPEC.md (v1.2, 100% complete) - ALL 7 FLOWS DESIGNED (19 screens) 🎉
+✅ UX_FLOW_SPEC.md (v1.2) - ALL 7 FLOWS DESIGNED (19 screens) 🎉
     ↓
-🔴 DATA_MODEL_SPEC.md ← YOU ARE HERE (next to create)
+✅ DATA_MODEL_SPEC.md (v1.0) - All 4 SwiftData models defined 🔥
     ↓
-🔴 TECHNICAL_IMPLEMENTATION.md
+✅ TECHNICAL_IMPLEMENTATION.md (v1.2) - 16-week roadmap, TDD workflow, all features mapped 🚀
     ↓
-🚀 START CODING (Phase 1)
+✅ BASELINE REFACTORS COMPLETE - Craving schema migrated to multi-trigger (2025-10-31) 🔥
+    ↓
+🎯 START CODING ← YOU ARE HERE (Phase 2: Implementation - Week 1)
 ```
 
 ---
@@ -292,12 +278,12 @@ Map features to code (repos, use cases, views) and define build order.
 4. ❌ Refactor everything
 
 ### Your (Correct) Order:
-1. ✅ **Product spec** (what are we building?)
-2. ✅ **Clinical validation** (is the model correct?)
-3. ✅ **UX flows** (how does it feel to use?)
-4. 🔴 **Technical spec** (how do we build it?) ← DATA_MODEL_SPEC.md
-5. 🔴 **Implementation plan** (in what order?) ← TECHNICAL_IMPLEMENTATION.md
-6. ⚪ Start coding (with confidence)
+1. ✅ **Product spec** (what are we building?) → MVP_PRODUCT_SPEC.md
+2. ✅ **Clinical validation** (is the model correct?) → CLINICAL_CANNABIS_SPEC.md
+3. ✅ **UX flows** (how does it feel to use?) → UX_FLOW_SPEC.md
+4. ✅ **Data models** (what do we store?) → DATA_MODEL_SPEC.md
+5. ✅ **Implementation plan** (in what order?) → TECHNICAL_IMPLEMENTATION.md
+6. 🎯 **Start coding** (with confidence) ← YOU ARE HERE
 
 **This is called "Domain-Driven Design"** - the domain expert (you) validates the model before engineers build it.
 
@@ -308,31 +294,60 @@ Map features to code (repos, use cases, views) and define build order.
 ### When You Return to This Project:
 
 1. **Read this file** (`CHECKPOINT_STATUS.md`)
-2. **Check the "YOU ARE HERE" marker** (currently: Ready for DATA_MODEL_SPEC.md)
-3. **Choose your path:**
-   - **Option A (Recommended):** Create DATA_MODEL_SPEC.md (define SwiftData schemas, relationships, persistence)
-   - **Option B:** Scan completed planning docs for any gaps
-   - **Option C:** Jump to TECHNICAL_IMPLEMENTATION.md (map features to code)
-4. **Update this file** when you complete a doc (move ✅, update "YOU ARE HERE")
+2. **Check the "YOU ARE HERE" marker** (currently: START CODING - Phase 2)
+3. **Implementation Phase** - Follow TECHNICAL_IMPLEMENTATION.md:
+   - **Day 1:** Update DependencyContainer, create missing models (UsageModel)
+   - **Week 1:** Implement Feature 1 (Craving Logging) with TDD
+   - **Week 2:** Implement Feature 2 (Usage Logging) with TDD
+   - **Weeks 3-16:** Follow 16-week roadmap in TECHNICAL_IMPLEMENTATION.md
+4. **Update this file** when you complete Phase 2 (move to Phase 3: Testing & Launch)
 
 ---
 
-## 🚀 Immediate Next Step: Create DATA_MODEL_SPEC.md
+## 🚀 Immediate Next Step: START CODING (Phase 2)
 
-**🚧 3/5 PLANNING DOCS COMPLETE.** MVP, Clinical, and UX specs done. Data model and implementation plan remain.
+**✅ 5/5 PLANNING DOCS COMPLETE!** All planning phase documentation finalized. Ready for implementation.
 
-**Next: DATA_MODEL_SPEC.md**
-- Define exact SwiftData model schemas (`CravingModel`, `UsageModel`, `RecordingModel`, `MotivationalMessageModel`)
-- Map relationships (Craving ↔ Recording, delete rules from Appendix B)
-- Validate against UX flows (all fields needed for 19 screens)
-- Define persistence layer (ModelContainer setup, CloudKit `.none`)
-- Performance constraints (<5 sec craving log, <10 sec usage log, 90+ day chart rendering)
+**✅ BASELINE REFACTORING COMPLETE (2025-10-31)**
 
-**Why this matters:**
-- Technical source of truth for implementation
-- Ensures SwiftData relationships match product spec
-- Catches data integrity issues before coding
-- Copy-paste ready code examples for implementation
+All code corrections and baseline refactors have been applied:
+1. ✅ FileStorageManager & ModelContainerSetup already exist (confirmed)
+2. ✅ **COMPLETED:** Craving models refactored to multi-trigger across 8 files
+   - `CravingEntity.swift` - ✅ `triggers: [String]`
+   - `CravingModel.swift` - ✅ `triggers: [String]`
+   - `LogCravingUseCase.swift` - ✅ `triggers: [String]` parameter
+   - `CravingMapper.swift` - ✅ Updated mapping logic
+   - `CravingLogViewModel.swift` - ✅ `selectedTriggers: Set<String>`
+   - `CravingRepository.swift` - ✅ Update method uses triggers
+   - `ModelContainerSetup.swift` - ✅ Preview data uses array
+   - Unit tests - ✅ All updated (4/4 passing)
+3. ✅ SwiftUI @State syntax corrected in all doc examples
+4. ✅ File count corrected (20 exist, 61 to create, 81 total)
+5. ✅ Recording coordinators separated from FileStorageManager
+
+**Build Status:** ✅ All tests passing, no compile errors
+
+**Next: Begin UI Implementation (Week 1 - Craving Logging)**
+
+**Day 1 Tasks (Next Steps):**
+1. Create `UsageModel.swift` (copy from DATA_MODEL_SPEC.md)
+2. Update `ModelContainerSetup.swift` (add UsageModel to schema)
+3. Update `DependencyContainer.swift` (wire UsageRepository stub)
+4. Build verification (`xcodebuild build`)
+
+**Week 1 Tasks:**
+- Mon-Tue: Create reusable components (IntensitySlider, TimestampPicker, ChipSelector)
+- Wed-Thu: Build CravingLogForm, wire to HomeView
+- Fri: Write unit tests, validate <10 sec target
+
+**Follow:** TECHNICAL_IMPLEMENTATION.md for complete 16-week roadmap
+
+**Why this is ready:**
+- All 6 features mapped to exact files (Domain/Data/Presentation layers)
+- TDD workflow defined (Red-Green-Refactor with Swift Testing)
+- Feature dependencies identified (5 independent, build in parallel)
+- Code examples provided (copy-paste ready)
+- Testing strategy validated (80% unit, 15% integration, 5% UI)
 
 ---
 

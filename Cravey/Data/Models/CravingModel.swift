@@ -9,7 +9,7 @@ final class CravingModel {
     var timestamp: Date
     var intensity: Int
     var duration: TimeInterval?
-    var trigger: String?
+    var triggers: [String]
     var notes: String?
     var location: String?
     var managementStrategy: String?
@@ -24,7 +24,7 @@ final class CravingModel {
         timestamp: Date = Date(),
         intensity: Int,
         duration: TimeInterval? = nil,
-        trigger: String? = nil,
+        triggers: [String] = [],
         notes: String? = nil,
         location: String? = nil,
         managementStrategy: String? = nil,
@@ -34,7 +34,7 @@ final class CravingModel {
         self.timestamp = timestamp
         self.intensity = intensity
         self.duration = duration
-        self.trigger = trigger
+        self.triggers = triggers
         self.notes = notes
         self.location = location
         self.managementStrategy = managementStrategy

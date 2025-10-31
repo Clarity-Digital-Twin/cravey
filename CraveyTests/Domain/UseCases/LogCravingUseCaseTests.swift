@@ -15,7 +15,7 @@ struct LogCravingUseCaseTests {
         // Act
         let result = try await useCase.execute(
             intensity: 5,
-            trigger: "Work stress",
+            triggers: ["Anxious", "Bored"],
             notes: "Test note",
             location: "Office",
             wasManagedSuccessfully: true
@@ -23,7 +23,7 @@ struct LogCravingUseCaseTests {
 
         // Assert
         #expect(result.intensity == 5)
-        #expect(result.trigger == "Work stress")
+        #expect(result.triggers == ["Anxious", "Bored"])
         let savedCount = try await mockRepo.count()
         #expect(savedCount == 1)
     }
@@ -38,7 +38,7 @@ struct LogCravingUseCaseTests {
         await #expect(throws: CravingError.self) {
             try await useCase.execute(
                 intensity: 11,  // Invalid
-                trigger: nil,
+                triggers: [],
                 notes: nil,
                 location: nil,
                 wasManagedSuccessfully: false

@@ -7,7 +7,7 @@ import Foundation
 final class CravingLogViewModel {
     // UI State
     var intensity: Double = 5
-    var trigger: String = ""
+    var selectedTriggers: Set<String> = []
     var notes: String = ""
     var location: String = ""
     var wasManagedSuccessfully: Bool = false
@@ -31,7 +31,7 @@ final class CravingLogViewModel {
         do {
             _ = try await logCravingUseCase.execute(
                 intensity: Int(intensity),
-                trigger: trigger.isEmpty ? nil : trigger,
+                triggers: Array(selectedTriggers),
                 notes: notes.isEmpty ? nil : notes,
                 location: location.isEmpty ? nil : location,
                 wasManagedSuccessfully: wasManagedSuccessfully
@@ -48,7 +48,7 @@ final class CravingLogViewModel {
 
     private func resetForm() {
         intensity = 5
-        trigger = ""
+        selectedTriggers = []
         notes = ""
         location = ""
         wasManagedSuccessfully = false

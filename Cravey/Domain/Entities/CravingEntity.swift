@@ -7,7 +7,7 @@ struct CravingEntity: Identifiable, Codable, Equatable, Hashable {
     let timestamp: Date
     let intensity: Int  // 1-10 scale
     let duration: TimeInterval?
-    let trigger: String?
+    let triggers: [String]
     let notes: String?
     let location: String?
     let managementStrategy: String?
@@ -18,7 +18,7 @@ struct CravingEntity: Identifiable, Codable, Equatable, Hashable {
         timestamp: Date = Date(),
         intensity: Int,
         duration: TimeInterval? = nil,
-        trigger: String? = nil,
+        triggers: [String] = [],
         notes: String? = nil,
         location: String? = nil,
         managementStrategy: String? = nil,
@@ -28,7 +28,7 @@ struct CravingEntity: Identifiable, Codable, Equatable, Hashable {
         self.timestamp = timestamp
         self.intensity = intensity
         self.duration = duration
-        self.trigger = trigger
+        self.triggers = triggers
         self.notes = notes
         self.location = location
         self.managementStrategy = managementStrategy

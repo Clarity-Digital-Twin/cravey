@@ -5,7 +5,7 @@ import Foundation
 protocol LogCravingUseCase: Sendable {
     func execute(
         intensity: Int,
-        trigger: String?,
+        triggers: [String],
         notes: String?,
         location: String?,
         wasManagedSuccessfully: Bool
@@ -21,7 +21,7 @@ final class DefaultLogCravingUseCase: LogCravingUseCase {
 
     func execute(
         intensity: Int,
-        trigger: String?,
+        triggers: [String],
         notes: String?,
         location: String?,
         wasManagedSuccessfully: Bool
@@ -34,7 +34,7 @@ final class DefaultLogCravingUseCase: LogCravingUseCase {
         // Create entity
         let craving = CravingEntity(
             intensity: intensity,
-            trigger: trigger,
+            triggers: triggers,
             notes: notes,
             location: location,
             wasManagedSuccessfully: wasManagedSuccessfully
