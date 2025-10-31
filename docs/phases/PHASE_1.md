@@ -1,8 +1,8 @@
-# Phase 1: Foundation + Craving Logging
+# Phase 1: Foundation + Craving Logging (Week 1 Only)
 
-**Version:** 1.0
+**Version:** 2.0 (Aligned with 16-week master timeline)
 **Last Updated:** 2025-10-31
-**Duration:** 1 week (5 days)
+**Duration:** 1 week (Week 1 of 16-week plan)
 **Dependencies:** None (baseline code exists)
 **Status:** 🎯 **START HERE**
 
@@ -10,11 +10,14 @@
 
 ## 🎯 Phase Goal
 
-**Shippable Deliverable:** Users can launch the app, log a craving in <5 seconds, and view their craving history.
+**Shippable Deliverable:** Users can launch the app, log cravings in <5 seconds, and view craving history.
 
 **Features Implemented:**
 - Feature 1: Craving Logging (complete)
-- Foundation: UsageModel schema + Tab Bar shell
+- Foundation: UsageModel schema (data model only, UI in Week 2)
+- Tab Bar shell (Home, Dashboard, Settings empty states)
+
+**Scope Note:** This document covers **Week 1 only** from TECHNICAL_IMPLEMENTATION.md. Usage Logging, Data Management, and Onboarding are covered in subsequent week-by-week docs (to be created after Week 1 completion).
 
 ---
 
@@ -43,7 +46,7 @@
 ✅ **Build Status:**
 - All tests passing (4/4)
 - No compile errors
-- No SwiftLint critical warnings
+- 13 SwiftLint TODO warnings (expected, will resolve during Phase 1 implementation)
 
 ---
 
@@ -123,28 +126,29 @@
 
 **Goal:** Wire everything together, validate <5 sec log time
 
-#### Tests to Write (17 tests)
+#### Tests to Write (14 tests total)
 
-**Unit Tests (12 tests):**
+**Unit Tests (10 tests):**
 - `IntensitySliderTests.swift` (2 tests)
 - `ChipSelectorTests.swift` (2 tests)
-- `CravingLogFormViewModelTests.swift` (4 tests)
-- `CravingListViewModelTests.swift` (4 tests)
+- `CravingLogFormViewModelTests.swift` (3 tests)
+- `CravingListViewModelTests.swift` (3 tests)
 
 **Integration Tests (3 tests):**
 - `CravingLogIntegrationTests.swift` (3 tests - form → VM → UC → Repo)
 
-**UI Tests (2 tests):**
-- `CravingLogUITests.swift` (2 tests - <5 sec validation, error handling)
+**UI Tests (1 test):**
+- `CravingLogUITests.swift` (1 test - <5 sec validation)
 
 ---
 
-## 📦 Complete File Checklist (14 files)
+## 📦 Complete File Checklist (15 files)
 
-### Foundation (4 files)
+### Foundation (5 files)
 - [ ] `Data/Models/UsageModel.swift` (CREATE)
-- [ ] `Data/Storage/ModelContainerSetup.swift` (MODIFY)
-- [ ] `App/DependencyContainer.swift` (MODIFY)
+- [ ] `Data/Storage/ModelContainerSetup.swift` (MODIFY - add UsageModel to schema)
+- [ ] `Domain/Repositories/UsageRepositoryProtocol.swift` (CREATE - stub protocol)
+- [ ] `App/DependencyContainer.swift` (MODIFY - add usageRepository property + stub)
 - [ ] `App/CraveyApp.swift` (MODIFY - add TabView)
 
 ### Tab Bar Shell (3 files)
@@ -301,7 +305,7 @@ import SwiftData
 
 @Model
 final class UsageModel {
-    var id: UUID
+    @Attribute(.unique) var id: UUID
     var timestamp: Date
     var method: String  // ROA: "Bowls", "Vape", etc.
     var amount: Double
@@ -367,47 +371,9 @@ xcodebuild -scheme Cravey \
 
 ---
 
-#### Step 3: Update DependencyContainer.swift
+#### Step 3: Wire UsageRepository stub in DependencyContainer
 
-**Modify:** `Cravey/App/DependencyContainer.swift`
-
-**Change:** Wire UsageRepository stub (we'll implement the real repo in Phase 2)
-
-```swift
-// Add after CravingRepository initialization (~line 40)
-
-// Usage Repository (stub for Phase 2)
-self.usageRepository = StubUsageRepository()
-```
-
-**Create stub file:**
-
-```swift
-// Cravey/Data/Repositories/UsageRepository.swift
-
-import Foundation
-
-// STUB: Real implementation in Phase 2
-final class StubUsageRepository: UsageRepositoryProtocol {
-    func save(_ usage: UsageEntity) async throws -> UsageEntity {
-        fatalError("UsageRepository not implemented - Phase 2")
-    }
-
-    func fetchAll() async throws -> [UsageEntity] {
-        return []  // Empty for now
-    }
-
-    func fetch(since date: Date) async throws -> [UsageEntity] {
-        return []
-    }
-
-    func deleteAll() async throws {
-        // No-op
-    }
-}
-```
-
-**Note:** UsageRepositoryProtocol needs to be created (copy pattern from CravingRepositoryProtocol)
+**Note:** We'll create the stub protocol and implementation for Phase 2 compatibility. Full implementation happens in Phase 2.
 
 **Create:** `Cravey/Domain/Repositories/UsageRepositoryProtocol.swift`
 
@@ -417,14 +383,59 @@ final class StubUsageRepository: UsageRepositoryProtocol {
 import Foundation
 
 protocol UsageRepositoryProtocol: Sendable {
-    func save(_ usage: UsageEntity) async throws -> UsageEntity
+    func save(_ usage: UsageEntity) async throws
     func fetchAll() async throws -> [UsageEntity]
     func fetch(since date: Date) async throws -> [UsageEntity]
     func deleteAll() async throws
 }
 ```
 
+**Modify:** `Cravey/App/DependencyContainer.swift`
+
+**Add property declaration** (after `messageRepository`, ~line 19):
+
+```swift
+private(set) var usageRepository: UsageRepositoryProtocol
+```
+
+**Add stub initialization** (in init method, after `messageRepo`, ~line 54):
+
+```swift
+// Usage Repository (stub for Phase 2)
+let usageRepo = StubUsageRepository()
+self.usageRepository = usageRepo
+```
+
+**Add stub implementation** (at bottom of file, after `StubMessageRepository`):
+
+```swift
+/// Stub implementation until UsageRepository is fully implemented
+private struct StubUsageRepository: UsageRepositoryProtocol {
+    func save(_ usage: UsageEntity) async throws {
+        // TODO: Implement in Phase 2
+    }
+
+    func fetchAll() async throws -> [UsageEntity] {
+        return []
+    }
+
+    func fetch(since date: Date) async throws -> [UsageEntity] {
+        return []
+    }
+
+    func deleteAll() async throws {
+        // TODO: Implement in Phase 2
+    }
+}
+```
+
 **Verify:** Build succeeds
+
+```bash
+xcodebuild -scheme Cravey \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+  build | xcbeautify
+```
 
 **Commit:** `[Phase 1] Wire UsageRepository stub (Phase 2 implementation)`
 
@@ -558,12 +569,7 @@ import SwiftData
 
 @main
 struct CraveyApp: App {
-    @State private var dependencyContainer: DependencyContainer
-
-    init() {
-        let container = DependencyContainer()
-        self.dependencyContainer = container
-    }
+    @State private var dependencyContainer = DependencyContainer()
 
     var body: some Scene {
         WindowGroup {
@@ -583,6 +589,7 @@ struct CraveyApp: App {
                         Label("Settings", systemImage: "gearshape.fill")
                     }
             }
+            .environment(dependencyContainer)
         }
         .modelContainer(dependencyContainer.modelContainer)
     }
@@ -1037,9 +1044,6 @@ struct CravingLogForm: View {
                     Button("Save") {
                         Task {
                             await viewModel.logCraving()
-                            if viewModel.errorMessage == nil {
-                                dismiss()
-                            }
                         }
                     }
                     .disabled(!viewModel.canSubmit)
@@ -1052,7 +1056,10 @@ struct CravingLogForm: View {
             } message: {
                 Text("Craving logged successfully ✓")
             }
-            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
+            .alert("Error", isPresented: Binding(
+                get: { viewModel.errorMessage != nil },
+                set: { if !$0 { viewModel.errorMessage = nil } }
+            )) {
                 Button("OK") {
                     viewModel.errorMessage = nil
                 }
@@ -1074,10 +1081,8 @@ struct CravingLogForm: View {
 }
 
 #Preview {
-    let container = DependencyContainer()
-    let viewModel = CravingLogViewModel(
-        logCravingUseCase: container.logCravingUseCase
-    )
+    let container = DependencyContainer.preview
+    let viewModel = container.makeCravingLogViewModel()
     return CravingLogForm(viewModel: viewModel)
 }
 ```
@@ -1090,8 +1095,8 @@ struct CravingLogForm: View {
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(DependencyContainer.self) private var container
     @State private var showCravingLogSheet = false
-    @State private var dependencyContainer = DependencyContainer()
 
     var body: some View {
         NavigationStack {
@@ -1124,9 +1129,7 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showCravingLogSheet) {
-                let viewModel = CravingLogViewModel(
-                    logCravingUseCase: dependencyContainer.logCravingUseCase
-                )
+                let viewModel = container.makeCravingLogViewModel()
                 CravingLogForm(viewModel: viewModel)
             }
         }
@@ -1504,7 +1507,7 @@ var body: some View {
 // ... in body:
 CravingListView(
     viewModel: CravingListViewModel(
-        fetchCravingsUseCase: dependencyContainer.fetchCravingsUseCase
+        fetchCravingsUseCase: container.fetchCravingsUseCase
     )
 )
 .id(refreshID)  // ← Force re-render when refreshID changes
@@ -1513,9 +1516,7 @@ CravingListView(
 .sheet(isPresented: $showCravingLogSheet) {
     refreshID = UUID()  // ← Trigger refresh after dismiss
 } content: {
-    let viewModel = CravingLogViewModel(
-        logCravingUseCase: dependencyContainer.logCravingUseCase
-    )
+    let viewModel = container.makeCravingLogViewModel()
     CravingLogForm(viewModel: viewModel)
 }
 ```
@@ -1544,7 +1545,7 @@ xcodebuild test -scheme Cravey \
 - ✅ CravingLogIntegrationTests: 3/3 passing
 - ✅ CravingLogUITests: 1/1 passing
 
-**Total:** 10/10 tests passing
+**Total:** 14/14 tests passing (10 unit + 3 integration + 1 UI)
 
 ---
 
@@ -1559,8 +1560,9 @@ xcodebuild test -scheme Cravey \
 - [ ] Location chips work (single-select)
 - [ ] Cancel button dismisses sheet without saving
 - [ ] Save button logs craving (<5 sec validated)
-- [ ] Success alert shows
-- [ ] List auto-refreshes with new craving
+- [ ] Success alert shows after Save (with OK button)
+- [ ] Tapping OK on alert dismisses sheet
+- [ ] List auto-refreshes with new craving after dismissal
 - [ ] Craving row shows intensity badge (correct color)
 - [ ] Timestamp shows relative time ("2 minutes ago")
 - [ ] Triggers display correctly
@@ -1609,15 +1611,18 @@ swiftformat .
 
 ## ✅ Phase 1 Completion Checklist
 
-- [ ] All 14 files created/modified
+- [ ] All 15 files created/modified (5 foundation + 3 tabs + 5 components + 2 views)
 - [ ] Build succeeds with zero errors
-- [ ] All 10 tests passing (6 unit + 3 integration + 1 UI)
+- [ ] All 14 tests passing (10 unit + 3 integration + 1 UI)
 - [ ] Manual testing complete (15/15 checklist items)
 - [ ] Performance validated (<5 sec craving log)
 - [ ] SwiftLint violations <10 warnings
 - [ ] Code formatted (swiftformat)
 - [ ] Git commits pushed (feature/phase-1 branch)
 - [ ] Phase deliverable shippable (users can log cravings)
+- [ ] DI container uses environment injection (no duplicate instances)
+- [ ] UsageModel includes @Attribute(.unique) on id field
+- [ ] Alert/dismiss flow works correctly (success alert shows before dismiss)
 
 ---
 
