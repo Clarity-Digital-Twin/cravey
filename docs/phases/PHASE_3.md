@@ -497,8 +497,9 @@ final class AudioRecordingCoordinator: NSObject {
     // State
     var isRecording = false
     var duration: TimeInterval = 0
-    var currentFilePath: String?
+    var currentFileURL: String?  // ← Relative path (matches baseline naming)
     var error: String?
+    var didAutoStop = false  // ← Flag to notify ViewModel of forced stop
 
     // AVFoundation
     private var audioRecorder: AVAudioRecorder?
@@ -506,15 +507,11 @@ final class AudioRecordingCoordinator: NSObject {
 
     // MARK: - Recording
 
-    func startRecording(recordingID: UUID) throws {
-        // 1. Request microphone permission
-        AVAudioSession.sharedInstance().requestRecordPermission { [weak self] granted in
-            guard granted else {
-                Task { @MainActor in
-                    self?.error = "Microphone access denied"
-                }
-                return
-            }
+    func startRecording(recordingID: UUID) async throws {
+        // 1. Request microphone permission (MUST await before continuing)
+        let granted = await AVAudioSession.sharedInstance().requestRecordPermission()
+        guard granted else {
+            throw RecordingError.permissionDenied
         }
 
         // 2. Configure audio session
@@ -522,7 +519,7 @@ final class AudioRecordingCoordinator: NSObject {
         try session.setCategory(.playAndRecord, mode: .default)
         try session.setActive(true)
 
-        // 3. Generate file path
+        // 3. Generate file URL
         let fileName = "audio_\(recordingID.uuidString).m4a"
         let recordingsDir = FileManager.default.urls(
             for: .documentDirectory,
@@ -552,8 +549,9 @@ final class AudioRecordingCoordinator: NSObject {
 
         // 6. Update state
         isRecording = true
-        currentFilePath = "Recordings/\(fileName)"
+        currentFileURL = "Recordings/\(fileName)"  // ← Store relative path
         duration = 0
+        didAutoStop = false
 
         // 7. Start timer for duration tracking
         recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
@@ -561,8 +559,9 @@ final class AudioRecordingCoordinator: NSObject {
                 guard let recorder = self?.audioRecorder else { return }
                 self?.duration = recorder.currentTime
 
-                // Auto-stop at 120 seconds
+                // Auto-stop at 120 seconds (notify ViewModel via didAutoStop flag)
                 if self?.duration ?? 0 >= 120 {
+                    self?.didAutoStop = true
                     self?.stopRecording()
                 }
             }
@@ -583,16 +582,17 @@ final class AudioRecordingCoordinator: NSObject {
         stopRecording()
 
         // Delete file
-        if let filePath = currentFilePath {
-            let fileURL = FileManager.default.urls(
+        if let fileURL = currentFileURL {
+            let fullURL = FileManager.default.urls(
                 for: .documentDirectory,
                 in: .userDomainMask
-            )[0].appendingPathComponent(filePath)
-            try? FileManager.default.removeItem(at: fileURL)
+            )[0].appendingPathComponent(fileURL)
+            try? FileManager.default.removeItem(at: fullURL)
         }
 
-        currentFilePath = nil
+        currentFileURL = nil
         duration = 0
+        didAutoStop = false
     }
 }
 
@@ -606,7 +606,7 @@ extension AudioRecordingCoordinator: AVAudioRecorderDelegate {
         Task { @MainActor in
             if !flag {
                 error = "Recording failed"
-                currentFilePath = nil
+                currentFileURL = nil
             }
         }
     }
@@ -624,10 +624,12 @@ extension AudioRecordingCoordinator: AVAudioRecorderDelegate {
 
 **Why This Code:**
 - `@Observable` enables SwiftUI state updates
-- Permission handling for microphone access
+- **CRITICAL:** Uses `async/await` for permission request (MUST await before configuring audio session)
+- `currentFileURL` property matches baseline naming (not `filePath`)
+- `didAutoStop` flag notifies ViewModel when 120s auto-stop occurs (triggers save sheet UX)
 - Auto-stop at 120 seconds (MVP requirement)
 - Timer tracks duration for UI display
-- Relative file path (consistent with RecordingModel)
+- Relative file URL stored (consistent with RecordingEntity.fileURL)
 - Delegate pattern for error handling
 
 ---
@@ -651,10 +653,11 @@ final class VideoRecordingCoordinator: NSObject {
     // State
     var isRecording = false
     var duration: TimeInterval = 0
-    var currentFilePath: String?
-    var currentThumbnailPath: String?
+    var currentFileURL: String?  // ← Relative path (matches baseline naming)
+    var currentThumbnailURL: String?  // ← Relative path (matches baseline naming)
     var error: String?
     var previewLayer: AVCaptureVideoPreviewLayer?
+    var didAutoStop = false  // ← Flag to notify ViewModel of forced stop
 
     // AVFoundation
     private var captureSession: AVCaptureSession?
@@ -748,9 +751,10 @@ final class VideoRecordingCoordinator: NSObject {
 
         // Update state
         isRecording = true
-        currentFilePath = "Recordings/\(fileName)"
+        currentFileURL = "Recordings/\(fileName)"
         duration = 0
         recordingStartTime = Date()
+        didAutoStop = false
 
         // Start timer for duration tracking
         recordingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] _ in
@@ -758,8 +762,9 @@ final class VideoRecordingCoordinator: NSObject {
                 guard let startTime = self?.recordingStartTime else { return }
                 self?.duration = Date().timeIntervalSince(startTime)
 
-                // Auto-stop at 120 seconds
+                // Auto-stop at 120 seconds (notify ViewModel via didAutoStop flag)
                 if self?.duration ?? 0 >= 120 {
+                    self?.didAutoStop = true
                     self?.stopRecording()
                 }
             }
@@ -777,17 +782,18 @@ final class VideoRecordingCoordinator: NSObject {
         stopRecording()
 
         // Delete file
-        if let filePath = currentFilePath {
-            let fileURL = FileManager.default.urls(
+        if let fileURL = currentFileURL {
+            let fullURL = FileManager.default.urls(
                 for: .documentDirectory,
                 in: .userDomainMask
-            )[0].appendingPathComponent(filePath)
-            try? FileManager.default.removeItem(at: fileURL)
+            )[0].appendingPathComponent(fileURL)
+            try? FileManager.default.removeItem(at: fullURL)
         }
 
-        currentFilePath = nil
-        currentThumbnailPath = nil
+        currentFileURL = nil
+        currentThumbnailURL = nil
         duration = 0
+        didAutoStop = false
     }
 
     func stopCamera() {
@@ -826,7 +832,7 @@ final class VideoRecordingCoordinator: NSObject {
 
             if let jpegData = thumbnail.jpegData(compressionQuality: 0.8) {
                 try jpegData.write(to: thumbnailURL)
-                currentThumbnailPath = "Recordings/Thumbnails/\(thumbnailFileName)"
+                currentThumbnailURL = "Recordings/Thumbnails/\(thumbnailFileName)"
             }
         } catch {
             print("Thumbnail generation failed: \(error)")
@@ -846,13 +852,13 @@ extension VideoRecordingCoordinator: AVCaptureFileOutputRecordingDelegate {
         Task { @MainActor in
             if let error = error {
                 self.error = error.localizedDescription
-                currentFilePath = nil
+                currentFileURL = nil
                 return
             }
 
             // Generate thumbnail
-            if let filePath = currentFilePath {
-                let recordingID = UUID(uuidString: filePath.components(separatedBy: "_")[1].replacingOccurrences(of: ".mov", with: "")) ?? UUID()
+            if let fileURL = currentFileURL {
+                let recordingID = UUID(uuidString: fileURL.components(separatedBy: "_")[1].replacingOccurrences(of: ".mov", with: "")) ?? UUID()
                 await generateThumbnail(for: outputFileURL, recordingID: recordingID)
             }
         }
@@ -864,9 +870,12 @@ extension VideoRecordingCoordinator: AVCaptureFileOutputRecordingDelegate {
 - Front camera default (users record themselves)
 - Audio + video inputs for full recordings
 - AVCaptureMovieFileOutput for .mov files
+- `currentFileURL` and `currentThumbnailURL` properties match baseline naming (not `filePath`/`thumbnailPath`)
+- `didAutoStop` flag notifies ViewModel when 120s auto-stop occurs (triggers save sheet UX)
 - Auto-stop at 120 seconds (MVP requirement)
 - Thumbnail generation at 1-second mark (preview images for library)
 - Delegate pattern for completion handling
+- Permission already uses async/await (setupCamera is async)
 
 ---
 
@@ -907,8 +916,15 @@ final class RecordingLibraryViewModel {
         error = nil
 
         do {
-            let typeFilter = selectedFilter == .all ? nil : selectedFilter.rawValue
-            recordings = try await fetchUseCase.execute(type: typeFilter)
+            // Convert filter to RecordingType enum
+            let typeFilter: RecordingType? = {
+                switch selectedFilter {
+                case .all: return nil
+                case .video: return .video
+                case .audio: return .audio
+                }
+            }()
+            recordings = try await fetchUseCase.execute(recordingType: typeFilter)
         } catch {
             self.error = "Failed to load recordings: \(error.localizedDescription)"
         }
@@ -918,7 +934,7 @@ final class RecordingLibraryViewModel {
 
     func deleteRecording(_ recording: RecordingEntity) async {
         do {
-            try await deleteUseCase.execute(recording: recording)
+            try await deleteUseCase.execute(id: recording.id)  // ← Use id parameter
             recordings.removeAll { $0.id == recording.id }
         } catch {
             self.error = "Failed to delete recording: \(error.localizedDescription)"
@@ -982,7 +998,7 @@ final class AudioRecordingViewModel {
 
     // Dependencies
     private let saveUseCase: SaveRecordingUseCase
-    private let recordingID = UUID()
+    private var currentRecordingID: UUID?  // ← Generate fresh UUID per recording
 
     init(saveUseCase: SaveRecordingUseCase) {
         self.saveUseCase = saveUseCase
@@ -990,12 +1006,16 @@ final class AudioRecordingViewModel {
 
     // MARK: - Actions
 
-    func startRecording() {
+    func startRecording() async {
+        // Generate new UUID for THIS recording session
+        currentRecordingID = UUID()
+
         do {
-            try coordinator.startRecording(recordingID: recordingID)
+            try await coordinator.startRecording(recordingID: currentRecordingID!)
             isRecording = coordinator.isRecording
         } catch {
             self.error = "Failed to start recording: \(error.localizedDescription)"
+            currentRecordingID = nil
         }
     }
 
@@ -1003,7 +1023,13 @@ final class AudioRecordingViewModel {
         coordinator.stopRecording()
         isRecording = false
         duration = coordinator.duration
-        showSaveDialog = true
+
+        // Check if auto-stopped (120s limit reached)
+        if coordinator.didAutoStop {
+            showSaveDialog = true  // Still show save dialog on forced stop
+        } else {
+            showSaveDialog = true
+        }
     }
 
     func cancelRecording() {
@@ -1011,24 +1037,28 @@ final class AudioRecordingViewModel {
         isRecording = false
         duration = 0
         error = nil
+        currentRecordingID = nil  // ← Clear UUID after cancel
     }
 
     func saveRecording() async -> Bool {
-        guard let filePath = coordinator.currentFilePath else {
+        guard let fileURL = coordinator.currentFileURL else {
             error = "No recording to save"
             return false
         }
 
         do {
             _ = try await saveUseCase.execute(
-                type: "audio",
-                purpose: selectedPurpose.rawValue,
+                recordingType: .audio,  // ← RecordingType enum
+                purpose: selectedPurpose,  // ← RecordingPurpose enum (already correct type)
                 duration: duration,
-                filePath: filePath,
-                thumbnailPath: nil,
-                title: title.isEmpty ? nil : title,
+                fileURL: fileURL,  // ← Correct property name
+                thumbnailURL: nil,  // ← Correct property name
+                title: title.isEmpty ? "Audio Recording" : title,  // ← Required parameter
                 notes: notes.isEmpty ? nil : notes
             )
+
+            // Clear UUID after successful save
+            currentRecordingID = nil
             return true
         } catch {
             self.error = "Failed to save recording: \(error.localizedDescription)"
@@ -1037,36 +1067,19 @@ final class AudioRecordingViewModel {
     }
 }
 
-enum RecordingPurpose: String, CaseIterable {
-    case motivational = "motivational"
-    case milestone = "milestone"
-    case reflection = "reflection"
-    case craving = "craving"
-
-    var displayName: String {
-        switch self {
-        case .motivational: return "Motivational"
-        case .milestone: return "Milestone"
-        case .reflection: return "Reflection"
-        case .craving: return "During Craving"
-        }
-    }
-
-    var description: String {
-        switch self {
-        case .motivational: return "Why you're taking a break"
-        case .milestone: return "Celebrate progress (e.g., 30 days)"
-        case .reflection: return "How you're feeling today"
-        case .craving: return "Record during a craving moment"
-        }
-    }
-}
+// Note: RecordingPurpose enum is defined in Domain/Entities/RecordingEntity.swift
+// This is just a reference for the ViewModel's selectedPurpose property
+// Actual enum case: .cravingMoment (not .craving)
 ```
 
 **Why This Code:**
 - Wraps coordinator state for SwiftUI
-- Save dialog flow (title, notes, purpose)
-- Purpose categorization (motivational, milestone, etc.)
+- **CRITICAL FIX:** `currentRecordingID` generates fresh UUID per recording (prevents file collisions)
+- `startRecording()` is `async` to await coordinator permission handling
+- `stopRecording()` checks `coordinator.didAutoStop` flag (auto-stop UX)
+- Save uses `recordingType: .audio` enum (not String)
+- Save uses `fileURL`/`thumbnailURL` properties (matches baseline)
+- RecordingPurpose enum is imported from Domain layer (use `.cravingMoment` not `.craving`)
 - Returns Bool from saveRecording() for navigation control
 
 ---
@@ -1098,7 +1111,7 @@ final class VideoRecordingViewModel {
 
     // Dependencies
     private let saveUseCase: SaveRecordingUseCase
-    private let recordingID = UUID()
+    private var currentRecordingID: UUID?  // ← Generate fresh UUID per recording
 
     init(saveUseCase: SaveRecordingUseCase) {
         self.saveUseCase = saveUseCase
@@ -1123,7 +1136,9 @@ final class VideoRecordingViewModel {
     // MARK: - Actions
 
     func startRecording() {
-        coordinator.startRecording(recordingID: recordingID)
+        // Generate new UUID for THIS recording session
+        currentRecordingID = UUID()
+        coordinator.startRecording(recordingID: currentRecordingID!)
         isRecording = coordinator.isRecording
     }
 
@@ -1131,7 +1146,13 @@ final class VideoRecordingViewModel {
         coordinator.stopRecording()
         isRecording = false
         duration = coordinator.duration
-        showSaveDialog = true
+
+        // Check if auto-stopped (120s limit reached)
+        if coordinator.didAutoStop {
+            showSaveDialog = true  // Still show save dialog on forced stop
+        } else {
+            showSaveDialog = true
+        }
     }
 
     func cancelRecording() {
@@ -1139,24 +1160,28 @@ final class VideoRecordingViewModel {
         isRecording = false
         duration = 0
         error = nil
+        currentRecordingID = nil  // ← Clear UUID after cancel
     }
 
     func saveRecording() async -> Bool {
-        guard let filePath = coordinator.currentFilePath else {
+        guard let fileURL = coordinator.currentFileURL else {
             error = "No recording to save"
             return false
         }
 
         do {
             _ = try await saveUseCase.execute(
-                type: "video",
-                purpose: selectedPurpose.rawValue,
+                recordingType: .video,  // ← RecordingType enum
+                purpose: selectedPurpose,  // ← RecordingPurpose enum
                 duration: duration,
-                filePath: filePath,
-                thumbnailPath: coordinator.currentThumbnailPath,
-                title: title.isEmpty ? nil : title,
+                fileURL: fileURL,  // ← Correct property name
+                thumbnailURL: coordinator.currentThumbnailURL,  // ← Correct property name
+                title: title.isEmpty ? "Video Recording" : title,  // ← Required parameter
                 notes: notes.isEmpty ? nil : notes
             )
+
+            // Clear UUID after successful save
+            currentRecordingID = nil
             return true
         } catch {
             self.error = "Failed to save recording: \(error.localizedDescription)"
@@ -1168,8 +1193,11 @@ final class VideoRecordingViewModel {
 
 **Why This Code:**
 - Identical pattern to AudioRecordingViewModel (consistency)
+- **CRITICAL FIX:** `currentRecordingID` generates fresh UUID per recording (prevents file collisions)
+- `stopRecording()` checks `coordinator.didAutoStop` flag (auto-stop UX)
+- Save uses `recordingType: .video` enum (not String)
+- Save uses `fileURL`/`thumbnailURL` properties (matches baseline)
 - Camera lifecycle management (setup/teardown)
-- Includes thumbnailPath for video
 - Async camera setup for permission handling
 
 ---
