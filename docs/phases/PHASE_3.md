@@ -1212,36 +1212,55 @@ final class VideoRecordingViewModel {
 import SwiftUI
 
 struct RecordingsLibraryView: View {
-    @State private var viewModel: RecordingLibraryViewModel
+    @Environment(DependencyContainer.self) private var container
+    @State private var viewModel: RecordingLibraryViewModel?
     @State private var showRecordingMode = false
+
+    init() {
+        // ViewModel will be created in .task using container factory method
+    }
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Filter Picker
-                Picker("Filter", selection: Binding(
-                    get: { viewModel.selectedFilter },
-                    set: { filter in
-                        Task {
-                            await viewModel.filterChanged(to: filter)
+            Group {
+                if let viewModel = viewModel {
+                    VStack(spacing: 0) {
+                        // Filter Picker
+                        Picker("Filter", selection: Binding(
+                            get: { viewModel.selectedFilter },
+                            set: { filter in
+                                Task {
+                                    await viewModel.filterChanged(to: filter)
+                                }
+                            }
+                        )) {
+                            ForEach(RecordingFilter.allCases, id: \.self) { filter in
+                                Text(filter.displayName).tag(filter)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .padding()
+
+                        // Recordings List
+                        if viewModel.isLoading {
+                            ProgressView("Loading recordings...")
+                                .frame(maxHeight: .infinity)
+                        } else if viewModel.recordings.isEmpty {
+                            emptyState
+                        } else {
+                            recordingsList(viewModel: viewModel)
                         }
                     }
-                )) {
-                    ForEach(RecordingFilter.allCases, id: \.self) { filter in
-                        Text(filter.displayName).tag(filter)
+                    .alert("Error", isPresented: Binding(
+                        get: { viewModel.error != nil },
+                        set: { if !$0 { viewModel.error = nil } }
+                    )) {
+                        Button("OK") { viewModel.error = nil }
+                    } message: {
+                        Text(viewModel.error ?? "")
                     }
-                }
-                .pickerStyle(.segmented)
-                .padding()
-
-                // Recordings List
-                if viewModel.isLoading {
-                    ProgressView("Loading recordings...")
-                        .frame(maxHeight: .infinity)
-                } else if viewModel.recordings.isEmpty {
-                    emptyState
                 } else {
-                    recordingsList
+                    ProgressView("Initializing...")
                 }
             }
             .navigationTitle("Recordings")
@@ -1259,15 +1278,11 @@ struct RecordingsLibraryView: View {
                 RecordingModeView()
             }
             .task {
-                await viewModel.loadRecordings()
-            }
-            .alert("Error", isPresented: Binding(
-                get: { viewModel.error != nil },
-                set: { if !$0 { viewModel.error = nil } }
-            )) {
-                Button("OK") { viewModel.error = nil }
-            } message: {
-                Text(viewModel.error ?? "")
+                // Initialize ViewModel from container
+                if viewModel == nil {
+                    viewModel = container.makeRecordingLibraryViewModel()
+                }
+                await viewModel?.loadRecordings()
             }
         }
     }
@@ -1302,7 +1317,7 @@ struct RecordingsLibraryView: View {
         .frame(maxHeight: .infinity)
     }
 
-    private var recordingsList: some View {
+    private func recordingsList(viewModel: RecordingLibraryViewModel) -> some View {
         List {
             ForEach(viewModel.recordings, id: \.id) { recording in
                 RecordingRow(recording: recording)
@@ -1328,7 +1343,7 @@ struct RecordingRow: View {
 
     var body: some View {
         NavigationLink {
-            if recording.type == "video" {
+            if recording.recordingType == .video {
                 VideoPlayerView(recording: recording)
             } else {
                 AudioPlayerView(recording: recording)
@@ -1336,8 +1351,8 @@ struct RecordingRow: View {
         } label: {
             HStack(spacing: 12) {
                 // Thumbnail or icon
-                if let thumbnailPath = recording.thumbnailPath {
-                    AsyncImage(url: thumbnailURL) { image in
+                if let thumbnailURL = recording.thumbnailURL {
+                    AsyncImage(url: thumbnailFullURL) { image in
                         image
                             .resizable()
                             .scaledToFill()
@@ -1350,7 +1365,7 @@ struct RecordingRow: View {
                     ZStack {
                         RoundedRectangle(cornerRadius: 8)
                             .fill(Color.blue.opacity(0.2))
-                        Image(systemName: recording.type == "video" ? "video.fill" : "waveform")
+                        Image(systemName: recording.recordingType == .video ? "video.fill" : "waveform")
                             .foregroundStyle(.blue)
                     }
                     .frame(width: 60, height: 60)
@@ -1358,13 +1373,13 @@ struct RecordingRow: View {
 
                 // Metadata
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(recording.title ?? "Untitled Recording")
+                    Text(recording.title)  // ← title is required in baseline
                         .font(.headline)
 
                     HStack(spacing: 8) {
                         Label(formatDuration(recording.duration), systemImage: "clock")
                         Label("\(recording.playCount)", systemImage: "play.fill")
-                        Text(recording.purpose.capitalized)
+                        Text(recording.purpose.rawValue.capitalized)  // ← purpose is enum
                     }
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -1375,9 +1390,9 @@ struct RecordingRow: View {
         }
     }
 
-    private var thumbnailURL: URL {
+    private var thumbnailFullURL: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(recording.thumbnailPath ?? "")
+            .appendingPathComponent(recording.thumbnailURL ?? "")
     }
 
     private func formatDuration(_ duration: TimeInterval) -> String {
