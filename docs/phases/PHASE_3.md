@@ -1538,19 +1538,29 @@ import SwiftUI
 
 struct AudioRecordingView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.saveRecordingUseCase) private var saveUseCase
-    @State private var viewModel: AudioRecordingViewModel
-
-    init() {
-        // DI via @Environment happens after init, so we use placeholder
-        _viewModel = State(initialValue: AudioRecordingViewModel(
-            saveUseCase: PlaceholderSaveRecordingUseCase()
-        ))
-    }
+    @Environment(DependencyContainer.self) private var container
+    @State private var viewModel: AudioRecordingViewModel?
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 32) {
+            Group {
+                if let viewModel = viewModel {
+                    audioRecordingContent(viewModel: viewModel)
+                } else {
+                    ProgressView("Initializing...")
+                }
+            }
+            .task {
+                if viewModel == nil {
+                    viewModel = container.makeAudioRecordingViewModel()
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func audioRecordingContent(viewModel: AudioRecordingViewModel) -> some View {
+        VStack(spacing: 32) {
                 // Waveform visualization (placeholder)
                 ZStack {
                     Circle()
@@ -1594,7 +1604,9 @@ struct AudioRecordingView: View {
                         if viewModel.isRecording {
                             viewModel.stopRecording()
                         } else {
-                            viewModel.startRecording()
+                            Task {
+                                await viewModel.startRecording()  // ← Async method
+                            }
                         }
                     } label: {
                         ZStack {
@@ -1649,11 +1661,6 @@ struct AudioRecordingView: View {
             } message: {
                 Text(viewModel.error ?? "")
             }
-            .onAppear {
-                // Inject dependency from environment
-                viewModel = AudioRecordingViewModel(saveUseCase: saveUseCase)
-            }
-        }
     }
 
     private func formatDuration(_ duration: TimeInterval) -> String {
