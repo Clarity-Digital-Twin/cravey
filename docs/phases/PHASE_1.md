@@ -56,18 +56,17 @@
 
 **Goal:** Complete data model schema, set up empty UI shell
 
-#### Files to Create/Modify (3 files)
+#### Files to Create/Modify (2 files)
 
-1. **Create `Data/Models/UsageModel.swift`** (NEW)
+1. **Create `Data/Models/UsageModel.swift`** (NEW - data model only, repository in Phase 2)
 2. **Modify `Data/Storage/ModelContainerSetup.swift`** (add UsageModel to schema)
-3. **Modify `App/DependencyContainer.swift`** (wire UsageRepository stub)
 
 #### Files to Create (Tab Bar Shell) (3 files)
 
-4. **Create `Presentation/Views/Home/HomeView.swift`** (empty state)
-5. **Create `Presentation/Views/Dashboard/DashboardView.swift`** (empty state)
-6. **Create `Presentation/Views/Settings/SettingsView.swift`** (empty state)
-7. **Modify `App/CraveyApp.swift`** (wire TabView)
+3. **Create `Presentation/Views/Home/HomeView.swift`** (empty state)
+4. **Create `Presentation/Views/Dashboard/DashboardView.swift`** (empty state)
+5. **Create `Presentation/Views/Settings/SettingsView.swift`** (empty state)
+6. **Modify `App/CraveyApp.swift`** (wire TabView)
 
 ---
 
@@ -126,30 +125,33 @@
 
 **Goal:** Wire everything together, validate <5 sec log time
 
-#### Tests to Write (14 tests total)
+#### Tests to Write (9 tests total)
 
-**Unit Tests (10 tests):**
-- `IntensitySliderTests.swift` (2 tests)
-- `ChipSelectorTests.swift` (2 tests)
-- `CravingLogFormViewModelTests.swift` (3 tests)
-- `CravingListViewModelTests.swift` (3 tests)
+**Unit Tests (6 tests):**
+- `LogCravingUseCaseTests.swift` (2 tests - already exists in baseline)
+- `CravingLogViewModelTests.swift` (2 tests - already exists in baseline)
+- `IntensitySliderTests.swift` (2 tests - new in Phase 1)
 
-**Integration Tests (3 tests):**
-- `CravingLogIntegrationTests.swift` (3 tests - form → VM → UC → Repo)
+**Integration Tests (2 tests):**
+- `CravingLogIntegrationTests.swift` (2 tests - form → VM → UC → Repo)
+  - Test 1: End-to-end craving log with all fields
+  - Test 2: Fetch and display cravings from SwiftData
 
 **UI Tests (1 test):**
 - `CravingLogUITests.swift` (1 test - <5 sec validation)
 
+**Note:** Component tests for ChipSelector and other reusable components will be added in later phases as those components evolve. List refresh behavior is validated via manual testing checklist (Step 14).
+
 ---
 
-## 📦 Complete File Checklist (15 files)
+## 📦 Complete File Checklist (17 files total)
 
-### Foundation (5 files)
-- [ ] `Data/Models/UsageModel.swift` (CREATE)
+### Foundation (2 files)
+- [ ] `Data/Models/UsageModel.swift` (CREATE - data model only, repository in Phase 2)
 - [ ] `Data/Storage/ModelContainerSetup.swift` (MODIFY - add UsageModel to schema)
-- [ ] `Domain/Repositories/UsageRepositoryProtocol.swift` (CREATE - stub protocol)
-- [ ] `App/DependencyContainer.swift` (MODIFY - add usageRepository property + stub)
-- [ ] `App/CraveyApp.swift` (MODIFY - add TabView)
+
+### App Setup (1 file)
+- [ ] `App/CraveyApp.swift` (MODIFY - add TabView with environment injection)
 
 ### Tab Bar Shell (3 files)
 - [ ] `Presentation/Views/Home/HomeView.swift` (CREATE)
@@ -163,9 +165,15 @@
 - [ ] `Presentation/Views/Components/TriggerOptions.swift` (CREATE)
 - [ ] `Presentation/Views/Components/LocationOptions.swift` (CREATE)
 
-### Craving Views (2 files)
+### Craving Views (3 files)
 - [ ] `Presentation/Views/Craving/CravingLogForm.swift` (CREATE)
 - [ ] `Presentation/Views/Craving/CravingListView.swift` (CREATE)
+- [ ] `Presentation/ViewModels/CravingListViewModel.swift` (CREATE)
+
+### Tests (2 files - new in Phase 1, baseline already has 4 test files)
+- [ ] `CraveyTests/Presentation/Components/IntensitySliderTests.swift` (CREATE - 2 tests)
+- [ ] `CraveyTests/Integration/CravingLogIntegrationTests.swift` (CREATE - 2 tests)
+- [ ] `CraveyUITests/CravingLogUITests.swift` (CREATE - 1 test)
 
 ---
 
@@ -371,79 +379,9 @@ xcodebuild -scheme Cravey \
 
 ---
 
-#### Step 3: Wire UsageRepository stub in DependencyContainer
-
-**Note:** We'll create the stub protocol and implementation for Phase 2 compatibility. Full implementation happens in Phase 2.
-
-**Create:** `Cravey/Domain/Repositories/UsageRepositoryProtocol.swift`
-
-```swift
-// Cravey/Domain/Repositories/UsageRepositoryProtocol.swift
-
-import Foundation
-
-protocol UsageRepositoryProtocol: Sendable {
-    func save(_ usage: UsageEntity) async throws
-    func fetchAll() async throws -> [UsageEntity]
-    func fetch(since date: Date) async throws -> [UsageEntity]
-    func deleteAll() async throws
-}
-```
-
-**Modify:** `Cravey/App/DependencyContainer.swift`
-
-**Add property declaration** (after `messageRepository`, ~line 19):
-
-```swift
-private(set) var usageRepository: UsageRepositoryProtocol
-```
-
-**Add stub initialization** (in init method, after `messageRepo`, ~line 54):
-
-```swift
-// Usage Repository (stub for Phase 2)
-let usageRepo = StubUsageRepository()
-self.usageRepository = usageRepo
-```
-
-**Add stub implementation** (at bottom of file, after `StubMessageRepository`):
-
-```swift
-/// Stub implementation until UsageRepository is fully implemented
-private struct StubUsageRepository: UsageRepositoryProtocol {
-    func save(_ usage: UsageEntity) async throws {
-        // TODO: Implement in Phase 2
-    }
-
-    func fetchAll() async throws -> [UsageEntity] {
-        return []
-    }
-
-    func fetch(since date: Date) async throws -> [UsageEntity] {
-        return []
-    }
-
-    func deleteAll() async throws {
-        // TODO: Implement in Phase 2
-    }
-}
-```
-
-**Verify:** Build succeeds
-
-```bash
-xcodebuild -scheme Cravey \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
-  build | xcbeautify
-```
-
-**Commit:** `[Phase 1] Wire UsageRepository stub (Phase 2 implementation)`
-
----
-
 ### Day 1 Afternoon: Tab Bar Shell
 
-#### Step 4: Create Empty Tab Bar
+#### Step 3: Create Empty Tab Bar
 
 **Goal:** App launches with 3 tabs (Home, Dashboard, Settings)
 
@@ -608,7 +546,7 @@ struct CraveyApp: App {
 
 ### Day 2: Components (TDD Approach)
 
-#### Step 5: Create IntensitySlider.swift
+#### Step 4: Create IntensitySlider.swift
 
 **Test First (RED):** Component tests are optional for SwiftUI views, but we'll write one for logic
 
@@ -718,7 +656,7 @@ xcodebuild test -scheme Cravey \
 
 ---
 
-#### Step 6: Create TimestampPicker.swift
+#### Step 5: Create TimestampPicker.swift
 
 **Implementation (no test needed - simple wrapper):**
 
@@ -751,7 +689,7 @@ struct TimestampPicker: View {
 
 ---
 
-#### Step 7: Create ChipSelector.swift
+#### Step 6: Create ChipSelector.swift
 
 **Implementation:**
 
@@ -888,7 +826,7 @@ extension [Int] {
 
 ---
 
-#### Step 8: Create Option Constants
+#### Step 7: Create Option Constants
 
 **Create:** `Cravey/Presentation/Views/Components/TriggerOptions.swift`
 
@@ -938,7 +876,7 @@ enum LocationOptions {
 
 ### Day 3: Craving Logging View
 
-#### Step 9: Create CravingLogForm.swift
+#### Step 8: Create CravingLogForm.swift
 
 **Test First (RED):** UI test (end-to-end)
 
@@ -1150,7 +1088,7 @@ struct HomeView: View {
 
 ---
 
-#### Step 10: Create CravingListView.swift
+#### Step 9: Create CravingListView.swift
 
 **Goal:** Display all cravings in HomeView
 
@@ -1308,8 +1246,8 @@ struct EmptyStatePlaceholder: View {
 import SwiftUI
 
 struct HomeView: View {
+    @Environment(DependencyContainer.self) private var container
     @State private var showCravingLogSheet = false
-    @State private var dependencyContainer = DependencyContainer()
 
     var body: some View {
         NavigationStack {
@@ -1317,7 +1255,7 @@ struct HomeView: View {
                 // Craving List
                 CravingListView(
                     viewModel: CravingListViewModel(
-                        fetchCravingsUseCase: dependencyContainer.fetchCravingsUseCase
+                        fetchCravingsUseCase: container.fetchCravingsUseCase
                     )
                 )
             }
@@ -1338,9 +1276,7 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showCravingLogSheet) {
-                let viewModel = CravingLogViewModel(
-                    logCravingUseCase: dependencyContainer.logCravingUseCase
-                )
+                let viewModel = container.makeCravingLogViewModel()
                 CravingLogForm(viewModel: viewModel)
             }
         }
@@ -1361,7 +1297,7 @@ struct HomeView: View {
 
 ### Day 4: Integration Testing
 
-#### Step 11: Write Integration Tests
+#### Step 10: Write Integration Tests
 
 **Create Test:** `CraveyTests/Integration/CravingLogIntegrationTests.swift`
 
@@ -1450,12 +1386,8 @@ struct CravingLogIntegrationTests {
         #expect(viewModel.cravings[0].triggers == ["Stressed"])
     }
 
-    @Test("Should refresh list after logging new craving")
-    func testListRefreshAfterLog() async throws {
-        // TODO: Implement in Phase 1, Day 5
-        // This test validates that CravingListView auto-refreshes
-        // when a new craving is logged (via @Environment refresh)
-    }
+    // Note: List refresh behavior tested manually in Step 14
+    // Auto-refresh via .id(refreshID) binding validated in manual checklist
 }
 ```
 
@@ -1475,7 +1407,7 @@ xcodebuild test -scheme Cravey \
 
 ### Day 5: Polish + Validation
 
-#### Step 12: Implement List Refresh
+#### Step 11: Implement List Refresh
 
 **Problem:** When user logs a craving, CravingListView doesn't auto-refresh.
 
@@ -1529,7 +1461,7 @@ CravingListView(
 
 ---
 
-#### Step 13: Run Full Test Suite
+#### Step 12: Run Full Test Suite
 
 **Run All Tests:**
 
@@ -1539,17 +1471,17 @@ xcodebuild test -scheme Cravey \
 ```
 
 **Expected Results:**
-- ✅ LogCravingUseCaseTests: 2/2 passing
-- ✅ CravingLogViewModelTests: 2/2 passing
-- ✅ IntensitySliderTests: 2/2 passing
-- ✅ CravingLogIntegrationTests: 3/3 passing
-- ✅ CravingLogUITests: 1/1 passing
+- ✅ LogCravingUseCaseTests: 2/2 passing (baseline)
+- ✅ CravingLogViewModelTests: 2/2 passing (baseline)
+- ✅ IntensitySliderTests: 2/2 passing (Phase 1)
+- ✅ CravingLogIntegrationTests: 2/2 passing (Phase 1)
+- ✅ CravingLogUITests: 1/1 passing (Phase 1)
 
-**Total:** 14/14 tests passing (10 unit + 3 integration + 1 UI)
+**Total:** 9/9 tests passing (6 unit + 2 integration + 1 UI)
 
 ---
 
-#### Step 14: Manual Testing Checklist
+#### Step 13: Manual Testing Checklist
 
 - [ ] App launches without crash
 - [ ] Tab bar shows 3 tabs (Home, Dashboard, Settings)
@@ -1571,7 +1503,7 @@ xcodebuild test -scheme Cravey \
 
 ---
 
-#### Step 15: Performance Validation
+#### Step 14: Performance Validation
 
 **Goal:** Verify <5 sec log time
 
@@ -1589,7 +1521,7 @@ xcodebuild test -scheme Cravey \
 
 ---
 
-#### Step 16: Code Quality Check
+#### Step 15: Code Quality Check
 
 **Run SwiftLint:**
 
@@ -1611,12 +1543,12 @@ swiftformat .
 
 ## ✅ Phase 1 Completion Checklist
 
-- [ ] All 15 files created/modified (5 foundation + 3 tabs + 5 components + 2 views)
+- [ ] All 17 files created/modified (2 foundation + 1 app + 3 tabs + 5 components + 3 views/VMs + 3 test files)
 - [ ] Build succeeds with zero errors
-- [ ] All 14 tests passing (10 unit + 3 integration + 1 UI)
+- [ ] All 9 tests passing (6 unit + 2 integration + 1 UI)
 - [ ] Manual testing complete (15/15 checklist items)
 - [ ] Performance validated (<5 sec craving log)
-- [ ] SwiftLint violations <10 warnings
+- [ ] SwiftLint violations ≤13 warnings (13 TODOs for Phase 2+ features are acceptable)
 - [ ] Code formatted (swiftformat)
 - [ ] Git commits pushed (feature/phase-1 branch)
 - [ ] Phase deliverable shippable (users can log cravings)
@@ -1628,14 +1560,16 @@ swiftformat .
 
 ## 🚀 What's Next: Phase 2
 
-**Phase 2: Usage Logging** begins with:
-1. Create UsageEntity (copy pattern from CravingEntity)
-2. Create LogUsageUseCase (copy pattern from LogCravingUseCase)
-3. Create PickerWheelInput component (ROA-aware amounts)
-4. Create UsageLogForm (copy pattern from CravingLogForm)
-5. Wire up in HomeView
+**Phase 2: Usage Logging (Week 2)** begins with:
+1. Create UsageEntity (pure Swift, copy pattern from CravingEntity)
+2. Create UsageRepositoryProtocol + UsageRepository (replaces what was skipped in Phase 1)
+3. Create LogUsageUseCase + FetchUsageUseCase (copy patterns from Craving use cases)
+4. Create ROAPickerInput component (ROA-aware amounts - Bowls, Vape, Edible, etc.)
+5. Create UsageLogForm + UsageListView (copy patterns from CravingLogForm/CravingListView)
+6. Wire up "Log Usage" menu item in HomeView
+7. Write 14 tests (10 unit + 2 integration + 2 UI)
 
-**See:** [PHASE_2.md](./PHASE_2.md) (will be written after Phase 1 completion)
+**See:** [PHASE_2.md](./PHASE_2.md)
 
 ---
 
