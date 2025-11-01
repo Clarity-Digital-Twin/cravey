@@ -134,7 +134,7 @@
 
 **File:** `Cravey/Domain/UseCases/SaveRecordingUseCase.swift`
 
-**Purpose:** Business logic for saving recording metadata + file path validation.
+**Purpose:** Business logic for saving recording metadata + file URL validation.
 
 ```swift
 import Foundation
@@ -142,12 +142,12 @@ import Foundation
 /// Use case for saving a recording with metadata validation
 protocol SaveRecordingUseCase: Sendable {
     func execute(
-        type: String,
-        purpose: String,
+        recordingType: RecordingType,
+        purpose: RecordingPurpose,
         duration: TimeInterval,
-        filePath: String,
-        thumbnailPath: String?,
-        title: String?,
+        fileURL: String,
+        thumbnailURL: String?,
+        title: String,
         notes: String?
     ) async throws -> RecordingEntity
 }
@@ -161,43 +161,32 @@ actor DefaultSaveRecordingUseCase: SaveRecordingUseCase {
     }
 
     func execute(
-        type: String,
-        purpose: String,
+        recordingType: RecordingType,
+        purpose: RecordingPurpose,
         duration: TimeInterval,
-        filePath: String,
-        thumbnailPath: String?,
-        title: String?,
+        fileURL: String,
+        thumbnailURL: String?,
+        title: String,
         notes: String?
     ) async throws -> RecordingEntity {
-        // Validation: type must be "audio" or "video"
-        guard type == "audio" || type == "video" else {
-            throw RecordingError.invalidType
-        }
-
         // Validation: duration must be ≤120 seconds
         guard duration > 0 && duration <= 120 else {
             throw RecordingError.invalidDuration
         }
 
-        // Validation: purpose must be valid category
-        let validPurposes = ["motivational", "milestone", "reflection", "craving"]
-        guard validPurposes.contains(purpose) else {
-            throw RecordingError.invalidPurpose
-        }
-
-        // Create entity
+        // Create entity (enums are already validated by type system)
         let recording = RecordingEntity(
             id: UUID(),
-            timestamp: Date(),
-            type: type,
+            createdAt: Date(),
+            recordingType: recordingType,
             purpose: purpose,
-            duration: duration,
-            filePath: filePath,
-            thumbnailPath: thumbnailPath,
             title: title,
+            fileURL: fileURL,
+            duration: duration,
             notes: notes,
-            playCount: 0,
-            lastPlayedAt: nil
+            thumbnailURL: thumbnailURL,
+            lastPlayedAt: nil,
+            playCount: 0
         )
 
         // Save to repository
@@ -208,18 +197,18 @@ actor DefaultSaveRecordingUseCase: SaveRecordingUseCase {
 }
 
 enum RecordingError: Error {
-    case invalidType
     case invalidDuration
-    case invalidPurpose
     case fileNotFound
     case saveFailed
+    case permissionDenied
 }
 ```
 
 **Why This Code:**
-- Type validation prevents invalid "audio"/"video" strings
+- Uses `RecordingType` and `RecordingPurpose` enums (type-safe, matches baseline)
 - Duration validation enforces 2-minute max (MVP requirement)
-- Purpose validation ensures category consistency
+- Property names match `RecordingEntity.swift:8-14` (fileURL, thumbnailURL, recordingType)
+- Enum validation handled by Swift's type system (no manual string checks)
 - Returns RecordingEntity for ViewModel use
 
 ---
@@ -233,7 +222,7 @@ import Foundation
 
 /// Use case for fetching recordings with optional filters
 protocol FetchRecordingsUseCase: Sendable {
-    func execute(type: String?) async throws -> [RecordingEntity]
+    func execute(recordingType: RecordingType?) async throws -> [RecordingEntity]
     func fetchTopPlayed(limit: Int) async throws -> [RecordingEntity]
 }
 
@@ -245,8 +234,8 @@ actor DefaultFetchRecordingsUseCase: FetchRecordingsUseCase {
     }
 
     /// Fetch all recordings, optionally filtered by type
-    func execute(type: String? = nil) async throws -> [RecordingEntity] {
-        if let type = type {
+    func execute(recordingType: RecordingType? = nil) async throws -> [RecordingEntity] {
+        if let type = recordingType {
             return try await repository.fetch(byType: type)
         } else {
             return try await repository.fetchAll()
@@ -264,9 +253,42 @@ actor DefaultFetchRecordingsUseCase: FetchRecordingsUseCase {
 ```
 
 **Why This Code:**
-- `execute(type:)` enables filtering by audio/video
+- Uses `RecordingType` enum (not String) for type-safe filtering
+- `execute(recordingType:)` enables filtering by audio/video
 - `fetchTopPlayed(limit:)` powers Quick Play section (Home tab)
 - Sorting by playCount prioritizes user's favorite recordings
+
+**Note:** This requires adding `fetch(byType:)` to `RecordingRepositoryProtocol` (see Step 2a below).
+
+---
+
+### Step 2a: Extend RecordingRepositoryProtocol (Domain Layer)
+
+**File:** `Cravey/Domain/Repositories/RecordingRepositoryProtocol.swift` (MODIFY)
+
+**Add this method to the existing protocol:**
+
+```swift
+/// Fetch recordings by type (audio or video)
+func fetch(byType recordingType: RecordingType) async throws -> [RecordingEntity]
+```
+
+**Why:** The baseline protocol has `fetch(byPurpose:)` but the UI needs to filter by type (All/Videos/Audio). This extends the protocol to support both filtering strategies.
+
+**Updated Protocol (after modification):**
+
+```swift
+import Foundation
+
+protocol RecordingRepositoryProtocol: Sendable {
+    func save(_ recording: RecordingEntity) async throws
+    func fetchAll() async throws -> [RecordingEntity]
+    func fetch(byPurpose purpose: RecordingPurpose) async throws -> [RecordingEntity]
+    func fetch(byType recordingType: RecordingType) async throws -> [RecordingEntity]  // ← NEW
+    func delete(id: UUID) async throws
+    func update(_ recording: RecordingEntity) async throws
+}
+```
 
 ---
 
@@ -290,10 +312,8 @@ actor DefaultPlayRecordingUseCase: PlayRecordingUseCase {
     }
 
     func execute(recording: RecordingEntity) async throws -> RecordingEntity {
-        // Increment play count and update timestamp
-        var updatedRecording = recording
-        updatedRecording.playCount += 1
-        updatedRecording.lastPlayedAt = Date()
+        // Increment play count and update timestamp (using RecordingEntity business logic)
+        let updatedRecording = recording.incrementPlayCount()
 
         // Save updated entity
         try await repository.update(updatedRecording)
@@ -304,6 +324,7 @@ actor DefaultPlayRecordingUseCase: PlayRecordingUseCase {
 ```
 
 **Why This Code:**
+- Uses `RecordingEntity.incrementPlayCount()` method (RecordingEntity.swift:72) for business logic
 - Tracks usage analytics (which recordings help most)
 - Powers Quick Play ranking (most-played recordings shown first)
 - Updates lastPlayedAt for future "recently played" features
@@ -319,7 +340,7 @@ import Foundation
 
 /// Use case for deleting recording (file + database entry)
 protocol DeleteRecordingUseCase: Sendable {
-    func execute(recording: RecordingEntity) async throws
+    func execute(id: UUID) async throws
 }
 
 actor DefaultDeleteRecordingUseCase: DeleteRecordingUseCase {
@@ -329,15 +350,16 @@ actor DefaultDeleteRecordingUseCase: DeleteRecordingUseCase {
         self.repository = repository
     }
 
-    func execute(recording: RecordingEntity) async throws {
+    func execute(id: UUID) async throws {
         // Delete from repository (handles file deletion + DB removal)
-        try await repository.delete(recording)
+        try await repository.delete(id: id)
     }
 }
 ```
 
 **Why This Code:**
 - Single responsibility: coordinate deletion
+- Uses `delete(id:)` signature from RecordingRepositoryProtocol.swift:16
 - Repository handles both file I/O and database operations
 - Atomic delete (both file and DB entry removed together)
 
@@ -373,7 +395,7 @@ final class RecordingRepository: RecordingRepositoryProtocol {
 
     func fetchAll() async throws -> [RecordingEntity] {
         let descriptor = FetchDescriptor<RecordingModel>(
-            sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
         let models = try modelContext.fetch(descriptor)
         return models.map(RecordingMapper.toEntity)
@@ -381,10 +403,21 @@ final class RecordingRepository: RecordingRepositoryProtocol {
 
     // MARK: - Fetch by Type
 
-    func fetch(byType type: String) async throws -> [RecordingEntity] {
+    func fetch(byType recordingType: RecordingType) async throws -> [RecordingEntity] {
         let descriptor = FetchDescriptor<RecordingModel>(
-            predicate: #Predicate { $0.type == type },
-            sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
+            predicate: #Predicate { $0.recordingType == recordingType.rawValue },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        let models = try modelContext.fetch(descriptor)
+        return models.map(RecordingMapper.toEntity)
+    }
+
+    // MARK: - Fetch by Purpose (existing baseline method)
+
+    func fetch(byPurpose purpose: RecordingPurpose) async throws -> [RecordingEntity] {
+        let descriptor = FetchDescriptor<RecordingModel>(
+            predicate: #Predicate { $0.purpose == purpose.rawValue },
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
         let models = try modelContext.fetch(descriptor)
         return models.map(RecordingMapper.toEntity)
@@ -406,28 +439,28 @@ final class RecordingRepository: RecordingRepositoryProtocol {
         existingModel.lastPlayedAt = recording.lastPlayedAt
         existingModel.title = recording.title
         existingModel.notes = recording.notes
-        existingModel.modifiedAt = Date()
 
         try modelContext.save()
     }
 
     // MARK: - Delete
 
-    func delete(_ recording: RecordingEntity) async throws {
-        // 1. Delete file from disk
-        try fileManager.deleteRecording(
-            filePath: recording.filePath,
-            thumbnailPath: recording.thumbnailPath
-        )
-
-        // 2. Delete from database
+    func delete(id: UUID) async throws {
+        // 1. Fetch the recording to get file paths
         let descriptor = FetchDescriptor<RecordingModel>(
-            predicate: #Predicate { $0.id == recording.id }
+            predicate: #Predicate { $0.id == id }
         )
         guard let model = try modelContext.fetch(descriptor).first else {
             throw RecordingError.fileNotFound
         }
 
+        // 2. Delete files from disk
+        try fileManager.deleteRecording(
+            fileURL: model.fileURL,
+            thumbnailURL: model.thumbnailURL
+        )
+
+        // 3. Delete from database
         modelContext.delete(model)
         try modelContext.save()
     }
@@ -436,9 +469,13 @@ final class RecordingRepository: RecordingRepositoryProtocol {
 
 **Why This Code:**
 - `nonisolated(unsafe)` for Swift 6 ModelContext access
+- Uses `createdAt` property (RecordingModel.swift:9) not `timestamp`
+- `fetch(byType:)` uses `RecordingType` enum and matches on `recordingType` property
+- `fetch(byPurpose:)` included (baseline protocol method)
+- `delete(id:)` signature matches RecordingRepositoryProtocol.swift:16
+- Uses `fileURL` and `thumbnailURL` properties (RecordingEntity.swift:12,14)
 - FileStorageManager handles file I/O (separation of concerns)
-- `update()` only modifies mutable fields (playCount, lastPlayedAt, title, notes)
-- `delete()` removes both file AND database entry (atomic operation)
+- Atomic delete (file + DB) with proper error handling
 
 ---
 
