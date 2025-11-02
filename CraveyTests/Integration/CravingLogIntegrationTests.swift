@@ -83,4 +83,38 @@ struct CravingLogIntegrationTests {
         #expect(viewModel.cravings[0].intensity == 5)
         #expect(viewModel.cravings[0].triggers == ["Stressed"])
     }
+
+    @Test("Should log craving within 5 seconds (performance requirement)")
+    @MainActor
+    func performanceLogCravingUnder5Seconds() async throws {
+        // Setup: In-memory SwiftData container
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try ModelContainer(
+            for: CravingModel.self,
+            configurations: config
+        )
+        let context = ModelContext(container)
+
+        // Setup: Real dependencies (no mocks)
+        let repository = CravingRepository(modelContext: context)
+        let useCase = DefaultLogCravingUseCase(repository: repository)
+        let viewModel = CravingLogViewModel(logCravingUseCase: useCase)
+
+        // Given: User fills form
+        viewModel.intensity = 7
+        viewModel.selectedTriggers = Set(["Anxious", "Bored"])
+        viewModel.notes = "Performance test"
+        viewModel.location = "Home"
+        viewModel.wasManagedSuccessfully = false
+
+        // Measure: Time the save operation
+        let startTime = Date()
+        await viewModel.logCraving()
+        let duration = Date().timeIntervalSince(startTime)
+
+        // Then: Craving saved successfully AND within 5 seconds
+        #expect(viewModel.errorMessage == nil)
+        #expect(viewModel.showSuccessAlert == true)
+        #expect(duration < 5.0, "Log craving took \(duration)s, should be <5s")
+    }
 }
