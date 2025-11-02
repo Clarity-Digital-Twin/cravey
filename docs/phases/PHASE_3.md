@@ -755,20 +755,32 @@ import SwiftUI
 /// Settings screen with data management options
 struct SettingsView: View {
     @Environment(DependencyContainer.self) private var container
-    @State private var viewModel: SettingsViewModel
+    @State private var viewModel: SettingsViewModel?
     @State private var showExportSheet = false
-
-    init() {
-        // ViewModel initialized in onAppear with DI
-        _viewModel = State(wrappedValue: SettingsViewModel(
-            exportDataUseCase: MockExportDataUseCase(),
-            deleteAllDataUseCase: MockDeleteAllDataUseCase()
-        ))
-    }
 
     var body: some View {
         NavigationStack {
-            List {
+            Group {
+                if let viewModel = viewModel {
+                    settingsContent(viewModel: viewModel)
+                } else {
+                    ProgressView("Loading...")
+                }
+            }
+            .task {
+                if viewModel == nil {
+                    viewModel = SettingsViewModel(
+                        exportDataUseCase: container.exportDataUseCase,
+                        deleteAllDataUseCase: container.deleteAllDataUseCase
+                    )
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func settingsContent(viewModel: SettingsViewModel) -> some View {
+        List {
                 // Data Management Section
                 Section {
                     // Export data button
@@ -815,55 +827,41 @@ struct SettingsView: View {
                     Text("About")
                 }
             }
-            .navigationTitle("Settings")
-            .sheet(isPresented: $showExportSheet) {
+        .navigationTitle("Settings")
+        .sheet(isPresented: $showExportSheet) {
+            if let viewModel = viewModel {
                 ExportDataView(viewModel: viewModel)
             }
-            .confirmationDialog(
-                "Delete All Data",
-                isPresented: $viewModel.showDeleteConfirmation,
-                titleVisibility: .visible
-            ) {
-                Button("Delete All Data", role: .destructive) {
-                    Task {
-                        await viewModel.deleteAllData()
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("This will permanently delete all cravings, usage logs, and recordings. This cannot be undone.")
-            }
-            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-                Button("OK") {
-                    viewModel.dismissError()
-                }
-            } message: {
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
+        }
+        .confirmationDialog(
+            "Delete All Data",
+            isPresented: Binding(
+                get: { viewModel.showDeleteConfirmation },
+                set: { _ in }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Delete All Data", role: .destructive) {
+                Task {
+                    await viewModel.deleteAllData()
                 }
             }
-            .onAppear {
-                // Re-initialize ViewModel with real dependencies from DI
-                viewModel = SettingsViewModel(
-                    exportDataUseCase: container.exportDataUseCase,
-                    deleteAllDataUseCase: container.deleteAllDataUseCase
-                )
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This will permanently delete all cravings, usage logs, and recordings. This cannot be undone.")
+        }
+        .alert("Error", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { _ in }
+        )) {
+            Button("OK") {
+                viewModel.dismissError()
+            }
+        } message: {
+            if let errorMessage = viewModel.errorMessage {
+                Text(errorMessage)
             }
         }
-    }
-}
-
-// Mock use cases for preview
-actor MockExportDataUseCase: ExportDataUseCase {
-    func execute(format: ExportFormat) async throws -> URL {
-        try await Task.sleep(for: .seconds(1))
-        return FileManager.default.temporaryDirectory.appendingPathComponent("preview_export.\(format.rawValue)")
-    }
-}
-
-actor MockDeleteAllDataUseCase: DeleteAllDataUseCase {
-    func execute() async throws {
-        try await Task.sleep(for: .seconds(1))
     }
 }
 
@@ -874,13 +872,15 @@ actor MockDeleteAllDataUseCase: DeleteAllDataUseCase {
 ```
 
 **Why This Code:**
+- **Optional ViewModel pattern** - Matches PHASE_4/5 pattern, handles async initialization
+- **@ViewBuilder content extraction** - Separates loading state from content
 - **List-based settings UI** - Standard iOS pattern
 - **Destructive action confirmation** - `.confirmationDialog` for delete (iOS 15+)
 - **Error handling UI** - `.alert` for error messages
 - **Loading states** - Disables buttons during operations
 - **Sheet presentation** - `ExportDataView` for format selection
-- **DI via @Environment** - Gets dependencies from container
-- **Preview mocks** - Mock use cases for Xcode Previews
+- **DI via @Environment** - Gets use cases from container properties
+- **`.task` initialization** - Clean DI without `.onAppear` hack
 
 **Dependencies Required:**
 - ✅ `SettingsViewModel` - Created in Step 5
