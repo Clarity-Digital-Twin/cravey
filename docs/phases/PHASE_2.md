@@ -20,6 +20,46 @@
 
 ---
 
+## 📚 NEW: Sub-Phase Breakdown (Lessons from Phase 1)
+
+**Problem:** Phase 1 required 3 convergence passes because we implemented code before validating specs. This caused rework and conflicting documentation.
+
+**Solution:** Phase 2 is broken into **3 smaller sub-phases** with **spec-first validation** to avoid rework:
+
+### [**PHASE_2A: Data Foundation**](./PHASE_2A.md) (Day 1 - Domain + Data layers only)
+- **Goal:** Validate data models + repositories against specs BEFORE building UI
+- **Files:** UsageEntity, UsageRepositoryProtocol, Use Cases, UsageMapper, UsageRepository
+- **Checkpoint:** 6 integration tests pass → data layer is spec-compliant
+- **No UI work** - pure domain/data validation
+
+### [**PHASE_2B: ROA Picker Component**](./PHASE_2B.md) (Half day - Component only)
+- **Goal:** Validate complex ROA picker in isolation BEFORE integrating into form
+- **Files:** ROAPickerInput component + tests
+- **Checkpoint:** 5 component tests pass + all 4 previews validated → picker works for all 6 ROAs
+- **No form work** - just the picker component
+
+### [**PHASE_2C: Form & Integration**](./PHASE_2C.md) (Days 2-3 - ViewModels + Views + Integration)
+- **Goal:** Assemble complete feature using validated components
+- **Files:** UsageLogViewModel, UsageLogForm, UsageListView, HomeView integration
+- **Checkpoint:** 8 tests pass + <10 sec performance validated → feature complete
+- **Full integration** - everything wired together
+
+**Why This Approach Works:**
+- ✅ Data layer validated BEFORE UI (no surprises during integration)
+- ✅ Complex components validated in isolation (easier to debug)
+- ✅ Smaller, focused tasks (less cognitive load)
+- ✅ Clear checkpoints with tests (know when to move forward)
+- ✅ Spec references upfront (avoid drift)
+
+**How to Use:**
+1. Start with [PHASE_2A.md](./PHASE_2A.md) - implement data layer + run integration tests
+2. Move to [PHASE_2B.md](./PHASE_2B.md) - build ROA picker + run component tests
+3. Finish with [PHASE_2C.md](./PHASE_2C.md) - assemble full feature + run end-to-end tests
+
+**This Document (PHASE_2.md):** Kept for reference, contains full implementation details. Use sub-phases (2A/2B/2C) for actual implementation.
+
+---
+
 ## 📊 What's Already Done (From Phase 1)
 
 ✅ **Data Layer:**
