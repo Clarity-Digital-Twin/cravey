@@ -60,25 +60,26 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 
 ### Weeks 3-4: Onboarding + Data Management ⏱️ 2 weeks
 **Dependencies:** Weeks 1-2 (craving + usage logging complete)
-**Shippable:** Users can onboard, export/delete data, navigate enhanced home screen
-**Features:** Onboarding, Data Export, Data Deletion, Enhanced Home Tab
-**Status:** 📝 Documentation pending (will be created after Week 2 completion)
+**Shippable:** Users can onboard, export/delete data, manage app settings
+**Features:** Feature 0 (Onboarding) + Feature 5 (Data Management)
+**Status:** ✅ **Documented** (PHASE_3.md)
 
 **Key Deliverables:**
-- WelcomeView + TourView (onboarding flow)
+- WelcomeView + TourView (onboarding flow in <60 seconds)
 - ExportDataUseCase (CSV/JSON generation)
 - DeleteAllDataUseCase (atomic deletion)
 - SettingsView with export/delete flows
-- Tab bar navigation polish
+- Tab bar with Settings tab
+
+**Note:** See [PHASE_3.md](./PHASE_3.md) for detailed Weeks 3-4 implementation guide.
 
 ---
 
-### Weeks 5-6: Recordings ⏱️ 2 weeks (Weeks 5-6 of 16-week plan)
+### Weeks 5-6: Recordings ⏱️ 2 weeks
 **Dependencies:** Weeks 1-4 (craving + usage logging, onboarding, data management)
 **Shippable:** Users can record motivational content (audio + video) and play it back during cravings
 **Features:** Feature 3 (Pre-Recorded Motivational Content - Recordings)
-**Files Created:** 18 files (4 domain + 1 data + 2 coordinators + 3 ViewModels + 7 views + 1 modified)
-**Tests:** 10 unit tests, 4 integration tests, 2 UI tests (16 total)
+**Status:** ✅ **Documented** (PHASE_4.md)
 
 **Key Deliverables:**
 - AudioRecordingCoordinator (AVAudioRecorder with 120-sec auto-stop)
@@ -90,15 +91,15 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 - Swipe-to-delete with atomic file deletion
 - Purpose categorization (motivational, milestone, reflection, craving)
 
-**Note:** See [PHASE_3.md](./PHASE_3.md) for detailed Weeks 5-6 implementation guide.
+**Note:** See [PHASE_4.md](./PHASE_4.md) for detailed Weeks 5-6 implementation guide.
 
 ---
 
-### Weeks 7-8: Dashboard ⏱️ 2 weeks (Weeks 7-8 of 16-week plan)
-**Dependencies:** Weeks 1-6 (craving + usage logging, recordings)
-**Shippable:** Users can visualize progress with 11 metric cards and date range filters
+### Weeks 7-8: Dashboard ⏱️ 2 weeks
+**Dependencies:** Weeks 1-2 (craving + usage logging) - Recordings optional
+**Shippable:** Users can visualize progress with 5 MVP metric cards and date range filters
 **Features:** Feature 4 (Dashboard with Swift Charts)
-**Status:** 📝 Documentation pending (will be created after Weeks 5-6 completion)
+**Status:** ✅ **Documented** (PHASE_5.md)
 
 **Key Deliverables:**
 - FetchDashboardDataUseCase (aggregates craving + usage data)
@@ -155,21 +156,23 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 
 | Phase | Duration | Cumulative | Status | Description |
 |-------|----------|------------|--------|-------------|
-| Phase 1 (Week 1) | 1 week | Week 1 | 🎯 **START HERE** | Foundation + Craving Logging |
-| Week 2 | 1 week | Week 2 | 📝 **Documented** | Usage Logging (PHASE_2.md) |
-| Weeks 3-4 | 2 weeks | Weeks 3-4 | ⏳ Pending | Onboarding + Data Management (docs TBD) |
-| Weeks 5-6 | 2 weeks | Weeks 5-6 | 📝 **Documented** | Recordings (PHASE_3.md) |
-| Weeks 7-8 | 2 weeks | Weeks 7-8 | ⏳ Pending | Dashboard (docs TBD) |
+| PHASE_1 (Week 1) | 1 week | Week 1 | ✅ **Documented** | Foundation + Craving Logging |
+| PHASE_2 (Week 2) | 1 week | Week 2 | ✅ **Documented** | Usage Logging |
+| PHASE_3 (Weeks 3-4) | 2 weeks | Weeks 3-4 | ✅ **Documented** | Onboarding + Data Management |
+| PHASE_4 (Weeks 5-6) | 2 weeks | Weeks 5-6 | ✅ **Documented** | Recordings |
+| PHASE_5 (Weeks 7-8) | 2 weeks | Weeks 7-8 | ✅ **Documented** | Dashboard |
 | Weeks 9-12 | 4 weeks | Weeks 9-12 | ⏳ Pending | Polish & Testing |
 | Weeks 13-16 | 4 weeks | Weeks 13-16 | ⏳ Pending | Launch Prep |
 
 **Total Timeline:** 16 weeks to MVP launch (aligned with TECHNICAL_IMPLEMENTATION.md master spec)
 
 **Documentation Status:**
-- ✅ **Phase 1 (Week 1):** Complete and ready to implement
-- ✅ **Week 2:** Complete and ready to implement (PHASE_2.md)
-- ✅ **Weeks 5-6:** Complete and ready to implement (PHASE_3.md)
-- ⏳ **Weeks 3-4, 7-8, 9-16:** To be documented as needed
+- ✅ **PHASE_1 (Week 1):** Complete and ready to implement
+- ✅ **PHASE_2 (Week 2):** Complete and ready to implement
+- ✅ **PHASE_3 (Weeks 3-4):** Complete and ready to implement (Onboarding + Data Management)
+- ✅ **PHASE_4 (Weeks 5-6):** Complete and ready to implement (Recordings)
+- ✅ **PHASE_5 (Weeks 7-8):** Complete and ready to implement (Dashboard)
+- ⏳ **Weeks 9-16:** To be documented as needed
 
 ---
 
@@ -177,19 +180,21 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 
 | Phase | Unit Tests | Integration Tests | UI Tests | Total | Notes |
 |-------|------------|-------------------|----------|-------|-------|
-| Phase 1 (Week 1) | 6 | 2 | 1 | 9 | Craving logging only (4 baseline + 2 new) |
-| Week 2 | 10 | 2 | 2 | 14 | Usage logging (PHASE_2.md) |
-| Weeks 3-4 | TBD | TBD | TBD | TBD | Onboarding + data mgmt (docs pending) |
-| Weeks 5-6 | 10 | 4 | 2 | 16 | Recordings (PHASE_3.md) |
-| Weeks 7-8 | TBD | TBD | TBD | TBD | Dashboard (docs pending) |
+| PHASE_1 (Week 1) | 6 | 2 | 1 | 9 | Craving logging only (4 baseline + 2 new) |
+| PHASE_2 (Week 2) | 10 | 2 | 2 | 14 | Usage logging |
+| PHASE_3 (Weeks 3-4) | 8 | 4 | 2 | 14 | Onboarding + data management |
+| PHASE_4 (Weeks 5-6) | 10 | 4 | 2 | 16 | Recordings |
+| PHASE_5 (Weeks 7-8) | 5 | 0 | 8 | 13 | Dashboard (5 use case + 8 ViewModel tests) |
 | Weeks 9-12 | Achieve 80%+ | — | — | — | Coverage target |
 | Weeks 13-16 | 0 | 0 | 5 | 5 | Critical flow tests |
 | **TOTAL** | **26+** | **8+** | **10+** | **44+** | Target: 80% coverage |
 
 **Coverage Strategy:**
-- **Phase 1 (Week 1):** Baseline test patterns established (9 tests total: 4 baseline + 5 new for craving logging)
-- **Week 2:** Usage logging tests (14 tests)
-- **Weeks 5-6:** Recording tests (16 tests including AVFoundation coordinators)
+- **PHASE_1 (Week 1):** Baseline test patterns established (9 tests total: 4 baseline + 5 new for craving logging)
+- **PHASE_2 (Week 2):** Usage logging tests (14 tests)
+- **PHASE_3 (Weeks 3-4):** Onboarding + data management tests (14 tests)
+- **PHASE_4 (Weeks 5-6):** Recording tests (16 tests including AVFoundation coordinators)
+- **PHASE_5 (Weeks 7-8):** Dashboard tests (13 tests)
 - **Weeks 9-12:** Comprehensive coverage audit and gap-filling to reach 80%+
 
 ---
@@ -238,11 +243,11 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 
 ## 🚀 Phase Navigation
 
-- **[PHASE 1: Foundation + Craving Logging (Week 1)](./PHASE_1.md)** ← START HERE (✅ Complete documentation)
-- **[PHASE 2: Usage Logging (Week 2)](./PHASE_2.md)** (✅ Complete documentation)
-- **[PHASE 3: Recordings (Weeks 5-6)](./PHASE_3.md)** (✅ Complete documentation)
-- [Weeks 3-4: Onboarding + Data Management] (⏳ To be documented)
-- [Weeks 7-8: Dashboard] (⏳ To be documented)
+- **[PHASE_1: Foundation + Craving Logging (Week 1)](./PHASE_1.md)** ← START HERE (✅ Complete documentation)
+- **[PHASE_2: Usage Logging (Week 2)](./PHASE_2.md)** (✅ Complete documentation)
+- **[PHASE_3: Onboarding + Data Management (Weeks 3-4)](./PHASE_3.md)** (✅ Complete documentation)
+- **[PHASE_4: Recordings (Weeks 5-6)](./PHASE_4.md)** (✅ Complete documentation)
+- **[PHASE_5: Dashboard (Weeks 7-8)](./PHASE_5.md)** (✅ Complete documentation)
 - [Weeks 9-12: Polish & Testing] (⏳ To be documented)
 - [Weeks 13-16: Launch Prep] (⏳ To be documented)
 
