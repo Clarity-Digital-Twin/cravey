@@ -19,7 +19,7 @@ struct HomeView: View {
                         fetchCravingsUseCase: container.fetchCravingsUseCase
                     )
                 )
-                .id(refreshID)  // Force refresh when ID changes
+                .id(refreshID) // Force refresh when ID changes
             }
             .navigationTitle("Home")
             .toolbar {

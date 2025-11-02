@@ -12,17 +12,17 @@ final class CraveyUITests: XCTestCase {
     // Temporarily disabled due to Swift 6 strict concurrency
     // TODO: Fix concurrency issues in UI tests
     /*
-    func testAppLaunches() async throws {
-        await MainActor.run {
-            app = XCUIApplication()
-            app.launch()
+     func testAppLaunches() async throws {
+         await MainActor.run {
+             app = XCUIApplication()
+             app.launch()
 
-            // Verify app launches and shows main screen
-            let mainTitle = app.staticTexts["Cravey"]
-            XCTAssertTrue(mainTitle.exists)
-        }
-    }
-    */
+             // Verify app launches and shows main screen
+             let mainTitle = app.staticTexts["Cravey"]
+             XCTAssertTrue(mainTitle.exists)
+         }
+     }
+     */
 
     // TODO: Add more UI tests as views are implemented
 }

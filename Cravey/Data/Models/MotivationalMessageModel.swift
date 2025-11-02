@@ -7,7 +7,7 @@ import SwiftData
 final class MotivationalMessageModel {
     var id: UUID
     var createdAt: Date
-    var category: String  // Store as String for SwiftData
+    var category: String // Store as String for SwiftData
     var content: String
     var isActive: Bool
     var isUserCreated: Bool

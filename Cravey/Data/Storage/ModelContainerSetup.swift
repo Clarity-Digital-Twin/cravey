@@ -18,7 +18,7 @@ enum ModelContainerSetup {
             schema: schema,
             isStoredInMemoryOnly: false,
             allowsSave: true,
-            cloudKitDatabase: .none  // Local-only storage
+            cloudKitDatabase: .none // Local-only storage
         )
 
         return try ModelContainer(

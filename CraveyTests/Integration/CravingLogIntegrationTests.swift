@@ -1,16 +1,15 @@
-import Testing
-import SwiftData
-import Foundation
 @testable import Cravey
+import Foundation
+import SwiftData
+import Testing
 
 /// Integration tests for craving log flow
 /// Tests end-to-end flow: Form → ViewModel → UseCase → Repository → SwiftData
 @Suite("Craving Log Integration Tests")
 struct CravingLogIntegrationTests {
-
     @Test("Should log craving end-to-end (Form → ViewModel → UseCase → Repository → SwiftData)")
     @MainActor
-    func testEndToEndCravingLog() async throws {
+    func endToEndCravingLog() async throws {
         // Setup: In-memory SwiftData container
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(
@@ -51,7 +50,7 @@ struct CravingLogIntegrationTests {
 
     @Test("Should fetch cravings end-to-end (SwiftData → Repository → UseCase → ViewModel)")
     @MainActor
-    func testEndToEndFetchCravings() async throws {
+    func endToEndFetchCravings() async throws {
         // Setup
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let container = try ModelContainer(

@@ -1,13 +1,13 @@
-import Testing
-import Foundation
 @testable import Cravey
+import Foundation
+import Testing
 
 /// Unit tests for LogCravingUseCase
 /// Tests business logic in isolation with mocked repository
 @Suite("LogCravingUseCase Tests")
 struct LogCravingUseCaseTests {
     @Test("Should save valid craving")
-    func testLogValidCraving() async throws {
+    func logValidCraving() async throws {
         // Arrange
         let mockRepo = MockCravingRepository()
         let useCase = DefaultLogCravingUseCase(repository: mockRepo)
@@ -29,7 +29,7 @@ struct LogCravingUseCaseTests {
     }
 
     @Test("Should reject invalid intensity")
-    func testRejectInvalidIntensity() async {
+    func rejectInvalidIntensity() async {
         // Arrange
         let mockRepo = MockCravingRepository()
         let useCase = DefaultLogCravingUseCase(repository: mockRepo)
@@ -37,7 +37,7 @@ struct LogCravingUseCaseTests {
         // Act & Assert
         await #expect(throws: CravingError.self) {
             try await useCase.execute(
-                intensity: 11,  // Invalid
+                intensity: 11, // Invalid
                 triggers: [],
                 notes: nil,
                 location: nil,
@@ -68,7 +68,7 @@ actor MockCravingRepository: CravingRepositoryProtocol {
         savedCravings.removeAll { $0.id == id }
     }
 
-    func update(_ craving: CravingEntity) async throws {
+    func update(_: CravingEntity) async throws {
         // Mock implementation
     }
 

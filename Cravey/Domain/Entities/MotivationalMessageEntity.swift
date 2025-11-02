@@ -49,6 +49,7 @@ enum MessageCategory: String, Codable, CaseIterable {
 }
 
 // MARK: - Business Logic
+
 extension MotivationalMessageEntity {
     func markAsShown() -> MotivationalMessageEntity {
         MotivationalMessageEntity(

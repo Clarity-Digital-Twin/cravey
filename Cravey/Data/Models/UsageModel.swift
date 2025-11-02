@@ -7,7 +7,7 @@ import SwiftData
 final class UsageModel {
     @Attribute(.unique) var id: UUID
     var timestamp: Date
-    var method: String  // ROA: "Bowls", "Vape", "Edible", etc.
+    var method: String // ROA: "Bowls", "Vape", "Edible", etc.
     var amount: Double
     var triggers: [String]
     var location: String?

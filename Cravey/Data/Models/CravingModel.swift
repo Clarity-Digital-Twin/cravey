@@ -39,6 +39,6 @@ final class CravingModel {
         self.location = location
         self.managementStrategy = managementStrategy
         self.wasManagedSuccessfully = wasManagedSuccessfully
-        self.recordings = []
+        recordings = []
     }
 }

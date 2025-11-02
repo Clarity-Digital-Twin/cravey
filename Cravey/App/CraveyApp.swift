@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 /// Main app entry point
 /// Clean Architecture: Composition Root
@@ -30,9 +30,9 @@ struct CraveyApp: App {
         .modelContainer(dependencyContainer.modelContainer)
 
         #if os(macOS)
-        Settings {
-            MacOSSettingsView()
-        }
+            Settings {
+                MacOSSettingsView()
+            }
         #endif
     }
 }
@@ -86,51 +86,51 @@ struct PlaceholderContentView: View {
 // MARK: - Settings View (macOS)
 
 #if os(macOS)
-struct MacOSSettingsView: View {
-    var body: some View {
-        TabView {
-            GeneralSettingsView()
-                .tabItem {
-                    Label("General", systemImage: "gear")
-                }
+    struct MacOSSettingsView: View {
+        var body: some View {
+            TabView {
+                GeneralSettingsView()
+                    .tabItem {
+                        Label("General", systemImage: "gear")
+                    }
 
-            PrivacySettingsView()
-                .tabItem {
-                    Label("Privacy", systemImage: "lock")
-                }
-        }
-        .frame(width: 500, height: 400)
-    }
-}
-
-struct GeneralSettingsView: View {
-    var body: some View {
-        Form {
-            Section {
-                Text("General settings coming soon...")
+                PrivacySettingsView()
+                    .tabItem {
+                        Label("Privacy", systemImage: "lock")
+                    }
             }
+            .frame(width: 500, height: 400)
         }
-        .padding()
     }
-}
 
-struct PrivacySettingsView: View {
-    var body: some View {
-        Form {
-            Section {
-                Label {
-                    Text("All data is stored locally on your device")
-                } icon: {
-                    Image(systemName: "checkmark.shield.fill")
-                        .foregroundStyle(.green)
+    struct GeneralSettingsView: View {
+        var body: some View {
+            Form {
+                Section {
+                    Text("General settings coming soon...")
                 }
-            } header: {
-                Text("Privacy Features")
             }
+            .padding()
         }
-        .padding()
     }
-}
+
+    struct PrivacySettingsView: View {
+        var body: some View {
+            Form {
+                Section {
+                    Label {
+                        Text("All data is stored locally on your device")
+                    } icon: {
+                        Image(systemName: "checkmark.shield.fill")
+                            .foregroundStyle(.green)
+                    }
+                } header: {
+                    Text("Privacy Features")
+                }
+            }
+            .padding()
+        }
+    }
 #endif
 
 // MARK: - Preview

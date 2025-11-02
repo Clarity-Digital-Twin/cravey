@@ -1,14 +1,13 @@
-import Testing
-import SwiftUI
 @testable import Cravey
+import SwiftUI
+import Testing
 
 /// Tests for IntensitySlider component
 /// Presentation layer tests - Clean Architecture
 @Suite("IntensitySlider Tests")
 struct IntensitySliderTests {
-
     @Test("Should format intensity label correctly")
-    func testIntensityLabel() {
+    func intensityLabel() {
         #expect(IntensitySlider.formatLabel(for: 1) == "1 - Very Mild")
         #expect(IntensitySlider.formatLabel(for: 2) == "2 - Very Mild")
         #expect(IntensitySlider.formatLabel(for: 3) == "3 - Mild")
@@ -22,7 +21,7 @@ struct IntensitySliderTests {
     }
 
     @Test("Should return correct emoji for intensity")
-    func testIntensityEmoji() {
+    func intensityEmoji() {
         #expect(IntensitySlider.emoji(for: 1) == "😌")
         #expect(IntensitySlider.emoji(for: 2) == "😌")
         #expect(IntensitySlider.emoji(for: 3) == "🙂")

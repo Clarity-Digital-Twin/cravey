@@ -9,7 +9,7 @@ struct TimestampPicker: View {
         DatePicker(
             "When did this happen?",
             selection: $date,
-            in: ...Date(),  // Can't pick future dates
+            in: ...Date(), // Can't pick future dates
             displayedComponents: [.date, .hourAndMinute]
         )
         .datePickerStyle(.compact)
@@ -17,7 +17,7 @@ struct TimestampPicker: View {
 }
 
 #Preview {
-    @Previewable @State var timestamp: Date = Date()
+    @Previewable @State var timestamp = Date()
 
     VStack {
         TimestampPicker(date: $timestamp)

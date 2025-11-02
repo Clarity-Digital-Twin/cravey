@@ -9,7 +9,7 @@ struct RecordingEntity: Identifiable, Codable, Equatable, Hashable {
     let purpose: RecordingPurpose
     let title: String
     let notes: String?
-    let fileURL: String  // Relative path
+    let fileURL: String // Relative path
     let duration: TimeInterval
     let thumbnailURL: String?
     let lastPlayedAt: Date?
@@ -62,6 +62,7 @@ enum RecordingPurpose: String, Codable, CaseIterable {
 }
 
 // MARK: - Business Logic
+
 extension RecordingEntity {
     var durationFormatted: String {
         let minutes = Int(duration) / 60

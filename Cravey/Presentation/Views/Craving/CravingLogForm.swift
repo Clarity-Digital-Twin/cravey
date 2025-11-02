@@ -39,7 +39,7 @@ struct CravingLogForm: View {
                     )
 
                     TextField("Notes", text: $viewModel.notes, axis: .vertical)
-                        .lineLimit(3...5)
+                        .lineLimit(3 ... 5)
 
                     Toggle("I managed this craving successfully", isOn: $viewModel.wasManagedSuccessfully)
                 }

@@ -36,26 +36,26 @@ final class DependencyContainer {
     init(isPreview: Bool = false) {
         do {
             // Initialize infrastructure
-            self.modelContainer = if isPreview {
+            modelContainer = if isPreview {
                 try ModelContainerSetup.createPreview()
             } else {
                 try ModelContainerSetup.create()
             }
-            self.modelContext = ModelContext(modelContainer)
-            self.fileStorage = FileStorageManager.shared
+            modelContext = ModelContext(modelContainer)
+            fileStorage = FileStorageManager.shared
 
             // Initialize repositories
             let cravingRepo = CravingRepository(modelContext: modelContext)
             let recordingRepo = StubRecordingRepository() // TODO: Implement RecordingRepository
             let messageRepo = StubMessageRepository() // TODO: Implement MessageRepository
 
-            self.cravingRepository = cravingRepo
-            self.recordingRepository = recordingRepo
-            self.messageRepository = messageRepo
+            cravingRepository = cravingRepo
+            recordingRepository = recordingRepo
+            messageRepository = messageRepo
 
             // Initialize use cases
-            self.logCravingUseCase = DefaultLogCravingUseCase(repository: cravingRepo)
-            self.fetchCravingsUseCase = DefaultFetchCravingsUseCase(repository: cravingRepo)
+            logCravingUseCase = DefaultLogCravingUseCase(repository: cravingRepo)
+            fetchCravingsUseCase = DefaultFetchCravingsUseCase(repository: cravingRepo)
 
             // Seed default data if needed
             if !isPreview {
@@ -79,7 +79,7 @@ extension DependencyContainer {
 
 /// Stub implementation until RecordingRepository is fully implemented
 private struct StubRecordingRepository: RecordingRepositoryProtocol {
-    func save(_ recording: RecordingEntity) async throws {
+    func save(_: RecordingEntity) async throws {
         // TODO: Implement
     }
 
@@ -87,22 +87,22 @@ private struct StubRecordingRepository: RecordingRepositoryProtocol {
         return []
     }
 
-    func fetch(byPurpose purpose: RecordingPurpose) async throws -> [RecordingEntity] {
+    func fetch(byPurpose _: RecordingPurpose) async throws -> [RecordingEntity] {
         return []
     }
 
-    func delete(id: UUID) async throws {
+    func delete(id _: UUID) async throws {
         // TODO: Implement
     }
 
-    func update(_ recording: RecordingEntity) async throws {
+    func update(_: RecordingEntity) async throws {
         // TODO: Implement
     }
 }
 
 /// Stub implementation until MessageRepository is fully implemented
 private struct StubMessageRepository: MessageRepositoryProtocol {
-    func save(_ message: MotivationalMessageEntity) async throws {
+    func save(_: MotivationalMessageEntity) async throws {
         // TODO: Implement
     }
 
@@ -110,15 +110,15 @@ private struct StubMessageRepository: MessageRepositoryProtocol {
         return []
     }
 
-    func fetch(byCategory category: MessageCategory) async throws -> [MotivationalMessageEntity] {
+    func fetch(byCategory _: MessageCategory) async throws -> [MotivationalMessageEntity] {
         return []
     }
 
-    func delete(id: UUID) async throws {
+    func delete(id _: UUID) async throws {
         // TODO: Implement
     }
 
-    func update(_ message: MotivationalMessageEntity) async throws {
+    func update(_: MotivationalMessageEntity) async throws {
         // TODO: Implement
     }
 

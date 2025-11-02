@@ -1,6 +1,6 @@
-import Testing
-import Foundation
 @testable import Cravey
+import Foundation
+import Testing
 
 /// Unit tests for CravingLogViewModel
 /// Tests UI logic in isolation with mocked use case
@@ -8,7 +8,7 @@ import Foundation
 @MainActor
 struct CravingLogViewModelTests {
     @Test("Should log craving successfully")
-    func testLogCravingSuccess() async throws {
+    func logCravingSuccess() async throws {
         // Arrange
         let mockUseCase = MockLogCravingUseCase()
         let viewModel = CravingLogViewModel(logCravingUseCase: mockUseCase)
@@ -27,7 +27,7 @@ struct CravingLogViewModelTests {
     }
 
     @Test("Should reset form after successful submission")
-    func testFormResetAfterSuccess() async {
+    func formResetAfterSuccess() async {
         // Arrange
         let mockUseCase = MockLogCravingUseCase()
         let viewModel = CravingLogViewModel(logCravingUseCase: mockUseCase)
@@ -39,8 +39,8 @@ struct CravingLogViewModelTests {
         await viewModel.logCraving()
 
         // Assert
-        #expect(viewModel.intensity == 5)  // Reset to default
-        #expect(viewModel.selectedTriggers == [])   // Cleared
+        #expect(viewModel.intensity == 5) // Reset to default
+        #expect(viewModel.selectedTriggers == []) // Cleared
     }
 }
 

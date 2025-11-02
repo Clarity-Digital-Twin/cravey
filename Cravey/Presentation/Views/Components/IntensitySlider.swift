@@ -19,7 +19,7 @@ struct IntensitySlider: View {
                 Text("1")
                     .foregroundColor(.secondary)
                     .font(.caption)
-                Slider(value: $value, in: 1...10, step: 1)
+                Slider(value: $value, in: 1 ... 10, step: 1)
                 Text("10")
                     .foregroundColor(.secondary)
                     .font(.caption)
@@ -36,15 +36,15 @@ struct IntensitySlider: View {
     /// Format intensity label with description
     static func formatLabel(for intensity: Int) -> String {
         switch intensity {
-        case 1...2:
+        case 1 ... 2:
             return "\(intensity) - Very Mild"
-        case 3...4:
+        case 3 ... 4:
             return "\(intensity) - Mild"
-        case 5...6:
+        case 5 ... 6:
             return "\(intensity) - Moderate"
-        case 7...8:
+        case 7 ... 8:
             return "\(intensity) - Strong"
-        case 9...10:
+        case 9 ... 10:
             return "\(intensity) - Overwhelming"
         default:
             return "\(intensity)"
@@ -54,15 +54,15 @@ struct IntensitySlider: View {
     /// Get emoji for intensity level
     static func emoji(for intensity: Int) -> String {
         switch intensity {
-        case 1...2:
+        case 1 ... 2:
             return "😌"
-        case 3...4:
+        case 3 ... 4:
             return "🙂"
-        case 5...6:
+        case 5 ... 6:
             return "😐"
-        case 7...8:
+        case 7 ... 8:
             return "😟"
-        case 9...10:
+        case 9 ... 10:
             return "😫"
         default:
             return "😐"

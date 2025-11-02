@@ -7,7 +7,7 @@ import SwiftData
 final class RecordingModel {
     var id: UUID
     var createdAt: Date
-    var recordingType: String  // Store as String for SwiftData
+    var recordingType: String // Store as String for SwiftData
     var purpose: String
     var title: String
     var notes: String?

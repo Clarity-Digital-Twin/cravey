@@ -3,7 +3,7 @@ import SwiftData
 
 /// Concrete implementation of CravingRepositoryProtocol using SwiftData
 final class CravingRepository: CravingRepositoryProtocol {
-    nonisolated(unsafe) private let modelContext: ModelContext
+    private nonisolated(unsafe) let modelContext: ModelContext
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext

@@ -69,13 +69,13 @@ struct ChipButton: View {
 struct FlowLayout: Layout {
     var spacing: CGFloat = 8
 
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache _: inout ()) -> CGSize {
         let rows = computeRows(proposal: proposal, subviews: subviews)
         let height = rows.reduce(0) { $0 + $1.maxHeight + spacing }
         return CGSize(width: proposal.width ?? 0, height: height)
     }
 
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache _: inout ()) {
         let rows = computeRows(proposal: proposal, subviews: subviews)
         var yPosition = bounds.minY
 
@@ -99,7 +99,7 @@ struct FlowLayout: Layout {
             let size = subview.sizeThatFits(.unspecified)
 
             // Start new row if current row would overflow
-            if currentRowWidth + size.width > maxWidth && !rows[rows.count - 1].indices.isEmpty {
+            if currentRowWidth + size.width > maxWidth, !rows[rows.count - 1].indices.isEmpty {
                 rows.append(Row())
                 currentRowWidth = 0
             }

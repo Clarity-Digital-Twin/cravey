@@ -5,7 +5,7 @@ import Foundation
 struct CravingEntity: Identifiable, Codable, Equatable, Hashable {
     let id: UUID
     let timestamp: Date
-    let intensity: Int  // 1-10 scale
+    let intensity: Int // 1-10 scale
     let duration: TimeInterval?
     let triggers: [String]
     let notes: String?
@@ -37,12 +37,13 @@ struct CravingEntity: Identifiable, Codable, Equatable, Hashable {
 }
 
 // MARK: - Business Logic (Domain)
+
 extension CravingEntity {
     var intensityLevel: IntensityLevel {
         switch intensity {
-        case 1...3: return .low
-        case 4...6: return .moderate
-        case 7...10: return .high
+        case 1 ... 3: return .low
+        case 4 ... 6: return .moderate
+        case 7 ... 10: return .high
         default: return .unknown
         }
     }

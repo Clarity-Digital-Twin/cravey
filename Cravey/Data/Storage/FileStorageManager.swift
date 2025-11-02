@@ -1,7 +1,7 @@
-import Foundation
 import AVFoundation
+import Foundation
 #if canImport(UIKit)
-import UIKit
+    import UIKit
 #endif
 
 enum StorageError: LocalizedError {
@@ -100,13 +100,13 @@ final class FileStorageManager {
         let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
 
         #if canImport(UIKit)
-        let image = UIImage(cgImage: cgImage)
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            throw StorageError.thumbnailGenerationFailed
-        }
+            let image = UIImage(cgImage: cgImage)
+            guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+                throw StorageError.thumbnailGenerationFailed
+            }
         #else
-        // macOS - would use NSImage
-        throw StorageError.thumbnailGenerationFailed
+            // macOS - would use NSImage
+            throw StorageError.thumbnailGenerationFailed
         #endif
 
         let thumbnailsDir = try thumbnailsDirectory
@@ -163,7 +163,8 @@ final class FileStorageManager {
     /// Deletes a thumbnail
     func deleteThumbnail(at relativePath: String?) throws {
         guard let relativePath = relativePath,
-              let url = absoluteURL(for: relativePath) else {
+              let url = absoluteURL(for: relativePath)
+        else {
             return // No thumbnail to delete
         }
 

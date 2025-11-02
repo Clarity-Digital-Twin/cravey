@@ -58,18 +58,18 @@ final class CravingLogViewModel {
 
     var intensityColor: String {
         switch Int(intensity) {
-        case 1...3: return "green"
-        case 4...6: return "orange"
-        case 7...10: return "red"
+        case 1 ... 3: return "green"
+        case 4 ... 6: return "orange"
+        case 7 ... 10: return "red"
         default: return "gray"
         }
     }
 
     var intensityDescription: String {
         switch Int(intensity) {
-        case 1...3: return "Mild - Manageable discomfort"
-        case 4...6: return "Moderate - Noticeable urge"
-        case 7...10: return "Intense - Strong urge"
+        case 1 ... 3: return "Mild - Manageable discomfort"
+        case 4 ... 6: return "Moderate - Noticeable urge"
+        case 7 ... 10: return "Intense - Strong urge"
         default: return ""
         }
     }
