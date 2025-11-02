@@ -135,8 +135,8 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 **Dependencies:** Weeks 9-12 (production-ready MVP)
 **Shippable:** Cravey v1.0 live on App Store
 **Features:** TestFlight Beta + App Store Submission
-**Files Created:** 2 onboarding views
-**Tests:** 5 UI tests (critical flows)
+**Files Created:** 4 documentation files (README, CHANGELOG, privacy-policy, support)
+**Tests:** 10 UI tests (critical flows)
 
 **Key Deliverables:**
 - TestFlight setup (App Store Connect record, beta builds, internal testing)
