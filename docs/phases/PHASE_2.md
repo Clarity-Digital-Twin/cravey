@@ -1449,4 +1449,4 @@ final class UsageLogUITests: XCTestCase {
 
 **Ready for Phase 1 Completion → Phase 2 Implementation**
 
-**[← Back to Overview](./PHASE_OVERVIEW.md)** | **[← Phase 1](./PHASE_1.md)**
+**[← Back to Overview](./PHASE_OVERVIEW.md)** | **[← Phase 1](./PHASE_1.md)** | **[Phase 3 (Onboarding+Data) →](./PHASE_3.md)**
