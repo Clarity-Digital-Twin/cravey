@@ -2053,21 +2053,21 @@ jobs:
 - Thu: UsageLogForm + wire up to HomeView
 - Fri: Write tests, manual validation (<10 sec)
 
-**Week 3: Onboarding + Data Management Setup**
-- Mon: WelcomeView + TourView (onboarding flow moved to Week 9 for final polish)
-- Tue: ExportDataUseCase (CSV/JSON generation) - Start data management early
-- Wed: DeleteAllDataUseCase (atomic deletion)
-- Thu: SettingsView + ExportDataView
-- Fri: Test export flow (open CSV in Numbers)
+**Week 3: Onboarding + Settings Shell**
+- Mon: Build WelcomeView (first-launch screen)
+- Tue: Build TourView (PageTabView carousel)
+- Wed: Wire onboarding into `CraveyApp` with `@AppStorage`
+- Thu: Create Settings shell (lists, placeholders)
+- Fri: Home tab polish + end-to-end test (fresh install → onboarding → log craving)
 
-**Week 4: Data Management Polish + Tab Bar**
-- Mon: HomeView refinement (prepare for Quick Play in Week 5)
-- Tue: Wire up tab bar navigation (Home, Dashboard, Settings)
-- Wed: Polish animations, haptic feedback
-- Thu: End-to-end test (onboarding → log craving/usage → export)
-- Fri: Buffer for bug fixes
+**Week 4: Data Management**
+- Mon: Implement ExportDataUseCase (CSV/JSON generation)
+- Tue: Implement DeleteAllDataUseCase (atomic deletion)
+- Wed: Build Settings data management UI (export/delete flows)
+- Thu: Manual QA pass (export to Numbers, delete restores first-launch state)
+- Fri: Buffer for bug fixes + prepare for Phase 4 (Quick Play integration)
 
-**Deliverable:** Users can log cravings/usage, export/delete data. Onboarding deferred to Week 9 (polish phase).
+**Deliverable:** Users can onboard, log cravings/usage, and manage data (export/delete). Onboarding receives final polish in Phase 6.
 
 ---
 
