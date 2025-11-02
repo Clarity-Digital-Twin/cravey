@@ -109,6 +109,89 @@ struct EditView: View {
 }
 ```
 
+**6. @ObservationIgnored for Non-Tracked Properties**
+```swift
+// ✅ Exclude properties from observation tracking
+@Observable
+@MainActor
+final class CravingLogViewModel {
+    var intensity: Double = 5.0  // Tracked
+    var notes: String = ""       // Tracked
+
+    @ObservationIgnored
+    private let dateFormatter = DateFormatter()  // NOT tracked (performance optimization)
+
+    @ObservationIgnored
+    private var cache: [UUID: CravingEntity] = [:]  // NOT tracked (internal state)
+}
+```
+
+**When to use @ObservationIgnored:**
+- Formatters (DateFormatter, NumberFormatter) - expensive to recreate
+- Caches and lookup tables - internal optimization, not UI state
+- Dependencies (use cases, repositories) - injected, not state
+- Temporary computation values - won't trigger view updates
+
+**7. @Previewable for Preview-Specific State**
+```swift
+// ✅ Create state inside #Preview blocks
+#Preview("Craving Log Form") {
+    @Previewable @State var viewModel = CravingLogViewModel(
+        logCravingUseCase: MockLogCravingUseCase()
+    )
+    CravingLogForm(viewModel: viewModel)
+}
+```
+
+**8. Deferred Sheet/ViewModel Initialization Tradeoffs**
+
+**Pattern Used in This Project (Color.clear.task):**
+```swift
+@State private var cravingLogViewModel: CravingLogViewModel?
+
+.sheet(isPresented: $showCravingLogSheet) {
+    cravingLogViewModel = nil  // Reset on dismiss
+} content: {
+    if let viewModel = cravingLogViewModel {
+        CravingLogForm(viewModel: viewModel)
+    } else {
+        Color.clear.task {
+            cravingLogViewModel = container.makeCravingLogViewModel()
+        }
+    }
+}
+```
+
+**Pros:**
+- ✅ ViewModel created only once when sheet first appears
+- ✅ Avoids recreating ViewModel on every parent view update
+- ✅ Clean reset on dismiss (`viewModel = nil`)
+
+**Cons:**
+- ⚠️ Brief blank flash (Color.clear renders before `.task` completes)
+- ⚠️ Slightly more complex than immediate initialization
+
+**Alternative Pattern (Immediate Init):**
+```swift
+@State private var viewModel = container.makeCravingLogViewModel()
+
+.sheet(isPresented: $showCravingLogSheet) {
+    CravingLogForm(viewModel: viewModel)
+}
+```
+**Tradeoff:** Simpler code, but ViewModel recreated if parent view rebuilds.
+
+**Alternative Pattern (onAppear):**
+```swift
+.sheet(isPresented: $showCravingLogSheet) {
+    CravingLogForm(viewModel: container.makeCravingLogViewModel())
+        .onAppear { /* initialize if needed */ }
+}
+```
+**Tradeoff:** ViewModel created inline, harder to manage lifecycle.
+
+**Our Choice:** We use Color.clear.task for optimal performance in production apps where parent views may rebuild frequently. The brief flash is acceptable for the performance gain.
+
 ### SwiftData Patterns
 
 **1. @Model Macro**
@@ -146,6 +229,81 @@ func saveData() {
     try? modelContext.save()
 }
 ```
+
+**5. @ModelActor for Concurrent SwiftData Access**
+```swift
+// ✅ Recommended pattern for concurrent writes
+@ModelActor
+actor DataHandler {
+    // modelContext and modelContainer automatically available
+
+    func saveCraving(_ craving: CravingModel) {
+        modelContext.insert(craving)
+        try? modelContext.save()
+    }
+
+    func fetchCravings() -> [CravingModel] {
+        let descriptor = FetchDescriptor<CravingModel>()
+        return (try? modelContext.fetch(descriptor)) ?? []
+    }
+}
+```
+
+**Why @ModelActor is Better than nonisolated(unsafe):**
+- ✅ Thread-safe by design (actor isolation)
+- ✅ No unsafe annotations needed
+- ✅ Automatically provides `modelContext` and `modelContainer`
+- ✅ Works with Swift 6 strict concurrency
+
+**Our Approach (Repository Pattern):**
+```swift
+// ⚠️ We use nonisolated(unsafe) for Clean Architecture compatibility
+final class CravingRepository: CravingRepositoryProtocol {
+    nonisolated(unsafe) private let modelContext: ModelContext
+
+    func save(_ craving: CravingEntity) async throws {
+        // Maps entity → model, saves to SwiftData
+    }
+}
+```
+
+**Tradeoff:** Repository pattern keeps Domain pure (no SwiftData imports) but requires `nonisolated(unsafe)`. Future refactor could wrap repositories in `@ModelActor`.
+
+**6. @Query for Direct SwiftData Access in SwiftUI**
+```swift
+// ✅ SwiftUI-native pattern (simple apps)
+struct CravingListView: View {
+    @Query(sort: \CravingModel.timestamp, order: .reverse)
+    private var cravings: [CravingModel]
+
+    var body: some View {
+        List(cravings) { craving in
+            Text(craving.notes ?? "")
+        }
+    }
+}
+```
+
+**Why We DON'T Use @Query (Architectural Decision):**
+- ❌ Violates Clean Architecture (SwiftUI views depend directly on Data layer)
+- ❌ Hard to test (can't mock @Query)
+- ❌ Couples UI to persistence (can't swap SwiftData for CoreData later)
+
+**Our Approach (Repository + Use Cases):**
+```swift
+// ✅ Domain-driven, testable, framework-independent
+@Observable
+final class CravingListViewModel {
+    private let fetchCravingsUseCase: FetchCravingsUseCase
+    private(set) var cravings: [CravingEntity] = []
+
+    func loadCravings() async {
+        cravings = (try? await fetchCravingsUseCase.execute()) ?? []
+    }
+}
+```
+
+**Tradeoff:** More code upfront, but **scales better** for complex apps. Choose @Query for simple CRUD apps; choose repositories for production apps with business logic.
 
 ### Patterns Used in Phase 1
 

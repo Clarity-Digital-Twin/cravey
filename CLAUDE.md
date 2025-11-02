@@ -113,6 +113,32 @@ struct HomeView: View {
 }
 ```
 
+**6. @ObservationIgnored for Non-Tracked Properties**
+```swift
+// ✅ Exclude properties from observation tracking
+@Observable
+@MainActor
+final class CravingLogViewModel {
+    var intensity: Double = 5.0  // Tracked
+
+    @ObservationIgnored
+    private let dateFormatter = DateFormatter()  // NOT tracked
+}
+```
+
+**When to use:** Formatters, caches, dependencies - anything that shouldn't trigger view updates.
+
+**7. @Previewable for Preview-Specific State**
+```swift
+// ✅ Create state inside #Preview blocks
+#Preview("Craving Log") {
+    @Previewable @State var viewModel = CravingLogViewModel(
+        logCravingUseCase: MockLogCravingUseCase()
+    )
+    CravingLogForm(viewModel: viewModel)
+}
+```
+
 ### SwiftData Modern Patterns
 
 **1. @Model Macro (Auto-Adds Observable, PersistentModel, Sendable)**
@@ -176,6 +202,31 @@ func saveData() {
 @Environment(DependencyContainer.self) private var container
 let repository = container.cravingRepository  // Keeps Domain pure
 ```
+
+**6. @ModelActor for Concurrent SwiftData Access**
+```swift
+// ✅ Recommended for concurrent writes
+@ModelActor
+actor DataHandler {
+    func saveCraving(_ craving: CravingModel) {
+        modelContext.insert(craving)
+        try? modelContext.save()
+    }
+}
+```
+
+**Why @ModelActor:** Thread-safe, no `nonisolated(unsafe)` needed. Our repositories use `nonisolated(unsafe)` for Clean Architecture compatibility.
+
+**7. @Query for Direct SwiftData Access**
+```swift
+// ✅ SwiftUI-native (simple apps)
+struct CravingListView: View {
+    @Query(sort: \CravingModel.timestamp, order: .reverse)
+    private var cravings: [CravingModel]
+}
+```
+
+**Why We DON'T Use @Query:** Violates Clean Architecture (couples UI to Data layer). We use repositories + use cases for testability and framework independence.
 
 ### Why We Use DependencyContainer
 
