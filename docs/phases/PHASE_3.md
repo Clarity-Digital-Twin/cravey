@@ -618,9 +618,8 @@ actor DefaultDeleteAllDataUseCase: DeleteAllDataUseCase {
         }
 
         // 3. Delete all recording files from disk
-        // Note: FileStorageManager will be introduced in PHASE_4 (Recordings).
-        // Until then, we use FileManager directly for directory deletion.
-        // This is acceptable because RecordingRepository is still a stub at this phase.
+        // Note: FileStorageManager exists in baseline but RecordingRepository is still a stub.
+        // We use FileManager directly for directory deletion to avoid coupling to stub methods.
         let fileManager = FileManager.default
         let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
         let recordingsURL = documentsURL.appendingPathComponent("Recordings")
@@ -640,8 +639,8 @@ actor DefaultDeleteAllDataUseCase: DeleteAllDataUseCase {
 - **Database + file deletion** - Clears SwiftData AND recording files
 - **Preserves default messages** - Only user data deleted (not app content)
 - **Actor isolation** - Thread-safe async operations
-- **Uses existing repository APIs** - `delete(id:)` from CravingRepositoryProtocol
-- **Raw FileManager for recordings** - FileStorageManager doesn't exist yet (introduced in PHASE_4)
+- **Uses existing repository APIs** - `delete(id:)` from CravingRepositoryProtocol and UsageRepositoryProtocol
+- **Raw FileManager for recordings** - RecordingRepository is still a stub at this phase (full implementation in PHASE_4)
 
 **Dependencies Required:**
 - ✅ `CravingRepositoryProtocol.fetchAll()` + `delete(id:)` - Exists (PHASE_1)

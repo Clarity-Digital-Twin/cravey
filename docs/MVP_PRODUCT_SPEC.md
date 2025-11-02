@@ -221,45 +221,54 @@ Hearing your own voice/seeing your own face when you're clear-headed is more pow
 
 **Visual Charts & Metrics (Swift Charts):**
 
-1. **Amount Trend Over Time** - Line chart
-   - Shows if using more or less week-over-week
-   - Reveals escalation or reduction patterns
+**MVP Metrics (v1.0 - 5 cards):**
 
-2. **Usage Reduction/Change** - Comparison metric card
-   - "Using 30% less than last month" OR "Usage increased 15%"
-   - Context-aware (shows reduction or increase based on actual data)
+1. **Weekly Summary Card** - Top of dashboard
+   - "This week: 12 uses, 3 cravings"
+   - "Top trigger: Bored"
+   - Quick reference without scrolling
 
-3. **Trigger Breakdown** - Pie chart
-   - Shows proportion of each trigger (40% Bored, 30% Anxious, 20% Habit...)
-   - Applies to both usage and craving triggers combined
-
-4. **Location Patterns** - Bar chart or list
-   - Where use/cravings occur most (Home 40%, Car 30%, Work 20%...)
-   - Reveals high-risk environmental cues
-
-5. **Time of Day Patterns** - Bar chart
-   - Morning vs afternoon vs evening distribution
-   - Identifies temporal patterns
-
-6. **Weekly Patterns** - Bar chart
-   - Usage by day of week (Mon: 2, Tue: 1, Wed: 3...)
-   - Shows which days are highest risk
-
-7. **ROA Breakdown** - Pie chart
-   - Method distribution (50% Bowls, 30% Vape, 20% Edibles...)
-   - Tracks ROA switching (escalation indicator)
-
-8. **Consecutive Days Tracking** - Streak card
+2. **Current Clean Days Streak** - Streak card
    - Context-aware: "7 days used in a row" OR "5 days abstinent"
    - Shows current streak based on user's pattern
 
-9. **Longest Abstinence Streak** - Milestone card
+3. **Longest Abstinence Streak** - Milestone card
    - "Your best: 14 days"
    - Never resets, celebrates historical achievement
 
-10. **Average Craving Intensity Over Time** - Line chart
-    - Shows if cravings getting weaker/stronger week-over-week
-    - Tracks improvement in craving severity
+4. **Average Craving Intensity Over Time** - Line chart
+   - Shows if cravings getting weaker/stronger week-over-week
+   - Tracks improvement in craving severity over selected date range (7/30/90 days)
+
+5. **Trigger Breakdown (Top 3)** - Pie chart
+   - Shows proportion of top 3 triggers (40% Bored, 30% Anxious, 20% Habit...)
+   - Applies to both usage and craving triggers combined
+
+**Post-MVP Metrics (v1.1+ - Available as DashboardData computed properties):**
+
+6. **Amount Trend Over Time** - Line chart
+   - Shows if using more or less week-over-week
+   - Reveals escalation or reduction patterns
+
+7. **Usage Reduction/Change** - Comparison metric card
+   - "Using 30% less than last month" OR "Usage increased 15%"
+   - Context-aware (shows reduction or increase based on actual data)
+
+8. **Location Patterns** - Bar chart or list
+   - Where use/cravings occur most (Home 40%, Car 30%, Work 20%...)
+   - Reveals high-risk environmental cues
+
+9. **Time of Day Patterns** - Bar chart
+   - Morning vs afternoon vs evening distribution
+   - Identifies temporal patterns
+
+10. **Weekly Patterns** - Bar chart
+    - Usage by day of week (Mon: 2, Tue: 1, Wed: 3...)
+    - Shows which days are highest risk
+
+11. **ROA Breakdown** - Pie chart
+    - Method distribution (50% Bowls, 30% Vape, 20% Edibles...)
+    - Tracks ROA switching (escalation indicator)
 
 **UI/UX Details:**
 - **Empty States** - If <7 days of data: "Keep logging! You'll see patterns after 7 days."
@@ -407,13 +416,19 @@ v1.0 MVP is ethically successful if:
 3. Implement Onboarding Flow (Welcome, Permissions, Tour)
 4. Implement Data Management (export/delete)
 
-### Phase 2: Recordings & Dashboard (Weeks 5-8)
+### Phase 4: Recordings (Weeks 5-6)
 1. Implement AVFoundation Recording (video/audio capture)
 2. Implement Playback UI
-3. Implement Progress Dashboard (Swift Charts)
-4. Implement Progress Stats calculations
+3. Implement Recording Library with filters
+4. Implement Quick Play section (Home tab)
 
-### Phase 3: Polish & Testing (Weeks 9-12)
+### Phase 5: Dashboard (Weeks 7-8)
+1. Implement Dashboard with 5 MVP metrics (Swift Charts)
+2. Implement date range filtering (7/30/90 days)
+3. Implement FetchDashboardDataUseCase
+4. Test dashboard load time (<3 sec target)
+
+### Phase 6: Polish, Testing & Launch (Weeks 9-16)
 1. UI/UX polish (animations, empty states, error handling, haptics)
 2. User testing and iteration
 3. Performance optimization (SwiftData queries, chart rendering)

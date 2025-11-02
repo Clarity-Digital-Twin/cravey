@@ -1498,7 +1498,7 @@ struct CravingIntensityChart: View {
 1. FetchDashboardDataUseCase (aggregates craving + usage data)
 2. DashboardViewModel (fetches data, computes metrics)
 3. ChartCard, EmptyStateView components
-4. DashboardView (11 metric cards with Swift Charts)
+4. DashboardView (5 MVP metric cards with Swift Charts, 6 additional in DashboardData)
 5. Wire up in Tab Bar
 6. Test with sample data (>7 days)
 
@@ -2053,55 +2053,61 @@ jobs:
 - Thu: UsageLogForm + wire up to HomeView
 - Fri: Write tests, manual validation (<10 sec)
 
-**Week 3: Onboarding + Home Tab**
-- Mon: WelcomeView + TourView
-- Tue: HomeView (Quick Play section with Top 3 recordings)
-- Wed: Wire up tab bar navigation
-- Thu: Polish animations, haptic feedback
-- Fri: End-to-end test (onboarding → log craving/usage)
+**Week 3: Onboarding + Data Management Setup**
+- Mon: WelcomeView + TourView (onboarding flow moved to Week 9 for final polish)
+- Tue: ExportDataUseCase (CSV/JSON generation) - Start data management early
+- Wed: DeleteAllDataUseCase (atomic deletion)
+- Thu: SettingsView + ExportDataView
+- Fri: Test export flow (open CSV in Numbers)
 
-**Week 4: Data Management**
-- Mon: ExportDataUseCase (CSV/JSON generation)
-- Tue: DeleteAllDataUseCase (atomic deletion)
-- Wed: SettingsView + ExportDataView
-- Thu: Test export flow (open CSV in Numbers)
+**Week 4: Data Management Polish + Tab Bar**
+- Mon: HomeView refinement (prepare for Quick Play in Week 5)
+- Tue: Wire up tab bar navigation (Home, Dashboard, Settings)
+- Wed: Polish animations, haptic feedback
+- Thu: End-to-end test (onboarding → log craving/usage → export)
 - Fri: Buffer for bug fixes
 
-**Deliverable:** Users can onboard, log cravings/usage, export/delete data
+**Deliverable:** Users can log cravings/usage, export/delete data. Onboarding deferred to Week 9 (polish phase).
 
 ---
 
-### Phase 2: Recordings + Dashboard (Weeks 5-8)
+### Phase 4: Recordings (Weeks 5-6)
 
-**Week 5: Audio Recording (Simpler, Test First)**
+**Week 5: Audio Recording + Quick Play**
 - Mon: AudioRecordingCoordinator (AVAudioRecorder)
 - Tue: SaveRecordingUseCase, FetchRecordingsUseCase
 - Wed: RecordingViewModel + unit tests
 - Thu: AudioRecordingView + RecordingPreviewView
 - Fri: RecordingsLibraryView (empty state + with recordings)
 
-**Week 6: Audio Playback + Video Prep**
+**Week 6: Audio Playback + Video Recording**
 - Mon: PlayRecordingUseCase + DeleteRecordingUseCase
 - Tue: AudioPlayerView (bottom sheet mini-player)
-- Wed: Test full audio flow (record → save → playback → delete)
-- Thu: Start VideoRecordingCoordinator (AVCaptureSession setup)
-- Fri: Continue VideoRecordingCoordinator (recording logic)
+- Wed: VideoRecordingCoordinator (AVCaptureSession setup + recording)
+- Thu: VideoRecordingView + thumbnail generation
+- Fri: VideoPlayerView + test full video flow
 
-**Week 7: Video Recording + Playback**
-- Mon: VideoRecordingView (finish recording + stop)
-- Tue: Thumbnail generation (FileStorageManager already has this ✅)
-- Wed: VideoPlayerView (AVPlayerViewController wrapper)
-- Thu: Test full video flow (record → save → playback → delete)
-- Fri: Polish recording UX (mode choice modal, permission flows)
+**Deliverable:** Full recording feature (audio + video), Quick Play section working
 
-**Week 8: Dashboard**
+---
+
+### Phase 5: Dashboard (Weeks 7-8)
+
+**Week 7: Dashboard Infrastructure**
 - Mon: FetchDashboardDataUseCase (aggregate craving + usage)
 - Tue: DashboardViewModel + unit tests
-- Wed: ChartCard, EmptyStateView components
-- Thu: DashboardView (11 metric cards with Swift Charts)
-- Fri: Test dashboard with >7 days of sample data
+- Wed: DashboardData entity with all 11 metrics as computed properties
+- Thu: ChartCard + EmptyStateView components
+- Fri: Test data aggregation with >7 days of sample data
 
-**Deliverable:** Full MVP feature-complete (6/6 features working)
+**Week 8: Dashboard UI (5 MVP Metrics)**
+- Mon: Weekly summary card
+- Tue: Clean days streak + longest abstinence streak
+- Wed: Average craving intensity chart (line chart)
+- Thu: Top 3 triggers pie chart
+- Fri: Date range filter (7/30/90 days) + performance testing (<3 sec load)
+
+**Deliverable:** Full MVP feature-complete (6/6 features working with 5 dashboard metrics)
 
 ---
 
@@ -2179,7 +2185,7 @@ jobs:
    - ✅ Craving log <5 seconds (UI response time)
    - ✅ Usage log <10 seconds (UI response time)
    - ✅ Dashboard load <3 seconds (with 90 days of data)
-   - ✅ Chart rendering <2 seconds (11 metrics)
+   - ✅ Chart rendering <2 seconds (5 MVP metrics)
 
 2. **Reliability:**
    - ✅ Zero network calls (verified via Xcode Network Debug)

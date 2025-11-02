@@ -72,7 +72,7 @@
 - HAALT-based trigger chips (multi-select, evidence-based)
 - Location presets with GPS (single-select, privacy-first)
 - UI pattern: Single scrollable form (Apple HIG) for both flows
-- **Dashboard metrics validated** (11 metrics for MVP, 3 deferred to post-MVP)
+- **Dashboard metrics validated** (5 MVP metrics for v1.0, 6 additional metrics available as computed properties for post-MVP)
 - **Scope decisions resolved** (THC potency, medical/rec distinction, goal tracking)
 
 **Key Decisions Made:**
@@ -111,9 +111,10 @@ Map user journeys and screen flows to understand how the app FEELS to use.
 5. **✅ Flow 5: Recordings Tab** (10 screens)
    - Empty state, permissions, mode choice, recording screens, preview/save, library, playback, edit, delete
 6. **✅ Flow 6: Progress Dashboard Tab** (1 screen)
-   - Single scrollable feed with 11 metrics
+   - Single scrollable feed with 5 MVP metrics (summary, 2 streaks, intensity trend, top triggers)
    - Sticky date filters (7D/30D/90D/All)
    - Static charts for MVP (defer interactivity to v2)
+   - 6 additional metrics available as DashboardData computed properties for v1.1+
    - Contextual insights even with sparse data (2 data points)
    - Show from Day 1 (no gating)
 7. **✅ Flow 7: Settings Tab** (3 screens)
@@ -221,10 +222,9 @@ Map user journeys and screen flows to understand how the app FEELS to use.
 - **SwiftData Optimization:** Predicates for filtering, fetch limits for charts
 
 **Implementation Roadmap (16 Weeks):**
-- **Phase 1 (Weeks 1-4):** Core logging (Craving, Usage, Onboarding, Data Management)
-- **Phase 2 (Weeks 5-8):** Recordings (Audio → Video) + Dashboard
-- **Phase 3 (Weeks 9-12):** Polish & Testing (UI/UX, performance, user testing)
-- **Phase 4 (Weeks 13-16):** Launch Prep (TestFlight, App Store, v1.0 release)
+- **Phases 1-3 (Weeks 1-4):** Core logging (Craving, Usage, Onboarding, Data Management)
+- **Phases 4-5 (Weeks 5-8):** Recordings (Audio → Video) + Dashboard (5 MVP metrics)
+- **Phase 6 (Weeks 9-16):** Polish, Testing & Launch (UI/UX, performance, TestFlight, App Store)
 
 **Validation:**
 - ✅ All 6 features mapped to exact files (Domain/Data/Presentation)

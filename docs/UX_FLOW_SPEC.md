@@ -997,7 +997,7 @@ Tap [Cancel]:
 
 **Key Design Decisions:**
 - ✅ Show all metrics from Day 1 (no "7 days required" gating)
-- ✅ Single scrollable feed (all 11 metrics, prioritized order)
+- ✅ Single scrollable feed (5 MVP metrics: summary, 2 streaks, intensity trend, top triggers)
 - ✅ Sticky date filter (always visible when scrolling)
 - ✅ Static charts for MVP (no tap interactions, defer to v2)
 - ✅ Contextual insights even with sparse data (2 data points = actionable feedback)
@@ -1437,7 +1437,7 @@ func deleteAllData() {
 - ✅ Flow 3: Log Craving (1 screen - Bottom sheet form, full spec)
 - ✅ Flow 4: Log Usage (1 screen - Bottom sheet form, full spec with UX parity)
 - ✅ Flow 5: Recordings Tab (10 screens - Complete: Empty state, permissions, mode choice, recording screens, preview/save, library, playback, edit, delete)
-- ✅ Flow 6: Progress Dashboard Tab (1 screen - Single scrollable feed with 11 metrics, sticky filters, contextual insights)
+- ✅ Flow 6: Progress Dashboard Tab (1 screen - Single scrollable feed with 5 MVP metrics, sticky filters, contextual insights, 6 additional metrics in DashboardData for v1.1+)
 - ✅ Flow 7: Settings Tab (3 screens - Main settings, export via Share Sheet, delete confirmation)
 
 **Total Screens Designed:** 19 screens fully specified

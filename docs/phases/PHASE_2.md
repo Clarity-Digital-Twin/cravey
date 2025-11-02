@@ -16,7 +16,7 @@
 - Reuses Phase 1 components (ChipSelector, TimestampPicker, triggers/location)
 - Introduces ROA-specific amount pickers
 
-**Scope Note:** This document covers **Week 2 only** from TECHNICAL_IMPLEMENTATION.md. Onboarding and Data Management are covered in Weeks 3-4 (documentation to be created after Week 2 completion).
+**Scope Note:** This document covers **Week 2 only** from TECHNICAL_IMPLEMENTATION.md. Onboarding + Data Management (Weeks 3-4), Recordings (Weeks 5-6), and Dashboard (Weeks 7-8) are documented in PHASE_3 through PHASE_5. See [PHASE_OVERVIEW.md](./PHASE_OVERVIEW.md) for complete timeline.
 
 ---
 
@@ -188,6 +188,7 @@ protocol UsageRepositoryProtocol: Sendable {
     func save(_ usage: UsageEntity) async throws
     func fetchAll() async throws -> [UsageEntity]
     func fetch(since date: Date) async throws -> [UsageEntity]
+    func delete(id: UUID) async throws  // Required for PHASE_3 DeleteAllDataUseCase
     func deleteAll() async throws
 }
 ```
@@ -433,10 +434,29 @@ final class UsageRepository: UsageRepositoryProtocol {
         return models.map { UsageMapper.toEntity($0) }
     }
 
+    func delete(id: UUID) async throws {
+        let predicate = #Predicate<UsageModel> { usage in
+            usage.id == id
+        }
+        let descriptor = FetchDescriptor<UsageModel>(predicate: predicate)
+        let models = try modelContext.fetch(descriptor)
+
+        guard let model = models.first else {
+            throw UsageRepositoryError.notFound(id: id)
+        }
+
+        modelContext.delete(model)
+        try modelContext.save()
+    }
+
     func deleteAll() async throws {
         try modelContext.delete(model: UsageModel.self)
         try modelContext.save()
     }
+}
+
+enum UsageRepositoryError: Error {
+    case notFound(id: UUID)
 }
 ```
 

@@ -17,7 +17,7 @@
 - Foundation: UsageModel schema (data model only, UI in Week 2)
 - Tab Bar shell (Home, Dashboard, Settings empty states)
 
-**Scope Note:** This document covers **Week 1 only** from TECHNICAL_IMPLEMENTATION.md. Usage Logging, Data Management, and Onboarding are covered in subsequent week-by-week docs (to be created after Week 1 completion).
+**Scope Note:** This document covers **Week 1 only** from TECHNICAL_IMPLEMENTATION.md. Usage Logging (Week 2), Onboarding + Data Management (Weeks 3-4), Recordings (Weeks 5-6), and Dashboard (Weeks 7-8) are documented in PHASE_2 through PHASE_5. See [PHASE_OVERVIEW.md](./PHASE_OVERVIEW.md) for complete timeline.
 
 ---
 
@@ -405,7 +405,7 @@ struct HomeView: View {
 
                 Spacer()
 
-                // TODO: Quick Play section (Phase 3)
+                // TODO: Quick Play section (Phase 4 - Recordings)
                 // TODO: Craving list (Phase 1, Day 3)
             }
             .navigationTitle("Home")
@@ -447,7 +447,7 @@ struct DashboardView: View {
                 Text("Dashboard")
                     .font(.largeTitle)
 
-                Text("Coming in Phase 4")
+                Text("Coming in Phase 5")
                     .foregroundColor(.secondary)
             }
             .navigationTitle("Progress")

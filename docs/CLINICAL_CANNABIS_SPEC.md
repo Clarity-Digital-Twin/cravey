@@ -420,7 +420,7 @@ Once validated, this doc feeds into:
 6. ✅ **Design Principle:** UX parity between both flows (learn once, use everywhere)
 
 ### Dashboard & Analytics:
-7. ✅ **DASHBOARD METRICS VALIDATED:** 11 metrics for MVP (summary card, trends, breakdowns, streaks)
+7. ✅ **DASHBOARD METRICS VALIDATED:** 5 MVP metrics for v1.0 (summary card, 2 streaks, intensity trend, top triggers), with 6 additional metrics available as DashboardData computed properties for v1.1+
 
 ### Scope Decisions:
 8. ✅ **THC Potency Tracking:** SKIP (false precision, bogus data)

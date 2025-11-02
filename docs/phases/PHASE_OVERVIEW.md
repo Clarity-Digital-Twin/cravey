@@ -17,7 +17,7 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 
 ---
 
-## 📦 Phase Breakdown (4 Phases, 16 Weeks Total)
+## 📦 Phase Breakdown (6 Phases, 16 Weeks Total)
 
 ### Phase 1: Foundation + Craving Logging ⏱️ 1 week (Week 1)
 **Dependencies:** None (baseline code exists)
@@ -103,20 +103,15 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 
 **Key Deliverables:**
 - FetchDashboardDataUseCase (aggregates craving + usage data)
-- 11 metric cards (Swift Charts):
-  - Total cravings logged
-  - Average craving intensity
-  - Craving frequency (7/30/90 days)
-  - Most common triggers
-  - Total usage logged
-  - Usage frequency by ROA
-  - Clean days streak
-  - Progress over time (line chart)
-  - Craving vs. usage correlation
-  - Success rate (cravings resisted)
-  - Weekly summary
+- 5 MVP metric cards (Swift Charts):
+  - Weekly summary (top triggers, total logs)
+  - Current clean days streak
+  - Longest abstinence streak (all-time)
+  - Average craving intensity trend (7/30/90 days)
+  - Top 3 triggers (pie chart)
 - Date range filter (7/30/90 days)
 - <3 sec dashboard load time validated
+- **Note:** 6 additional metrics available as computed properties for future UI expansion (see PHASE_5.md for details)
 
 ---
 

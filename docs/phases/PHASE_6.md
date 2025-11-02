@@ -49,9 +49,10 @@
 - Swipe-to-delete
 
 ✅ **Phase 5 (Weeks 7-8): Dashboard**
-- 11 metric cards (Swift Charts)
+- 5 MVP metric cards (Swift Charts)
 - Date range filters (7/30/90 days)
 - <3 sec dashboard load target
+- 6 additional metrics available as DashboardData computed properties
 
 ---
 
@@ -80,7 +81,7 @@
      1. **Craving Logging:** "Log cravings in <5 seconds"
      2. **Usage Tracking:** "Track usage with ROA-specific amounts"
      3. **Recordings:** "Record motivational videos & audio"
-     4. **Dashboard:** "Visualize progress with 11 metrics"
+     4. **Dashboard:** "Visualize progress with 5 MVP metrics"
      5. **Privacy:** "All data stays on your device"
    - Skip button (top-right)
    - Progress dots
@@ -341,7 +342,7 @@ xcodebuild test -scheme Cravey \
 ## Features
 - 📝 Craving & Usage Logging (<5 sec target)
 - 🎥 Motivational Recordings (audio + video)
-- 📊 Dashboard with 11 metrics (Swift Charts)
+- 📊 Dashboard with 5 MVP metrics (Swift Charts)
 - 🔒 100% Local (zero cloud sync, zero tracking)
 
 ## Installation
