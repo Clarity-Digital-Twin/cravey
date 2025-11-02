@@ -161,8 +161,7 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 | PHASE_3 (Weeks 3-4) | 2 weeks | Weeks 3-4 | ✅ **Documented** | Onboarding + Data Management |
 | PHASE_4 (Weeks 5-6) | 2 weeks | Weeks 5-6 | ✅ **Documented** | Recordings |
 | PHASE_5 (Weeks 7-8) | 2 weeks | Weeks 7-8 | ✅ **Documented** | Dashboard |
-| Weeks 9-12 | 4 weeks | Weeks 9-12 | ⏳ Pending | Polish & Testing |
-| Weeks 13-16 | 4 weeks | Weeks 13-16 | ⏳ Pending | Launch Prep |
+| PHASE_6 (Weeks 9-16) | 8 weeks | Weeks 9-16 | ✅ **Documented** | Polish, Testing & Launch |
 
 **Total Timeline:** 16 weeks to MVP launch (aligned with TECHNICAL_IMPLEMENTATION.md master spec)
 
@@ -172,7 +171,7 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 - ✅ **PHASE_3 (Weeks 3-4):** Complete and ready to implement (Onboarding + Data Management)
 - ✅ **PHASE_4 (Weeks 5-6):** Complete and ready to implement (Recordings)
 - ✅ **PHASE_5 (Weeks 7-8):** Complete and ready to implement (Dashboard)
-- ⏳ **Weeks 9-16:** To be documented as needed
+- ✅ **PHASE_6 (Weeks 9-16):** Complete and ready to implement (Polish, Testing & Launch)
 
 ---
 
@@ -185,9 +184,8 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 | PHASE_3 (Weeks 3-4) | 8 | 4 | 2 | 14 | Onboarding + data management |
 | PHASE_4 (Weeks 5-6) | 10 | 4 | 2 | 16 | Recordings |
 | PHASE_5 (Weeks 7-8) | 5 | 0 | 8 | 13 | Dashboard (5 use case + 8 ViewModel tests) |
-| Weeks 9-12 | Achieve 80%+ | — | — | — | Coverage target |
-| Weeks 13-16 | 0 | 0 | 5 | 5 | Critical flow tests |
-| **TOTAL** | **26+** | **8+** | **10+** | **44+** | Target: 80% coverage |
+| PHASE_6 (Weeks 9-16) | 0 | 0 | 10 | 10 | Polish, testing & launch (10 critical flow UI tests) |
+| **TOTAL** | **39** | **12** | **25** | **76** | Target: 80% coverage |
 
 **Coverage Strategy:**
 - **PHASE_1 (Week 1):** Baseline test patterns established (9 tests total: 4 baseline + 5 new for craving logging)
@@ -195,7 +193,7 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 - **PHASE_3 (Weeks 3-4):** Onboarding + data management tests (14 tests)
 - **PHASE_4 (Weeks 5-6):** Recording tests (16 tests including AVFoundation coordinators)
 - **PHASE_5 (Weeks 7-8):** Dashboard tests (13 tests)
-- **Weeks 9-12:** Comprehensive coverage audit and gap-filling to reach 80%+
+- **PHASE_6 (Weeks 9-16):** Critical flow UI tests (10 tests) + comprehensive coverage audit to reach 80%+
 
 ---
 
@@ -248,8 +246,7 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 - **[PHASE_3: Onboarding + Data Management (Weeks 3-4)](./PHASE_3.md)** (✅ Complete documentation)
 - **[PHASE_4: Recordings (Weeks 5-6)](./PHASE_4.md)** (✅ Complete documentation)
 - **[PHASE_5: Dashboard (Weeks 7-8)](./PHASE_5.md)** (✅ Complete documentation)
-- [Weeks 9-12: Polish & Testing] (⏳ To be documented)
-- [Weeks 13-16: Launch Prep] (⏳ To be documented)
+- **[PHASE_6: Polish, Testing & Launch (Weeks 9-16)](./PHASE_6.md)** (✅ Complete documentation)
 
 ---
 
