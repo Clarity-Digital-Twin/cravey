@@ -1,8 +1,8 @@
 # Phase 4: Dashboard & Analytics (Weeks 7-8)
 
-**Version:** 2.0 (Complete Implementation Guide)
+**Version:** 2.1 (Complete Implementation Guide - Audit Validated)
 **Duration:** 2 weeks
-**Dependencies:** Phases 1-3 (craving + usage logging, recordings complete)
+**Dependencies:** Phases 1-2 (craving + usage logging) - **⚠️ PHASE_2 MUST BE COMPLETE** (requires UsageEntity + UsageRepository)
 **Status:** 📝 Ready for implementation
 **Last Updated:** 2025-11-01
 
@@ -10,7 +10,7 @@
 
 ## 🎯 Phase Goal
 
-**Shippable Deliverable:** Users can **visualize progress** with 11 metric cards, Swift Charts visualizations, and date range filtering (7/30/90 days).
+**Shippable Deliverable:** Users can **visualize progress** with 5 MVP metrics (summary, streaks, intensity, triggers) and date range filtering (7/30/90 days). Additional metrics available as computed properties for future UI expansion.
 
 **Feature Implemented:** Feature 4 (Dashboard with Analytics)
 
@@ -51,13 +51,12 @@ This phase creates a **read-only analytics dashboard** that aggregates data from
 - `Presentation/Views/Dashboard/SummaryCardView.swift` (top summary card)
 - `Presentation/Views/Dashboard/EmptyDashboardView.swift` (empty state for <2 logs)
 
-### Part 5: Presentation Layer - Components (2 files)
+### Part 5: Presentation Layer - Components (1 file)
 - `Presentation/Views/Components/MetricCardView.swift` (reusable metric card)
-- `Presentation/Views/Components/LineChartCard.swift` (reusable line chart - optional for charts phase)
 
 ---
 
-## 📈 11 Metrics to Implement
+## 📈 Metrics Overview (5 MVP + 6 Future)
 
 Based on [MVP_PRODUCT_SPEC.md](../../MVP_PRODUCT_SPEC.md#4-progress-metrics-dashboard):
 
