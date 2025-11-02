@@ -507,10 +507,9 @@ private(set) var logCravingUseCase: LogCravingUseCase
 private(set) var fetchCravingsUseCase: FetchCravingsUseCase
 
 // ← ADD THESE NEW USE CASES:
-      private(set) var saveRecordingUseCase: SaveRecordingUseCase
-      private(set) var fetchRecordingsUseCase: FetchRecordingsUseCase
-      private(set) var playRecordingUseCase: PlayRecordingUseCase
-      private(set) var deleteRecordingUseCase: DeleteRecordingUseCase
+private(set) var saveRecordingUseCase: SaveRecordingUseCase
+private(set) var fetchRecordingsUseCase: FetchRecordingsUseCase
+private(set) var playRecordingUseCase: PlayRecordingUseCase
 private(set) var deleteRecordingUseCase: DeleteRecordingUseCase
 ```
 
@@ -629,6 +628,7 @@ final class DependencyContainer {
     private(set) var saveRecordingUseCase: SaveRecordingUseCase
     private(set) var fetchRecordingsUseCase: FetchRecordingsUseCase
     private(set) var playRecordingUseCase: PlayRecordingUseCase
+    private(set) var deleteRecordingUseCase: DeleteRecordingUseCase
 
     // MARK: - View Models (Presentation Layer)
 
@@ -636,12 +636,12 @@ final class DependencyContainer {
         CravingLogViewModel(logCravingUseCase: logCravingUseCase)
     }
 
-      func makeRecordingLibraryViewModel() -> RecordingLibraryViewModel {
-          RecordingLibraryViewModel(
-              fetchUseCase: fetchRecordingsUseCase,
-              deleteUseCase: deleteRecordingUseCase
-          )
-      }
+    func makeRecordingLibraryViewModel() -> RecordingLibraryViewModel {
+        RecordingLibraryViewModel(
+            fetchUseCase: fetchRecordingsUseCase,
+            deleteUseCase: deleteRecordingUseCase
+        )
+    }
 
     func makeAudioRecordingViewModel() -> AudioRecordingViewModel {
         AudioRecordingViewModel(saveUseCase: saveRecordingUseCase)
@@ -683,9 +683,9 @@ final class DependencyContainer {
             self.logCravingUseCase = DefaultLogCravingUseCase(repository: cravingRepo)
             self.fetchCravingsUseCase = DefaultFetchCravingsUseCase(repository: cravingRepo)
             self.saveRecordingUseCase = DefaultSaveRecordingUseCase(repository: recordingRepo)
-              self.fetchRecordingsUseCase = DefaultFetchRecordingsUseCase(repository: recordingRepo)
-              self.playRecordingUseCase = DefaultPlayRecordingUseCase(repository: recordingRepo)
-              self.deleteRecordingUseCase = DefaultDeleteRecordingUseCase(repository: recordingRepo)
+            self.fetchRecordingsUseCase = DefaultFetchRecordingsUseCase(repository: recordingRepo)
+            self.playRecordingUseCase = DefaultPlayRecordingUseCase(repository: recordingRepo)
+            self.deleteRecordingUseCase = DefaultDeleteRecordingUseCase(repository: recordingRepo)
 
             if !isPreview {
                 ModelContainerSetup.seedDefaultMessages(context: modelContext)
