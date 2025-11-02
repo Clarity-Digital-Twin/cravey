@@ -1262,9 +1262,13 @@ func testExportCSV() async throws {
 
 ### From PHASE_2 (Usage Logging):
 - ⚠️ `UsageEntity` must exist
-- ⚠️ `UsageRepositoryProtocol.fetchAll()` method must exist (same signature as CravingRepositoryProtocol)
+- ⚠️ `UsageRepositoryProtocol.fetchAll()` method must exist
+  - **Signature:** `func fetchAll() async throws -> [UsageEntity]`
+  - **Implementation note:** PHASE_2 must add this method to UsageRepositoryProtocol (same pattern as CravingRepositoryProtocol)
 - ⚠️ `UsageRepositoryProtocol.delete(id:)` method must exist
-- ⚠️ `UsageRepository` implementation must exist
+  - **Signature:** `func delete(id: UUID) async throws`
+  - **Implementation note:** PHASE_2 must add this method to UsageRepositoryProtocol (same pattern as CravingRepositoryProtocol)
+- ⚠️ `UsageRepository` implementation must exist with both `fetchAll()` and `delete(id:)` methods
 
 ### From Baseline (Recordings - Stub):
 - ⚠️ `RecordingEntity` exists (baseline)
