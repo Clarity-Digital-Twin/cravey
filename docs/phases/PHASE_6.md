@@ -60,21 +60,24 @@
 
 ### Part 1: Onboarding Polish (Week 9, Days 1-2)
 
-**Goal:** Refresh copy, visuals, and haptics so the existing onboarding flow feels production-ready and highlights all 6 features clearly.
+**Goal:** Enhance the onboarding flow built in PHASE_3 with production-ready polish, specific feature messaging (now that all features exist), and accessibility refinements.
+
+**Note:** WelcomeView and TourView were built in PHASE_3 (Week 3) with generic messaging. Now that all features exist (recordings + dashboard built in Weeks 5-8), we can showcase specific functionality.
 
 #### Files to Modify (2 files)
 
-1. **Update `Presentation/Views/Onboarding/WelcomeView.swift`**
-   - Refine headline/tagline copy (consistent with App Store description)
-   - Add subtle animation or hero illustration if missing
+1. **Refine `Presentation/Views/Onboarding/WelcomeView.swift`**
+   - Update headline/tagline copy (align with App Store description)
+   - Add subtle animation or hero illustration
    - Reinforce privacy message ("100% local, zero tracking")
-   - Ensure primary CTA uses new button style + haptics
+   - Add haptic feedback to primary CTA button
 
-2. **Update `Presentation/Views/Onboarding/TourView.swift`**
-   - Audit slide copy/images (Craving Logging, Usage Tracking, Recordings, Dashboard with 5 metrics, Privacy)
-   - Add progress indicator polish (PageTabView dots + accessibility labels)
-   - Confirm Skip button, final CTA, and AppStorage flag still work
-   - Localize strings where possible; prepare for future translations
+2. **Refine `Presentation/Views/Onboarding/TourView.swift`**
+   - Update slide 2 copy: "Visualize progress with 5 analytics metrics" (dashboard exists now)
+   - Update slide 3 copy: "Record motivational videos & audio" (recordings exist now)
+   - Add accessibility labels to progress indicators
+   - Add haptic feedback to Next/Skip buttons
+   - Prepare for localization (extract strings)
 
 ---
 
@@ -891,9 +894,9 @@ Go to Home tab → Quick Play section → "+" → Choose Audio or Video → Reco
 
 ## 📦 Complete File Checklist (Phase 6)
 
-### Onboarding (2 files - NEW)
-- [ ] `Presentation/Views/Onboarding/WelcomeView.swift` (CREATE)
-- [ ] `Presentation/Views/Onboarding/TourView.swift` (CREATE)
+### Onboarding (2 files - REFINE)
+- [ ] `Presentation/Views/Onboarding/WelcomeView.swift` (REFINE - built in PHASE_3, polish here)
+- [ ] `Presentation/Views/Onboarding/TourView.swift` (REFINE - built in PHASE_3, update messaging + accessibility)
 
 ### UI/UX Polish (Refinements to existing files)
 - [ ] Add animations to `CravingLogForm.swift`, `UsageLogForm.swift`, `RecordingView.swift`
@@ -925,7 +928,8 @@ Go to Home tab → Quick Play section → "+" → Choose Audio or Video → Reco
 - [ ] Support URL
 
 ### Total Files for Phase 6:
-- **2 new files** (WelcomeView, TourView)
+- **0 new code files** (onboarding built in PHASE_3)
+- **2 onboarding files refined** (WelcomeView, TourView - update messaging + haptics)
 - **4 documentation files** (README, CHANGELOG, support, privacy-policy)
 - **Refinements to 20+ existing files** (polish, optimization, accessibility)
 
@@ -1023,14 +1027,14 @@ Go to Home tab → Quick Play section → "+" → Choose Audio or Video → Reco
 
 ## 🔄 Week-by-Week Breakdown
 
-### Week 9: Onboarding + UI/UX Polish
-- **Mon:** Refine WelcomeView (copy, visuals, haptics)
-- **Tue:** Refine TourView (slides, accessibility, localization prep)
+### Week 9: Onboarding Polish + UI/UX Refinement
+- **Mon:** Refine WelcomeView messaging (built in Week 3, update copy/haptics)
+- **Tue:** Refine TourView messaging (update slides to showcase all 6 features now complete)
 - **Wed:** Add animations (sheet transitions, button feedback)
 - **Thu:** Add haptic feedback + empty state polish
 - **Fri:** Accessibility audit (VoiceOver labels, Dynamic Type)
 
-**Deliverable:** Onboarding flow polished (<60 sec), refined animations/haptics.
+**Deliverable:** Onboarding flow production-ready (<60 sec), all features showcased accurately.
 
 ---
 
@@ -1113,7 +1117,7 @@ Go to Home tab → Quick Play section → "+" → Choose Audio or Video → Reco
 
 **Before marking Phase 6 complete:**
 
-- [ ] Onboarding implemented (WelcomeView + TourView)
+- [ ] Onboarding polished (WelcomeView + TourView messaging updated, haptics added)
 - [ ] All UI/UX polish complete (animations, haptics, empty states)
 - [ ] All performance targets met (<5s, <10s, <3s)
 - [ ] Accessibility compliance (VoiceOver, Dynamic Type, color contrast)
