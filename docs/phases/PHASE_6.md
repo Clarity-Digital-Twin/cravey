@@ -363,7 +363,7 @@ All data is stored locally using SwiftData. No network calls, no analytics, no t
 - Craving logging with multi-trigger support
 - Usage tracking with ROA-specific amounts
 - Audio + video recording with Quick Play
-- Dashboard with 11 Swift Charts metrics
+- Dashboard with 5 Swift Charts metrics
 - Data export (CSV/JSON) and deletion
 - Onboarding flow (<60 seconds)
 
