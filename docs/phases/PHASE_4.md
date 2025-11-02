@@ -60,65 +60,99 @@ This phase creates a **read-only analytics dashboard** that aggregates data from
 
 Based on [MVP_PRODUCT_SPEC.md](../../MVP_PRODUCT_SPEC.md#4-progress-metrics-dashboard):
 
-### 1. Summary Card (Top Priority)
+**✅ MVP Metrics (Implemented in DashboardView):**
+1. Summary Card (Total cravings + usage)
+2. Current Abstinence Streak
+3. Longest Abstinence Streak
+4. Average Craving Intensity
+5. Top Triggers (Top 3)
+
+**🔮 Future Metrics (Computed properties exist in DashboardData, UI deferred):**
+6. Craving Intensity Over Time (line chart)
+7. Craving Frequency (bar chart)
+8. Location Patterns
+9. Time of Day Breakdown
+10. Usage by ROA
+11. Day of Week Patterns
+
+---
+
+### 1. Summary Card (Top Priority) ✅ MVP
 - **Data:** Total cravings + Total usage for selected date range
 - **UI:** Large card at top, "This week: 12 uses, 3 cravings"
 - **Purpose:** At-a-glance overview without scrolling
 
-### 2. Craving Intensity Over Time
-- **Chart:** Line chart
-- **Data:** Average craving intensity per day/week
-- **Y-Axis:** 0-10 scale
-- **Purpose:** Shows if cravings getting weaker/stronger over time
-
-### 3. Craving Frequency
-- **Chart:** Bar chart
-- **Data:** Number of cravings per day/week
-- **Purpose:** Identifies high-frequency periods
-
-### 4. Trigger Breakdown (Combined)
-- **Chart:** Pie chart (future enhancement - MVP uses text list)
-- **Data:** All triggers from BOTH cravings + usage (HAALT model)
-- **Purpose:** Reveals most common emotional/situational cues
-
-### 5. Most Common Triggers (Top 3)
-- **UI:** Text list with percentages
-- **Data:** Top 3 triggers by frequency
-- **Example:** "1. Bored (40%), 2. Anxious (30%), 3. Habit (20%)"
-- **Purpose:** Quick summary of trigger breakdown
-
-### 6. Location Patterns
-- **Chart:** Bar chart or list
-- **Data:** Where cravings/usage occur most (Home, Work, Social, etc.)
-- **Purpose:** Identifies high-risk environmental cues
-
-### 7. Time of Day Breakdown
-- **Chart:** Bar chart (4 periods: morning/afternoon/evening/night)
-- **Data:** Usage + craving distribution by time of day
-- **Purpose:** Reveals temporal patterns for intervention planning
-
-### 8. Usage by ROA (Route of Administration)
-- **Chart:** Pie chart (future enhancement - MVP uses text list)
-- **Data:** Method distribution (50% Bowls, 30% Vape, 20% Edibles)
-- **Purpose:** Tracks ROA switching (escalation indicator)
-
-### 9. Day of Week Patterns
-- **Chart:** Bar chart (Mon-Sun)
-- **Data:** Usage frequency by day of week
-- **Purpose:** Shows which days are highest risk
-
-### 10. Current Streak
+### 2. Current Streak ✅ MVP
 - **UI:** Metric card with large number
 - **Data:** Context-aware based on user pattern:
   - "7 days abstinent" (if no usage logs in last 7 days)
   - "Active use period" (if usage logged recently)
 - **Purpose:** Non-punitive streak tracking
+- **Implementation:** DashboardView lines 868-872 (MetricCardView)
 
-### 11. Longest Abstinence Streak
+### 3. Longest Abstinence Streak ✅ MVP
 - **UI:** Milestone card
 - **Data:** Historical best streak (never resets)
 - **Example:** "Your best: 14 days"
 - **Purpose:** Celebrates achievement without punishment
+- **Implementation:** DashboardView lines 874-879 (MetricCardView)
+
+### 4. Average Craving Intensity ✅ MVP
+- **UI:** Metric card with subtitle
+- **Data:** Average intensity across all cravings (0-10 scale)
+- **Example:** "7.5 / 10"
+- **Purpose:** Shows overall craving severity trend
+- **Implementation:** DashboardView lines 882-889 (MetricCardView)
+
+### 5. Most Common Triggers (Top 3) ✅ MVP
+- **UI:** Text list with counts
+- **Data:** Top 3 triggers by frequency
+- **Example:** "1. Bored (12)\n2. Anxious (8)\n3. Habit (5)"
+- **Purpose:** Quick summary of trigger patterns
+- **Implementation:** DashboardView lines 893-904 (VStack with Text)
+
+### 6. Craving Intensity Over Time 🔮 FUTURE
+- **Chart:** Line chart
+- **Data:** Average craving intensity per day/week
+- **Y-Axis:** 0-10 scale
+- **Purpose:** Shows if cravings getting weaker/stronger over time
+- **Status:** Computed property exists, UI deferred to post-MVP
+
+### 7. Craving Frequency 🔮 FUTURE
+- **Chart:** Bar chart
+- **Data:** Number of cravings per day/week
+- **Purpose:** Identifies high-frequency periods
+- **Status:** Raw data available (totalCravings), chart UI deferred
+
+### 8. Trigger Breakdown (Complete) 🔮 FUTURE
+- **Chart:** Pie chart
+- **Data:** All triggers from BOTH cravings + usage (HAALT model)
+- **Purpose:** Visual breakdown beyond top 3
+- **Status:** Computed property exists (`triggerBreakdown`), chart UI deferred
+
+### 9. Location Patterns 🔮 FUTURE
+- **Chart:** Bar chart or list
+- **Data:** Where cravings/usage occur most (Home, Work, Social, etc.)
+- **Purpose:** Identifies high-risk environmental cues
+- **Status:** Computed property exists (`locationBreakdown`), UI deferred
+
+### 10. Time of Day Breakdown 🔮 FUTURE
+- **Chart:** Bar chart (4 periods: morning/afternoon/evening/night)
+- **Data:** Usage + craving distribution by time of day
+- **Purpose:** Reveals temporal patterns for intervention planning
+- **Status:** Computed property exists (`timeOfDayBreakdown`), UI deferred
+
+### 11. Usage by ROA 🔮 FUTURE
+- **Chart:** Pie chart
+- **Data:** Method distribution (50% Bowls, 30% Vape, 20% Edibles)
+- **Purpose:** Tracks ROA switching (escalation indicator)
+- **Status:** Computed property exists (`roaBreakdown`), UI deferred
+
+### 12. Day of Week Patterns 🔮 FUTURE
+- **Chart:** Bar chart (Mon-Sun)
+- **Data:** Usage frequency by day of week
+- **Purpose:** Shows which days are highest risk
+- **Status:** Computed property exists (`dayOfWeekBreakdown`), UI deferred
 
 ---
 
@@ -126,10 +160,10 @@ Based on [MVP_PRODUCT_SPEC.md](../../MVP_PRODUCT_SPEC.md#4-progress-metrics-dash
 
 ### Functional Requirements
 - [ ] Dashboard loads <3 seconds with 90 days of data (200+ logs)
-- [ ] All 11 metrics render correctly with sample data
+- [ ] All 5 MVP metrics render correctly with sample data (summary, 2 streaks, intensity, triggers)
 - [ ] Date range filter works (7/30/90 days/All Time)
 - [ ] Empty state shows if <2 total logs (craving + usage combined)
-- [ ] Charts adapt to dark mode automatically
+- [ ] All metrics adapt to dark mode automatically
 - [ ] All metrics handle edge cases (zero data, single data point, etc.)
 
 ### Code Quality
@@ -141,8 +175,9 @@ Based on [MVP_PRODUCT_SPEC.md](../../MVP_PRODUCT_SPEC.md#4-progress-metrics-dash
 
 ### Performance
 - [ ] Date range filter responds instantly (<100ms)
-- [ ] Charts render in <500ms
+- [ ] Metric cards render in <500ms
 - [ ] No UI blocking during data aggregation
+- [ ] Repository queries use efficient date range filtering
 
 ---
 
