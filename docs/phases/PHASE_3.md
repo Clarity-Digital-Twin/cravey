@@ -1690,26 +1690,42 @@ import AVFoundation
 
 struct VideoRecordingView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.saveRecordingUseCase) private var saveUseCase
-    @State private var viewModel: VideoRecordingViewModel
-
-    init() {
-        _viewModel = State(initialValue: VideoRecordingViewModel(
-            saveUseCase: PlaceholderSaveRecordingUseCase()
-        ))
-    }
+    @Environment(DependencyContainer.self) private var container
+    @State private var viewModel: VideoRecordingViewModel?
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                // Camera preview
-                if viewModel.isCameraReady, let previewLayer = viewModel.coordinator.previewLayer {
-                    CameraPreview(previewLayer: previewLayer)
-                        .ignoresSafeArea()
+            Group {
+                if let viewModel = viewModel {
+                    videoRecordingContent(viewModel: viewModel)
                 } else {
                     Color.black.ignoresSafeArea()
-                    ProgressView("Loading camera...")
+                    ProgressView("Initializing camera...")
                 }
+            }
+            .task {
+                if viewModel == nil {
+                    viewModel = container.makeVideoRecordingViewModel()
+                }
+                await viewModel?.setupCamera()
+            }
+            .onDisappear {
+                viewModel?.teardownCamera()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func videoRecordingContent(viewModel: VideoRecordingViewModel) -> some View {
+        ZStack {
+            // Camera preview
+            if viewModel.isCameraReady, let previewLayer = viewModel.coordinator.previewLayer {
+                CameraPreview(previewLayer: previewLayer)
+                    .ignoresSafeArea()
+            } else {
+                Color.black.ignoresSafeArea()
+                ProgressView("Loading camera...")
+            }
 
                 // Overlay UI
                 VStack {
@@ -1795,13 +1811,6 @@ struct VideoRecordingView: View {
                     }
                 }
             }
-            .task {
-                viewModel = VideoRecordingViewModel(saveUseCase: saveUseCase)
-                await viewModel.setupCamera()
-            }
-            .onDisappear {
-                viewModel.teardownCamera()
-            }
             .alert("Error", isPresented: Binding(
                 get: { viewModel.error != nil },
                 set: { if !$0 { viewModel.error = nil } }
@@ -1810,7 +1819,6 @@ struct VideoRecordingView: View {
             } message: {
                 Text(viewModel.error ?? "")
             }
-        }
     }
 
     private func formatDuration(_ duration: TimeInterval) -> String {
@@ -1917,6 +1925,8 @@ struct SaveRecordingSheet: View {
 ```
 
 **Why This Code:**
+- Uses `RecordingPurpose` enum from Domain layer (RecordingEntity.swift)
+- **IMPORTANT:** RecordingPurpose has `.cravingMoment` case (not `.craving`)
 - Form-based UI (iOS standard for data entry)
 - Optional title and notes
 - Purpose picker with descriptions
@@ -1932,9 +1942,29 @@ struct SaveRecordingSheet: View {
 import SwiftUI
 
 struct QuickPlaySection: View {
-    @State private var viewModel: QuickPlayViewModel
+    @Environment(DependencyContainer.self) private var container
+    @State private var viewModel: QuickPlayViewModel?
 
     var body: some View {
+        Group {
+            if let viewModel = viewModel {
+                quickPlayContent(viewModel: viewModel)
+            } else {
+                ProgressView("Loading...")
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 120)
+            }
+        }
+        .task {
+            if viewModel == nil {
+                viewModel = container.makeQuickPlayViewModel()
+            }
+            await viewModel?.loadTopRecordings()
+        }
+    }
+
+    @ViewBuilder
+    private func quickPlayContent(viewModel: QuickPlayViewModel) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text("Quick Play")
@@ -1970,9 +2000,6 @@ struct QuickPlaySection: View {
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color(.secondarySystemBackground))
         )
-        .task {
-            await viewModel.loadTopRecordings()
-        }
     }
 
     private var emptyState: some View {
@@ -2001,7 +2028,7 @@ struct RecordingCard: View {
 
     var body: some View {
         NavigationLink {
-            if recording.type == "video" {
+            if recording.recordingType == .video {
                 VideoPlayerView(recording: recording)
             } else {
                 AudioPlayerView(recording: recording)
@@ -2009,8 +2036,8 @@ struct RecordingCard: View {
         } label: {
             VStack(alignment: .leading, spacing: 8) {
                 // Thumbnail
-                if let thumbnailPath = recording.thumbnailPath {
-                    AsyncImage(url: thumbnailURL) { image in
+                if let thumbnailURL = recording.thumbnailURL {
+                    AsyncImage(url: thumbnailFullURL) { image in
                         image
                             .resizable()
                             .scaledToFill()
@@ -2031,7 +2058,7 @@ struct RecordingCard: View {
                 }
 
                 // Metadata
-                Text(recording.title ?? "Untitled")
+                Text(recording.title)  // ← title is required
                     .font(.caption)
                     .fontWeight(.semibold)
                     .lineLimit(1)
@@ -2049,9 +2076,9 @@ struct RecordingCard: View {
         .buttonStyle(.plain)
     }
 
-    private var thumbnailURL: URL {
+    private var thumbnailFullURL: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(recording.thumbnailPath ?? "")
+            .appendingPathComponent(recording.thumbnailURL ?? "")
     }
 
     private func formatDuration(_ duration: TimeInterval) -> String {
@@ -2103,7 +2130,7 @@ import SwiftUI
 import AVKit
 
 struct AudioPlayerView: View {
-    @Environment(\.playRecordingUseCase) private var playUseCase
+    @Environment(DependencyContainer.self) private var container
     let recording: RecordingEntity
 
     @State private var player: AVPlayer?
@@ -2128,11 +2155,11 @@ struct AudioPlayerView: View {
 
             // Metadata
             VStack(spacing: 8) {
-                Text(recording.title ?? "Untitled Recording")
+                Text(recording.title)  // ← title is required
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Text(recording.purpose.capitalized)
+                Text(recording.purpose.rawValue.capitalized)  // ← purpose is enum
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -2167,7 +2194,7 @@ struct AudioPlayerView: View {
                     player?.play()
                     // Increment play count on first play
                     Task {
-                        _ = try? await playUseCase.execute(recording: recording)
+                        _ = try? await container.playRecordingUseCase.execute(recording: recording)
                     }
                 }
                 isPlaying.toggle()
@@ -2198,7 +2225,7 @@ struct AudioPlayerView: View {
 
     private func setupPlayer() {
         let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(recording.filePath)
+            .appendingPathComponent(recording.fileURL)  // ← Correct property name
 
         player = AVPlayer(url: url)
 
@@ -2234,7 +2261,7 @@ import SwiftUI
 import AVKit
 
 struct VideoPlayerView: View {
-    @Environment(\.playRecordingUseCase) private var playUseCase
+    @Environment(DependencyContainer.self) private var container
     let recording: RecordingEntity
 
     @State private var player: AVPlayer?
@@ -2250,7 +2277,7 @@ struct VideoPlayerView: View {
                         if !hasPlayed {
                             hasPlayed = true
                             Task {
-                                _ = try? await playUseCase.execute(recording: recording)
+                                _ = try? await container.playRecordingUseCase.execute(recording: recording)
                             }
                         }
                     }
@@ -2258,7 +2285,7 @@ struct VideoPlayerView: View {
                 ProgressView("Loading video...")
             }
         }
-        .navigationTitle(recording.title ?? "Untitled")
+        .navigationTitle(recording.title)  // ← title is required
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             setupPlayer()
@@ -2270,7 +2297,7 @@ struct VideoPlayerView: View {
 
     private func setupPlayer() {
         let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent(recording.filePath)
+            .appendingPathComponent(recording.fileURL)  // ← Correct property name
 
         player = AVPlayer(url: url)
     }
@@ -2293,17 +2320,14 @@ struct VideoPlayerView: View {
 
 ```swift
 // Quick Play Section (Top 3 Recordings)
-if let fetchRecordingsUseCase = container.fetchRecordingsUseCase {
-    QuickPlaySection(
-        viewModel: QuickPlayViewModel(fetchUseCase: fetchRecordingsUseCase)
-    )
-}
+QuickPlaySection()
 ```
 
 **Why This Code:**
 - Integrates recordings into Home tab
 - Shows most-played recordings (user's favorites)
 - Increases recording discoverability and usage
+- QuickPlaySection handles its own DI via @Environment(DependencyContainer.self)
 
 ---
 
