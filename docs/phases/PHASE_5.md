@@ -32,6 +32,7 @@ This phase creates a **read-only analytics dashboard** that aggregates data from
 - **FetchDescriptor** for efficient SwiftData queries
 - **Computed properties** for metrics (no database writes)
 - **Clean Architecture** (Domain → Presentation, same as Phases 1-3)
+- **SwiftUI 2025:** @Observable ViewModels, @State with deferred init via `.task` (see [PHASE_1 Best Practices](./PHASE_1.md#-swiftui--swiftdata-2025-best-practices))
 
 ---
 

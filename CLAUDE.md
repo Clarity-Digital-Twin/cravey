@@ -32,6 +32,163 @@ Cravey is a **cannabis cessation support iOS app** (iOS 18+) built with Clean Ar
 
 ---
 
+## SwiftUI & SwiftData 2025 Best Practices
+
+This project follows the latest Apple conventions for iOS 18+ development:
+
+### SwiftUI Modern Patterns
+
+**1. @Observable (NOT ObservableObject)**
+```swift
+// ✅ Modern (2025)
+@Observable
+@MainActor
+final class CravingLogViewModel {
+    var intensity: Double = 5.0
+    var notes: String = ""
+    // No @Published needed!
+}
+
+// ❌ Legacy (pre-iOS 17)
+class CravingLogViewModel: ObservableObject {
+    @Published var intensity: Double = 5.0
+    @Published var notes: String = ""
+}
+```
+
+**2. @State for Objects (NOT @StateObject)**
+```swift
+// ✅ Modern (2025)
+struct ContentView: View {
+    @State private var viewModel = CravingLogViewModel()
+    // ...
+}
+
+// ❌ Legacy
+struct ContentView: View {
+    @StateObject private var viewModel = CravingLogViewModel()
+}
+```
+
+**3. @Environment(Type.self) for DI (NOT @EnvironmentObject)**
+```swift
+// ✅ Modern (2025)
+struct ContentView: View {
+    @Environment(DependencyContainer.self) private var container
+}
+
+// ❌ Legacy
+struct ContentView: View {
+    @EnvironmentObject var container: DependencyContainer
+}
+```
+
+**4. @Bindable for Two-Way Bindings**
+```swift
+// ✅ Use @Bindable when you need bindings to @Observable properties
+struct EditView: View {
+    @Bindable var book: Book  // NOT @ObservedObject!
+
+    var body: some View {
+        TextField("Title", text: $book.title)
+    }
+}
+```
+
+**5. Deferred Initialization for Expensive Objects**
+```swift
+// ✅ Prevents recreating ViewModels on every view update
+struct HomeView: View {
+    @State private var viewModel: CravingLogViewModel?
+
+    var body: some View {
+        if let viewModel {
+            ContentView(viewModel: viewModel)
+        } else {
+            Color.clear.task {
+                viewModel = makeViewModel()
+            }
+        }
+    }
+}
+```
+
+### SwiftData Modern Patterns
+
+**1. @Model Macro (Auto-Adds Observable, PersistentModel, Sendable)**
+```swift
+// ✅ Modern (2025)
+@Model
+final class CravingModel {
+    @Attribute(.unique) var id: UUID
+    var timestamp: Date
+    var intensity: Int
+    // Automatically Observable, PersistentModel, Sendable!
+}
+```
+
+**2. @Attribute for Constraints**
+```swift
+@Model
+final class UserProfile {
+    @Attribute(.unique) var id: UUID  // Uniqueness constraint
+    @Attribute(.unique) var email: String
+    var name: String
+}
+```
+
+**3. @Relationship with Delete Rules**
+```swift
+@Model
+final class CravingModel {
+    @Relationship(deleteRule: .cascade, inverse: \RecordingModel.craving)
+    var recordings: [RecordingModel] = []
+}
+
+@Model
+final class RecordingModel {
+    var craving: CravingModel?  // Inverse relationship
+}
+```
+
+**4. @Transient for Non-Persisted Properties**
+```swift
+@Model
+final class RecordingModel {
+    var filePath: String
+
+    @Transient
+    var isDownloading: Bool = false  // Not saved to database
+}
+```
+
+**5. ModelContext from Environment**
+```swift
+// ✅ For simple apps without Clean Architecture
+@Environment(\.modelContext) private var modelContext
+
+func saveData() {
+    modelContext.insert(newModel)
+    try? modelContext.save()
+}
+
+// ✅ For Clean Architecture (our approach)
+@Environment(DependencyContainer.self) private var container
+let repository = container.cravingRepository  // Keeps Domain pure
+```
+
+### Why We Use DependencyContainer
+
+While `@Environment(\.modelContext)` is valid for simple apps, we use **Clean Architecture**:
+- ✅ Domain layer stays framework-independent (no SwiftData imports)
+- ✅ Repository pattern enables mocking/testing
+- ✅ Use cases are pure business logic
+- ✅ Works seamlessly with @Observable (no migration needed)
+
+**For detailed examples, see:** [PHASE_1 Best Practices](./docs/phases/PHASE_1.md#-swiftui--swiftdata-2025-best-practices)
+
+---
+
 ## Architecture (Clean Architecture + MVVM)
 
 ### Layer Structure

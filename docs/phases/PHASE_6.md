@@ -54,6 +54,12 @@
 - <3 sec dashboard load target
 - 6 additional metrics available as DashboardData computed properties
 
+**SwiftUI & SwiftData 2025 Best Practices:**
+- All code across Phases 1-5 follows iOS 18+ conventions (see [PHASE_1 Best Practices](./PHASE_1.md#-swiftui--swiftdata-2025-best-practices))
+- Onboarding polish (this phase) maintains same patterns: `@Observable` ViewModels, `@State` with deferred init
+- Performance optimizations follow SwiftData best practices (predicates, fetch limits)
+- Accessibility audit ensures VoiceOver compliance for all `@Observable` state updates
+
 ---
 
 ## 🛠️ What We're Building (Phase 6)

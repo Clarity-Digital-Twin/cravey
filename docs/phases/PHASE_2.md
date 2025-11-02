@@ -34,8 +34,9 @@
 - `HomeView.swift` - Has "Log Usage" menu item (currently TODO)
 
 ✅ **Patterns Established:**
+- **SwiftUI 2025:** @Observable ViewModels, @State for objects, deferred initialization (see [PHASE_1 Best Practices](./PHASE_1.md#-swiftui--swiftdata-2025-best-practices))
 - Environment injection (`@Environment(DependencyContainer.self)`)
-- Factory methods (`container.makeViewModel()`)
+- Factory methods with deferred init (`container.makeViewModel()` in `.task`)
 - Alert-before-dismiss flow
 - SwiftData testing with in-memory configuration
 - TDD with Swift Testing framework
@@ -957,6 +958,10 @@ struct HomeView: View {
     @State private var showCravingLogSheet = false
     @State private var showUsageLogSheet = false
 
+    // 2025 Best Practice: Deferred ViewModel initialization (see PHASE_1 for details)
+    @State private var cravingLogViewModel: CravingLogViewModel?
+    @State private var usageLogViewModel: UsageLogViewModel?
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -993,12 +998,26 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showCravingLogSheet) {
-                let viewModel = container.makeCravingLogViewModel()
-                CravingLogForm(viewModel: viewModel)
+                cravingLogViewModel = nil  // Reset on dismiss
+            } content: {
+                if let viewModel = cravingLogViewModel {
+                    CravingLogForm(viewModel: viewModel)
+                } else {
+                    Color.clear.task {
+                        cravingLogViewModel = container.makeCravingLogViewModel()
+                    }
+                }
             }
             .sheet(isPresented: $showUsageLogSheet) {
-                let viewModel = container.makeUsageLogViewModel()
-                UsageLogForm(viewModel: viewModel)
+                usageLogViewModel = nil  // Reset on dismiss
+            } content: {
+                if let viewModel = usageLogViewModel {
+                    UsageLogForm(viewModel: viewModel)
+                } else {
+                    Color.clear.task {
+                        usageLogViewModel = container.makeUsageLogViewModel()
+                    }
+                }
             }
         }
     }

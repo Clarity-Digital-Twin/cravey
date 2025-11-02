@@ -41,6 +41,7 @@
 - SwiftData ModelContainer with RecordingModel schema
 - File storage infrastructure (Documents/Recordings/ directory)
 - Clean Architecture DI pattern via @Environment
+- **SwiftUI 2025 Patterns:** @Observable ViewModels, deferred initialization via `.task` (see [PHASE_1 Best Practices](./PHASE_1.md#-swiftui--swiftdata-2025-best-practices))
 
 ---
 

@@ -50,6 +50,133 @@
 
 ---
 
+## 📱 SwiftUI & SwiftData 2025 Best Practices
+
+This phase follows the latest Apple conventions for SwiftUI and SwiftData (iOS 18+):
+
+### SwiftUI Patterns
+
+**1. @Observable Instead of ObservableObject**
+```swift
+// ✅ 2025 Pattern (already in baseline)
+@Observable
+@MainActor
+final class CravingLogViewModel {
+    var intensity: Double = 5.0
+    var selectedTriggers: Set<String> = []
+    // No @Published needed!
+}
+```
+
+**2. @State for Observable Objects**
+```swift
+// ✅ Use @State, not @StateObject
+@State private var viewModel: CravingLogViewModel
+```
+
+**3. Deferred Initialization for Expensive Objects**
+```swift
+// ✅ Avoid creating ViewModels on every view update
+@State private var viewModel: CravingLogViewModel?
+
+var body: some View {
+    if let viewModel {
+        ContentView(viewModel: viewModel)
+    } else {
+        Color.clear.task { viewModel = makeViewModel() }
+    }
+}
+```
+
+**4. @Environment for Dependency Injection**
+```swift
+// ✅ Custom environment objects (Clean Architecture DI)
+@Environment(DependencyContainer.self) private var container
+
+// ✅ SwiftData ModelContext (alternative to repository pattern)
+@Environment(\.modelContext) private var modelContext
+```
+
+**5. @Bindable for Two-Way Bindings**
+```swift
+// ✅ When you need bindings to @Observable object properties
+struct EditView: View {
+    @Bindable var book: Book  // Not @ObservedObject!
+
+    var body: some View {
+        TextField("Title", text: $book.title)  // Binding works!
+    }
+}
+```
+
+### SwiftData Patterns
+
+**1. @Model Macro**
+```swift
+// ✅ Automatically adds Observable, PersistentModel, Sendable
+@Model
+final class CravingModel {
+    @Attribute(.unique) var id: UUID
+    var timestamp: Date
+    // ...
+}
+```
+
+**2. @Relationship with Delete Rules**
+```swift
+// ✅ Define relationships between models
+@Relationship(deleteRule: .cascade, inverse: \CravingModel.recordings)
+var recordings: [RecordingModel] = []
+```
+
+**3. @Transient for Non-Persisted Properties**
+```swift
+// ✅ Exclude computed/temporary properties
+@Transient
+var isDownloading: Bool = false
+```
+
+**4. ModelContext from Environment**
+```swift
+// ✅ Access context in views
+@Environment(\.modelContext) private var modelContext
+
+func saveData() {
+    modelContext.insert(newModel)
+    try? modelContext.save()
+}
+```
+
+### Patterns Used in Phase 1
+
+- ✅ **@Observable ViewModels** - CravingLogViewModel, CravingListViewModel
+- ✅ **@State with Deferred Init** - HomeView sheet presentation (Step 8)
+- ✅ **@Environment DI** - DependencyContainer for Clean Architecture
+- ✅ **@Model with @Attribute** - CravingModel with `.unique` id
+- ✅ **@Bindable** - CravingLogForm bindings to ViewModel properties
+- ✅ **ModelContext** - Accessed via repository pattern (Clean Architecture)
+
+### Why We Use DependencyContainer
+
+While SwiftData's `@Environment(\.modelContext)` is valid, we use a custom `DependencyContainer` for **Clean Architecture**:
+- Keeps Domain layer framework-independent (no SwiftData imports)
+- Enforces repository pattern (testable with mocks)
+- Supports dependency injection for use cases
+- Works seamlessly with @Observable (no changes needed)
+
+**Alternative for Simple Apps:** You can access `modelContext` directly and skip repositories:
+```swift
+@Environment(\.modelContext) private var modelContext
+
+func saveCraving() {
+    let craving = CravingModel(...)
+    modelContext.insert(craving)
+    try? modelContext.save()
+}
+```
+
+---
+
 ## 🛠️ What We're Building (Phase 1)
 
 ### Part 1: Foundation (Day 1 Morning)
@@ -1036,6 +1163,10 @@ struct HomeView: View {
     @Environment(DependencyContainer.self) private var container
     @State private var showCravingLogSheet = false
 
+    // 2025 Best Practice: Use @State for ViewModel with deferred initialization
+    // This avoids recreating the VM on every sheet presentation
+    @State private var cravingLogViewModel: CravingLogViewModel?
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 24) {
@@ -1067,8 +1198,19 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $showCravingLogSheet) {
-                let viewModel = container.makeCravingLogViewModel()
-                CravingLogForm(viewModel: viewModel)
+                // Reset form state when sheet dismisses
+                cravingLogViewModel = nil
+            } content: {
+                // 2025 Pattern: Initialize VM once when sheet appears
+                if let viewModel = cravingLogViewModel {
+                    CravingLogForm(viewModel: viewModel)
+                } else {
+                    // Placeholder while VM initializes
+                    Color.clear
+                        .task {
+                            cravingLogViewModel = container.makeCravingLogViewModel()
+                        }
+                }
             }
         }
     }

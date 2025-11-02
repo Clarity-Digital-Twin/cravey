@@ -72,9 +72,15 @@ This document maps all 6 MVP features to **exact code artifacts** (files, protoc
    - NO `import SwiftData`
    - Pure Swift protocols and structs only
 
-3. **State Management (2025):**
-   - `@Observable` macro (NOT `ObservableObject`)
-   - `@State` for local view state
+3. **State Management (2025 SwiftUI/SwiftData Best Practices):**
+   - `@Observable` macro (NOT `ObservableObject` - no `@Published` needed)
+   - `@State` for objects (NOT `@StateObject`)
+   - `@Environment(Type.self)` for DI (NOT `@EnvironmentObject`)
+   - `@Bindable` for two-way bindings to @Observable properties
+   - Deferred initialization: `@State var vm: VM?` + `.task { vm = makeVM() }`
+   - `@Model` macro for SwiftData (auto-adds `Observable`, `PersistentModel`, `Sendable`)
+   - `@Attribute(.unique)` for unique constraints (e.g., `id` field)
+   - `@Relationship(deleteRule:, inverse:)` for model relationships
    - Unidirectional data flow (View → ViewModel → Use Case → Repository)
 
 4. **Dependency Injection:**

@@ -55,6 +55,13 @@
 - Clean Architecture DI via @Environment
 - Tab bar shell ready for Settings tab
 
+**SwiftUI & SwiftData 2025 Best Practices:**
+- All code in this phase follows iOS 18+ conventions (see [PHASE_1 Best Practices](./PHASE_1.md#-swiftui--swiftdata-2025-best-practices))
+- SettingsViewModel uses `@Observable` (NOT `ObservableObject`)
+- SettingsView uses `@State` with deferred initialization via `.task`
+- ExportDataView uses `@Bindable` for two-way bindings to ViewModel
+- DependencyContainer accessed via `@Environment(DependencyContainer.self)`
+
 ---
 
 ## 📦 Complete File Checklist (8 files total)
