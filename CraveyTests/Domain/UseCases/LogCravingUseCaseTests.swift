@@ -14,11 +14,11 @@ struct LogCravingUseCaseTests {
 
         // Act
         let result = try await useCase.execute(
+            timestamp: Date(),
             intensity: 5,
             triggers: ["Anxious", "Bored"],
             notes: "Test note",
-            location: "Office",
-            wasManagedSuccessfully: true
+            location: "Office"
         )
 
         // Assert
@@ -37,11 +37,11 @@ struct LogCravingUseCaseTests {
         // Act & Assert
         await #expect(throws: CravingError.self) {
             try await useCase.execute(
+                timestamp: Date(),
                 intensity: 11, // Invalid
                 triggers: [],
                 notes: nil,
-                location: nil,
-                wasManagedSuccessfully: false
+                location: nil
             )
         }
     }

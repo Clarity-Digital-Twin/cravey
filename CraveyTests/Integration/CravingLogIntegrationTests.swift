@@ -28,7 +28,6 @@ struct CravingLogIntegrationTests {
         viewModel.selectedTriggers = Set(["Anxious", "Bored"])
         viewModel.notes = "Integration test"
         viewModel.location = "Home"
-        viewModel.wasManagedSuccessfully = false
 
         // When: User taps Save
         await viewModel.logCraving()
@@ -64,8 +63,8 @@ struct CravingLogIntegrationTests {
             timestamp: Date(),
             intensity: 5,
             triggers: ["Stressed"],
-            notes: "Test",
-            wasManagedSuccessfully: true
+            location: nil,
+            notes: "Test"
         )
         context.insert(craving)
         try context.save()
@@ -105,7 +104,6 @@ struct CravingLogIntegrationTests {
         viewModel.selectedTriggers = Set(["Anxious", "Bored"])
         viewModel.notes = "Performance test"
         viewModel.location = "Home"
-        viewModel.wasManagedSuccessfully = false
 
         // Measure: Time the save operation
         let startTime = Date()

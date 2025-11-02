@@ -1,7 +1,7 @@
 # Phase 1: Foundation + Craving Logging (Week 1 Only)
 
-**Version:** 2.0 (Aligned with 16-week master timeline)
-**Last Updated:** 2025-10-31
+**Version:** 2.1 (Timestamp + Notes Limit Added)
+**Last Updated:** 2025-11-02
 **Duration:** 1 week (Week 1 of 16-week plan)
 **Dependencies:** None (baseline code exists)
 **Status:** 🎯 **START HERE**
@@ -18,6 +18,23 @@
 - Tab Bar shell (Home, Dashboard, Settings empty states)
 
 **Scope Note:** This document covers **Week 1 only** from TECHNICAL_IMPLEMENTATION.md. Usage Logging (Week 2), Onboarding + Data Management (Weeks 3-4), Recordings (Weeks 5-6), and Dashboard (Weeks 7-8) are documented in PHASE_2 through PHASE_5. See [PHASE_OVERVIEW.md](./PHASE_OVERVIEW.md) for complete timeline.
+
+---
+
+## 🔍 Phase 1 Scope Decisions (2025-11-02)
+
+### ✅ Implemented in Phase 1
+- **Timestamp Field:** User-editable timestamp with >7 days warning (CLINICAL_CANNABIS_SPEC.md:193)
+- **500 Char Notes Limit:** Enforced in ViewModel with character counter (DATA_MODEL_SPEC.md:275)
+- **HAALT Triggers:** All 10 triggers (6 primary + 4 secondary) in flat list (CLINICAL_CANNABIS_SPEC.md:196-198)
+- **Location Presets:** 5 presets (Home, Work, Social, Outside, Car) + "Current Location" placeholder
+
+### 🔜 Deferred to Phase 2
+- **GPS Location Detection:** "Current Location" chip exists but doesn't trigger CoreLocation. Full GPS integration with privacy prompt deferred to Phase 2 (Week 2) per complexity assessment.
+- **HAALT Grouped Display:** Data model correctly implements primary/secondary groupings in TriggerOptions.swift. Grouped UI (section headers) is polish, not Tier 1 requirement. Consider for Phase 2 UX improvements.
+
+### ❌ Removed (Not in Tier 1 Specs)
+- **wasManagedSuccessfully field:** Removed during convergence (2025-11-02). Not in DATA_MODEL_SPEC.md lines 260-305. See CONVERGENCE_STRATEGY.md for details.
 
 ---
 
@@ -394,10 +411,10 @@ func saveCraving() {
 
 13. **`Presentation/Views/Craving/CravingLogForm.swift`**
     - Sheet presentation
-    - Required section (intensity only)
-    - Optional section (triggers, location, notes, managed successfully)
+    - Required section (timestamp, intensity - per CLINICAL_CANNABIS_SPEC.md:187-193)
+    - Optional section (triggers, location, notes - with 500 char limit per DATA_MODEL_SPEC.md:275)
     - Cancel/Save toolbar
-    - Success/Error alerts
+    - Success/Error alerts (including >7 days timestamp warning)
 
 14. **`Presentation/Views/Craving/CravingListView.swift`** (NEW)
     - Displays all cravings (fetched via `FetchCravingsUseCase`)
@@ -479,11 +496,11 @@ func saveCraving() {
 │  PRESENTATION LAYER (SwiftUI)                   │
 │  ┌────────────────────────────────────┐         │
 │  │ CravingLogViewModel (@Observable)   │         │
+│  │  - timestamp: Date                  │         │
 │  │  - intensity: Double                │         │
 │  │  - selectedTriggers: Set<String>    │         │
-│  │  - notes: String                    │         │
+│  │  - notes: String (500 char limit)   │         │
 │  │  - location: String                 │         │
-│  │  - wasManagedSuccessfully: Bool     │         │
 │  │  - logCraving() async               │         │
 │  └────────────┬───────────────────────┘         │
 └───────────────┼─────────────────────────────────┘
@@ -546,13 +563,13 @@ func saveCraving() {
    ↓
 6. CravingLogForm calls: await viewModel.logCraving()
    ↓
-7. ViewModel validates state, calls use case:
+7. ViewModel validates notes (500 char limit), timestamp (>7 days warning), calls use case:
    try await logCravingUseCase.execute(
+       timestamp: timestamp,
        intensity: Int(intensity),
        triggers: Array(selectedTriggers),
        notes: notes.isEmpty ? nil : notes,
-       location: location.isEmpty ? nil : location,
-       wasManagedSuccessfully: wasManagedSuccessfully
+       location: location.isEmpty ? nil : location
    )
    ↓
 8. Use case validates intensity (1-10), creates CravingEntity

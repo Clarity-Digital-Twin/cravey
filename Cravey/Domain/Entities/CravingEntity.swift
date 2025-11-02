@@ -6,33 +6,30 @@ struct CravingEntity: Identifiable, Codable, Equatable, Hashable {
     let id: UUID
     let timestamp: Date
     let intensity: Int // 1-10 scale
-    let duration: TimeInterval?
     let triggers: [String]
-    let notes: String?
     let location: String?
-    let managementStrategy: String?
-    let wasManagedSuccessfully: Bool
+    let notes: String?
+    let createdAt: Date
+    let modifiedAt: Date?
 
     init(
         id: UUID = UUID(),
         timestamp: Date = Date(),
         intensity: Int,
-        duration: TimeInterval? = nil,
         triggers: [String] = [],
-        notes: String? = nil,
         location: String? = nil,
-        managementStrategy: String? = nil,
-        wasManagedSuccessfully: Bool = false
+        notes: String? = nil,
+        createdAt: Date = Date(),
+        modifiedAt: Date? = nil
     ) {
         self.id = id
         self.timestamp = timestamp
         self.intensity = intensity
-        self.duration = duration
         self.triggers = triggers
-        self.notes = notes
         self.location = location
-        self.managementStrategy = managementStrategy
-        self.wasManagedSuccessfully = wasManagedSuccessfully
+        self.notes = notes
+        self.createdAt = createdAt
+        self.modifiedAt = modifiedAt
     }
 }
 

@@ -50,19 +50,19 @@ actor MockLogCravingUseCase: LogCravingUseCase {
     var executionCount = 0
 
     func execute(
+        timestamp: Date,
         intensity: Int,
         triggers: [String],
         notes: String?,
-        location: String?,
-        wasManagedSuccessfully: Bool
+        location: String?
     ) async throws -> CravingEntity {
         executionCount += 1
         return CravingEntity(
+            timestamp: timestamp,
             intensity: intensity,
             triggers: triggers,
-            notes: notes,
             location: location,
-            wasManagedSuccessfully: wasManagedSuccessfully
+            notes: notes
         )
     }
 

@@ -1,18 +1,27 @@
 import Foundation
 
 /// Static trigger options for craving logging
-/// Presentation layer - constants
+/// HAALT Model (evidence-based relapse prevention framework)
+/// Source: CLINICAL_CANNABIS_SPEC.md lines 196-198
 enum TriggerOptions {
-    static let all: [String] = [
-        "Anxious",
-        "Bored",
-        "Stressed",
-        "Social Situation",
-        "Celebratory",
-        "Craving",
-        "Habit/Routine",
-        "Sad",
+    /// Primary triggers (HAALT framework)
+    static let primary: [String] = [
+        "Hungry",
         "Angry",
-        "Tired"
+        "Anxious",
+        "Lonely",
+        "Tired",
+        "Sad"
     ]
+
+    /// Secondary triggers (contextual/environmental)
+    static let secondary: [String] = [
+        "Bored",
+        "Social",
+        "Habit",
+        "Paraphernalia"
+    ]
+
+    /// All triggers (primary + secondary)
+    static let all: [String] = primary + secondary
 }

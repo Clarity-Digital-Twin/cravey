@@ -9,8 +9,11 @@ struct CravingLogForm: View {
     var body: some View {
         NavigationStack {
             Form {
-                // REQUIRED SECTION
+                // REQUIRED SECTION (CLINICAL_CANNABIS_SPEC.md:187-193)
                 Section {
+                    TimestampPicker(date: $viewModel.timestamp)
+                        .accessibilityLabel("Timestamp")
+
                     IntensitySlider(value: $viewModel.intensity)
                         .accessibilityLabel("Intensity")
                 }
@@ -38,10 +41,17 @@ struct CravingLogForm: View {
                         multiSelect: false
                     )
 
-                    TextField("Notes", text: $viewModel.notes, axis: .vertical)
-                        .lineLimit(3 ... 5)
+                    VStack(alignment: .leading, spacing: 4) {
+                        TextField("Notes", text: $viewModel.notes, axis: .vertical)
+                            .lineLimit(3 ... 5)
 
-                    Toggle("I managed this craving successfully", isOn: $viewModel.wasManagedSuccessfully)
+                        HStack {
+                            Spacer()
+                            Text(viewModel.notesCharacterCount)
+                                .font(.caption)
+                                .foregroundColor(viewModel.notesExceedsLimit ? .red : .secondary)
+                        }
+                    }
                 }
             }
             .navigationTitle("Log Craving")
@@ -67,7 +77,19 @@ struct CravingLogForm: View {
                     dismiss()
                 }
             } message: {
-                Text("Craving logged successfully")
+                Text("💪 Logged. Every moment of awareness counts.")
+            }
+            .alert("Old Timestamp", isPresented: $viewModel.showTimestampWarning) {
+                Button("Cancel", role: .cancel) {
+                    viewModel.showTimestampWarning = false
+                }
+                Button("Continue Anyway") {
+                    Task {
+                        await viewModel.confirmOldTimestamp()
+                    }
+                }
+            } message: {
+                Text("This craving is more than 7 days old. Are you sure you want to log it?")
             }
             .alert("Error", isPresented: Binding(
                 get: { viewModel.errorMessage != nil },

@@ -1,6 +1,7 @@
 import Foundation
 
 /// Mapper between CravingEntity (Domain) and CravingModel (Data/SwiftData)
+/// Source: DATA_MODEL_SPEC.md lines 260-305
 enum CravingMapper {
     /// Convert Domain Entity → SwiftData Model
     static func toModel(_ entity: CravingEntity) -> CravingModel {
@@ -8,12 +9,9 @@ enum CravingMapper {
             id: entity.id,
             timestamp: entity.timestamp,
             intensity: entity.intensity,
-            duration: entity.duration,
             triggers: entity.triggers,
-            notes: entity.notes,
             location: entity.location,
-            managementStrategy: entity.managementStrategy,
-            wasManagedSuccessfully: entity.wasManagedSuccessfully
+            notes: entity.notes
         )
     }
 
@@ -23,12 +21,11 @@ enum CravingMapper {
             id: model.id,
             timestamp: model.timestamp,
             intensity: model.intensity,
-            duration: model.duration,
             triggers: model.triggers,
-            notes: model.notes,
             location: model.location,
-            managementStrategy: model.managementStrategy,
-            wasManagedSuccessfully: model.wasManagedSuccessfully
+            notes: model.notes,
+            createdAt: model.createdAt,
+            modifiedAt: model.modifiedAt
         )
     }
 }

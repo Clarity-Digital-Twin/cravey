@@ -5,40 +5,35 @@ import SwiftData
 /// Data layer only - never exposed to Domain or Presentation
 @Model
 final class CravingModel {
-    var id: UUID
+    @Attribute(.unique) var id: UUID
     var timestamp: Date
     var intensity: Int
-    var duration: TimeInterval?
     var triggers: [String]
-    var notes: String?
     var location: String?
-    var managementStrategy: String?
-    var wasManagedSuccessfully: Bool
+    var notes: String?
+    var createdAt: Date
+    var modifiedAt: Date?
 
-    // Relationships
-    @Relationship(deleteRule: .cascade, inverse: \RecordingModel.craving)
-    var recordings: [RecordingModel]
+    // Relationship (many-to-one: many cravings can reference one recording)
+    @Relationship(deleteRule: .nullify, inverse: \RecordingModel.linkedCravings)
+    var recording: RecordingModel?
 
     init(
         id: UUID = UUID(),
         timestamp: Date = Date(),
         intensity: Int,
-        duration: TimeInterval? = nil,
         triggers: [String] = [],
-        notes: String? = nil,
         location: String? = nil,
-        managementStrategy: String? = nil,
-        wasManagedSuccessfully: Bool = false
+        notes: String? = nil
     ) {
         self.id = id
         self.timestamp = timestamp
         self.intensity = intensity
-        self.duration = duration
         self.triggers = triggers
-        self.notes = notes
         self.location = location
-        self.managementStrategy = managementStrategy
-        self.wasManagedSuccessfully = wasManagedSuccessfully
-        recordings = []
+        self.notes = notes
+        self.createdAt = Date()
+        self.modifiedAt = nil
+        self.recording = nil
     }
 }

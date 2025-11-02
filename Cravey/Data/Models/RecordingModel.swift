@@ -17,8 +17,9 @@ final class RecordingModel {
     var lastPlayedAt: Date?
     var playCount: Int
 
-    // Relationships
-    var craving: CravingModel?
+    // Relationship (one-to-many: one recording can be linked from many cravings)
+    @Relationship(deleteRule: .nullify)
+    var linkedCravings: [CravingModel]?
 
     init(
         id: UUID = UUID(),

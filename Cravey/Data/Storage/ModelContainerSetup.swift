@@ -73,13 +73,13 @@ enum ModelContainerSetup {
     /// Seed preview data for SwiftUI previews
     @MainActor
     private static func seedPreviewData(context: ModelContext) {
-        // Sample craving
+        // Sample craving (spec-aligned: no wasManagedSuccessfully field)
         let craving = CravingModel(
             timestamp: Date().addingTimeInterval(-3600),
             intensity: 7,
             triggers: ["Anxious", "Bored"],
-            notes: "Had a rough meeting",
-            wasManagedSuccessfully: true
+            location: "Work",
+            notes: "Had a rough meeting"
         )
         context.insert(craving)
 

@@ -52,12 +52,10 @@ final class CravingRepository: CravingRepositoryProtocol {
         // Update model properties
         model.timestamp = craving.timestamp
         model.intensity = craving.intensity
-        model.duration = craving.duration
         model.triggers = craving.triggers
         model.notes = craving.notes
         model.location = craving.location
-        model.managementStrategy = craving.managementStrategy
-        model.wasManagedSuccessfully = craving.wasManagedSuccessfully
+        model.modifiedAt = Date()
 
         try modelContext.save()
     }
