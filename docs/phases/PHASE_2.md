@@ -1442,7 +1442,7 @@ final class UsageLogUITests: XCTestCase {
 
 **What's Next (Week 3):**
 - Onboarding flow (WelcomeView, TourView)
-- Enhanced HomeView (Quick Play section with Top 3 recordings)
+- Data export/deletion features
 - Tab bar navigation polish
 
 ---

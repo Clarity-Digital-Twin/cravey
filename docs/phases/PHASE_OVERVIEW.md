@@ -66,7 +66,6 @@ This document breaks down the **TECHNICAL_IMPLEMENTATION.md** into **modular, we
 
 **Key Deliverables:**
 - WelcomeView + TourView (onboarding flow)
-- Enhanced HomeView with Quick Play section (Top 3 recordings preview)
 - ExportDataUseCase (CSV/JSON generation)
 - DeleteAllDataUseCase (atomic deletion)
 - SettingsView with export/delete flows

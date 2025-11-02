@@ -275,6 +275,17 @@ func fetch(byType recordingType: RecordingType) async throws -> [RecordingEntity
 
 **Why:** The baseline protocol has `fetch(byPurpose:)` but the UI needs to filter by type (All/Videos/Audio). This extends the protocol to support both filtering strategies.
 
+⚠️ **IMPORTANT - Compilation Fix Required:**
+After adding this method to the protocol, the `StubRecordingRepository` in `DependencyContainer.swift` (lines 81-101) will fail to compile. You MUST immediately add the stub implementation:
+
+```swift
+func fetch(byType recordingType: RecordingType) async throws -> [RecordingEntity] {
+    return []
+}
+```
+
+See **Step 5a, Section 5** for complete instructions on updating the stub.
+
 **Updated Protocol (after modification):**
 
 ```swift
@@ -455,10 +466,8 @@ final class RecordingRepository: RecordingRepositoryProtocol {
         }
 
         // 2. Delete files from disk
-        try fileManager.deleteRecording(
-            fileURL: model.fileURL,
-            thumbnailURL: model.thumbnailURL
-        )
+        try fileManager.deleteRecording(at: model.fileURL)
+        try fileManager.deleteThumbnail(at: model.thumbnailURL)
 
         // 3. Delete from database
         modelContext.delete(model)
@@ -476,6 +485,239 @@ final class RecordingRepository: RecordingRepositoryProtocol {
 - Uses `fileURL` and `thumbnailURL` properties (RecordingEntity.swift:12,14)
 - FileStorageManager handles file I/O (separation of concerns)
 - Atomic delete (file + DB) with proper error handling
+
+---
+
+### Step 5a: Update DependencyContainer (App Layer)
+
+**File:** `Cravey/App/DependencyContainer.swift` (MODIFY)
+
+**Purpose:** Wire up all new use cases, replace stub repository, add ViewModel factory methods.
+
+**Required Changes:**
+
+#### 1. Add Use Case Properties
+
+Add these properties after the existing use cases (after line 24):
+
+```swift
+// MARK: - Use Cases (Domain Layer)
+
+private(set) var logCravingUseCase: LogCravingUseCase
+private(set) var fetchCravingsUseCase: FetchCravingsUseCase
+
+// ← ADD THESE NEW USE CASES:
+private(set) var saveRecordingUseCase: SaveRecordingUseCase
+private(set) var fetchRecordingsUseCase: FetchRecordingsUseCase
+private(set) var playRecordingUseCase: PlayRecordingUseCase
+```
+
+#### 2. Replace StubRecordingRepository with Real Implementation
+
+In the `init(isPreview:)` method, replace line 49:
+
+```swift
+// BEFORE:
+let recordingRepo = StubRecordingRepository() // TODO: Implement RecordingRepository
+
+// AFTER:
+let recordingRepo = RecordingRepository(
+    modelContext: modelContext,
+    fileManager: fileStorage
+)
+```
+
+#### 3. Initialize New Use Cases
+
+After the existing use case initialization (after line 58), add:
+
+```swift
+// Initialize use cases
+self.logCravingUseCase = DefaultLogCravingUseCase(repository: cravingRepo)
+self.fetchCravingsUseCase = DefaultFetchCravingsUseCase(repository: cravingRepo)
+
+// ← ADD THESE:
+self.saveRecordingUseCase = DefaultSaveRecordingUseCase(repository: recordingRepo)
+self.fetchRecordingsUseCase = DefaultFetchRecordingsUseCase(repository: recordingRepo)
+self.playRecordingUseCase = DefaultPlayRecordingUseCase(repository: recordingRepo)
+```
+
+#### 4. Add ViewModel Factory Methods
+
+After `makeCravingLogViewModel()` (after line 30), add:
+
+```swift
+func makeCravingLogViewModel() -> CravingLogViewModel {
+    CravingLogViewModel(logCravingUseCase: logCravingUseCase)
+}
+
+// ← ADD THESE NEW FACTORIES:
+
+func makeRecordingLibraryViewModel() -> RecordingLibraryViewModel {
+    RecordingLibraryViewModel(
+        fetchUseCase: fetchRecordingsUseCase,
+        deleteUseCase: playRecordingUseCase  // Reuses repository delete
+    )
+}
+
+func makeAudioRecordingViewModel() -> AudioRecordingViewModel {
+    AudioRecordingViewModel(saveUseCase: saveRecordingUseCase)
+}
+
+func makeVideoRecordingViewModel() -> VideoRecordingViewModel {
+    VideoRecordingViewModel(saveUseCase: saveRecordingUseCase)
+}
+
+func makeQuickPlayViewModel() -> QuickPlayViewModel {
+    QuickPlayViewModel(fetchUseCase: fetchRecordingsUseCase)
+}
+```
+
+#### 5. Update StubRecordingRepository (Temporary Compilation Fix)
+
+**IMPORTANT:** After adding `fetch(byType:)` to the protocol in Step 2a, the stub will break compilation. Add this method to `StubRecordingRepository` (around line 92):
+
+```swift
+private struct StubRecordingRepository: RecordingRepositoryProtocol {
+    func save(_ recording: RecordingEntity) async throws { }
+    func fetchAll() async throws -> [RecordingEntity] { return [] }
+    func fetch(byPurpose purpose: RecordingPurpose) async throws -> [RecordingEntity] { return [] }
+
+    // ← ADD THIS METHOD:
+    func fetch(byType recordingType: RecordingType) async throws -> [RecordingEntity] {
+        return []
+    }
+
+    func delete(id: UUID) async throws { }
+    func update(_ recording: RecordingEntity) async throws { }
+}
+```
+
+**Note:** This stub update should be done immediately after Step 2a to maintain compilation. Once you complete Step 5, replace the stub entirely as shown in change #2 above.
+
+**Complete Updated DependencyContainer:**
+
+<details>
+<summary>Click to see full file (after all changes)</summary>
+
+```swift
+import Foundation
+import SwiftData
+
+@Observable
+@MainActor
+final class DependencyContainer {
+    // MARK: - Infrastructure (Data Layer)
+
+    let modelContainer: ModelContainer
+    let modelContext: ModelContext
+    let fileStorage: FileStorageManager
+
+    // MARK: - Repositories (Data Layer)
+
+    private(set) var cravingRepository: CravingRepositoryProtocol
+    private(set) var recordingRepository: RecordingRepositoryProtocol
+    private(set) var messageRepository: MessageRepositoryProtocol
+
+    // MARK: - Use Cases (Domain Layer)
+
+    private(set) var logCravingUseCase: LogCravingUseCase
+    private(set) var fetchCravingsUseCase: FetchCravingsUseCase
+    private(set) var saveRecordingUseCase: SaveRecordingUseCase
+    private(set) var fetchRecordingsUseCase: FetchRecordingsUseCase
+    private(set) var playRecordingUseCase: PlayRecordingUseCase
+
+    // MARK: - View Models (Presentation Layer)
+
+    func makeCravingLogViewModel() -> CravingLogViewModel {
+        CravingLogViewModel(logCravingUseCase: logCravingUseCase)
+    }
+
+    func makeRecordingLibraryViewModel() -> RecordingLibraryViewModel {
+        RecordingLibraryViewModel(
+            fetchUseCase: fetchRecordingsUseCase,
+            deleteUseCase: playRecordingUseCase
+        )
+    }
+
+    func makeAudioRecordingViewModel() -> AudioRecordingViewModel {
+        AudioRecordingViewModel(saveUseCase: saveRecordingUseCase)
+    }
+
+    func makeVideoRecordingViewModel() -> VideoRecordingViewModel {
+        VideoRecordingViewModel(saveUseCase: saveRecordingUseCase)
+    }
+
+    func makeQuickPlayViewModel() -> QuickPlayViewModel {
+        QuickPlayViewModel(fetchUseCase: fetchRecordingsUseCase)
+    }
+
+    // MARK: - Initialization
+
+    init(isPreview: Bool = false) {
+        do {
+            self.modelContainer = if isPreview {
+                try ModelContainerSetup.createPreview()
+            } else {
+                try ModelContainerSetup.create()
+            }
+            self.modelContext = ModelContext(modelContainer)
+            self.fileStorage = FileStorageManager.shared
+
+            // Initialize repositories
+            let cravingRepo = CravingRepository(modelContext: modelContext)
+            let recordingRepo = RecordingRepository(
+                modelContext: modelContext,
+                fileManager: fileStorage
+            )
+            let messageRepo = StubMessageRepository()
+
+            self.cravingRepository = cravingRepo
+            self.recordingRepository = recordingRepo
+            self.messageRepository = messageRepo
+
+            // Initialize use cases
+            self.logCravingUseCase = DefaultLogCravingUseCase(repository: cravingRepo)
+            self.fetchCravingsUseCase = DefaultFetchCravingsUseCase(repository: cravingRepo)
+            self.saveRecordingUseCase = DefaultSaveRecordingUseCase(repository: recordingRepo)
+            self.fetchRecordingsUseCase = DefaultFetchRecordingsUseCase(repository: recordingRepo)
+            self.playRecordingUseCase = DefaultPlayRecordingUseCase(repository: recordingRepo)
+
+            if !isPreview {
+                ModelContainerSetup.seedDefaultMessages(context: modelContext)
+            }
+        } catch {
+            fatalError("Failed to initialize DependencyContainer: \(error)")
+        }
+    }
+}
+
+// MARK: - Preview Container
+
+extension DependencyContainer {
+    static var preview: DependencyContainer {
+        DependencyContainer(isPreview: true)
+    }
+}
+
+// MARK: - Stub Implementations (Temporary)
+
+private struct StubMessageRepository: MessageRepositoryProtocol {
+    func save(_ message: MotivationalMessageEntity) async throws { }
+    func fetchActive() async throws -> [MotivationalMessageEntity] { return [] }
+    func fetch(byCategory category: MessageCategory) async throws -> [MotivationalMessageEntity] { return [] }
+    func delete(id: UUID) async throws { }
+    func update(_ message: MotivationalMessageEntity) async throws { }
+    func seedDefaultMessagesIfNeeded() async throws { }
+}
+```
+</details>
+
+**Why This Section:**
+- **Compilation Safety:** Step 2a breaks the stub - this section tells implementers exactly when/how to fix it
+- **Factory Pattern:** Documents all required ViewModel factories referenced throughout Steps 11-19
+- **Clean DI:** Follows established pattern from PHASE_1.md and PHASE_2.md
+- **Complete Picture:** Shows full container after all changes (expandable section for reference)
 
 ---
 
@@ -508,8 +750,12 @@ final class AudioRecordingCoordinator: NSObject {
     // MARK: - Recording
 
     func startRecording(recordingID: UUID) async throws {
-        // 1. Request microphone permission (MUST await before continuing)
-        let granted = await AVAudioSession.sharedInstance().requestRecordPermission()
+        // 1. Request microphone permission (closure-based API, wrapped in continuation)
+        let granted = await withCheckedContinuation { continuation in
+            AVAudioSession.sharedInstance().requestRecordPermission { granted in
+                continuation.resume(returning: granted)
+            }
+        }
         guard granted else {
             throw RecordingError.permissionDenied
         }
@@ -1876,15 +2122,11 @@ struct SaveRecordingSheet: View {
 
                     Picker("Purpose", selection: $purpose) {
                         ForEach(RecordingPurpose.allCases, id: \.self) { purpose in
-                            VStack(alignment: .leading) {
-                                Text(purpose.displayName)
-                                Text(purpose.description)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            .tag(purpose)
+                            Text(purpose.rawValue)
+                                .tag(purpose)
                         }
                     }
+                    .pickerStyle(.menu)
 
                     TextField("Notes (optional)", text: $notes, axis: .vertical)
                         .lineLimit(3...5)
