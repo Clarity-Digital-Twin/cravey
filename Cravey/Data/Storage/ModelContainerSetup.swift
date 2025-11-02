@@ -9,6 +9,7 @@ enum ModelContainerSetup {
     static func create() throws -> ModelContainer {
         let schema = Schema([
             CravingModel.self,
+            UsageModel.self,
             RecordingModel.self,
             MotivationalMessageModel.self
         ])
@@ -31,6 +32,7 @@ enum ModelContainerSetup {
     static func createPreview() throws -> ModelContainer {
         let schema = Schema([
             CravingModel.self,
+            UsageModel.self,
             RecordingModel.self,
             MotivationalMessageModel.self
         ])
