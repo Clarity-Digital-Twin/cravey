@@ -230,7 +230,7 @@ let dailyAverages = Dictionary(grouping: cravings, by: { Calendar.current.startO
    - [ ] Verify <5 sec target (use stopwatch)
 
 3. **Usage Logging:**
-   - [ ] Log usage for each ROA (Bowls, Vape, Edible, Dab, Tincture)
+   - [ ] Log usage for each ROA (Bowls, Joints, Blunts, Vape, Dab, Edible)
    - [ ] Verify <10 sec target
 
 4. **Recordings:**
@@ -679,7 +679,6 @@ Log cannabis usage with route-of-administration (ROA) specific amounts:
 - Vape (number of sessions)
 - Edibles (milligrams THC)
 - Dabs (number of dabs)
-- Tinctures (milliliters)
 
 ✅ DATA EXPORT & MANAGEMENT
 Export your data anytime (CSV or JSON format). Delete all data with one tap if needed.
