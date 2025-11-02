@@ -1,1221 +1,1255 @@
-# Phase 5: Onboarding + Data Management (Weeks 3-4)
+# Phase 4: Dashboard & Analytics (Weeks 7-8)
 
-**Version:** 2.0 (Complete Implementation Guide)
-**Duration:** 2 weeks (Weeks 3-4 of 16-week timeline)
-**Dependencies:** Phases 1-2 complete (Craving + Usage logging) - **⚠️ PHASE_2 MUST BE COMPLETE** (requires UsageRepository for export)
-**Status:** 📝 Ready for Implementation
+**Version:** 2.1 (Complete Implementation Guide - Audit Validated)
+**Duration:** 2 weeks
+**Dependencies:** Phases 1-2 (craving + usage logging) - **⚠️ PHASE_2 MUST BE COMPLETE** (requires UsageEntity + UsageRepository)
+**Status:** 📝 Ready for implementation
 **Last Updated:** 2025-11-01
 
 ---
 
 ## 🎯 Phase Goal
 
-**Shippable Deliverable:** Users can **complete onboarding in <60 seconds**, **export all data** (CSV + JSON), and **delete all data** with confirmation.
+**Shippable Deliverable:** Users can **visualize progress** with 5 MVP metrics (summary, streaks, intensity, triggers) and date range filtering (7/30/90 days). Additional metrics available as computed properties for future UI expansion.
 
-**Features Implemented:**
-- Feature 0 (Onboarding): WelcomeView + TourView
-- Feature 5 (Data Management): Export + Delete + Settings UI
+**Feature Implemented:** Feature 4 (Dashboard with Analytics)
 
-**Week 3 Focus:** Onboarding flow (Welcome → Tour → Home tab), basic Settings shell
-**Week 4 Focus:** Export/Delete use cases, Settings UI polish, testing
+**User Value:** Transform raw logs into actionable insights. Users see patterns, celebrate progress, identify high-risk scenarios, and make data-driven decisions about their cannabis use.
 
 ---
 
-## 📋 What's Already Done (Baseline from Phases 1-2)
+## 📊 Overview
 
-### Domain Layer
-- ✅ `CravingEntity.swift` - Domain model for cravings (PHASE_1)
-- ✅ `UsageEntity.swift` - Domain model for usage logs (PHASE_2)
-- ✅ `RecordingEntity.swift` - Domain model for recordings (baseline, full implementation in PHASE_3)
-- ✅ `CravingRepositoryProtocol.swift` - Repository interface with `fetchAll()` method
-- ✅ `UsageRepositoryProtocol.swift` - Repository interface with `fetchAll()` method (PHASE_2)
-- ✅ `RecordingRepositoryProtocol.swift` - Repository interface (baseline)
+This phase creates a **read-only analytics dashboard** that aggregates data from Phases 1-2 (cravings + usage logs) to surface meaningful patterns. No data is created or modified—only queried and visualized.
 
-### Data Layer
-- ✅ `CravingModel.swift` - SwiftData @Model (PHASE_1)
-- ✅ `UsageModel.swift` - SwiftData @Model (PHASE_2)
-- ✅ `RecordingModel.swift` - SwiftData @Model (baseline)
-- ✅ `CravingRepository.swift` - Full implementation with `fetchAll()` (PHASE_1)
-- ✅ `UsageRepository.swift` - Full implementation with `fetchAll()` (PHASE_2)
-- ✅ `RecordingRepository.swift` - Stub implementation (real implementation in PHASE_3)
-- ✅ `CravingMapper.swift`, `UsageMapper.swift`, `RecordingMapper.swift` - Entity ↔ Model conversion
+**Core Dependencies:**
+- `CravingEntity` from Phase 1 (cravings logged)
+- `UsageEntity` from Phase 2 (usage logged)
+- `RecordingEntity` from Phase 3 (optional - used for "Recordings Created" count)
 
-### Presentation Layer
-- ✅ `HomeView.swift` - Exists (will be enhanced with tab bar integration)
-- ✅ `CravingLogForm.swift` - Craving logging UI (PHASE_1)
-- ✅ `UsageLogForm.swift` - Usage logging UI (PHASE_2)
-
-### App Layer
-- ✅ `DependencyContainer.swift` - DI container with all repositories
-- ✅ `CraveyApp.swift` - @main entry point
-
-**Key Infrastructure Available:**
-- SwiftData ModelContainer with all 4 models (Craving, Usage, Recording, Message)
-- Repository pattern established (CravingRepository shows the pattern)
-- Clean Architecture DI via @Environment
-- Tab bar shell ready for Settings tab
+**Technical Stack:**
+- **Swift Charts** for visualizations (line charts, bar charts, pie charts)
+- **FetchDescriptor** for efficient SwiftData queries
+- **Computed properties** for metrics (no database writes)
+- **Clean Architecture** (Domain → Presentation, same as Phases 1-3)
 
 ---
 
-## 📦 Complete File Checklist (8 files total)
+## 📦 Files to Create (8 files total)
 
-### Part 1: Domain Layer - Use Cases (2 files)
-- [ ] `Domain/UseCases/ExportDataUseCase.swift` (CREATE - CSV/JSON generation)
-- [ ] `Domain/UseCases/DeleteAllDataUseCase.swift` (CREATE - atomic deletion)
+### Part 1: Domain Layer (1 file)
+- `Domain/Entities/DashboardData.swift` (aggregated dashboard metrics value object)
 
-### Part 2: Presentation Layer - ViewModels (1 file)
-- [ ] `Presentation/ViewModels/SettingsViewModel.swift` (CREATE - settings state management)
+### Part 2: Domain Layer - Use Case (1 file)
+- `Domain/UseCases/FetchDashboardDataUseCase.swift` (fetches + aggregates craving + usage data)
 
-### Part 3: Presentation Layer - Views (5 files)
-- [ ] `Presentation/Views/Onboarding/WelcomeView.swift` (CREATE - first-launch welcome screen)
-- [ ] `Presentation/Views/Onboarding/TourView.swift` (CREATE - 4-card swipeable tour)
-- [ ] `Presentation/Views/Settings/SettingsView.swift` (CREATE - settings list with data management)
-- [ ] `Presentation/Views/Settings/ExportDataView.swift` (CREATE - format picker + share sheet)
-- [ ] `Presentation/Views/Settings/DeleteDataConfirmationView.swift` (CREATE - destructive action confirmation)
+### Part 3: Presentation Layer - ViewModel (1 file)
+- `Presentation/ViewModels/DashboardViewModel.swift` (dashboard state + date filtering)
 
----
+### Part 4: Presentation Layer - Views (3 files)
+- `Presentation/Views/Dashboard/DashboardView.swift` (main dashboard container)
+- `Presentation/Views/Dashboard/SummaryCardView.swift` (top summary card)
+- `Presentation/Views/Dashboard/EmptyDashboardView.swift` (empty state for <2 logs)
 
-## 🧪 Test Plan (14 tests total)
-
-### Unit Tests (8 tests across 3 files)
-
-**Domain Layer (4 tests):**
-1. `ExportDataUseCaseTests.swift` (2 tests)
-   - Test: Export CSV with all data types (cravings + usage + recordings)
-   - Test: Export JSON with all data types
-
-2. `DeleteAllDataUseCaseTests.swift` (2 tests)
-   - Test: Delete all data atomically (all 4 repositories cleared)
-   - Test: Verify file deletion for recordings
-
-**Presentation Layer (4 tests):**
-3. `SettingsViewModelTests.swift` (4 tests)
-   - Test: Export CSV triggers use case and returns URL
-   - Test: Export JSON triggers use case and returns URL
-   - Test: Delete all data calls use case
-   - Test: Error handling for export failures
-
-### Integration Tests (4 tests in 2 files)
-
-4. `OnboardingIntegrationTests.swift` (2 tests)
-   - Test: Complete onboarding flow (Welcome → Tour → Home tab)
-   - Test: Onboarding only shows on first launch (UserDefaults check)
-
-5. `DataManagementIntegrationTests.swift` (2 tests)
-   - Test: Export flow generates valid CSV file
-   - Test: Delete all data clears database and files
-
-### UI Tests (2 tests in 1 file)
-
-6. `SettingsUITests.swift` (2 tests)
-   - Test: Export CSV flow (Settings → Export → Share Sheet appears)
-   - Test: Delete all data flow (Settings → Delete → Confirmation → Success)
-
-**Total: 8 unit + 4 integration + 2 UI = 14 tests**
+### Part 5: Presentation Layer - Components (1 file)
+- `Presentation/Views/Components/MetricCardView.swift` (reusable metric card)
 
 ---
 
-## 🚀 Implementation Steps (Week 3: Onboarding, Week 4: Data Management)
+## 📈 Metrics Overview (5 MVP + 6 Future)
+
+Based on [MVP_PRODUCT_SPEC.md](../../MVP_PRODUCT_SPEC.md#4-progress-metrics-dashboard):
+
+**✅ MVP Metrics (Implemented in DashboardView):**
+1. Summary Card (Total cravings + usage)
+2. Current Abstinence Streak
+3. Longest Abstinence Streak
+4. Average Craving Intensity
+5. Top Triggers (Top 3)
+
+**🔮 Future Metrics (Computed properties exist in DashboardData, UI deferred):**
+6. Craving Intensity Over Time (line chart)
+7. Craving Frequency (bar chart)
+8. Location Patterns
+9. Time of Day Breakdown
+10. Usage by ROA
+11. Day of Week Patterns
 
 ---
 
-## WEEK 3: Onboarding Flow
+### 1. Summary Card (Top Priority) ✅ MVP
+- **Data:** Total cravings + Total usage for selected date range
+- **UI:** Large card at top, "This week: 12 uses, 3 cravings"
+- **Purpose:** At-a-glance overview without scrolling
 
-### Step 1: Create WelcomeView (Onboarding Screen 1)
+### 2. Current Streak ✅ MVP
+- **UI:** Metric card with large number
+- **Data:** Context-aware based on user pattern:
+  - "7 days abstinent" (if no usage logs in last 7 days)
+  - "Active use period" (if usage logged recently)
+- **Purpose:** Non-punitive streak tracking
+- **Implementation:** DashboardView lines 868-872 (MetricCardView)
 
-**File:** `Cravey/Presentation/Views/Onboarding/WelcomeView.swift`
+### 3. Longest Abstinence Streak ✅ MVP
+- **UI:** Milestone card
+- **Data:** Historical best streak (never resets)
+- **Example:** "Your best: 14 days"
+- **Purpose:** Celebrates achievement without punishment
+- **Implementation:** DashboardView lines 874-879 (MetricCardView)
 
-**Purpose:** First-launch welcome screen with privacy message and CTA to start tour.
+### 4. Average Craving Intensity ✅ MVP
+- **UI:** Metric card with subtitle
+- **Data:** Average intensity across all cravings (0-10 scale)
+- **Example:** "7.5 / 10"
+- **Purpose:** Shows overall craving severity trend
+- **Implementation:** DashboardView lines 882-889 (MetricCardView)
+
+### 5. Most Common Triggers (Top 3) ✅ MVP
+- **UI:** Text list with counts
+- **Data:** Top 3 triggers by frequency
+- **Example:** "1. Bored (12)\n2. Anxious (8)\n3. Habit (5)"
+- **Purpose:** Quick summary of trigger patterns
+- **Implementation:** DashboardView lines 893-904 (VStack with Text)
+
+### 6. Craving Intensity Over Time 🔮 FUTURE
+- **Chart:** Line chart
+- **Data:** Average craving intensity per day/week
+- **Y-Axis:** 0-10 scale
+- **Purpose:** Shows if cravings getting weaker/stronger over time
+- **Status:** Computed property exists, UI deferred to post-MVP
+
+### 7. Craving Frequency 🔮 FUTURE
+- **Chart:** Bar chart
+- **Data:** Number of cravings per day/week
+- **Purpose:** Identifies high-frequency periods
+- **Status:** Raw data available (totalCravings), chart UI deferred
+
+### 8. Trigger Breakdown (Complete) 🔮 FUTURE
+- **Chart:** Pie chart
+- **Data:** All triggers from BOTH cravings + usage (HAALT model)
+- **Purpose:** Visual breakdown beyond top 3
+- **Status:** Computed property exists (`triggerBreakdown`), chart UI deferred
+
+### 9. Location Patterns 🔮 FUTURE
+- **Chart:** Bar chart or list
+- **Data:** Where cravings/usage occur most (Home, Work, Social, etc.)
+- **Purpose:** Identifies high-risk environmental cues
+- **Status:** Computed property exists (`locationBreakdown`), UI deferred
+
+### 10. Time of Day Breakdown 🔮 FUTURE
+- **Chart:** Bar chart (4 periods: morning/afternoon/evening/night)
+- **Data:** Usage + craving distribution by time of day
+- **Purpose:** Reveals temporal patterns for intervention planning
+- **Status:** Computed property exists (`timeOfDayBreakdown`), UI deferred
+
+### 11. Usage by ROA 🔮 FUTURE
+- **Chart:** Pie chart
+- **Data:** Method distribution (50% Bowls, 30% Vape, 20% Edibles)
+- **Purpose:** Tracks ROA switching (escalation indicator)
+- **Status:** Computed property exists (`roaBreakdown`), UI deferred
+
+### 12. Day of Week Patterns 🔮 FUTURE
+- **Chart:** Bar chart (Mon-Sun)
+- **Data:** Usage frequency by day of week
+- **Purpose:** Shows which days are highest risk
+- **Status:** Computed property exists (`dayOfWeekBreakdown`), UI deferred
+
+---
+
+## ✅ Success Criteria
+
+### Functional Requirements
+- [ ] Dashboard loads <3 seconds with 90 days of data (200+ logs)
+- [ ] All 5 MVP metrics render correctly with sample data (summary, 2 streaks, intensity, triggers)
+- [ ] Date range filter works (7/30/90 days/All Time)
+- [ ] Empty state shows if <2 total logs (craving + usage combined)
+- [ ] All metrics adapt to dark mode automatically
+- [ ] All metrics handle edge cases (zero data, single data point, etc.)
+
+### Code Quality
+- [ ] FetchDashboardDataUseCase unit tests (5 tests)
+- [ ] DashboardViewModel unit tests (8 tests)
+- [ ] No SwiftData queries in View layer (all in Use Case)
+- [ ] DependencyContainer wiring complete
+- [ ] Swift 6 strict concurrency compliance (@MainActor, Sendable)
+
+### Performance
+- [ ] Date range filter responds instantly (<100ms)
+- [ ] Metric cards render in <500ms
+- [ ] No UI blocking during data aggregation
+- [ ] Repository queries use efficient date range filtering
+
+---
+
+## 🏗️ Architecture Decisions
+
+### Why Separate Use Case for Dashboard?
+**Decision:** Create `FetchDashboardDataUseCase` instead of reusing `FetchCravingsUseCase` + `FetchUsageUseCase`
+
+**Rationale:**
+1. **Performance** - Single query with optimized predicates (avoids N+1 queries)
+2. **Encapsulation** - Dashboard-specific logic isolated from generic fetch operations
+3. **Testability** - Mock dashboard data independently from individual log fetches
+4. **Future-proofing** - Dashboard may need aggregated queries that don't fit generic fetch patterns
+
+### Why No Repository Layer Changes?
+**Decision:** Use existing `CravingRepositoryProtocol` and `UsageRepositoryProtocol` without modifications
+
+**Rationale:**
+1. **Repositories are already complete** - Phases 1-2 created full CRUD operations
+2. **Use Case handles aggregation** - Business logic belongs in Use Cases, not Repositories
+3. **Follows Clean Architecture** - Repositories provide raw data, Use Cases compute metrics
+
+### Data Model: DashboardData Struct
+**Decision:** Create a simple struct to carry aggregated data from Use Case → ViewModel
+
+**Why:**
+- **Type-safe** - Compile-time guarantee of data structure
+- **Testable** - Easy to mock dashboard data in tests
+- **Decoupled** - View doesn't depend on SwiftData models directly
+
+---
+
+## 📝 Implementation Steps
+
+### Step 1: Create DashboardData Entity (Domain Layer)
+
+**File:** `Cravey/Domain/Entities/DashboardData.swift`
+
+**Purpose:** Value object to carry aggregated dashboard metrics from Use Case to ViewModel.
 
 ```swift
-import SwiftUI
+import Foundation
 
-/// First-launch welcome screen with privacy-first messaging
-struct WelcomeView: View {
-    @Binding var showOnboarding: Bool
-    @State private var showTour = false
+/// Aggregated dashboard data (computed from cravings + usage logs)
+/// Pure Swift - no framework dependencies
+struct DashboardData: Equatable, Sendable {
+    // Raw data
+    let cravings: [CravingEntity]
+    let usageLogs: [UsageEntity]
 
-    var body: some View {
-        ZStack {
-            // Background gradient
-            LinearGradient(
-                gradient: Gradient(colors: [.blue.opacity(0.6), .purple.opacity(0.6)]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+    // Date range metadata
+    let startDate: Date
+    let endDate: Date
 
-            VStack(spacing: 30) {
-                Spacer()
-
-                // App icon/logo placeholder
-                Image(systemName: "heart.circle.fill")
-                    .font(.system(size: 100))
-                    .foregroundColor(.white)
-
-                // Welcome text
-                VStack(spacing: 12) {
-                    Text("Welcome to Cravey")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-
-                    Text("Your private companion for cannabis cessation")
-                        .font(.title3)
-                        .foregroundColor(.white.opacity(0.9))
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                }
-
-                Spacer()
-
-                // Privacy badge
-                HStack(spacing: 12) {
-                    Image(systemName: "lock.shield.fill")
-                        .font(.title2)
-                        .foregroundColor(.green)
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("100% Private")
-                            .font(.headline)
-                            .foregroundColor(.white)
-
-                        Text("All data stays on your device")
-                            .font(.subheadline)
-                            .foregroundColor(.white.opacity(0.8))
-                    }
-                }
-                .padding()
-                .background(Color.white.opacity(0.15))
-                .cornerRadius(12)
-
-                // CTA button
-                Button {
-                    showTour = true
-                } label: {
-                    Text("Get Started")
-                        .font(.headline)
-                        .foregroundColor(.blue)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(12)
-                }
-                .padding(.horizontal, 40)
-                .padding(.bottom, 40)
-            }
-        }
-        .fullScreenCover(isPresented: $showTour) {
-            TourView(showOnboarding: $showOnboarding)
-        }
+    init(
+        cravings: [CravingEntity],
+        usageLogs: [UsageEntity],
+        startDate: Date,
+        endDate: Date
+    ) {
+        self.cravings = cravings
+        self.usageLogs = usageLogs
+        self.startDate = startDate
+        self.endDate = endDate
     }
 }
 
-#Preview {
-    WelcomeView(showOnboarding: .constant(true))
+// MARK: - Computed Metrics
+
+extension DashboardData {
+    /// Total number of cravings in date range
+    var totalCravings: Int {
+        cravings.count
+    }
+
+    /// Total number of usage logs in date range
+    var totalUsage: Int {
+        usageLogs.count
+    }
+
+    /// Average craving intensity (1-10 scale), nil if no cravings
+    var averageCravingIntensity: Double? {
+        guard !cravings.isEmpty else { return nil }
+        let sum = cravings.reduce(0) { $0 + $1.intensity }
+        return Double(sum) / Double(cravings.count)
+    }
+
+    /// Combined triggers from both cravings and usage
+    /// Returns dictionary: ["Anxious": 12, "Bored": 8, ...]
+    var triggerBreakdown: [String: Int] {
+        var counts: [String: Int] = [:]
+
+        // Combine craving triggers
+        for craving in cravings {
+            for trigger in craving.triggers {
+                counts[trigger, default: 0] += 1
+            }
+        }
+
+        // Combine usage triggers
+        for usage in usageLogs {
+            for trigger in usage.triggers {
+                counts[trigger, default: 0] += 1
+            }
+        }
+
+        return counts
+    }
+
+    /// Top 3 triggers by frequency
+    /// Returns array of tuples: [("Anxious", 12), ("Bored", 8), ...]
+    var topTriggers: [(trigger: String, count: Int)] {
+        triggerBreakdown
+            .sorted { $0.value > $1.value }
+            .prefix(3)
+            .map { (trigger: $0.key, count: $0.value) }
+    }
+
+    /// Location breakdown (combined cravings + usage)
+    /// Returns dictionary: ["Home": 15, "Work": 8, ...]
+    var locationBreakdown: [String: Int] {
+        var counts: [String: Int] = [:]
+
+        // Combine craving locations
+        for craving in cravings {
+            if let location = craving.location {
+                counts[location, default: 0] += 1
+            }
+        }
+
+        // Combine usage locations
+        for usage in usageLogs {
+            if let location = usage.location {
+                counts[location, default: 0] += 1
+            }
+        }
+
+        return counts
+    }
+
+    /// Usage by ROA (Route of Administration)
+    /// Returns dictionary: ["Bowls": 10, "Vape": 5, ...]
+    var roaBreakdown: [String: Int] {
+        var counts: [String: Int] = [:]
+
+        for usage in usageLogs {
+            counts[usage.method, default: 0] += 1
+        }
+
+        return counts
+    }
+
+    /// Time of day breakdown (4 periods: morning/afternoon/evening/night)
+    /// Returns dictionary: ["Morning": 5, "Afternoon": 8, ...]
+    var timeOfDayBreakdown: [String: Int] {
+        var counts: [String: Int] = [:]
+
+        let calendar = Calendar.current
+
+        func timeOfDay(for date: Date) -> String {
+            let hour = calendar.component(.hour, from: date)
+            switch hour {
+            case 5..<12: return "Morning"
+            case 12..<17: return "Afternoon"
+            case 17..<21: return "Evening"
+            default: return "Night"
+            }
+        }
+
+        // Count cravings by time of day
+        for craving in cravings {
+            let period = timeOfDay(for: craving.timestamp)
+            counts[period, default: 0] += 1
+        }
+
+        // Count usage by time of day
+        for usage in usageLogs {
+            let period = timeOfDay(for: usage.timestamp)
+            counts[period, default: 0] += 1
+        }
+
+        return counts
+    }
+
+    /// Day of week breakdown (Mon-Sun)
+    /// Returns dictionary: ["Monday": 5, "Tuesday": 3, ...]
+    var dayOfWeekBreakdown: [String: Int] {
+        var counts: [String: Int] = [:]
+
+        let calendar = Calendar.current
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"  // Full day name
+
+        // Count usage by day of week
+        for usage in usageLogs {
+            let dayName = formatter.string(from: usage.timestamp)
+            counts[dayName, default: 0] += 1
+        }
+
+        return counts
+    }
+
+    /// Current abstinence streak (consecutive days with NO usage)
+    /// Returns nil if user has logged usage today or never logged usage
+    var currentAbstinenceStreak: Int? {
+        guard !usageLogs.isEmpty else { return nil }
+
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        // Sort usage logs by date (newest first)
+        let sortedLogs = usageLogs.sorted { $0.timestamp > $1.timestamp }
+
+        // If most recent usage was today, no abstinence streak
+        guard let mostRecent = sortedLogs.first else { return nil }
+        let mostRecentDay = calendar.startOfDay(for: mostRecent.timestamp)
+
+        if calendar.isDate(mostRecentDay, inSameDayAs: today) {
+            return nil  // Used today, no streak
+        }
+
+        // Count consecutive days WITHOUT usage
+        var streak = 0
+        var checkDate = today
+
+        while true {
+            let hasUsage = usageLogs.contains { usage in
+                calendar.isDate(usage.timestamp, inSameDayAs: checkDate)
+            }
+
+            if hasUsage {
+                break  // Streak ends
+            }
+
+            streak += 1
+            checkDate = calendar.date(byAdding: .day, value: -1, to: checkDate)!
+
+            // Stop if we've checked beyond our data range
+            if checkDate < startDate {
+                break
+            }
+        }
+
+        return streak > 0 ? streak : nil
+    }
+
+    /// Longest historical abstinence streak
+    /// Calculated across ALL usage logs (not limited to date range)
+    /// Returns nil if fewer than 2 usage logs exist (need gaps to calculate)
+    var longestAbstinenceStreak: Int? {
+        guard usageLogs.count >= 2 else { return nil }
+
+        let calendar = Calendar.current
+
+        // Sort usage logs by date (oldest first)
+        let sortedLogs = usageLogs.sorted { $0.timestamp < $1.timestamp }
+
+        var maxGap = 0
+
+        for i in 0..<(sortedLogs.count - 1) {
+            let current = sortedLogs[i]
+            let next = sortedLogs[i + 1]
+
+            let currentDay = calendar.startOfDay(for: current.timestamp)
+            let nextDay = calendar.startOfDay(for: next.timestamp)
+
+            if let daysBetween = calendar.dateComponents([.day], from: currentDay, to: nextDay).day {
+                let gapDays = daysBetween - 1  // Exclude the usage days themselves
+                maxGap = max(maxGap, gapDays)
+            }
+        }
+
+        return maxGap > 0 ? maxGap : nil
+    }
 }
 ```
 
 **Why This Code:**
-- **Privacy-first messaging** - Emphasizes local-only data storage (core value prop)
-- **Simple CTA** - Single "Get Started" button (no cognitive load)
-- **Visual hierarchy** - Gradient background, large icon, clear text hierarchy
-- **@Binding for flow control** - Parent can dismiss onboarding when complete
+- **Pure Domain Logic** - No SwiftUI, no SwiftData, just business logic
+- **Computed Properties** - All metrics calculated on-demand (no caching needed for MVP)
+- **Type-Safe** - Returns `Int?` for metrics that may not exist (avoids force-unwraps)
+- **Reusable** - ViewModel can format/display however it wants
+- **Testable** - Easy to unit test with mock CravingEntity/UsageEntity arrays
 
 ---
 
-### Step 2: Create TourView (Onboarding Screen 2)
+### Step 2: Create FetchDashboardDataUseCase (Domain Layer)
 
-**File:** `Cravey/Presentation/Views/Onboarding/TourView.swift`
-
-**Purpose:** 4-card swipeable tour explaining app features (<60 sec to complete).
+**File:** `Cravey/Domain/UseCases/FetchDashboardDataUseCase.swift`
 
 ```swift
-import SwiftUI
+import Foundation
 
-/// 4-card swipeable tour of app features
-struct TourView: View {
-    @Binding var showOnboarding: Bool
-    @State private var currentPage = 0
-    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+/// Use case for fetching dashboard analytics data
+protocol FetchDashboardDataUseCase: Sendable {
+    func execute(dateRange: DateRange) async throws -> DashboardData
+}
 
-    private let tourCards: [TourCard] = [
-        TourCard(
-            icon: "pencil.circle.fill",
-            title: "Track Cravings",
-            description: "Log cravings in <5 seconds. Track intensity, triggers, and outcomes.",
-            color: .blue
-        ),
-        TourCard(
-            icon: "chart.line.uptrend.xyaxis.circle.fill",
-            title: "Visualize Progress",
-            description: "See patterns, streaks, and progress over time. Celebrate wins.",
-            color: .green
-        ),
-        TourCard(
-            icon: "video.circle.fill",
-            title: "Record Motivation",
-            description: "Save videos/audio to play during vulnerable moments.",
-            color: .purple
-        ),
-        TourCard(
-            icon: "lock.circle.fill",
-            title: "Stay Private",
-            description: "All data stays on your device. No cloud sync, no tracking.",
-            color: .orange
+/// Date range filter for dashboard
+enum DateRange: String, CaseIterable, Sendable {
+    case sevenDays = "7 Days"
+    case thirtyDays = "30 Days"
+    case ninetyDays = "90 Days"
+    case allTime = "All Time"
+
+    var days: Int? {
+        switch self {
+        case .sevenDays: return 7
+        case .thirtyDays: return 30
+        case .ninetyDays: return 90
+        case .allTime: return nil
+        }
+    }
+
+    func startDate(from endDate: Date = Date()) -> Date {
+        guard let days = days else {
+            return Date.distantPast  // All time = fetch everything
+        }
+        return Calendar.current.date(byAdding: .day, value: -days, to: endDate) ?? endDate
+    }
+}
+
+actor DefaultFetchDashboardDataUseCase: FetchDashboardDataUseCase {
+    private let cravingRepository: CravingRepositoryProtocol
+    private let usageRepository: UsageRepositoryProtocol
+
+    init(
+        cravingRepository: CravingRepositoryProtocol,
+        usageRepository: UsageRepositoryProtocol
+    ) {
+        self.cravingRepository = cravingRepository
+        self.usageRepository = usageRepository
+    }
+
+    func execute(dateRange: DateRange) async throws -> DashboardData {
+        let endDate = Date()
+        let startDate = dateRange.startDate(from: endDate)
+
+        // Fetch cravings and usage in parallel using existing repository APIs
+        async let cravings = cravingRepository.fetch(from: startDate, to: endDate)
+        async let usageLogs = usageRepository.fetch(from: startDate, to: endDate)
+
+        return DashboardData(
+            cravings: try await cravings,
+            usageLogs: try await usageLogs,
+            startDate: startDate,
+            endDate: endDate
         )
-    ]
-
-    var body: some View {
-        VStack(spacing: 0) {
-            // Progress indicator
-            HStack(spacing: 8) {
-                ForEach(0..<tourCards.count, id: \.self) { index in
-                    Capsule()
-                        .fill(index == currentPage ? Color.blue : Color.gray.opacity(0.3))
-                        .frame(width: index == currentPage ? 30 : 8, height: 8)
-                        .animation(.spring(response: 0.3), value: currentPage)
-                }
-            }
-            .padding(.top, 20)
-
-            // Tour cards (swipeable)
-            TabView(selection: $currentPage) {
-                ForEach(0..<tourCards.count, id: \.self) { index in
-                    TourCardView(card: tourCards[index])
-                        .tag(index)
-                }
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-
-            // CTA button
-            Button {
-                if currentPage < tourCards.count - 1 {
-                    withAnimation {
-                        currentPage += 1
-                    }
-                } else {
-                    // Complete onboarding
-                    hasCompletedOnboarding = true
-                    showOnboarding = false
-                }
-            } label: {
-                Text(currentPage < tourCards.count - 1 ? "Next" : "Start Using Cravey")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .cornerRadius(12)
-            }
-            .padding(.horizontal, 40)
-            .padding(.bottom, 40)
-
-            // Skip button (first 3 cards only)
-            if currentPage < tourCards.count - 1 {
-                Button("Skip") {
-                    hasCompletedOnboarding = true
-                    showOnboarding = false
-                }
-                .font(.subheadline)
-                .foregroundColor(.gray)
-                .padding(.bottom, 20)
-            }
-        }
-    }
-}
-
-// Tour card data model
-struct TourCard {
-    let icon: String
-    let title: String
-    let description: String
-    let color: Color
-}
-
-// Individual tour card view
-struct TourCardView: View {
-    let card: TourCard
-
-    var body: some View {
-        VStack(spacing: 30) {
-            Spacer()
-
-            Image(systemName: card.icon)
-                .font(.system(size: 100))
-                .foregroundColor(card.color)
-
-            VStack(spacing: 12) {
-                Text(card.title)
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.center)
-
-                Text(card.description)
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 40)
-            }
-
-            Spacer()
-        }
-    }
-}
-
-#Preview {
-    TourView(showOnboarding: .constant(true))
-}
-```
-
-**Why This Code:**
-- **4 cards, <60 sec** - Minimal friction, user can skip
-- **@AppStorage for persistence** - Onboarding only shows once
-- **SwipTabView with progress dots** - Standard iOS pattern
-- **Adaptive CTA** - "Next" → "Start Using Cravey" on last card
-- **Feature-focused messaging** - Clear value props (Track, Visualize, Record, Privacy)
-
-**Dependencies Required:**
-- None - Pure SwiftUI, no use cases
-
----
-
-## WEEK 4: Data Management
-
-### Step 3: Create ExportDataUseCase (Domain Layer)
-
-**File:** `Cravey/Domain/UseCases/ExportDataUseCase.swift`
-
-**Purpose:** Business logic for exporting all data to CSV or JSON format.
-
-```swift
-import Foundation
-
-/// Export format options
-enum ExportFormat: String, Sendable {
-    case csv
-    case json
-}
-
-/// Use case for exporting all app data
-protocol ExportDataUseCase: Sendable {
-    /// Export all data (cravings + usage + recordings metadata) to specified format
-    /// - Parameter format: CSV or JSON
-    /// - Returns: URL to generated export file in Documents directory
-    func execute(format: ExportFormat) async throws -> URL
-}
-
-/// Default implementation of ExportDataUseCase
-actor DefaultExportDataUseCase: ExportDataUseCase {
-    private let cravingRepository: CravingRepositoryProtocol
-    private let usageRepository: UsageRepositoryProtocol
-    private let recordingRepository: RecordingRepositoryProtocol
-
-    init(
-        cravingRepository: CravingRepositoryProtocol,
-        usageRepository: UsageRepositoryProtocol,
-        recordingRepository: RecordingRepositoryProtocol
-    ) {
-        self.cravingRepository = cravingRepository
-        self.usageRepository = usageRepository
-        self.recordingRepository = recordingRepository
-    }
-
-    func execute(format: ExportFormat) async throws -> URL {
-        // Fetch all data from repositories
-        let cravings = try await cravingRepository.fetchAll()
-        let usageLogs = try await usageRepository.fetchAll()
-        let recordings = try await recordingRepository.fetchAll()
-
-        // Generate export file based on format
-        let fileName = "cravey_export_\(Date().ISO8601Format()).txt"
-        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let fileURL = documentsURL.appendingPathComponent(fileName.replacingOccurrences(of: ".txt", with: ".\(format.rawValue)"))
-
-        switch format {
-        case .csv:
-            let csvContent = try generateCSV(cravings: cravings, usageLogs: usageLogs, recordings: recordings)
-            try csvContent.write(to: fileURL, atomically: true, encoding: .utf8)
-
-        case .json:
-            let jsonData = try generateJSON(cravings: cravings, usageLogs: usageLogs, recordings: recordings)
-            try jsonData.write(to: fileURL)
-        }
-
-        return fileURL
-    }
-
-    // MARK: - CSV Generation
-
-    private func generateCSV(cravings: [CravingEntity], usageLogs: [UsageEntity], recordings: [RecordingEntity]) throws -> String {
-        var csv = ""
-
-        // Cravings section
-        csv += "CRAVINGS\n"
-        csv += "Timestamp,Intensity,Duration (min),Triggers,Location,Notes,Managed Successfully\n"
-
-        for craving in cravings {
-            let row = [
-                ISO8601DateFormatter().string(from: craving.timestamp),
-                String(craving.intensity),
-                String(craving.duration ?? 0),
-                craving.triggers.joined(separator: "; "),
-                craving.location ?? "",
-                (craving.notes ?? "").replacingOccurrences(of: ",", with: ";"), // Escape commas
-                String(craving.wasManagedSuccessfully)
-            ].joined(separator: ",")
-            csv += row + "\n"
-        }
-
-        // Usage section
-        csv += "\nUSAGE LOGS\n"
-        csv += "Timestamp,ROA,Amount,Triggers,Location,Notes\n"
-
-        for usage in usageLogs {
-            let row = [
-                ISO8601DateFormatter().string(from: usage.timestamp),
-                usage.roa,
-                usage.amount ?? "",
-                usage.triggers.joined(separator: "; "),
-                usage.location ?? "",
-                (usage.notes ?? "").replacingOccurrences(of: ",", with: ";")
-            ].joined(separator: ",")
-            csv += row + "\n"
-        }
-
-        // Recordings section
-        csv += "\nRECORDINGS\n"
-        csv += "Timestamp,Type,Title,Duration (sec),Play Count,Last Played,Purpose\n"
-
-        for recording in recordings {
-            let row = [
-                ISO8601DateFormatter().string(from: recording.timestamp),
-                recording.type.rawValue,
-                recording.title ?? "",
-                String(format: "%.1f", recording.duration),
-                String(recording.playCount),
-                recording.lastPlayedAt.map { ISO8601DateFormatter().string(from: $0) } ?? "",
-                recording.purpose.rawValue
-            ].joined(separator: ",")
-            csv += row + "\n"
-        }
-
-        return csv
-    }
-
-    // MARK: - JSON Generation
-
-    private func generateJSON(cravings: [CravingEntity], usageLogs: [UsageEntity], recordings: [RecordingEntity]) throws -> Data {
-        let exportData: [String: Any] = [
-            "exportDate": ISO8601DateFormatter().string(from: Date()),
-            "version": "1.0",
-            "cravings": cravings.map { craving in
-                [
-                    "id": craving.id.uuidString,
-                    "timestamp": ISO8601DateFormatter().string(from: craving.timestamp),
-                    "intensity": craving.intensity,
-                    "duration": craving.duration ?? 0,
-                    "triggers": craving.triggers,
-                    "location": craving.location ?? "",
-                    "notes": craving.notes ?? "",
-                    "managedSuccessfully": craving.wasManagedSuccessfully
-                ]
-            },
-            "usageLogs": usageLogs.map { usage in
-                [
-                    "id": usage.id.uuidString,
-                    "timestamp": ISO8601DateFormatter().string(from: usage.timestamp),
-                    "roa": usage.roa,
-                    "amount": usage.amount ?? "",
-                    "triggers": usage.triggers,
-                    "location": usage.location ?? "",
-                    "notes": usage.notes ?? ""
-                ]
-            },
-            "recordings": recordings.map { recording in
-                [
-                    "id": recording.id.uuidString,
-                    "timestamp": ISO8601DateFormatter().string(from: recording.timestamp),
-                    "type": recording.type.rawValue,
-                    "title": recording.title ?? "",
-                    "duration": recording.duration,
-                    "playCount": recording.playCount,
-                    "lastPlayedAt": recording.lastPlayedAt.map { ISO8601DateFormatter().string(from: $0) } ?? "",
-                    "purpose": recording.purpose.rawValue,
-                    "filePath": recording.filePath
-                ]
-            }
-        ]
-
-        return try JSONSerialization.data(withJSONObject: exportData, options: [.prettyPrinted, .sortedKeys])
     }
 }
 ```
 
 **Why This Code:**
-- **Fetches from all 3 repositories** - Comprehensive export (cravings + usage + recordings)
-- **Dual format support** - CSV for spreadsheet apps, JSON for programmatic access
-- **ISO 8601 timestamps** - Universal date format
-- **Escapes CSV commas** - Prevents data corruption (notes field)
-- **Actor isolation** - Thread-safe async operations
-- **Pure domain layer** - No SwiftUI/SwiftData imports
+- **Protocol-based** - Follows Clean Architecture (dependency inversion)
+- **`actor` for concurrency** - Safe for async/await (Swift 6 strict concurrency)
+- **DateRange enum** - Type-safe date filtering (no magic numbers)
+- **Parallel fetching** - Uses `async let` to fetch cravings + usage simultaneously (performance)
+- **Uses existing repository APIs** - `CravingRepositoryProtocol.fetch(from:to:)` already exists (verified in baseline code at Cravey/Domain/Repositories/CravingRepositoryProtocol.swift:13)
 
 **Dependencies Required:**
-- ✅ `CravingRepositoryProtocol.fetchAll()` - Exists (PHASE_1)
-- ⚠️ `UsageRepositoryProtocol.fetchAll()` - Must exist from PHASE_2
-- ⚠️ `RecordingRepositoryProtocol.fetchAll()` - Stub exists (real implementation in PHASE_3)
+- ✅ `CravingRepositoryProtocol.fetch(from:to:)` - Already exists (PHASE_1)
+- ⚠️ `UsageRepositoryProtocol.fetch(from:to:)` - Must be implemented in PHASE_2 (same signature as craving repo)
 
 ---
 
-### Step 4: Create DeleteAllDataUseCase (Domain Layer)
+### Step 3: Create DashboardViewModel (Presentation Layer)
 
-**File:** `Cravey/Domain/UseCases/DeleteAllDataUseCase.swift`
-
-**Purpose:** Business logic for atomic deletion of all app data (database + files).
+**File:** `Cravey/Presentation/ViewModels/DashboardViewModel.swift`
 
 ```swift
 import Foundation
+import Observation
 
-/// Use case for deleting all app data (database + files)
-protocol DeleteAllDataUseCase: Sendable {
-    /// Atomically delete all cravings, usage logs, recordings (metadata + files), and messages
-    func execute() async throws
-}
-
-/// Default implementation of DeleteAllDataUseCase
-actor DefaultDeleteAllDataUseCase: DeleteAllDataUseCase {
-    private let cravingRepository: CravingRepositoryProtocol
-    private let usageRepository: UsageRepositoryProtocol
-    private let recordingRepository: RecordingRepositoryProtocol
-
-    init(
-        cravingRepository: CravingRepositoryProtocol,
-        usageRepository: UsageRepositoryProtocol,
-        recordingRepository: RecordingRepositoryProtocol
-    ) {
-        self.cravingRepository = cravingRepository
-        self.usageRepository = usageRepository
-        self.recordingRepository = recordingRepository
-    }
-
-    func execute() async throws {
-        // 1. Fetch all recordings to get file paths
-        let recordings = try await recordingRepository.fetchAll()
-
-        // 2. Delete all database entries
-        let cravings = try await cravingRepository.fetchAll()
-        for craving in cravings {
-            try await cravingRepository.delete(id: craving.id)
-        }
-
-        let usageLogs = try await usageRepository.fetchAll()
-        for usage in usageLogs {
-            try await usageRepository.delete(id: usage.id)
-        }
-
-        for recording in recordings {
-            try await recordingRepository.delete(id: recording.id)
-        }
-
-        // 3. Delete all recording files from disk
-        let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let recordingsURL = documentsURL.appendingPathComponent("Recordings")
-
-        // Delete entire Recordings directory
-        if fileManager.fileExists(atPath: recordingsURL.path) {
-            try fileManager.removeItem(at: recordingsURL)
-        }
-
-        // Note: Motivational messages are NOT deleted (default content persists)
-    }
-}
-```
-
-**Why This Code:**
-- **Atomic deletion** - All or nothing (if one fails, throw error)
-- **Database + file deletion** - Clears SwiftData AND recording files
-- **Preserves default messages** - Only user data deleted (not app content)
-- **Actor isolation** - Thread-safe async operations
-- **Uses existing repository APIs** - `delete(id:)` from CravingRepositoryProtocol
-
-**Dependencies Required:**
-- ✅ `CravingRepositoryProtocol.fetchAll()` + `delete(id:)` - Exists (PHASE_1)
-- ⚠️ `UsageRepositoryProtocol.fetchAll()` + `delete(id:)` - Must exist from PHASE_2
-- ⚠️ `RecordingRepositoryProtocol.fetchAll()` + `delete(id:)` - Stub exists (PHASE_3)
-
----
-
-### Step 5: Create SettingsViewModel (Presentation Layer)
-
-**File:** `Cravey/Presentation/ViewModels/SettingsViewModel.swift`
-
-**Purpose:** State management for Settings screen (export + delete flows).
-
-```swift
-import Foundation
-import SwiftUI
-
-/// ViewModel for Settings screen
+/// ViewModel for Dashboard screen
+/// Manages dashboard state and date range filtering
 @Observable
 @MainActor
-final class SettingsViewModel {
-    // MARK: - State
+final class DashboardViewModel {
+    // State
+    var dashboardData: DashboardData?
+    var isLoading = false
+    var error: String?
+    var selectedDateRange: DateRange = .thirtyDays
 
-    private(set) var isExporting = false
-    private(set) var isDeleting = false
-    private(set) var exportedFileURL: URL?
-    private(set) var errorMessage: String?
-    private(set) var showDeleteConfirmation = false
+    // Dependencies
+    private let fetchDashboardDataUseCase: FetchDashboardDataUseCase
 
-    // MARK: - Dependencies
-
-    private let exportDataUseCase: ExportDataUseCase
-    private let deleteAllDataUseCase: DeleteAllDataUseCase
-
-    init(
-        exportDataUseCase: ExportDataUseCase,
-        deleteAllDataUseCase: DeleteAllDataUseCase
-    ) {
-        self.exportDataUseCase = exportDataUseCase
-        self.deleteAllDataUseCase = deleteAllDataUseCase
+    init(fetchDashboardDataUseCase: FetchDashboardDataUseCase) {
+        self.fetchDashboardDataUseCase = fetchDashboardDataUseCase
     }
 
     // MARK: - Actions
 
-    /// Export data to specified format
-    func exportData(format: ExportFormat) async {
-        isExporting = true
-        errorMessage = nil
-        exportedFileURL = nil
+    func loadDashboard() async {
+        isLoading = true
+        error = nil
 
         do {
-            let fileURL = try await exportDataUseCase.execute(format: format)
-            exportedFileURL = fileURL
+            dashboardData = try await fetchDashboardDataUseCase.execute(dateRange: selectedDateRange)
         } catch {
-            errorMessage = "Export failed: \(error.localizedDescription)"
+            self.error = "Failed to load dashboard: \(error.localizedDescription)"
         }
 
-        isExporting = false
+        isLoading = false
     }
 
-    /// Show delete confirmation dialog
-    func promptDeleteAllData() {
-        showDeleteConfirmation = true
+    func changeDateRange(to newRange: DateRange) async {
+        selectedDateRange = newRange
+        await loadDashboard()
     }
 
-    /// Delete all data (called after confirmation)
-    func deleteAllData() async {
-        isDeleting = true
-        errorMessage = nil
+    // MARK: - Computed Properties (Formatted for UI)
 
-        do {
-            try await deleteAllDataUseCase.execute()
-        } catch {
-            errorMessage = "Deletion failed: \(error.localizedDescription)"
+    var summaryText: String {
+        guard let data = dashboardData else { return "Loading..." }
+
+        let period = selectedDateRange.rawValue.lowercased()
+        return "Past \(period): \(data.totalUsage) uses, \(data.totalCravings) cravings"
+    }
+
+    var averageIntensityText: String? {
+        guard let avg = dashboardData?.averageCravingIntensity else { return nil }
+        return String(format: "%.1f / 10", avg)
+    }
+
+    var topTriggersText: String {
+        guard let data = dashboardData else { return "No data" }
+
+        let topThree = data.topTriggers
+        if topThree.isEmpty {
+            return "No triggers logged"
         }
 
-        isDeleting = false
+        return topThree.enumerated().map { index, item in
+            "\(index + 1). \(item.trigger) (\(item.count))"
+        }.joined(separator: "\n")
     }
 
-    /// Dismiss error message
-    func dismissError() {
-        errorMessage = nil
+    var currentStreakText: String {
+        guard let data = dashboardData else { return "—" }
+
+        if let streak = data.currentAbstinenceStreak {
+            return "\(streak) days abstinent"
+        } else if !data.usageLogs.isEmpty {
+            return "Active use period"
+        } else {
+            return "No usage logged"
+        }
+    }
+
+    var longestStreakText: String {
+        guard let streak = dashboardData?.longestAbstinenceStreak else {
+            return "Not enough data"
+        }
+        return "Your best: \(streak) days"
+    }
+
+    /// Returns true if dashboard should show empty state
+    var shouldShowEmptyState: Bool {
+        guard let data = dashboardData else { return false }
+        return (data.totalCravings + data.totalUsage) < 2
     }
 }
 ```
 
 **Why This Code:**
-- **@Observable macro** - Modern SwiftUI state management (no ObservableObject)
-- **@MainActor** - All UI updates on main thread
-- **Separation of concerns** - VM delegates business logic to use cases
-- **Loading states** - `isExporting`, `isDeleting` for UI feedback
-- **Error handling** - Captures and exposes errors to UI
-- **Confirmation flow** - `showDeleteConfirmation` flag for destructive action
-
-**Dependencies Required:**
-- ✅ `ExportDataUseCase` - Created in Step 3
-- ✅ `DeleteAllDataUseCase` - Created in Step 4
+- **@Observable macro** - SwiftUI reactive binding (iOS 18+)
+- **@MainActor** - All UI updates on main thread (Swift 6 concurrency)
+- **Formatted properties** - ViewModel owns formatting logic, View just displays
+- **Empty state logic** - `shouldShowEmptyState` decides if <2 total logs
+- **Clean separation** - Domain logic in `DashboardData`, presentation logic in ViewModel
 
 ---
 
-### Step 6: Create SettingsView (Presentation Layer)
+### Step 4: Create MetricCardView Component (Presentation Layer)
 
-**File:** `Cravey/Presentation/Views/Settings/SettingsView.swift`
+**File:** `Cravey/Presentation/Views/Components/MetricCardView.swift`
 
-**Purpose:** Settings list with Data Management section (Export + Delete).
+**Purpose:** Reusable card component for displaying metrics. Follows iOS design patterns (rounded rectangle, padding, system fonts).
 
 ```swift
 import SwiftUI
 
-/// Settings screen with data management options
-struct SettingsView: View {
+/// Reusable metric card for dashboard
+struct MetricCardView: View {
+    let title: String
+    let value: String
+    let subtitle: String?
+    let systemImage: String?
+
+    init(
+        title: String,
+        value: String,
+        subtitle: String? = nil,
+        systemImage: String? = nil
+    ) {
+        self.title = title
+        self.value = value
+        self.subtitle = subtitle
+        self.systemImage = systemImage
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Header
+            HStack {
+                if let systemImage = systemImage {
+                    Image(systemName: systemImage)
+                        .foregroundStyle(.secondary)
+                }
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            // Value
+            Text(value)
+                .font(.title)
+                .fontWeight(.bold)
+
+            // Subtitle (optional)
+            if let subtitle = subtitle {
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(12)
+    }
+}
+
+#Preview {
+    VStack(spacing: 16) {
+        MetricCardView(
+            title: "Current Streak",
+            value: "7 days",
+            subtitle: "Abstinent since Nov 1",
+            systemImage: "flame.fill"
+        )
+
+        MetricCardView(
+            title: "Longest Streak",
+            value: "14 days",
+            systemImage: "star.fill"
+        )
+    }
+    .padding()
+}
+```
+
+**Why This Code:**
+- **Reusable** - Used for streak cards, summary stats, etc.
+- **SF Symbols** - Optional system image for visual hierarchy
+- **Adaptive** - Works in light/dark mode (Color(.systemGray6))
+- **Preview** - Xcode live preview for rapid iteration
+
+---
+
+### Step 5: Create SummaryCardView (Presentation Layer)
+
+**File:** `Cravey/Presentation/Views/Dashboard/SummaryCardView.swift`
+
+```swift
+import SwiftUI
+
+/// Top summary card for dashboard (total cravings + usage)
+struct SummaryCardView: View {
+    let totalCravings: Int
+    let totalUsage: Int
+    let dateRangeName: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Summary")
+                .font(.headline)
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 32) {
+                // Cravings
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("\(totalCravings)")
+                        .font(.system(size: 40, weight: .bold))
+                        .foregroundStyle(.orange)
+                    Text("Cravings")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                // Usage
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("\(totalUsage)")
+                        .font(.system(size: 40, weight: .bold))
+                        .foregroundStyle(.green)
+                    Text("Uses")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            Text("Past \(dateRangeName.lowercased())")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color(.systemGray6))
+        .cornerRadius(16)
+    }
+}
+
+#Preview {
+    SummaryCardView(
+        totalCravings: 12,
+        totalUsage: 8,
+        dateRangeName: "30 Days"
+    )
+    .padding()
+}
+```
+
+---
+
+### Step 6: Create EmptyDashboardView (Presentation Layer)
+
+**File:** `Cravey/Presentation/Views/Dashboard/EmptyDashboardView.swift`
+
+```swift
+import SwiftUI
+
+/// Empty state shown when user has <2 total logs
+struct EmptyDashboardView: View {
+    var body: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "chart.xyaxis.line")
+                .font(.system(size: 60))
+                .foregroundStyle(.secondary)
+
+            VStack(spacing: 8) {
+                Text("No Data Yet")
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Text("Keep logging cravings and usage.\nYou'll see patterns after a few entries.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+        }
+        .padding()
+    }
+}
+
+#Preview {
+    EmptyDashboardView()
+}
+```
+
+**Why This Code:**
+- **Compassionate messaging** - "No data yet" not "You failed"
+- **Clear next action** - Tells user to keep logging
+- **Visual hierarchy** - SF Symbol + text following iOS patterns
+
+---
+
+### Step 7: Create DashboardView (Presentation Layer)
+
+**File:** `Cravey/Presentation/Views/Dashboard/DashboardView.swift`
+
+**Purpose:** Main dashboard container with date range filter and metric cards.
+
+```swift
+import SwiftUI
+
+struct DashboardView: View {
     @Environment(DependencyContainer.self) private var container
-    @State private var viewModel: SettingsViewModel
-    @State private var showExportSheet = false
-
-    init() {
-        // ViewModel initialized in onAppear with DI
-        _viewModel = State(wrappedValue: SettingsViewModel(
-            exportDataUseCase: MockExportDataUseCase(),
-            deleteAllDataUseCase: MockDeleteAllDataUseCase()
-        ))
-    }
+    @State private var viewModel: DashboardViewModel?
 
     var body: some View {
-        NavigationStack {
-            List {
-                // Data Management Section
-                Section {
-                    // Export data button
-                    Button {
-                        showExportSheet = true
-                    } label: {
-                        Label("Export Data", systemImage: "arrow.up.doc")
-                    }
-                    .disabled(viewModel.isExporting)
-
-                    // Delete all data button (destructive)
-                    Button(role: .destructive) {
-                        viewModel.promptDeleteAllData()
-                    } label: {
-                        Label("Delete All Data", systemImage: "trash")
-                    }
-                    .disabled(viewModel.isDeleting)
-
-                } header: {
-                    Text("Data Management")
-                } footer: {
-                    Text("Export your data to CSV or JSON. Delete all data will permanently remove all cravings, usage logs, and recordings.")
-                }
-
-                // App Info Section
-                Section {
-                    HStack {
-                        Text("Version")
-                        Spacer()
-                        Text("1.0.0")
-                            .foregroundColor(.secondary)
-                    }
-
-                    Link(destination: URL(string: "https://example.com/privacy")!) {
-                        HStack {
-                            Text("Privacy Policy")
-                            Spacer()
-                            Image(systemName: "arrow.up.right.square")
-                                .foregroundColor(.secondary)
-                        }
-                    }
-
-                } header: {
-                    Text("About")
-                }
-            }
-            .navigationTitle("Settings")
-            .sheet(isPresented: $showExportSheet) {
-                ExportDataView(viewModel: viewModel)
-            }
-            .confirmationDialog(
-                "Delete All Data",
-                isPresented: $viewModel.showDeleteConfirmation,
-                titleVisibility: .visible
-            ) {
-                Button("Delete All Data", role: .destructive) {
-                    Task {
-                        await viewModel.deleteAllData()
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("This will permanently delete all cravings, usage logs, and recordings. This cannot be undone.")
-            }
-            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-                Button("OK") {
-                    viewModel.dismissError()
-                }
-            } message: {
-                if let errorMessage = viewModel.errorMessage {
-                    Text(errorMessage)
-                }
-            }
-            .onAppear {
-                // Re-initialize ViewModel with real dependencies from DI
-                viewModel = SettingsViewModel(
-                    exportDataUseCase: container.exportDataUseCase,
-                    deleteAllDataUseCase: container.deleteAllDataUseCase
-                )
-            }
-        }
-    }
-}
-
-// Mock use cases for preview
-actor MockExportDataUseCase: ExportDataUseCase {
-    func execute(format: ExportFormat) async throws -> URL {
-        try await Task.sleep(for: .seconds(1))
-        return FileManager.default.temporaryDirectory.appendingPathComponent("preview_export.\(format.rawValue)")
-    }
-}
-
-actor MockDeleteAllDataUseCase: DeleteAllDataUseCase {
-    func execute() async throws {
-        try await Task.sleep(for: .seconds(1))
-    }
-}
-
-#Preview {
-    SettingsView()
-        .environment(DependencyContainer.preview)
-}
-```
-
-**Why This Code:**
-- **List-based settings UI** - Standard iOS pattern
-- **Destructive action confirmation** - `.confirmationDialog` for delete (iOS 15+)
-- **Error handling UI** - `.alert` for error messages
-- **Loading states** - Disables buttons during operations
-- **Sheet presentation** - `ExportDataView` for format selection
-- **DI via @Environment** - Gets dependencies from container
-- **Preview mocks** - Mock use cases for Xcode Previews
-
-**Dependencies Required:**
-- ✅ `SettingsViewModel` - Created in Step 5
-- ✅ `ExportDataView` - Created in Step 7
-- ✅ `DependencyContainer.exportDataUseCase` - Added in Step 9
-- ✅ `DependencyContainer.deleteAllDataUseCase` - Added in Step 9
-
----
-
-### Step 7: Create ExportDataView (Presentation Layer)
-
-**File:** `Cravey/Presentation/Views/Settings/ExportDataView.swift`
-
-**Purpose:** Format picker (CSV/JSON) with iOS Share Sheet for export.
-
-```swift
-import SwiftUI
-
-/// Export data format picker with share sheet
-struct ExportDataView: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var selectedFormat: ExportFormat = .csv
-    @State private var showShareSheet = false
-    @Bindable var viewModel: SettingsViewModel
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                // Format picker
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Export Format")
-                        .font(.headline)
-
-                    Picker("Format", selection: $selectedFormat) {
-                        Text("CSV (Spreadsheet)").tag(ExportFormat.csv)
-                        Text("JSON (Developers)").tag(ExportFormat.json)
-                    }
-                    .pickerStyle(.segmented)
-                }
-                .padding()
-
-                // Format descriptions
-                VStack(alignment: .leading, spacing: 16) {
-                    HStack(alignment: .top, spacing: 12) {
-                        Image(systemName: "tablecells")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("CSV Format")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-
-                            Text("Open in Numbers, Excel, Google Sheets. Separate sections for cravings, usage, and recordings.")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .opacity(selectedFormat == .csv ? 1 : 0.5)
-
-                    HStack(alignment: .top, spacing: 12) {
-                        Image(systemName: "curlybraces")
-                            .font(.title2)
-                            .foregroundColor(.purple)
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("JSON Format")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-
-                            Text("Structured data for developers. Includes metadata and full export timestamp.")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .opacity(selectedFormat == .json ? 1 : 0.5)
-                }
-                .padding()
-                .background(Color(.systemGroupedBackground))
-                .cornerRadius(12)
-                .padding(.horizontal)
-
-                Spacer()
-
-                // Export button
-                Button {
-                    Task {
-                        await viewModel.exportData(format: selectedFormat)
-                        showShareSheet = true
-                    }
-                } label: {
-                    if viewModel.isExporting {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                    } else {
-                        Text("Export Data")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .cornerRadius(12)
-                    }
-                }
-                .disabled(viewModel.isExporting)
-                .padding(.horizontal, 40)
-                .padding(.bottom, 40)
-            }
-            .navigationTitle("Export Data")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
-            .sheet(isPresented: $showShareSheet) {
-                if let fileURL = viewModel.exportedFileURL {
-                    ShareSheet(items: [fileURL])
-                        .onDisappear {
-                            dismiss()
-                        }
-                }
-            }
-        }
-    }
-}
-
-/// UIViewControllerRepresentable wrapper for UIActivityViewController (Share Sheet)
-struct ShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
-
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        return controller
-    }
-
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {
-        // No updates needed
-    }
-}
-
-#Preview {
-    ExportDataView(viewModel: SettingsViewModel(
-        exportDataUseCase: MockExportDataUseCase(),
-        deleteAllDataUseCase: MockDeleteAllDataUseCase()
-    ))
-}
-```
-
-**Why This Code:**
-- **Segmented picker** - Clear CSV vs JSON choice
-- **Format descriptions** - Educates users on use cases
-- **iOS Share Sheet** - Native sharing (AirDrop, email, Files app)
-- **UIViewControllerRepresentable** - Bridges UIKit share sheet to SwiftUI
-- **Loading state** - ProgressView during export
-- **Dismisses after share** - Clean UX flow
-
-**Dependencies Required:**
-- ✅ `SettingsViewModel` - Created in Step 5
-- ✅ `ExportFormat` enum - Defined in Step 3
-
----
-
-### Step 8: Update DependencyContainer (Wire New Use Cases)
-
-**File:** `Cravey/App/DependencyContainer.swift`
-
-**Purpose:** Add ExportDataUseCase and DeleteAllDataUseCase to DI container.
-
-**Modifications:**
-
-```swift
-// ADD to DependencyContainer class properties:
-let exportDataUseCase: ExportDataUseCase
-let deleteAllDataUseCase: DeleteAllDataUseCase
-
-// ADD to init() method after existing repository initialization:
-// Export/Delete use cases (PHASE_5)
-self.exportDataUseCase = DefaultExportDataUseCase(
-    cravingRepository: cravingRepository,
-    usageRepository: usageRepository,
-    recordingRepository: recordingRepository
-)
-
-self.deleteAllDataUseCase = DefaultDeleteAllDataUseCase(
-    cravingRepository: cravingRepository,
-    usageRepository: usageRepository,
-    recordingRepository: recordingRepository
-)
-
-// ADD to static preview property:
-static var preview: DependencyContainer {
-    let container = ModelContainer.preview
-    return DependencyContainer(modelContainer: container)
-}
-```
-
-**Why This Code:**
-- **Centralized DI** - All use cases wired in one place
-- **Uses existing repositories** - Reuses craving/usage/recording repos
-- **Follows established pattern** - Same pattern as existing use cases
-
-**Dependencies Required:**
-- ✅ `CravingRepository` - Exists (PHASE_1)
-- ⚠️ `UsageRepository` - Must exist from PHASE_2
-- ⚠️ `RecordingRepository` - Stub exists (PHASE_3 replaces stub)
-
----
-
-### Step 9: Update CraveyApp.swift (Add Onboarding Flow)
-
-**File:** `Cravey/App/CraveyApp.swift`
-
-**Purpose:** Show onboarding on first launch, then main app.
-
-**Modifications:**
-
-```swift
-import SwiftUI
-import SwiftData
-
-@main
-struct CraveyApp: App {
-    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
-    @State private var showOnboarding = false
-
-    // ... existing modelContainer and container code ...
-
-    var body: some Scene {
-        WindowGroup {
-            if hasCompletedOnboarding {
-                HomeView()
-                    .environment(container)
+        Group {
+            if let viewModel = viewModel {
+                dashboardContent(viewModel: viewModel)
             } else {
-                WelcomeView(showOnboarding: $showOnboarding)
-                    .onAppear {
-                        showOnboarding = true
-                    }
+                ProgressView("Loading dashboard...")
             }
         }
-        .modelContainer(modelContainer)
+        .task {
+            if viewModel == nil {
+                viewModel = container.makeDashboardViewModel()
+            }
+            await viewModel?.loadDashboard()
+        }
+    }
+
+    @ViewBuilder
+    private func dashboardContent(viewModel: DashboardViewModel) -> some View {
+        if viewModel.shouldShowEmptyState {
+            EmptyDashboardView()
+        } else {
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Date Range Filter
+                    dateRangePicker(viewModel: viewModel)
+
+                    // Summary Card
+                    if let data = viewModel.dashboardData {
+                        SummaryCardView(
+                            totalCravings: data.totalCravings,
+                            totalUsage: data.totalUsage,
+                            dateRangeName: viewModel.selectedDateRange.rawValue
+                        )
+                    }
+
+                    // Metric Cards Grid
+                    LazyVGrid(columns: [
+                        GridItem(.flexible()),
+                        GridItem(.flexible())
+                    ], spacing: 16) {
+                        // Current Streak
+                        MetricCardView(
+                            title: "Current Streak",
+                            value: viewModel.currentStreakText,
+                            systemImage: "flame.fill"
+                        )
+
+                        // Longest Streak
+                        MetricCardView(
+                            title: "Longest Streak",
+                            value: viewModel.longestStreakText,
+                            systemImage: "star.fill"
+                        )
+
+                        // Average Intensity
+                        if let intensityText = viewModel.averageIntensityText {
+                            MetricCardView(
+                                title: "Avg Intensity",
+                                value: intensityText,
+                                subtitle: "Craving severity",
+                                systemImage: "chart.line.uptrend.xyaxis"
+                            )
+                        }
+                    }
+
+                    // Top Triggers
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Top Triggers")
+                            .font(.headline)
+
+                        Text(viewModel.topTriggersText)
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(12)
+                }
+                .padding()
+            }
+            .navigationTitle("Dashboard")
+        }
+    }
+
+    @ViewBuilder
+    private func dateRangePicker(viewModel: DashboardViewModel) -> some View {
+        Picker("Date Range", selection: Binding(
+            get: { viewModel.selectedDateRange },
+            set: { newRange in
+                Task {
+                    await viewModel.changeDateRange(to: newRange)
+                }
+            }
+        )) {
+            ForEach(DateRange.allCases, id: \.self) { range in
+                Text(range.rawValue).tag(range)
+            }
+        }
+        .pickerStyle(.segmented)
+    }
+}
+
+#Preview {
+    NavigationStack {
+        DashboardView()
+            .environment(DependencyContainer.preview)
     }
 }
 ```
 
 **Why This Code:**
-- **@AppStorage check** - Persists onboarding completion
-- **Conditional root view** - WelcomeView → HomeView after onboarding
-- **One-time flow** - Never shows again after completion
+- **Optional ViewModel pattern** - Same as PHASE_3 (handles async initialization)
+- **@ViewBuilder** - Extracts content for readability
+- **Empty state handling** - Shows EmptyDashboardView if <2 logs
+- **Date range picker** - Segmented control (iOS standard)
+- **Grid layout** - 2-column grid for metric cards (compact)
+- **Preview** - Uses DependencyContainer.preview for Xcode live preview
 
 ---
 
-## ✅ Success Criteria (Phase 5 Complete When...)
+### Step 8: Update DependencyContainer (App Layer)
 
-### Onboarding
-- [ ] WelcomeView shows on first launch with privacy messaging
-- [ ] TourView shows 4 cards (Track, Visualize, Record, Privacy)
-- [ ] User can swipe through tour or skip
-- [ ] "Start Using Cravey" button completes onboarding
-- [ ] Onboarding never shows again after completion
-- [ ] Time to complete onboarding <60 seconds
+**File:** `Cravey/App/DependencyContainer.swift` (MODIFY)
 
-### Export Data
-- [ ] SettingsView shows "Export Data" button
-- [ ] ExportDataView allows CSV/JSON format selection
-- [ ] Export generates valid CSV with all data (cravings + usage + recordings)
-- [ ] Export generates valid JSON with all data
-- [ ] iOS Share Sheet appears with export file
-- [ ] CSV opens correctly in Numbers/Excel
-- [ ] JSON validates with JSON linter
+**Purpose:** Wire up dashboard use case and ViewModel factory.
 
-### Delete All Data
-- [ ] SettingsView shows "Delete All Data" button (red/destructive)
-- [ ] Confirmation dialog appears with warning message
-- [ ] Delete removes all cravings from database
-- [ ] Delete removes all usage logs from database
-- [ ] Delete removes all recordings from database
-- [ ] Delete removes all recording files from ~/Documents/Recordings/
-- [ ] Dashboard shows empty state after deletion
-- [ ] Deletion completes in <3 seconds
+#### 1. Add Use Case Property
 
-### Testing
-- [ ] All 8 unit tests passing
-- [ ] All 4 integration tests passing
-- [ ] All 2 UI tests passing
-- [ ] Build succeeds with zero warnings
-- [ ] SwiftLint violations <10 warnings
+After the existing use cases (around line 29):
+
+```swift
+// MARK: - Use Cases (Domain Layer)
+
+private(set) var logCravingUseCase: LogCravingUseCase
+private(set) var fetchCravingsUseCase: FetchCravingsUseCase
+// ... (existing recording use cases)
+
+// ← ADD THIS:
+private(set) var fetchDashboardDataUseCase: FetchDashboardDataUseCase
+```
+
+#### 2. Initialize Use Case
+
+In `init(isPreview:)` method, after existing use case initialization:
+
+```swift
+// Initialize use cases
+self.logCravingUseCase = DefaultLogCravingUseCase(repository: cravingRepo)
+self.fetchCravingsUseCase = DefaultFetchCravingsUseCase(repository: cravingRepo)
+// ... (existing recording use cases)
+
+// ← ADD THIS:
+self.fetchDashboardDataUseCase = DefaultFetchDashboardDataUseCase(
+    cravingRepository: cravingRepo,
+    usageRepository: usageRepo  // Assumes UsageRepository exists from Phase 2
+)
+```
+
+#### 3. Add ViewModel Factory Method
+
+After existing ViewModel factories:
+
+```swift
+// MARK: - View Models (Presentation Layer)
+
+func makeCravingLogViewModel() -> CravingLogViewModel {
+    CravingLogViewModel(logCravingUseCase: logCravingUseCase)
+}
+
+// ... (existing recording ViewModels)
+
+// ← ADD THIS:
+func makeDashboardViewModel() -> DashboardViewModel {
+    DashboardViewModel(fetchDashboardDataUseCase: fetchDashboardDataUseCase)
+}
+```
+
+**Dependencies Required:**
+- `usageRepository` must exist (created in PHASE_2)
+- `UsageRepositoryProtocol` must have `fetch(since: Date)` method
+
+---
+
+## ✅ Testing Strategy
+
+### Unit Tests (5 tests)
+
+**File:** `CraveyTests/Domain/UseCases/FetchDashboardDataUseCaseTests.swift`
+
+```swift
+import Testing
+@testable import Cravey
+
+@Suite("FetchDashboardDataUseCase Tests")
+struct FetchDashboardDataUseCaseTests {
+
+    @Test("Should aggregate cravings and usage for 7-day range")
+    func testSevenDayRange() async throws {
+        let mockCravingRepo = MockCravingRepository()
+        let mockUsageRepo = MockUsageRepository()
+
+        // Seed mock data (5 cravings, 3 usage logs in last 7 days)
+        let useCase = DefaultFetchDashboardDataUseCase(
+            cravingRepository: mockCravingRepo,
+            usageRepository: mockUsageRepo
+        )
+
+        let result = try await useCase.execute(dateRange: .sevenDays)
+
+        #expect(result.totalCravings == 5)
+        #expect(result.totalUsage == 3)
+    }
+
+    @Test("Should calculate average craving intensity correctly")
+    func testAverageCravingIntensity() async throws {
+        // Create 3 cravings: intensity 5, 7, 9
+        // Expected average: (5+7+9)/3 = 7.0
+
+        #expect(dashboardData.averageCravingIntensity == 7.0)
+    }
+
+    @Test("Should return nil for average intensity if no cravings")
+    func testAverageIntensityWithNoCravings() async throws {
+        let emptyData = DashboardData(
+            cravings: [],
+            usageLogs: [],
+            startDate: Date(),
+            endDate: Date()
+        )
+
+        #expect(emptyData.averageCravingIntensity == nil)
+    }
+
+    @Test("Should combine triggers from both cravings and usage")
+    func testTriggerBreakdown() async throws {
+        // Create craving with ["Anxious", "Bored"]
+        // Create usage with ["Anxious", "Social"]
+        // Expected: ["Anxious": 2, "Bored": 1, "Social": 1]
+
+        let breakdown = dashboardData.triggerBreakdown
+        #expect(breakdown["Anxious"] == 2)
+        #expect(breakdown["Bored"] == 1)
+        #expect(breakdown["Social"] == 1)
+    }
+
+    @Test("Should calculate current abstinence streak correctly")
+    func testCurrentAbstinenceStreak() async throws {
+        // Create usage logs: 5 days ago, 6 days ago
+        // Expected streak: 4 days (no usage for 4 consecutive days)
+
+        #expect(dashboardData.currentAbstinenceStreak == 4)
+    }
+}
+```
+
+### ViewModel Tests (8 tests)
+
+**File:** `CraveyTests/Presentation/ViewModels/DashboardViewModelTests.swift`
+
+```swift
+import Testing
+@testable import Cravey
+
+@Suite("DashboardViewModel Tests")
+struct DashboardViewModelTests {
+
+    @Test("Should load dashboard data on initialization")
+    @MainActor
+    func testLoadDashboard() async throws {
+        let mockUseCase = MockFetchDashboardDataUseCase()
+        let viewModel = DashboardViewModel(fetchDashboardDataUseCase: mockUseCase)
+
+        await viewModel.loadDashboard()
+
+        #expect(viewModel.dashboardData != nil)
+        #expect(viewModel.isLoading == false)
+    }
+
+    @Test("Should update date range and reload data")
+    @MainActor
+    func testChangeDateRange() async throws {
+        let viewModel = DashboardViewModel(fetchDashboardDataUseCase: mockUseCase)
+
+        await viewModel.changeDateRange(to: .ninetyDays)
+
+        #expect(viewModel.selectedDateRange == .ninetyDays)
+        #expect(mockUseCase.lastExecutedRange == .ninetyDays)
+    }
+
+    @Test("Should show empty state if <2 total logs")
+    @MainActor
+    func testShouldShowEmptyState() async throws {
+        // Create dashboard data with 1 craving, 0 usage
+        viewModel.dashboardData = DashboardData(
+            cravings: [mockCraving],
+            usageLogs: [],
+            startDate: Date(),
+            endDate: Date()
+        )
+
+        #expect(viewModel.shouldShowEmptyState == true)
+    }
+
+    @Test("Should format summary text correctly")
+    @MainActor
+    func testSummaryText() async throws {
+        viewModel.dashboardData = mockDashboardData
+        viewModel.selectedDateRange = .thirtyDays
+
+        #expect(viewModel.summaryText == "Past 30 days: 8 uses, 12 cravings")
+    }
+}
+```
 
 ---
 
 ## 🧪 Mock Implementations for Tests
 
-The test examples above reference mock objects. Implement these using the same patterns from PHASE_1/2/3/4:
+The test examples above reference mock objects. Implement these using the same patterns from PHASE_1/2/3:
 
-### MockExportDataUseCase
+### MockCravingRepository (Reuse from PHASE_1)
 
-**File:** `CraveyTests/Mocks/MockExportDataUseCase.swift` (CREATE THIS)
+Already exists in `CraveyTests/Mocks/MockCravingRepository.swift` from PHASE_1. Key method:
 
 ```swift
-import Foundation
-@testable import Cravey
+actor MockCravingRepository: CravingRepositoryProtocol {
+    private var cravings: [CravingEntity] = []
 
-actor MockExportDataUseCase: ExportDataUseCase {
-    private(set) var lastExecutedFormat: ExportFormat?
-    private var resultURL: URL?
-
-    func setResult(_ url: URL) {
-        self.resultURL = url
+    func fetch(from startDate: Date, to endDate: Date) async throws -> [CravingEntity] {
+        return cravings.filter { craving in
+            craving.timestamp >= startDate && craving.timestamp <= endDate
+        }
     }
 
-    func execute(format: ExportFormat) async throws -> URL {
-        lastExecutedFormat = format
-
-        guard let resultURL = resultURL else {
-            // Return temp URL if no mock result set
-            return FileManager.default.temporaryDirectory.appendingPathComponent("test_export.\(format.rawValue)")
-        }
-
-        return resultURL
+    // Add helper for tests
+    func seed(_ cravings: [CravingEntity]) {
+        self.cravings = cravings
     }
 }
 ```
 
-### MockDeleteAllDataUseCase
+### MockUsageRepository (Create in PHASE_2)
 
-**File:** `CraveyTests/Mocks/MockDeleteAllDataUseCase.swift` (CREATE THIS)
+Should be created in PHASE_2 at `CraveyTests/Mocks/MockUsageRepository.swift`:
+
+```swift
+actor MockUsageRepository: UsageRepositoryProtocol {
+    private var usageLogs: [UsageEntity] = []
+
+    func fetch(from startDate: Date, to endDate: Date) async throws -> [UsageEntity] {
+        return usageLogs.filter { usage in
+            usage.timestamp >= startDate && usage.timestamp <= endDate
+        }
+    }
+
+    func seed(_ logs: [UsageEntity]) {
+        self.usageLogs = logs
+    }
+}
+```
+
+### MockFetchDashboardDataUseCase
+
+**File:** `CraveyTests/Mocks/MockFetchDashboardDataUseCase.swift` (CREATE THIS)
 
 ```swift
 import Foundation
 @testable import Cravey
 
-actor MockDeleteAllDataUseCase: DeleteAllDataUseCase {
-    private(set) var executeCallCount = 0
+actor MockFetchDashboardDataUseCase: FetchDashboardDataUseCase {
+    private(set) var lastExecutedRange: DateRange?
+    private var result: DashboardData?
 
-    func execute() async throws {
-        executeCallCount += 1
+    func setResult(_ data: DashboardData) {
+        self.result = data
+    }
+
+    func execute(dateRange: DateRange) async throws -> DashboardData {
+        lastExecutedRange = dateRange
+
+        guard let result = result else {
+            // Return empty data if no mock result set
+            return DashboardData(
+                cravings: [],
+                usageLogs: [],
+                startDate: Date(),
+                endDate: Date()
+            )
+        }
+
+        return result
     }
 }
 ```
@@ -1223,284 +1257,85 @@ actor MockDeleteAllDataUseCase: DeleteAllDataUseCase {
 **Usage in Tests:**
 
 ```swift
-@Test("SettingsViewModel should export CSV")
+@Test("Should load dashboard data")
 @MainActor
-func testExportCSV() async throws {
-    let mockExportUseCase = MockExportDataUseCase()
-    let mockDeleteUseCase = MockDeleteAllDataUseCase()
+func testLoadDashboard() async throws {
+    let mockUseCase = MockFetchDashboardDataUseCase()
 
-    // Seed mock result
-    let testURL = FileManager.default.temporaryDirectory.appendingPathComponent("test.csv")
-    await mockExportUseCase.setResult(testURL)
-
-    let viewModel = SettingsViewModel(
-        exportDataUseCase: mockExportUseCase,
-        deleteAllDataUseCase: mockDeleteUseCase
+    // Seed mock data
+    let mockData = DashboardData(
+        cravings: [mockCraving1, mockCraving2],
+        usageLogs: [mockUsage1],
+        startDate: Date().addingTimeInterval(-30 * 86400),
+        endDate: Date()
     )
+    await mockUseCase.setResult(mockData)
 
-    await viewModel.exportData(format: .csv)
+    let viewModel = DashboardViewModel(fetchDashboardDataUseCase: mockUseCase)
+    await viewModel.loadDashboard()
 
-    #expect(viewModel.exportedFileURL == testURL)
-    let lastFormat = await mockExportUseCase.lastExecutedFormat
-    #expect(lastFormat == .csv)
+    #expect(viewModel.dashboardData != nil)
+    #expect(viewModel.dashboardData?.totalCravings == 2)
+    #expect(viewModel.dashboardData?.totalUsage == 1)
 }
 ```
 
 ---
 
-## 📊 Dependencies Validation
+## 📚 Dependencies from Previous Phases
+
+This phase REQUIRES completion of:
 
 ### From PHASE_1 (Craving Logging):
 - ✅ `CravingEntity` exists
-- ✅ `CravingRepositoryProtocol.fetchAll()` method exists (verified in baseline)
-- ✅ `CravingRepositoryProtocol.delete(id:)` method exists
-- ✅ `CravingRepository` implementation exists
+- ✅ `CravingRepositoryProtocol.fetch(from:to:)` method exists (verified in baseline)
 
 ### From PHASE_2 (Usage Logging):
 - ⚠️ `UsageEntity` must exist
-- ⚠️ `UsageRepositoryProtocol.fetchAll()` method must exist (same signature as CravingRepositoryProtocol)
-- ⚠️ `UsageRepositoryProtocol.delete(id:)` method must exist
+- ⚠️ `UsageRepositoryProtocol.fetch(from:to:)` method must exist (same signature as CravingRepositoryProtocol)
 - ⚠️ `UsageRepository` implementation must exist
 
-### From Baseline (Recordings - Stub):
-- ⚠️ `RecordingEntity` exists (baseline)
-- ⚠️ `RecordingRepositoryProtocol.fetchAll()` method exists (stub)
-- ⚠️ `RecordingRepositoryProtocol.delete(id:)` method exists (stub)
-- ⚠️ `RecordingRepository` stub exists (PHASE_3 replaces with real implementation)
-
 **Action Required:**
-1. ✅ **PHASE_1 must be complete** before starting this phase (CravingRepository needed for export/delete)
-2. ✅ **PHASE_2 must be complete** before starting this phase (UsageRepository needed for export/delete)
-3. ⚠️ **RecordingRepository stub is OK** - Export/delete will work with stub (returns empty array), real implementation comes in PHASE_3
-
-**Note:** Export functionality will work even if PHASE_3 (Recordings) is not complete - it will simply export empty recordings array from stub repository.
+1. Verify PHASE_2 is complete before starting this phase
+2. Ensure `UsageRepositoryProtocol` has `fetch(from:to:)` method matching `CravingRepositoryProtocol` (see baseline at Cravey/Domain/Repositories/CravingRepositoryProtocol.swift:13)
 
 ---
 
-## 🔄 Integration with Existing App
+## 🔄 Future Enhancements (Post-MVP)
 
-### Tab Bar Integration (PHASE_1 already has tab bar shell)
+1. **Swift Charts Integration** - Visualize the 7 computed properties with line/bar/pie charts (craving intensity over time, location patterns, time of day, day of week, ROA breakdown)
+2. **Heatmap Visualization** - GitHub-style contribution graph (time + day combined)
+3. **Export Dashboard as PDF** - Share metrics with therapist/doctor
+4. **Custom Date Range** - User-selected start/end dates
+5. **Metric Favoriting** - Pin most useful metrics to top
+6. **Tap Metric to View Logs** - Drill down from summary to detailed logs
 
-**File:** `Cravey/Presentation/Views/Home/HomeView.swift` (MODIFY)
-
-Add Settings tab to existing TabView:
-
-```swift
-// ADD to TabView in HomeView.swift:
-SettingsView()
-    .tabItem {
-        Label("Settings", systemImage: "gearshape")
-    }
-```
-
-**Why This Integration:**
-- Tab bar shell already exists from PHASE_1
-- Settings is 4th tab (Home, Dashboard, Recordings, Settings)
-- Standard iOS app pattern
+**Note:** All data for future chart enhancements already exists as computed properties in `DashboardData`. Only UI implementation is deferred.
 
 ---
 
-## 📝 Testing Implementation Examples
+## 📝 Summary
 
-### Unit Test Example: ExportDataUseCaseTests.swift
-
-**File:** `CraveyTests/Domain/UseCases/ExportDataUseCaseTests.swift`
-
-```swift
-import Testing
-import Foundation
-@testable import Cravey
-
-@Suite("ExportDataUseCase Tests")
-struct ExportDataUseCaseTests {
-
-    @Test("Should generate CSV with all data types")
-    func testExportCSV() async throws {
-        // Given
-        let mockCravingRepo = MockCravingRepository()
-        let mockUsageRepo = MockUsageRepository()
-        let mockRecordingRepo = MockRecordingRepository()
-
-        // Seed test data
-        let testCraving = CravingEntity(
-            id: UUID(),
-            timestamp: Date(),
-            intensity: 7,
-            triggers: ["Stress", "Boredom"],
-            location: "Home",
-            notes: "Test craving",
-            wasManagedSuccessfully: true
-        )
-        await mockCravingRepo.seed([testCraving])
-
-        let testUsage = UsageEntity(
-            id: UUID(),
-            timestamp: Date(),
-            roa: "Smoke",
-            amount: "1 bowl",
-            triggers: ["Social"],
-            location: "Party",
-            notes: "Test usage"
-        )
-        await mockUsageRepo.seed([testUsage])
-
-        let useCase = DefaultExportDataUseCase(
-            cravingRepository: mockCravingRepo,
-            usageRepository: mockUsageRepo,
-            recordingRepository: mockRecordingRepo
-        )
-
-        // When
-        let fileURL = try await useCase.execute(format: .csv)
-
-        // Then
-        #expect(FileManager.default.fileExists(atPath: fileURL.path))
-
-        let csvContent = try String(contentsOf: fileURL, encoding: .utf8)
-        #expect(csvContent.contains("CRAVINGS"))
-        #expect(csvContent.contains("USAGE LOGS"))
-        #expect(csvContent.contains("RECORDINGS"))
-        #expect(csvContent.contains("Test craving"))
-        #expect(csvContent.contains("Test usage"))
-
-        // Cleanup
-        try FileManager.default.removeItem(at: fileURL)
-    }
-
-    @Test("Should generate JSON with metadata")
-    func testExportJSON() async throws {
-        // Given
-        let mockCravingRepo = MockCravingRepository()
-        let mockUsageRepo = MockUsageRepository()
-        let mockRecordingRepo = MockRecordingRepository()
-
-        let useCase = DefaultExportDataUseCase(
-            cravingRepository: mockCravingRepo,
-            usageRepository: mockUsageRepo,
-            recordingRepository: mockRecordingRepo
-        )
-
-        // When
-        let fileURL = try await useCase.execute(format: .json)
-
-        // Then
-        let jsonData = try Data(contentsOf: fileURL)
-        let json = try JSONSerialization.jsonObject(with: jsonData) as? [String: Any]
-
-        #expect(json?["version"] as? String == "1.0")
-        #expect(json?["exportDate"] != nil)
-        #expect(json?["cravings"] != nil)
-        #expect(json?["usageLogs"] != nil)
-        #expect(json?["recordings"] != nil)
-
-        // Cleanup
-        try FileManager.default.removeItem(at: fileURL)
-    }
-}
-```
-
-### Unit Test Example: DeleteAllDataUseCaseTests.swift
-
-**File:** `CraveyTests/Domain/UseCases/DeleteAllDataUseCaseTests.swift`
-
-```swift
-import Testing
-import Foundation
-@testable import Cravey
-
-@Suite("DeleteAllDataUseCase Tests")
-struct DeleteAllDataUseCaseTests {
-
-    @Test("Should delete all data from repositories")
-    func testDeleteAllData() async throws {
-        // Given
-        let mockCravingRepo = MockCravingRepository()
-        let mockUsageRepo = MockUsageRepository()
-        let mockRecordingRepo = MockRecordingRepository()
-
-        // Seed test data
-        await mockCravingRepo.seed([
-            CravingEntity(id: UUID(), timestamp: Date(), intensity: 5, triggers: [], location: nil, notes: nil, wasManagedSuccessfully: false)
-        ])
-        await mockUsageRepo.seed([
-            UsageEntity(id: UUID(), timestamp: Date(), roa: "Smoke", amount: nil, triggers: [], location: nil, notes: nil)
-        ])
-
-        let useCase = DefaultDeleteAllDataUseCase(
-            cravingRepository: mockCravingRepo,
-            usageRepository: mockUsageRepo,
-            recordingRepository: mockRecordingRepo
-        )
-
-        // When
-        try await useCase.execute()
-
-        // Then
-        let cravingsCount = try await mockCravingRepo.count()
-        let usageCount = try await mockUsageRepo.count()
-
-        #expect(cravingsCount == 0)
-        #expect(usageCount == 0)
-    }
-}
-```
-
-### Integration Test Example: OnboardingIntegrationTests.swift
-
-**File:** `CraveyTests/Integration/OnboardingIntegrationTests.swift`
-
-```swift
-import Testing
-import SwiftUI
-@testable import Cravey
-
-@Suite("Onboarding Integration Tests")
-struct OnboardingIntegrationTests {
-
-    @Test("Onboarding should only show on first launch")
-    @MainActor
-    func testOnboardingFirstLaunch() async throws {
-        // Reset UserDefaults
-        UserDefaults.standard.removeObject(forKey: "hasCompletedOnboarding")
-
-        // First launch - should show onboarding
-        let hasCompleted1 = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
-        #expect(hasCompleted1 == false)
-
-        // Complete onboarding
-        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
-
-        // Second launch - should not show onboarding
-        let hasCompleted2 = UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
-        #expect(hasCompleted2 == true)
-    }
-}
-```
-
----
-
-## 📦 Summary
-
-**Phase 5 delivers onboarding + data management** that:
-- ✅ Onboards users in <60 seconds (Welcome → Tour → Home)
-- ✅ Exports all data (CSV for spreadsheets, JSON for developers)
-- ✅ Deletes all data atomically (database + files)
-- ✅ Shows Settings UI with clear data management options
-- ✅ Uses iOS Share Sheet for native export experience
-- ✅ Requires destructive confirmation for delete
+**Phase 4 delivers a read-only analytics dashboard** that:
+- ✅ Aggregates data from Phases 1-2 (cravings + usage)
+- ✅ Displays 5 MVP metrics (summary, 2 streaks, intensity, top triggers)
+- ✅ Provides 7 computed properties in DashboardData for future UI expansion (location, ROA, time of day, etc.)
+- ✅ Filters by date range (7/30/90 days/all time)
+- ✅ Loads in <3 seconds with 90 days of data
 - ✅ Follows Clean Architecture (Domain → Presentation)
-- ✅ Uses established DI patterns from PHASE_1/2/3/4
-- ✅ Builds on existing repository APIs (fetchAll, delete)
-- ✅ Handles empty states gracefully (no data to export)
+- ✅ Uses baseline repository APIs: `fetch(from:to:)` (verified against existing code)
+- ✅ Uses established DI patterns from PHASE_3
+- ✅ Handles empty states gracefully (<2 total logs)
+- ✅ No data modification (read-only)
 - ✅ Includes comprehensive mock implementations for testing
 
-**Files Created:** 8 files (2 Use Cases + 1 ViewModel + 5 Views)
-**Tests:** 14 tests (8 unit + 4 integration + 2 UI) with complete mock guidance
-**Duration:** 2 weeks (Weeks 3-4)
-**Dependencies:** Phases 1-2 complete (requires CravingRepository + UsageRepository)
-
-**Next Phase:** PHASE_3 (Weeks 5-6) - Recordings (audio/video recording + playback)
+**Files Created:** 7 files (2 Domain + 1 ViewModel + 4 Views) + 1 mock file
+**Tests:** 13 tests (5 Use Case + 8 ViewModel) with complete mock guidance
+**Duration:** 2 weeks (Weeks 7-8)
+**Audit Status:** ✅ Validated against baseline code (v2.1)
 
 ---
 
-**[← Back to Overview](./PHASE_OVERVIEW.md)** | **[Phase 3 (Recordings) →](./PHASE_3.md)** | **[Phase 4 (Dashboard) →](./PHASE_4.md)**
+**Ready for Implementation! 🚀**
+
+**[← Back to Overview](./PHASE_OVERVIEW.md)** | **[← Phase 3](./PHASE_3.md)** | **[Phase 5 →](./PHASE_5.md)**
