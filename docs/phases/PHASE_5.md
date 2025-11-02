@@ -1,6 +1,6 @@
-# Phase 4: Dashboard & Analytics (Weeks 7-8)
+# Phase 5: Dashboard & Analytics (Weeks 7-8)
 
-**Version:** 2.1 (Complete Implementation Guide - Audit Validated)
+**Version:** 3.0 (Chronologically Ordered + Audit Validated)
 **Duration:** 2 weeks
 **Dependencies:** Phases 1-2 (craving + usage logging) - **⚠️ PHASE_2 MUST BE COMPLETE** (requires UsageEntity + UsageRepository)
 **Status:** 📝 Ready for implementation
@@ -25,7 +25,7 @@ This phase creates a **read-only analytics dashboard** that aggregates data from
 **Core Dependencies:**
 - `CravingEntity` from Phase 1 (cravings logged)
 - `UsageEntity` from Phase 2 (usage logged)
-- `RecordingEntity` from Phase 3 (optional - used for "Recordings Created" count)
+- `RecordingEntity` from Phase 4 (optional - used for "Recordings Created" count)
 
 **Technical Stack:**
 - **Swift Charts** for visualizations (line charts, bar charts, pie charts)
@@ -970,7 +970,7 @@ struct DashboardView: View {
 ```
 
 **Why This Code:**
-- **Optional ViewModel pattern** - Same as PHASE_3 (handles async initialization)
+- **Optional ViewModel pattern** - Same as PHASE_4 (handles async initialization)
 - **@ViewBuilder** - Extracts content for readability
 - **Empty state handling** - Shows EmptyDashboardView if <2 logs
 - **Date range picker** - Segmented control (iOS standard)
@@ -1177,7 +1177,7 @@ struct DashboardViewModelTests {
 
 ## 🧪 Mock Implementations for Tests
 
-The test examples above reference mock objects. Implement these using the same patterns from PHASE_1/2/3:
+The test examples above reference mock objects. Implement these using the same patterns from PHASE_1/2/3/4:
 
 ### MockCravingRepository (Reuse from PHASE_1)
 
@@ -1316,7 +1316,7 @@ This phase REQUIRES completion of:
 
 ## 📝 Summary
 
-**Phase 4 delivers a read-only analytics dashboard** that:
+**Phase 5 delivers a read-only analytics dashboard** that:
 - ✅ Aggregates data from Phases 1-2 (cravings + usage)
 - ✅ Displays 5 MVP metrics (summary, 2 streaks, intensity, top triggers)
 - ✅ Provides 7 computed properties in DashboardData for future UI expansion (location, ROA, time of day, etc.)
@@ -1324,7 +1324,7 @@ This phase REQUIRES completion of:
 - ✅ Loads in <3 seconds with 90 days of data
 - ✅ Follows Clean Architecture (Domain → Presentation)
 - ✅ Uses baseline repository APIs: `fetch(from:to:)` (verified against existing code)
-- ✅ Uses established DI patterns from PHASE_3
+- ✅ Uses established DI patterns from PHASE_3/4
 - ✅ Handles empty states gracefully (<2 total logs)
 - ✅ No data modification (read-only)
 - ✅ Includes comprehensive mock implementations for testing
@@ -1338,4 +1338,4 @@ This phase REQUIRES completion of:
 
 **Ready for Implementation! 🚀**
 
-**[← Back to Overview](./PHASE_OVERVIEW.md)** | **[← Phase 3](./PHASE_3.md)** | **[Phase 5 →](./PHASE_5.md)**
+**[← Back to Overview](./PHASE_OVERVIEW.md)** | **[← Phase 4 (Recordings)](./PHASE_4.md)**
