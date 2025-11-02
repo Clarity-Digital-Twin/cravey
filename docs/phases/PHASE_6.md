@@ -857,7 +857,7 @@ Go to Home tab → Quick Play section → "+" → Choose Audio or Video → Reco
 
    ✅ Log cravings in <5 seconds (no complex forms)
    ✅ Record motivational videos/audio for tough moments
-   ✅ Visualize progress with 11 analytics metrics
+   ✅ Visualize progress with 5 analytics metrics
    ✅ 100% private (all data stays on your device)
 
    App Store: [Link]
