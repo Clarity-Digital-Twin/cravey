@@ -663,12 +663,12 @@ Log cravings with intensity, triggers, location, and notes. No complex forms, ju
 Record videos or audio messages to yourself for tough moments. Play them back during cravings for instant support.
 
 ✅ VISUALIZE YOUR PROGRESS
-See your journey with 11 analytics metrics powered by Swift Charts:
-- Total cravings logged
-- Average intensity trends
-- Most common triggers
-- Clean days streak
-- Success rate (cravings resisted)
+See your journey with 5 analytics metrics powered by Swift Charts:
+- Weekly summary (total cravings + usage, top trigger)
+- Current clean days streak
+- Longest abstinence streak
+- Average craving intensity trend
+- Top 3 triggers
 
 ✅ 100% PRIVATE
 All data is stored locally on your device. Zero cloud sync, zero analytics, zero tracking. Your journey is yours alone.
@@ -676,6 +676,8 @@ All data is stored locally on your device. Zero cloud sync, zero analytics, zero
 ✅ TRACK USAGE WITH PRECISION
 Log cannabis usage with route-of-administration (ROA) specific amounts:
 - Bowls (number of bowls)
+- Joints (number of joints)
+- Blunts (number of blunts)
 - Vape (number of sessions)
 - Edibles (milligrams THC)
 - Dabs (number of dabs)
