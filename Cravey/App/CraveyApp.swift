@@ -9,14 +9,29 @@ struct CraveyApp: App {
 
     var body: some Scene {
         WindowGroup {
-            // TODO: Create proper ContentView in Presentation layer
-            PlaceholderContentView()
-                .environment(dependencyContainer)
+            TabView {
+                HomeView()
+                    .tabItem {
+                        Label("Home", systemImage: "house.fill")
+                    }
+
+                DashboardView()
+                    .tabItem {
+                        Label("Progress", systemImage: "chart.bar.fill")
+                    }
+
+                SettingsView()
+                    .tabItem {
+                        Label("Settings", systemImage: "gearshape.fill")
+                    }
+            }
+            .environment(dependencyContainer)
         }
+        .modelContainer(dependencyContainer.modelContainer)
 
         #if os(macOS)
         Settings {
-            SettingsView()
+            MacOSSettingsView()
         }
         #endif
     }
@@ -71,7 +86,7 @@ struct PlaceholderContentView: View {
 // MARK: - Settings View (macOS)
 
 #if os(macOS)
-struct SettingsView: View {
+struct MacOSSettingsView: View {
     var body: some View {
         TabView {
             GeneralSettingsView()
