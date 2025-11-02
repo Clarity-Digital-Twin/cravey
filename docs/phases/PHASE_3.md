@@ -230,6 +230,8 @@ struct WelcomeView: View {
 
 **Purpose:** 4-card swipeable tour explaining app features (<60 sec to complete).
 
+**Note:** The tour cards use **generic messaging** in Week 3 (e.g., "Visualize Progress") because some features don't exist yet (recordings built in Weeks 5-6, dashboard in Weeks 7-8). In PHASE_6 (Week 9), we'll update to **specific messaging** (e.g., "Visualize progress with 5 analytics metrics") once all features are complete.
+
 ```swift
 import SwiftUI
 
