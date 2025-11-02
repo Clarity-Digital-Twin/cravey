@@ -2,7 +2,7 @@ import XCTest
 
 @MainActor
 final class Phase1ScreenshotTests: XCTestCase {
-    var app: XCUIApplication!
+    nonisolated(unsafe) var app: XCUIApplication!
 
     override func setUpWithError() throws {
         continueAfterFailure = false

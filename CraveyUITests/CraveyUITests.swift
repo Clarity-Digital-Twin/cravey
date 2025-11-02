@@ -4,7 +4,7 @@ import XCTest
 /// End-to-end tests that interact with the actual UI
 @MainActor
 final class CraveyUITests: XCTestCase {
-    var app: XCUIApplication!
+    nonisolated(unsafe) var app: XCUIApplication!
 
     override func setUpWithError() throws {
         continueAfterFailure = false
