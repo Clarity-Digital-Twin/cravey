@@ -37,7 +37,7 @@
 - Dual craving + usage tracking in HomeView
 
 ✅ **Phase 3 (Weeks 3-4): Onboarding + Data Management**
-- ⚠️ **Onboarding implementation moved to Phase 6 (Week 9)** - See rationale below
+- Onboarding flow implemented (WelcomeView + TourView shows once on first launch)
 - Export data (CSV/JSON)
 - Delete all data (atomic)
 - SettingsView with data management
@@ -58,34 +58,23 @@
 
 ## 🛠️ What We're Building (Phase 6)
 
-### Part 1: Onboarding (Week 9, Days 1-2)
+### Part 1: Onboarding Polish (Week 9, Days 1-2)
 
-**Rationale for Moving Onboarding to Week 9:**
-- **Phase 3 documentation placed Onboarding too early** - users would see onboarding before features exist
-- **Phase 6 is the correct time** - all features complete, onboarding can showcase actual functionality
-- **Aligns with polish phase** - onboarding is part of final UX refinement
-- **Matches TECHNICAL_IMPLEMENTATION.md** - Week 9 includes "onboarding refinement"
+**Goal:** Refresh copy, visuals, and haptics so the existing onboarding flow feels production-ready and highlights all 6 features clearly.
 
-**Goal:** Users complete onboarding in <60 seconds, understand all 6 features.
+#### Files to Modify (2 files)
 
-#### Files to Create (2 files)
+1. **Update `Presentation/Views/Onboarding/WelcomeView.swift`**
+   - Refine headline/tagline copy (consistent with App Store description)
+   - Add subtle animation or hero illustration if missing
+   - Reinforce privacy message ("100% local, zero tracking")
+   - Ensure primary CTA uses new button style + haptics
 
-1. **Create `Presentation/Views/Onboarding/WelcomeView.swift`**
-   - Hero image/icon
-   - App value proposition ("Track cravings, stay motivated, find clarity")
-   - Privacy guarantee ("100% local, zero tracking")
-   - "Get Started" CTA
-
-2. **Create `Presentation/Views/Onboarding/TourView.swift`**
-   - 5-screen carousel (SwiftUI PageTabView):
-     1. **Craving Logging:** "Log cravings in <5 seconds"
-     2. **Usage Tracking:** "Track usage with ROA-specific amounts"
-     3. **Recordings:** "Record motivational videos & audio"
-     4. **Dashboard:** "Visualize progress with 5 MVP metrics"
-     5. **Privacy:** "All data stays on your device"
-   - Skip button (top-right)
-   - Progress dots
-   - "Start Using Cravey" final CTA
+2. **Update `Presentation/Views/Onboarding/TourView.swift`**
+   - Audit slide copy/images (Craving Logging, Usage Tracking, Recordings, Dashboard with 5 metrics, Privacy)
+   - Add progress indicator polish (PageTabView dots + accessibility labels)
+   - Confirm Skip button, final CTA, and AppStorage flag still work
+   - Localize strings where possible; prepare for future translations
 
 ---
 
@@ -1035,13 +1024,13 @@ Go to Home tab → Quick Play section → "+" → Choose Audio or Video → Reco
 ## 🔄 Week-by-Week Breakdown
 
 ### Week 9: Onboarding + UI/UX Polish
-- **Mon:** Create WelcomeView.swift
-- **Tue:** Create TourView.swift
+- **Mon:** Refine WelcomeView (copy, visuals, haptics)
+- **Tue:** Refine TourView (slides, accessibility, localization prep)
 - **Wed:** Add animations (sheet transitions, button feedback)
 - **Thu:** Add haptic feedback + empty state polish
 - **Fri:** Accessibility audit (VoiceOver labels, Dynamic Type)
 
-**Deliverable:** Onboarding flow complete (<60 sec), polished animations/haptics.
+**Deliverable:** Onboarding flow polished (<60 sec), refined animations/haptics.
 
 ---
 
