@@ -516,9 +516,9 @@ actor DefaultFetchDashboardDataUseCase: FetchDashboardDataUseCase {
         let endDate = Date()
         let startDate = dateRange.startDate(from: endDate)
 
-        // Fetch cravings and usage in parallel
-        async let cravings = cravingRepository.fetch(since: startDate)
-        async let usageLogs = usageRepository.fetch(since: startDate)
+        // Fetch cravings and usage in parallel using existing repository APIs
+        async let cravings = cravingRepository.fetch(from: startDate, to: endDate)
+        async let usageLogs = usageRepository.fetch(from: startDate, to: endDate)
 
         return DashboardData(
             cravings: try await cravings,
@@ -535,11 +535,11 @@ actor DefaultFetchDashboardDataUseCase: FetchDashboardDataUseCase {
 - **`actor` for concurrency** - Safe for async/await (Swift 6 strict concurrency)
 - **DateRange enum** - Type-safe date filtering (no magic numbers)
 - **Parallel fetching** - Uses `async let` to fetch cravings + usage simultaneously (performance)
-- **Depends on existing repositories** - Reuses `CravingRepositoryProtocol.fetch(since:)` and `UsageRepositoryProtocol.fetch(since:)` from Phases 1-2
+- **Uses existing repository APIs** - `CravingRepositoryProtocol.fetch(from:to:)` already exists (verified in baseline code at Cravey/Domain/Repositories/CravingRepositoryProtocol.swift:13)
 
 **Dependencies Required:**
-- Both repository protocols MUST have `fetch(since: Date)` method
-- This was documented in PHASE_1 and PHASE_2 (see those files for implementation)
+- ✅ `CravingRepositoryProtocol.fetch(from:to:)` - Already exists (PHASE_1)
+- ⚠️ `UsageRepositoryProtocol.fetch(from:to:)` - Must be implemented in PHASE_2 (same signature as craving repo)
 
 ---
 
@@ -1175,31 +1175,142 @@ struct DashboardViewModelTests {
 
 ---
 
+## 🧪 Mock Implementations for Tests
+
+The test examples above reference mock objects. Implement these using the same patterns from PHASE_1/2/3:
+
+### MockCravingRepository (Reuse from PHASE_1)
+
+Already exists in `CraveyTests/Mocks/MockCravingRepository.swift` from PHASE_1. Key method:
+
+```swift
+actor MockCravingRepository: CravingRepositoryProtocol {
+    private var cravings: [CravingEntity] = []
+
+    func fetch(from startDate: Date, to endDate: Date) async throws -> [CravingEntity] {
+        return cravings.filter { craving in
+            craving.timestamp >= startDate && craving.timestamp <= endDate
+        }
+    }
+
+    // Add helper for tests
+    func seed(_ cravings: [CravingEntity]) {
+        self.cravings = cravings
+    }
+}
+```
+
+### MockUsageRepository (Create in PHASE_2)
+
+Should be created in PHASE_2 at `CraveyTests/Mocks/MockUsageRepository.swift`:
+
+```swift
+actor MockUsageRepository: UsageRepositoryProtocol {
+    private var usageLogs: [UsageEntity] = []
+
+    func fetch(from startDate: Date, to endDate: Date) async throws -> [UsageEntity] {
+        return usageLogs.filter { usage in
+            usage.timestamp >= startDate && usage.timestamp <= endDate
+        }
+    }
+
+    func seed(_ logs: [UsageEntity]) {
+        self.usageLogs = logs
+    }
+}
+```
+
+### MockFetchDashboardDataUseCase
+
+**File:** `CraveyTests/Mocks/MockFetchDashboardDataUseCase.swift` (CREATE THIS)
+
+```swift
+import Foundation
+@testable import Cravey
+
+actor MockFetchDashboardDataUseCase: FetchDashboardDataUseCase {
+    private(set) var lastExecutedRange: DateRange?
+    private var result: DashboardData?
+
+    func setResult(_ data: DashboardData) {
+        self.result = data
+    }
+
+    func execute(dateRange: DateRange) async throws -> DashboardData {
+        lastExecutedRange = dateRange
+
+        guard let result = result else {
+            // Return empty data if no mock result set
+            return DashboardData(
+                cravings: [],
+                usageLogs: [],
+                startDate: Date(),
+                endDate: Date()
+            )
+        }
+
+        return result
+    }
+}
+```
+
+**Usage in Tests:**
+
+```swift
+@Test("Should load dashboard data")
+@MainActor
+func testLoadDashboard() async throws {
+    let mockUseCase = MockFetchDashboardDataUseCase()
+
+    // Seed mock data
+    let mockData = DashboardData(
+        cravings: [mockCraving1, mockCraving2],
+        usageLogs: [mockUsage1],
+        startDate: Date().addingTimeInterval(-30 * 86400),
+        endDate: Date()
+    )
+    await mockUseCase.setResult(mockData)
+
+    let viewModel = DashboardViewModel(fetchDashboardDataUseCase: mockUseCase)
+    await viewModel.loadDashboard()
+
+    #expect(viewModel.dashboardData != nil)
+    #expect(viewModel.dashboardData?.totalCravings == 2)
+    #expect(viewModel.dashboardData?.totalUsage == 1)
+}
+```
+
+---
+
 ## 📚 Dependencies from Previous Phases
 
 This phase REQUIRES completion of:
 
 ### From PHASE_1 (Craving Logging):
 - ✅ `CravingEntity` exists
-- ✅ `CravingRepositoryProtocol.fetch(since: Date)` method exists
+- ✅ `CravingRepositoryProtocol.fetch(from:to:)` method exists (verified in baseline)
 
 ### From PHASE_2 (Usage Logging):
 - ⚠️ `UsageEntity` must exist
-- ⚠️ `UsageRepositoryProtocol.fetch(since: Date)` method must exist
+- ⚠️ `UsageRepositoryProtocol.fetch(from:to:)` method must exist (same signature as CravingRepositoryProtocol)
 - ⚠️ `UsageRepository` implementation must exist
 
-**Action Required:** Verify PHASE_2 is complete before starting this phase. If not, implement PHASE_2 first.
+**Action Required:**
+1. Verify PHASE_2 is complete before starting this phase
+2. Ensure `UsageRepositoryProtocol` has `fetch(from:to:)` method matching `CravingRepositoryProtocol` (see baseline at Cravey/Domain/Repositories/CravingRepositoryProtocol.swift:13)
 
 ---
 
 ## 🔄 Future Enhancements (Post-MVP)
 
-1. **Swift Charts Integration** - Add line charts, bar charts, pie charts
+1. **Swift Charts Integration** - Visualize the 7 computed properties with line/bar/pie charts (craving intensity over time, location patterns, time of day, day of week, ROA breakdown)
 2. **Heatmap Visualization** - GitHub-style contribution graph (time + day combined)
 3. **Export Dashboard as PDF** - Share metrics with therapist/doctor
 4. **Custom Date Range** - User-selected start/end dates
 5. **Metric Favoriting** - Pin most useful metrics to top
 6. **Tap Metric to View Logs** - Drill down from summary to detailed logs
+
+**Note:** All data for future chart enhancements already exists as computed properties in `DashboardData`. Only UI implementation is deferred.
 
 ---
 
@@ -1207,17 +1318,21 @@ This phase REQUIRES completion of:
 
 **Phase 4 delivers a read-only analytics dashboard** that:
 - ✅ Aggregates data from Phases 1-2 (cravings + usage)
-- ✅ Displays 11 metrics with computed properties
+- ✅ Displays 5 MVP metrics (summary, 2 streaks, intensity, top triggers)
+- ✅ Provides 7 computed properties in DashboardData for future UI expansion (location, ROA, time of day, etc.)
 - ✅ Filters by date range (7/30/90 days/all time)
 - ✅ Loads in <3 seconds with 90 days of data
 - ✅ Follows Clean Architecture (Domain → Presentation)
+- ✅ Uses baseline repository APIs: `fetch(from:to:)` (verified against existing code)
 - ✅ Uses established DI patterns from PHASE_3
-- ✅ Handles empty states gracefully
+- ✅ Handles empty states gracefully (<2 total logs)
 - ✅ No data modification (read-only)
+- ✅ Includes comprehensive mock implementations for testing
 
-**Files Created:** 8 files (2 Domain + 1 ViewModel + 5 Views)
-**Tests:** 13 tests (5 Use Case + 8 ViewModel)
+**Files Created:** 7 files (2 Domain + 1 ViewModel + 4 Views) + 1 mock file
+**Tests:** 13 tests (5 Use Case + 8 ViewModel) with complete mock guidance
 **Duration:** 2 weeks (Weeks 7-8)
+**Audit Status:** ✅ Validated against baseline code (v2.1)
 
 ---
 
