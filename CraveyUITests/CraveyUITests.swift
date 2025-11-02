@@ -2,27 +2,80 @@ import XCTest
 
 /// UI tests for Cravey app
 /// End-to-end tests that interact with the actual UI
+@MainActor
 final class CraveyUITests: XCTestCase {
-    @MainActor var app: XCUIApplication!
+    var app: XCUIApplication!
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+        app = XCUIApplication()
     }
 
-    // Temporarily disabled due to Swift 6 strict concurrency
-    // TODO: Fix concurrency issues in UI tests
-    /*
-     func testAppLaunches() async throws {
-         await MainActor.run {
-             app = XCUIApplication()
-             app.launch()
+    func testAppLaunchesAndShowsEmptyState() throws {
+        // Given: App is launched
+        app.launch()
 
-             // Verify app launches and shows main screen
-             let mainTitle = app.staticTexts["Cravey"]
-             XCTAssertTrue(mainTitle.exists)
-         }
-     }
-     */
+        // Then: Main tab bar is visible
+        let homeTab = app.tabBars.buttons["Home"]
+        XCTAssertTrue(homeTab.waitForExistence(timeout: 5))
 
-    // TODO: Add more UI tests as views are implemented
+        // And: Empty state message is visible
+        let emptyStateMessage = app.staticTexts["No Cravings Logged"]
+        XCTAssertTrue(emptyStateMessage.waitForExistence(timeout: 2))
+
+        // And: Plus button is visible
+        let plusButton = app.buttons.matching(identifier: "plus.circle.fill").firstMatch
+        XCTAssertTrue(plusButton.exists)
+    }
+
+    func testLogCravingFlow() throws {
+        // Given: App is launched
+        app.launch()
+
+        // When: User taps + button
+        let plusButton = app.buttons.matching(identifier: "plus.circle.fill").firstMatch
+        XCTAssertTrue(plusButton.waitForExistence(timeout: 5))
+        plusButton.tap()
+
+        // And: User taps "Log Craving"
+        let logCravingButton = app.buttons["Log Craving"]
+        XCTAssertTrue(logCravingButton.waitForExistence(timeout: 2))
+        logCravingButton.tap()
+
+        // Then: Craving log form is visible
+        let formTitle = app.navigationBars["Log Craving"]
+        XCTAssertTrue(formTitle.waitForExistence(timeout: 2))
+
+        // And: Save button is disabled initially (would need validation to enable)
+        let saveButton = app.buttons["Save"]
+        XCTAssertTrue(saveButton.exists)
+
+        // When: User adjusts intensity
+        let slider = app.sliders.firstMatch
+        if slider.exists {
+            slider.adjust(toNormalizedSliderPosition: 0.7)
+        }
+
+        // And: User taps Save
+        saveButton.tap()
+
+        // Then: Success alert should appear
+        let successAlert = app.alerts["Success"]
+        XCTAssertTrue(successAlert.waitForExistence(timeout: 5))
+
+        // When: User taps OK
+        successAlert.buttons["OK"].tap()
+
+        // Then: Form should dismiss and list should show craving
+        XCTAssertTrue(emptyStateGone(timeout: 2))
+    }
+
+    private func emptyStateGone(timeout: TimeInterval) -> Bool {
+        let emptyState = app.staticTexts["No Cravings Logged"]
+        // Wait for empty state to disappear (inverse of waitForExistence)
+        let predicate = NSPredicate(format: "exists == false")
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: emptyState)
+        let result = XCTWaiter().wait(for: [expectation], timeout: timeout)
+        return result == .completed
+    }
 }
