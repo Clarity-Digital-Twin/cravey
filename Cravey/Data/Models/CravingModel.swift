@@ -32,8 +32,8 @@ final class CravingModel {
         self.triggers = triggers
         self.location = location
         self.notes = notes
-        self.createdAt = Date()
-        self.modifiedAt = nil
-        self.recording = nil
+        createdAt = Date()
+        modifiedAt = nil
+        recording = nil
     }
 }

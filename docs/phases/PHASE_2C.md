@@ -41,13 +41,13 @@ Data layer (2A) and picker (2B) are validated. This phase assembles the complete
 
 **Required Fields** (top of form, <10 sec logging):
 1. **ROA Method** - Picker (Bowls, Joints, Blunts, Vape, Dab, Edible)
-2. **Amount** - ROAPickerInput (validated in Phase 2B)
-3. **Timestamp** - TimestampPicker (defaults to "now", editable)
+2. **Amount** - ROAPickerInput (validated in Phase 2B, defaults to first valid option per ROA)
+3. **Timestamp** - TimestampPicker (defaults to "now", editable with >7 days warning)
 
 **Optional Fields** (below divider, "Details" section):
 4. **Triggers** - ChipSelector (multi-select HAALT)
-5. **Location** - ChipSelector (single-select presets)
-6. **Notes** - TextField (freeform, 500 char limit)
+5. **Location** - ChipSelector (single-select presets, GPS deferred to Phase 2)
+6. **Notes** - TextField (freeform, 500 char limit with counter at 400 chars)
 
 #### UX Requirements
 
@@ -65,13 +65,16 @@ Data layer (2A) and picker (2B) are validated. This phase assembles the complete
 - Faster than craving logging (<5 sec) because more fields
 - Quick log = Method + Amount + Save (3 taps)
 
-#### Success Message
+#### Success Feedback
 
-**Source: MVP_PRODUCT_SPEC.md line 178 (inferred from craving pattern)**
+**Source: UX_FLOW_SPEC.md lines 396-405**
 
-```
-"Usage logged successfully ✓"
-```
+**Required Behavior:**
+1. **Haptic feedback** - Success vibration on save
+2. **Sheet dismissal** - Bottom sheet slides down (0.3s animation)
+3. **Toast notification** - "Usage logged ✓" (2s auto-dismiss, top of screen)
+
+**NOT an alert** - No "OK" button, immediate dismissal with haptic + toast
 
 (Neutral, factual tone - no judgment about use)
 
@@ -91,23 +94,30 @@ Before marking Phase 2 complete, ALL of the following must be true:
 
 ### Validation Tests
 - [ ] **ViewModel Test 1:** `canSubmit` validates method + amount
-- [ ] **ViewModel Test 2:** `logUsage()` shows success alert
-- [ ] **ViewModel Test 3:** Amount resets when method changes
+- [ ] **ViewModel Test 2:** `logUsage()` triggers haptic + toast (not alert)
+- [ ] **ViewModel Test 3:** Amount resets to first valid option when method changes
+- [ ] **ViewModel Test 4:** Notes validation enforces 500 char limit
+- [ ] **ViewModel Test 5:** Timestamp >7 days shows warning
 - [ ] **List VM Test 1:** Fetches usage successfully
 - [ ] **List VM Test 2:** Handles empty state
 - [ ] **Integration Test 1:** End-to-end usage log (Form → VM → UC → Repo)
 - [ ] **Integration Test 2:** Fetch and display usage from SwiftData
 - [ ] **UI Test 1:** <10 sec validation (tap "Log Usage" → save)
-- [ ] All 8 tests passing ✅
+- [ ] All 10 tests passing ✅
 
 ### Manual QA
 - [ ] Log usage with all 6 ROAs (Bowls, Joints, Blunts, Vape, Dab, Edible)
 - [ ] Verify amount picker updates when ROA changes
+- [ ] Verify amount defaults to first valid option (0.5 for Bowls)
 - [ ] Verify triggers multi-select works (reused ChipSelector)
 - [ ] Verify location single-select works (reused ChipSelector)
 - [ ] Verify timestamp defaults to "now" (reused TimestampPicker)
-- [ ] Verify success alert shows after Save
-- [ ] Verify "OK" on alert dismisses sheet
+- [ ] Verify timestamp >7 days shows warning alert
+- [ ] Verify notes character counter appears at 400 chars
+- [ ] Verify notes cannot exceed 500 chars
+- [ ] Verify haptic feedback on save (phone vibrates)
+- [ ] Verify sheet dismisses immediately (no "OK" button)
+- [ ] Verify toast "Usage logged ✓" appears at top (2s)
 - [ ] Verify usage list auto-refreshes after logging
 - [ ] Verify <10 sec logging time (stopwatch test)
 
@@ -138,16 +148,29 @@ final class UsageLogViewModel {
 
     // Form fields (required)
     var timestamp: Date = Date()
-    var selectedMethod: String = "Bowls"
-    var amount: Double = 1.0
+    var selectedMethod: String = "Bowls" {
+        didSet {
+            // Auto-update amount to first valid option when method changes
+            updateAmountForMethod()
+        }
+    }
+    var amount: Double = 0.5  // Default to first valid option for Bowls (DATA_MODEL_SPEC:166)
 
     // Form fields (optional)
     var selectedTriggers: Set<String> = []
     var selectedLocation: String? = nil
-    var notes: String = ""
+    var notes: String = "" {
+        didSet {
+            // Enforce 500 char limit (DATA_MODEL_SPEC:122, UX_FLOW:391)
+            if notes.count > 500 {
+                notes = String(notes.prefix(500))
+            }
+        }
+    }
 
     // UI state
-    var showSuccessAlert: Bool = false
+    var showSuccessToast: Bool = false  // Toast instead of alert (UX_FLOW:396-405)
+    var showTimestampWarning: Bool = false  // >7 days warning (DATA_MODEL_SPEC:117)
     var errorMessage: String? = nil
     var isLoading: Bool = false
 
@@ -160,8 +183,30 @@ final class UsageLogViewModel {
         return !selectedMethod.isEmpty && amount > 0
     }
 
+    /// Character count for notes (show counter at 400+ chars)
+    var notesCharacterCount: Int {
+        return notes.count
+    }
+
+    /// Show notes character counter (at 400+ chars per UX_FLOW:391)
+    var shouldShowNotesCounter: Bool {
+        return notes.count >= 400
+    }
+
+    /// Check if timestamp is >7 days old (DATA_MODEL_SPEC:117)
+    var isTimestampOld: Bool {
+        let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        return timestamp < sevenDaysAgo
+    }
+
     /// Log usage via use case
     func logUsage() async {
+        // Check for old timestamp warning
+        if isTimestampOld && !showTimestampWarning {
+            showTimestampWarning = true
+            return  // Wait for user to confirm
+        }
+
         guard canSubmit else { return }
 
         isLoading = true
@@ -176,7 +221,9 @@ final class UsageLogViewModel {
                 location: selectedLocation,
                 notes: notes.isEmpty ? nil : notes
             )
-            showSuccessAlert = true
+
+            // Trigger haptic + toast (UX_FLOW:396-405)
+            triggerSuccessFeedback()
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -184,8 +231,24 @@ final class UsageLogViewModel {
         isLoading = false
     }
 
+    /// Confirm old timestamp and proceed with logging
+    func confirmOldTimestamp() async {
+        showTimestampWarning = false
+        await logUsage()  // Proceed with save
+    }
+
+    /// Trigger success feedback (haptic + toast per UX_FLOW:396-405)
+    private func triggerSuccessFeedback() {
+        // Haptic feedback
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+
+        // Show toast
+        showSuccessToast = true
+    }
+
     /// Reset amount to first valid option when method changes
-    /// Called by View via .onChange(of: selectedMethod)
+    /// Called automatically via didSet on selectedMethod
     func updateAmountForMethod() {
         let validAmounts = ROAAmountRange.range(for: selectedMethod)
         if let firstAmount = validAmounts.first {
@@ -197,10 +260,11 @@ final class UsageLogViewModel {
     func resetForm() {
         timestamp = Date()
         selectedMethod = "Bowls"
-        amount = 1.0
+        amount = 0.5  // First valid option for Bowls
         selectedTriggers = []
         selectedLocation = nil
         notes = ""
+        showTimestampWarning = false
     }
 }
 ```
@@ -224,6 +288,7 @@ final class UsageLogViewModel {
 
 ```swift
 import SwiftUI
+import UIKit  // For haptic feedback
 
 struct UsageLogForm: View {
     @Bindable var viewModel: UsageLogViewModel
@@ -297,9 +362,18 @@ struct UsageLogForm: View {
                         )
                     }
 
-                    // Notes (freeform text)
-                    TextField("Notes (Optional)", text: $viewModel.notes, axis: .vertical)
-                        .lineLimit(3...6)
+                    // Notes (freeform text, 500 char limit)
+                    VStack(alignment: .leading, spacing: 4) {
+                        TextField("Notes (Optional)", text: $viewModel.notes, axis: .vertical)
+                            .lineLimit(3...6)
+
+                        // Character counter (appears at 400+ chars per UX_FLOW:391)
+                        if viewModel.shouldShowNotesCounter {
+                            Text("\(viewModel.notesCharacterCount)/500")
+                                .font(.caption)
+                                .foregroundStyle(viewModel.notesCharacterCount >= 500 ? .red : .secondary)
+                        }
+                    }
                 }
             }
             .navigationTitle("Log Usage")
@@ -320,14 +394,20 @@ struct UsageLogForm: View {
                     .disabled(!viewModel.canSubmit)
                 }
             }
-            .alert("Success", isPresented: $viewModel.showSuccessAlert) {
-                Button("OK") {
-                    viewModel.resetForm()
-                    dismiss()
+            // Timestamp warning (>7 days per DATA_MODEL_SPEC:117)
+            .alert("Old Entry", isPresented: $viewModel.showTimestampWarning) {
+                Button("Cancel", role: .cancel) {
+                    viewModel.showTimestampWarning = false
+                }
+                Button("Save Anyway") {
+                    Task {
+                        await viewModel.confirmOldTimestamp()
+                    }
                 }
             } message: {
-                Text("Usage logged successfully ✓")
+                Text("Memory may be less reliable for events >7 days ago. Continue?")
             }
+            // Error alert
             .alert("Error", isPresented: Binding(
                 get: { viewModel.errorMessage != nil },
                 set: { if !$0 { viewModel.errorMessage = nil } }
@@ -348,7 +428,45 @@ struct UsageLogForm: View {
                         .background(Color.black.opacity(0.2))
                 }
             }
+            // Success toast (UX_FLOW:396-405)
+            .onChange(of: viewModel.showSuccessToast) { _, show in
+                if show {
+                    // Dismiss sheet immediately (no "OK" button needed)
+                    viewModel.resetForm()
+                    dismiss()
+                }
+            }
         }
+        // Toast overlay (appears after dismiss in parent view)
+        .overlay(alignment: .top) {
+            if viewModel.showSuccessToast {
+                ToastView(message: "Usage logged ✓")
+                    .padding(.top, 50)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .animation(.easeInOut, value: viewModel.showSuccessToast)
+                    .task {
+                        try? await Task.sleep(for: .seconds(2))
+                        viewModel.showSuccessToast = false
+                    }
+            }
+        }
+    }
+}
+
+// MARK: - Toast View
+
+struct ToastView: View {
+    let message: String
+
+    var body: some View {
+        Text(message)
+            .font(.subheadline.weight(.medium))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color.green.opacity(0.9))
+            .clipShape(Capsule())
+            .shadow(radius: 4)
     }
 }
 
@@ -1040,8 +1158,32 @@ xcodebuild test -scheme Cravey \
 ### Spec Compliance
 - [ ] Required fields match MVP_PRODUCT_SPEC.md:156-169 ✅
 - [ ] Optional fields match MVP_PRODUCT_SPEC.md:171-177 ✅
-- [ ] Success message matches MVP_PRODUCT_SPEC.md:178 ✅
+- [ ] Notes 500 char limit enforced (DATA_MODEL_SPEC:122, UX_FLOW:391) ✅
+- [ ] Timestamp >7 days warning implemented (DATA_MODEL_SPEC:117) ✅
+- [ ] Success feedback = haptic + toast (UX_FLOW:396-405, NOT alert) ✅
+- [ ] Default amount = first valid option (0.5 for Bowls) ✅
 - [ ] <10 sec performance requirement met ✅
+
+---
+
+## 🔍 Scope Notes (Deferred Features)
+
+**GPS "Current Location" Feature:**
+- "Current Location" chip visible in LocationOptions (Phase 1 component)
+- Tapping it does NOT trigger CoreLocation (same as Phase 1)
+- GPS integration deferred to Phase 2 Week 2 (per Phase 1 scope decision)
+- Placeholder text "Current Location" stored as string if selected
+- See PHASE_1.md:32-34 for original deferral rationale
+
+**Why Deferred:**
+- Complexity: Requires CoreLocation permission flow + privacy prompt
+- Phase 1 Week 1 scope: Get core logging working first
+- Phase 2 adds this alongside other location features
+
+**When Implemented:**
+- Phase 2 Week 2 will add CoreLocation integration
+- Privacy prompt: "Location data never leaves your device"
+- GPS coordinates stored as "lat,long" string format
 
 ---
 

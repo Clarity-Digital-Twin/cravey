@@ -17,11 +17,14 @@ final class DependencyContainer {
     private(set) var cravingRepository: CravingRepositoryProtocol
     private(set) var recordingRepository: RecordingRepositoryProtocol
     private(set) var messageRepository: MessageRepositoryProtocol
+    private(set) var usageRepository: UsageRepositoryProtocol
 
     // MARK: - Use Cases (Domain Layer)
 
     private(set) var logCravingUseCase: LogCravingUseCase
     private(set) var fetchCravingsUseCase: FetchCravingsUseCase
+    private(set) var logUsageUseCase: LogUsageUseCase
+    private(set) var fetchUsageUseCase: FetchUsageUseCase
 
     // MARK: - View Models (Presentation Layer)
 
@@ -48,14 +51,18 @@ final class DependencyContainer {
             let cravingRepo = CravingRepository(modelContext: modelContext)
             let recordingRepo = StubRecordingRepository() // TODO: Implement RecordingRepository
             let messageRepo = StubMessageRepository() // TODO: Implement MessageRepository
+            let usageRepo = UsageRepository(modelContext: modelContext)
 
             cravingRepository = cravingRepo
             recordingRepository = recordingRepo
             messageRepository = messageRepo
+            usageRepository = usageRepo
 
             // Initialize use cases
             logCravingUseCase = DefaultLogCravingUseCase(repository: cravingRepo)
             fetchCravingsUseCase = DefaultFetchCravingsUseCase(repository: cravingRepo)
+            logUsageUseCase = DefaultLogUsageUseCase(repository: usageRepo)
+            fetchUsageUseCase = DefaultFetchUsageUseCase(repository: usageRepo)
 
             // Seed default data if needed
             if !isPreview {

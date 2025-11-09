@@ -8,7 +8,7 @@ import Foundation
 final class CravingLogViewModel {
     // UI State (matches spec fields exactly)
     var intensity: Double = 5
-    var timestamp: Date = Date() // REQUIRED: Auto "now", editable (CLINICAL_CANNABIS_SPEC.md:193)
+    var timestamp: Date = .init() // REQUIRED: Auto "now", editable (CLINICAL_CANNABIS_SPEC.md:193)
     var selectedTriggers: Set<String> = []
     var notes: String = ""
     var location: String = ""

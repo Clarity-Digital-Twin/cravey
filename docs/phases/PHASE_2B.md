@@ -74,21 +74,27 @@ displayAmount(method: "Edible", amount: 25.0) // → "25mg"
 
 #### UI Behavior Requirements
 
-**Source: CLINICAL_CANNABIS_SPEC.md lines 220-224**
+**Source: CLINICAL_CANNABIS_SPEC.md lines 220-224 + UX_FLOW_SPEC.md lines 381-386**
 
 1. **Dynamic Range Update:**
    - When user changes ROA method (e.g., Bowls → Vape), picker options MUST update immediately
    - Selected amount MUST reset to first valid option for new method
    - Example: User has "2.5 bowls" selected, switches to Vape → reset to "1 pulls"
 
-2. **Picker Style:**
+2. **Fade Animation (UX_FLOW_SPEC.md:381):**
+   - When ROA changes: Amount picker fades out (0.1s) → New range fades in (0.1s)
+   - Use `.animation(.easeInOut(duration: 0.1), value: selectedMethod)`
+   - Provides visual feedback that picker range changed
+
+3. **Picker Style:**
    - Use `.pickerStyle(.wheel)` for iOS familiarity
    - Height: 120pt (3-4 visible options at once)
    - NO inline style (takes too much vertical space)
 
-3. **Visual Hierarchy:**
+4. **Visual Hierarchy:**
    - Label: "Amount" (secondary font, consistent with other form labels)
    - Picker: Primary focus
+   - Unit label shown in display text (e.g., "2.5 bowls", "25mg")
 
 ---
 
@@ -100,6 +106,7 @@ Before proceeding to Phase 2C, ALL of the following must be true:
 - [ ] ROAPickerInput.swift created (reusable SwiftUI component)
 - [ ] Supports all 6 ROA methods
 - [ ] Dynamic amount range updates when method changes
+- [ ] 0.1s fade animation when method changes (UX_FLOW:381)
 - [ ] Correct display formatting for all ROAs
 
 ### Validation Tests
@@ -114,6 +121,7 @@ Before proceeding to Phase 2C, ALL of the following must be true:
 - [ ] Preview shows picker for each ROA method
 - [ ] Picker wheel scrolls smoothly
 - [ ] Amount updates when method changes in preview
+- [ ] Fade animation (0.1s) visible when method changes in preview
 - [ ] Display text matches spec formatting
 
 ### Build Status
@@ -160,6 +168,7 @@ struct ROAPickerInput: View {
             }
             .pickerStyle(.wheel)
             .frame(height: 120)
+            .animation(.easeInOut(duration: 0.1), value: selectedMethod)  // Fade animation per UX_FLOW:381
         }
     }
 
