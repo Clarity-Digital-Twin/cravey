@@ -10,7 +10,7 @@ enum LocationOptions {
         "Work",
         "Social",
         "Outside",
-        "Car",
+        "Car"
     ]
 
     /// Format GPS coordinates as string (lat,long)

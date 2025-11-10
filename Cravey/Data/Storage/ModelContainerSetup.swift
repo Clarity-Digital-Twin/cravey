@@ -11,7 +11,7 @@ enum ModelContainerSetup {
             CravingModel.self,
             UsageModel.self,
             RecordingModel.self,
-            MotivationalMessageModel.self,
+            MotivationalMessageModel.self
         ])
 
         let modelConfiguration = ModelConfiguration(
@@ -34,7 +34,7 @@ enum ModelContainerSetup {
             CravingModel.self,
             UsageModel.self,
             RecordingModel.self,
-            MotivationalMessageModel.self,
+            MotivationalMessageModel.self
         ])
 
         let modelConfiguration = ModelConfiguration(

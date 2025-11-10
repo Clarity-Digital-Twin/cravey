@@ -11,7 +11,7 @@ enum TriggerOptions {
         "Anxious",
         "Lonely",
         "Tired",
-        "Sad",
+        "Sad"
     ]
 
     /// Secondary triggers (contextual/environmental)
@@ -19,7 +19,7 @@ enum TriggerOptions {
         "Bored",
         "Social",
         "Habit",
-        "Paraphernalia",
+        "Paraphernalia"
     ]
 
     /// All triggers (primary + secondary)

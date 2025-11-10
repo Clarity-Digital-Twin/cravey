@@ -32,7 +32,13 @@ final class DependencyContainer {
         CravingLogViewModel(logCravingUseCase: logCravingUseCase)
     }
 
-    // TODO: Add more ViewModel factories as needed
+    func makeUsageLogViewModel() -> UsageLogViewModel {
+        UsageLogViewModel(logUsageUseCase: logUsageUseCase)
+    }
+
+    func makeUsageListViewModel() -> UsageListViewModel {
+        UsageListViewModel(fetchUsageUseCase: fetchUsageUseCase)
+    }
 
     // MARK: - Initialization
 
