@@ -114,8 +114,7 @@ final class UsageLogViewModel {
         // Signal success to parent (form will dismiss, parent shows toast)
         didSucceed = true
 
-        // Reset form for next entry (UX_FLOW:396-405)
-        resetForm()
+        // Note: Form reset happens when sheet reopens (HomeView sets VM to nil)
     }
 
     /// Reset amount to first valid option when method changes
@@ -127,7 +126,7 @@ final class UsageLogViewModel {
         }
     }
 
-    /// Reset form to defaults (called after successful submit)
+    /// Reset form to defaults (called when form reopens)
     func resetForm() {
         timestamp = Date()
         selectedMethod = "Bowls"
@@ -136,7 +135,7 @@ final class UsageLogViewModel {
         selectedLocation = nil
         notes = ""
         showTimestampWarning = false
-        hasAcknowledgedOldTimestamp = false // Reset acknowledgment for next entry
-        didSucceed = false // Reset success flag
+        hasAcknowledgedOldTimestamp = false
+        didSucceed = false
     }
 }
