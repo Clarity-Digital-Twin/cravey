@@ -339,4 +339,75 @@ xcodebuild test -scheme Cravey \
 
 ---
 
-**Review Complete.** All P0-P3 issues addressed.
+---
+
+## Second-Pass Review (Self-Audit)
+
+After completing the initial fixes, a second-pass review was performed to catch any issues introduced by the fixes themselves.
+
+### Issues Found in Second Pass
+
+#### Issue #12: Test Files Reference Old Property Name
+**Status:** FIXED
+**Files:**
+- `CraveyTests/Integration/CravingLogIntegrationTests.swift:37,115`
+- `CraveyTests/Presentation/ViewModels/CravingLogViewModelTests.swift:23`
+
+**Problem:** Tests still referenced `showSuccessAlert` after it was renamed to `didSucceed`.
+
+**Fix:** Updated all test assertions to use `viewModel.didSucceed`.
+
+---
+
+#### Issue #13: Test Logic Mismatched New Design Pattern
+**Status:** FIXED
+**File:** `CraveyTests/Presentation/ViewModels/CravingLogViewModelTests.swift`
+
+**Problem:** `formResetAfterSuccess` test expected ViewModel to reset itself after success, but the new 2025 deferred-init pattern creates fresh VMs instead (VM is set to nil on dismiss, new VM created on next sheet open).
+
+**Fix:** Renamed to `freshViewModelHasDefaults` and updated to test that a newly-created VM has correct default state.
+
+---
+
+#### Issue #14: Force Unwraps in Test Files
+**Status:** FIXED
+**Files:**
+- `CraveyTests/Integration/UsageLogIntegrationTests.swift:164`
+- `CraveyTests/Presentation/ViewModels/UsageLogViewModelTests.swift:90`
+
+**Problem:** `Calendar.current.date(...)!` force unwraps in tests.
+
+**Fix:** Changed to nil coalescing: `Calendar.current.date(...) ?? Date()`
+
+---
+
+#### Issue #15: Redundant Imports
+**Status:** FIXED
+**Files:**
+- `Cravey/Presentation/ViewModels/UsageLogViewModel.swift:2`
+- `Cravey/Presentation/ViewModels/UsageListViewModel.swift:2`
+
+**Problem:** `import Observation` is redundant when using `@Observable` macro (the macro handles this automatically).
+
+**Fix:** Removed redundant imports.
+
+---
+
+## Verification Checklist
+
+After all fixes:
+
+- [x] All tests reference correct property names (`didSucceed`, not `showSuccessAlert`)
+- [x] No force unwraps in app code
+- [x] No force unwraps in test code
+- [x] No `try!` or `as!` usage
+- [x] No redundant `import Observation`
+- [x] All Views use `@Bindable` consistently for ViewModel bindings
+- [x] Deferred VM initialization pattern used in HomeView
+- [x] Toast + haptic feedback pattern consistent across Craving and Usage flows
+- [x] Repository error types consolidated
+- [x] Entity protocol conformances consistent
+
+---
+
+**Review Complete.** All P0-P3 issues addressed, plus 4 additional issues found and fixed in second pass.
