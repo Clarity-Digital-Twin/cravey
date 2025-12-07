@@ -34,7 +34,7 @@ struct CravingLogIntegrationTests {
 
         // Then: Craving saved to SwiftData
         #expect(viewModel.errorMessage == nil)
-        #expect(viewModel.showSuccessAlert == true)
+        #expect(viewModel.didSucceed == true)
 
         // Verify: Fetch from SwiftData
         let descriptor = FetchDescriptor<CravingModel>()
@@ -112,7 +112,7 @@ struct CravingLogIntegrationTests {
 
         // Then: Craving saved successfully AND within 5 seconds
         #expect(viewModel.errorMessage == nil)
-        #expect(viewModel.showSuccessAlert == true)
+        #expect(viewModel.didSucceed == true)
         #expect(duration < 5.0, "Log craving took \(duration)s, should be <5s")
     }
 }

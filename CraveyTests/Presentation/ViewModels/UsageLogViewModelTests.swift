@@ -87,7 +87,7 @@ struct UsageLogViewModelTests {
         let viewModel = UsageLogViewModel(logUsageUseCase: mockUseCase)
 
         // Set timestamp to 8 days ago
-        let eightDaysAgo = Calendar.current.date(byAdding: .day, value: -8, to: Date())!
+        let eightDaysAgo = Calendar.current.date(byAdding: .day, value: -8, to: Date()) ?? Date()
         viewModel.timestamp = eightDaysAgo
 
         #expect(viewModel.isTimestampOld == true)

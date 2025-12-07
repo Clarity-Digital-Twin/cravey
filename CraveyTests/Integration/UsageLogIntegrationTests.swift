@@ -161,7 +161,7 @@ struct UsageLogIntegrationTests {
         let viewModel = UsageLogViewModel(logUsageUseCase: useCase)
 
         // Set timestamp to 8 days ago (>7 days)
-        let eightDaysAgo = Calendar.current.date(byAdding: .day, value: -8, to: Date())!
+        let eightDaysAgo = Calendar.current.date(byAdding: .day, value: -8, to: Date()) ?? Date()
         viewModel.timestamp = eightDaysAgo
         viewModel.selectedMethod = "Bowls"
         viewModel.amount = 1.0
