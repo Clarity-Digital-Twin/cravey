@@ -46,7 +46,7 @@ final class CravingRepository: CravingRepositoryProtocol {
         let descriptor = FetchDescriptor<CravingModel>(predicate: predicate)
 
         guard let model = try modelContext.fetch(descriptor).first else {
-            throw RepositoryError.notFound
+            throw RepositoryError.notFound(id: craving.id)
         }
 
         // Update model properties
@@ -63,16 +63,5 @@ final class CravingRepository: CravingRepositoryProtocol {
     func count() async throws -> Int {
         let descriptor = FetchDescriptor<CravingModel>()
         return try modelContext.fetchCount(descriptor)
-    }
-}
-
-enum RepositoryError: LocalizedError {
-    case notFound
-
-    var errorDescription: String? {
-        switch self {
-        case .notFound:
-            return "Item not found"
-        }
     }
 }

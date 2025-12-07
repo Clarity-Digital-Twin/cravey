@@ -2,7 +2,7 @@ import Foundation
 
 /// Pure Swift entity for usage tracking (no framework dependencies)
 /// Source: DATA_MODEL_SPEC.md lines 75-124
-struct UsageEntity: Equatable, Sendable, Identifiable {
+struct UsageEntity: Identifiable, Codable, Equatable, Hashable, Sendable {
     let id: UUID
     let timestamp: Date
     let method: String // ROA: must be one of ["Bowls", "Joints", "Blunts", "Vape", "Dab", "Edible"]

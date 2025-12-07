@@ -69,15 +69,8 @@ struct CravingLogForm: View {
                             await viewModel.logCraving()
                         }
                     }
-                    .disabled(!viewModel.canSubmit)
+                    .disabled(!viewModel.canSubmit || viewModel.isLoading)
                 }
-            }
-            .alert("Success", isPresented: $viewModel.showSuccessAlert) {
-                Button("OK") {
-                    dismiss()
-                }
-            } message: {
-                Text("💪 Logged. Every moment of awareness counts.")
             }
             .alert("Old Timestamp", isPresented: $viewModel.showTimestampWarning) {
                 Button("Cancel", role: .cancel) {
@@ -91,10 +84,7 @@ struct CravingLogForm: View {
             } message: {
                 Text("This craving is more than 7 days old. Are you sure you want to log it?")
             }
-            .alert("Error", isPresented: Binding(
-                get: { viewModel.errorMessage != nil },
-                set: { if !$0 { viewModel.errorMessage = nil } }
-            )) {
+            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
                 Button("OK") {
                     viewModel.errorMessage = nil
                 }
@@ -103,14 +93,14 @@ struct CravingLogForm: View {
                     Text(error)
                 }
             }
-            .overlay {
-                if viewModel.isLoading {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color.black.opacity(0.2))
+            .onChange(of: viewModel.didSucceed) { _, didSucceed in
+                // Dismiss immediately on success (UX_FLOW:400 - sheet dismisses in 0.3s)
+                // Toast will be shown by parent (HomeView)
+                if didSucceed {
+                    dismiss()
                 }
             }
+            .disabled(viewModel.isLoading)
         }
     }
 }

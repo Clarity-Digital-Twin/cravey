@@ -67,7 +67,11 @@ enum ModelContainerSetup {
             context.insert(model)
         }
 
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            print("[ModelContainerSetup] Failed to seed default messages: \(error)")
+        }
     }
 
     /// Seed preview data for SwiftUI previews
@@ -99,6 +103,10 @@ enum ModelContainerSetup {
             context.insert(MessageMapper.toModel(message))
         }
 
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            print("[ModelContainerSetup] Failed to seed preview data: \(error)")
+        }
     }
 }

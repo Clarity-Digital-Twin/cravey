@@ -3,7 +3,7 @@ import SwiftUI
 /// Craving list view - displays all cravings
 /// Presentation layer - Clean Architecture
 struct CravingListView: View {
-    @State var viewModel: CravingListViewModel
+    @Bindable var viewModel: CravingListViewModel
 
     var body: some View {
         Group {
