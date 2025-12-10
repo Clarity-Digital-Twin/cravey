@@ -27,14 +27,14 @@ struct CravingLogIntegrationTests {
         viewModel.intensity = 7
         viewModel.selectedTriggers = Set(["Anxious", "Bored"])
         viewModel.notes = "Integration test"
-        viewModel.location = "Home"
+        viewModel.selectedLocation = "Home"
 
         // When: User taps Save
         await viewModel.logCraving()
 
         // Then: Craving saved to SwiftData
         #expect(viewModel.errorMessage == nil)
-        #expect(viewModel.showSuccessAlert == true)
+        #expect(viewModel.didSucceed == true)
 
         // Verify: Fetch from SwiftData
         let descriptor = FetchDescriptor<CravingModel>()
@@ -103,7 +103,7 @@ struct CravingLogIntegrationTests {
         viewModel.intensity = 7
         viewModel.selectedTriggers = Set(["Anxious", "Bored"])
         viewModel.notes = "Performance test"
-        viewModel.location = "Home"
+        viewModel.selectedLocation = "Home"
 
         // Measure: Time the save operation
         let startTime = Date()
@@ -112,7 +112,7 @@ struct CravingLogIntegrationTests {
 
         // Then: Craving saved successfully AND within 5 seconds
         #expect(viewModel.errorMessage == nil)
-        #expect(viewModel.showSuccessAlert == true)
+        #expect(viewModel.didSucceed == true)
         #expect(duration < 5.0, "Log craving took \(duration)s, should be <5s")
     }
 }

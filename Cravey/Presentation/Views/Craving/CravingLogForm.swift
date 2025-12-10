@@ -27,29 +27,25 @@ struct CravingLogForm: View {
                         multiSelect: true
                     )
 
-                    ChipSelector(
+                    // BUG-004 FIX: Use OptionalSingleSelectChipSelector to avoid Set allocation per render
+                    OptionalSingleSelectChipSelector(
                         title: "Where are you?",
                         options: LocationOptions.presets,
-                        selectedValues: Binding(
-                            get: {
-                                viewModel.location.isEmpty ? [] : Set([viewModel.location])
-                            },
-                            set: {
-                                viewModel.location = $0.first ?? ""
-                            }
-                        ),
-                        multiSelect: false
+                        selectedValue: $viewModel.selectedLocation
                     )
 
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Notes", text: $viewModel.notes, axis: .vertical)
                             .lineLimit(3 ... 5)
 
-                        HStack {
-                            Spacer()
-                            Text(viewModel.notesCharacterCount)
-                                .font(.caption)
-                                .foregroundColor(viewModel.notesExceedsLimit ? .red : .secondary)
+                        // BUG-006 FIX: Only show counter at 400+ chars (matches UsageLogForm)
+                        if viewModel.shouldShowNotesCounter {
+                            HStack {
+                                Spacer()
+                                Text(viewModel.notesCharacterCount)
+                                    .font(.caption)
+                                    .foregroundColor(viewModel.notesExceedsLimit ? .red : .secondary)
+                            }
                         }
                     }
                 }
@@ -69,15 +65,8 @@ struct CravingLogForm: View {
                             await viewModel.logCraving()
                         }
                     }
-                    .disabled(!viewModel.canSubmit)
+                    .disabled(!viewModel.canSubmit || viewModel.isLoading)
                 }
-            }
-            .alert("Success", isPresented: $viewModel.showSuccessAlert) {
-                Button("OK") {
-                    dismiss()
-                }
-            } message: {
-                Text("💪 Logged. Every moment of awareness counts.")
             }
             .alert("Old Timestamp", isPresented: $viewModel.showTimestampWarning) {
                 Button("Cancel", role: .cancel) {
@@ -103,14 +92,14 @@ struct CravingLogForm: View {
                     Text(error)
                 }
             }
-            .overlay {
-                if viewModel.isLoading {
-                    ProgressView()
-                        .scaleEffect(1.5)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color.black.opacity(0.2))
+            .onChange(of: viewModel.didSucceed) { _, didSucceed in
+                // Dismiss immediately on success (UX_FLOW:400 - sheet dismisses in 0.3s)
+                // Toast will be shown by parent (HomeView)
+                if didSucceed {
+                    dismiss()
                 }
             }
+            .disabled(viewModel.isLoading)
         }
     }
 }

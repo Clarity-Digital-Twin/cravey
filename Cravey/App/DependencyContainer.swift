@@ -40,6 +40,10 @@ final class DependencyContainer {
         UsageListViewModel(fetchUsageUseCase: fetchUsageUseCase)
     }
 
+    func makeCravingListViewModel() -> CravingListViewModel {
+        CravingListViewModel(fetchCravingsUseCase: fetchCravingsUseCase)
+    }
+
     // MARK: - Initialization
 
     init(isPreview: Bool = false) {

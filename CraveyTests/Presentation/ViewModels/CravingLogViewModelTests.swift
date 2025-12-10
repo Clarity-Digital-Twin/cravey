@@ -20,27 +20,26 @@ struct CravingLogViewModelTests {
         await viewModel.logCraving()
 
         // Assert
-        #expect(viewModel.showSuccessAlert == true)
+        #expect(viewModel.didSucceed == true)
         #expect(viewModel.errorMessage == nil)
         let count = await mockUseCase.getExecutionCount()
         #expect(count == 1)
     }
 
-    @Test("Should reset form after successful submission")
-    func formResetAfterSuccess() async {
-        // Arrange
+    @Test("Fresh ViewModel should have default values")
+    func freshViewModelHasDefaults() async {
+        // Arrange: Create a fresh ViewModel (as HomeView does on sheet open)
         let mockUseCase = MockLogCravingUseCase()
         let viewModel = CravingLogViewModel(logCravingUseCase: mockUseCase)
 
-        viewModel.intensity = 8
-        viewModel.selectedTriggers = ["Bored"]
-
-        // Act
-        await viewModel.logCraving()
-
-        // Assert
-        #expect(viewModel.intensity == 5) // Reset to default
-        #expect(viewModel.selectedTriggers == []) // Cleared
+        // Assert: Fresh VM has default state
+        // Note: 2025 pattern is deferred init - VMs are discarded after success,
+        // new VM created next time sheet opens (see HomeView onDismiss)
+        #expect(viewModel.intensity == 5) // Default value
+        #expect(viewModel.selectedTriggers == []) // Empty
+        #expect(viewModel.notes == "") // Empty
+        #expect(viewModel.didSucceed == false) // Not succeeded yet
+        #expect(viewModel.errorMessage == nil) // No error
     }
 }
 

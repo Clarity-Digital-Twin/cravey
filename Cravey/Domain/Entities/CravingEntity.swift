@@ -2,7 +2,7 @@ import Foundation
 
 /// Domain entity representing a craving episode
 /// Pure Swift - no framework dependencies
-struct CravingEntity: Identifiable, Codable, Equatable, Hashable {
+struct CravingEntity: Identifiable, Codable, Equatable, Hashable, Sendable {
     let id: UUID
     let timestamp: Date
     let intensity: Int // 1-10 scale

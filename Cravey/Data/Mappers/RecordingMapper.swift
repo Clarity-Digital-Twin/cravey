@@ -1,4 +1,7 @@
 import Foundation
+import os
+
+private let logger = Logger(subsystem: "com.cravey.app", category: "RecordingMapper")
 
 /// Mapper between RecordingEntity (Domain) and RecordingModel (Data/SwiftData)
 enum RecordingMapper {
@@ -21,11 +24,29 @@ enum RecordingMapper {
 
     /// Convert SwiftData Model → Domain Entity
     static func toEntity(_ model: RecordingModel) -> RecordingEntity {
-        RecordingEntity(
+        // Parse recording type with fallback logging
+        let recordingType: RecordingType
+        if let parsed = RecordingType(rawValue: model.recordingType) {
+            recordingType = parsed
+        } else {
+            logger.warning("Invalid recordingType '\(model.recordingType)' for id \(model.id), defaulting to .audio")
+            recordingType = .audio
+        }
+
+        // Parse purpose with fallback logging
+        let purpose: RecordingPurpose
+        if let parsed = RecordingPurpose(rawValue: model.purpose) {
+            purpose = parsed
+        } else {
+            logger.warning("Invalid purpose '\(model.purpose)' for id \(model.id), defaulting to .motivational")
+            purpose = .motivational
+        }
+
+        return RecordingEntity(
             id: model.id,
             createdAt: model.createdAt,
-            recordingType: RecordingType(rawValue: model.recordingType) ?? .audio,
-            purpose: RecordingPurpose(rawValue: model.purpose) ?? .motivational,
+            recordingType: recordingType,
+            purpose: purpose,
             title: model.title,
             fileURL: model.fileURL,
             duration: model.duration,

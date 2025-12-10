@@ -7,32 +7,28 @@ struct UsageListView: View {
     @Bindable var viewModel: UsageListViewModel
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if viewModel.isLoading {
-                    loadingView
-                } else if viewModel.usageList.isEmpty {
-                    emptyStateView
-                } else {
-                    usageListView
-                }
+        Group {
+            if viewModel.isLoading {
+                loadingView
+            } else if viewModel.usageList.isEmpty {
+                emptyStateView
+            } else {
+                usageListView
             }
-            .navigationTitle("Usage History")
-            .navigationBarTitleDisplayMode(.large)
-            .task {
-                await viewModel.fetchUsage()
+        }
+        .task {
+            await viewModel.fetchUsage()
+        }
+        .alert("Error", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )) {
+            Button("OK") {
+                viewModel.errorMessage = nil
             }
-            .refreshable {
-                await viewModel.fetchUsage()
-            }
-            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-                Button("OK") {
-                    viewModel.errorMessage = nil
-                }
-            } message: {
-                if let error = viewModel.errorMessage {
-                    Text(error)
-                }
+        } message: {
+            if let error = viewModel.errorMessage {
+                Text(error)
             }
         }
     }
@@ -47,6 +43,7 @@ struct UsageListView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
+        .frame(maxWidth: .infinity, minHeight: 100)
     }
 
     // MARK: - Empty State View
@@ -64,12 +61,16 @@ struct UsageListView: View {
 
     @ViewBuilder
     private var usageListView: some View {
-        List {
+        // Use LazyVStack instead of List for embedding in ScrollView
+        // List has internal scrolling that conflicts with parent ScrollView
+        LazyVStack(spacing: 0) {
             ForEach(viewModel.usageList) { usage in
                 UsageRowView(usage: usage)
+                    .padding(.horizontal)
+                Divider()
+                    .padding(.leading)
             }
         }
-        .listStyle(.insetGrouped)
     }
 }
 

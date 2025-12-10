@@ -43,7 +43,7 @@ final class UsageRepository: UsageRepositoryProtocol {
         let models = try modelContext.fetch(descriptor)
 
         guard let model = models.first else {
-            throw UsageRepositoryError.notFound(id: id)
+            throw RepositoryError.notFound(id: id)
         }
 
         modelContext.delete(model)
@@ -54,8 +54,4 @@ final class UsageRepository: UsageRepositoryProtocol {
         try modelContext.delete(model: UsageModel.self)
         try modelContext.save()
     }
-}
-
-enum UsageRepositoryError: Error {
-    case notFound(id: UUID)
 }

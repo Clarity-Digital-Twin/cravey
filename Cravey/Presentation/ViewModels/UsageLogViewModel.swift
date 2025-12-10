@@ -1,5 +1,4 @@
 import Foundation
-import Observation
 import UIKit // For UINotificationFeedbackGenerator
 
 @Observable
@@ -62,7 +61,9 @@ final class UsageLogViewModel {
 
     /// Check if timestamp is >7 days old (DATA_MODEL_SPEC:117)
     var isTimestampOld: Bool {
-        let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
+        guard let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) else {
+            return false // Fail-safe: treat as not old if calculation fails
+        }
         return timestamp < sevenDaysAgo
     }
 
@@ -78,6 +79,7 @@ final class UsageLogViewModel {
 
         isLoading = true
         errorMessage = nil
+        defer { isLoading = false } // Ensures cleanup regardless of exit path
 
         do {
             _ = try await logUsageUseCase.execute(
@@ -94,8 +96,6 @@ final class UsageLogViewModel {
         } catch {
             errorMessage = error.localizedDescription
         }
-
-        isLoading = false
     }
 
     /// Confirm old timestamp and proceed with logging
