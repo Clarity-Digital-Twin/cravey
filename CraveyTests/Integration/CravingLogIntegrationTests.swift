@@ -27,7 +27,7 @@ struct CravingLogIntegrationTests {
         viewModel.intensity = 7
         viewModel.selectedTriggers = Set(["Anxious", "Bored"])
         viewModel.notes = "Integration test"
-        viewModel.location = "Home"
+        viewModel.selectedLocation = "Home"
 
         // When: User taps Save
         await viewModel.logCraving()
@@ -103,7 +103,7 @@ struct CravingLogIntegrationTests {
         viewModel.intensity = 7
         viewModel.selectedTriggers = Set(["Anxious", "Bored"])
         viewModel.notes = "Performance test"
-        viewModel.location = "Home"
+        viewModel.selectedLocation = "Home"
 
         // Measure: Time the save operation
         let startTime = Date()

@@ -23,28 +23,49 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // TODO: Quick Play section (Phase 4 - Recordings)
+            ScrollView {
+                VStack(spacing: 16) {
+                    // TODO: Quick Play section (Phase 4 - Recordings)
 
-                // Craving List (with deferred VM initialization)
-                if let viewModel = cravingListViewModel {
-                    CravingListView(viewModel: viewModel)
-                } else {
-                    ProgressView()
-                        .task {
-                            cravingListViewModel = container.makeCravingListViewModel()
-                        }
-                }
+                    // BUG-007 FIX: Add section headers to distinguish craving/usage lists
+                    // Craving Section
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Recent Cravings")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal)
 
-                // Usage List (with deferred VM initialization)
-                if let viewModel = usageListViewModel {
-                    UsageListView(viewModel: viewModel)
-                } else {
-                    ProgressView()
-                        .task {
-                            usageListViewModel = container.makeUsageListViewModel()
+                        if let viewModel = cravingListViewModel {
+                            CravingListView(viewModel: viewModel)
+                        } else {
+                            ProgressView()
+                                .task {
+                                    cravingListViewModel = container.makeCravingListViewModel()
+                                }
                         }
+                    }
+
+                    Divider()
+                        .padding(.horizontal)
+
+                    // Usage Section
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Recent Usage")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal)
+
+                        if let viewModel = usageListViewModel {
+                            UsageListView(viewModel: viewModel)
+                        } else {
+                            ProgressView()
+                                .task {
+                                    usageListViewModel = container.makeUsageListViewModel()
+                                }
+                        }
+                    }
                 }
+                .padding(.vertical)
             }
             .navigationTitle("Home")
             .toolbar {

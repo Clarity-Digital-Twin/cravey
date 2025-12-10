@@ -12,7 +12,7 @@ final class CravingLogViewModel {
     var timestamp: Date = .init() // REQUIRED: Auto "now", editable (CLINICAL_CANNABIS_SPEC.md:193)
     var selectedTriggers: Set<String> = []
     var notes: String = ""
-    var location: String = ""
+    var selectedLocation: String? // BUG-004 FIX: Optional to avoid Set allocation in binding
     var isLoading: Bool = false
     var didSucceed: Bool = false // Signal success to parent (UX_FLOW:396-405) - toast, not alert
     var errorMessage: String?
@@ -55,7 +55,7 @@ final class CravingLogViewModel {
                 intensity: Int(intensity),
                 triggers: Array(selectedTriggers),
                 notes: notes.isEmpty ? nil : notes,
-                location: location.isEmpty ? nil : location
+                location: selectedLocation // BUG-004 FIX: Already optional, no conversion needed
             )
 
             // Trigger haptic + signal success (UX_FLOW:396-405)
@@ -91,7 +91,7 @@ final class CravingLogViewModel {
         timestamp = Date()
         selectedTriggers = []
         notes = ""
-        location = ""
+        selectedLocation = nil // BUG-004 FIX: Reset to nil
         hasAcknowledgedOldTimestamp = false
         didSucceed = false
     }
@@ -104,11 +104,13 @@ final class CravingLogViewModel {
         return timestamp < sevenDaysAgo
     }
 
+    // BUG-008 FIX: Align with CravingListView color scheme
     var intensityColor: String {
         switch Int(intensity) {
         case 1 ... 3: return "green"
-        case 4 ... 6: return "orange"
-        case 7 ... 10: return "red"
+        case 4 ... 6: return "yellow"
+        case 7 ... 8: return "orange"
+        case 9 ... 10: return "red"
         default: return "gray"
         }
     }
@@ -132,5 +134,10 @@ final class CravingLogViewModel {
 
     var notesExceedsLimit: Bool {
         notes.count > 500
+    }
+
+    /// BUG-006 FIX: Only show counter at 400+ chars (matches UsageLogViewModel)
+    var shouldShowNotesCounter: Bool {
+        notes.count >= 400
     }
 }

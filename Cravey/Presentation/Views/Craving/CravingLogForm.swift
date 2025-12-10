@@ -27,29 +27,25 @@ struct CravingLogForm: View {
                         multiSelect: true
                     )
 
-                    ChipSelector(
+                    // BUG-004 FIX: Use OptionalSingleSelectChipSelector to avoid Set allocation per render
+                    OptionalSingleSelectChipSelector(
                         title: "Where are you?",
                         options: LocationOptions.presets,
-                        selectedValues: Binding(
-                            get: {
-                                viewModel.location.isEmpty ? [] : Set([viewModel.location])
-                            },
-                            set: {
-                                viewModel.location = $0.first ?? ""
-                            }
-                        ),
-                        multiSelect: false
+                        selectedValue: $viewModel.selectedLocation
                     )
 
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Notes", text: $viewModel.notes, axis: .vertical)
                             .lineLimit(3 ... 5)
 
-                        HStack {
-                            Spacer()
-                            Text(viewModel.notesCharacterCount)
-                                .font(.caption)
-                                .foregroundColor(viewModel.notesExceedsLimit ? .red : .secondary)
+                        // BUG-006 FIX: Only show counter at 400+ chars (matches UsageLogForm)
+                        if viewModel.shouldShowNotesCounter {
+                            HStack {
+                                Spacer()
+                                Text(viewModel.notesCharacterCount)
+                                    .font(.caption)
+                                    .foregroundColor(viewModel.notesExceedsLimit ? .red : .secondary)
+                            }
                         }
                     }
                 }

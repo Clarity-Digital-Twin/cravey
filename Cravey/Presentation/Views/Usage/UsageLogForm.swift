@@ -26,14 +26,11 @@ struct UsageLogForm: View {
 
                 Section {
                     // Method selector (radio button chips per UX_FLOW:363)
-                    ChipSelector(
+                    // BUG-003 FIX: Use SingleSelectChipSelector to avoid Set allocation per render
+                    SingleSelectChipSelector(
                         title: "Method (ROA)",
                         options: methods,
-                        selectedValues: Binding(
-                            get: { [viewModel.selectedMethod] },
-                            set: { viewModel.selectedMethod = $0.first ?? "Bowls" }
-                        ),
-                        multiSelect: false
+                        selectedValue: $viewModel.selectedMethod
                     )
 
                     // Amount picker (ROA-aware)
@@ -144,21 +141,11 @@ struct UsageLogForm: View {
 
     @ViewBuilder
     private var locationSelector: some View {
-        ChipSelector(
+        // BUG-003 FIX: Use OptionalSingleSelectChipSelector to avoid Set allocation per render
+        OptionalSingleSelectChipSelector(
             title: "Where are you?",
             options: LocationOptions.presets,
-            selectedValues: Binding(
-                get: {
-                    if let loc = viewModel.selectedLocation {
-                        return [loc]
-                    }
-                    return []
-                },
-                set: { newValue in
-                    viewModel.selectedLocation = newValue.first
-                }
-            ),
-            multiSelect: false
+            selectedValue: $viewModel.selectedLocation
         )
     }
 }

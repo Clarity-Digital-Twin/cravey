@@ -46,22 +46,88 @@ struct ChipSelector: View {
     }
 }
 
+/// Single-select chip selector (no Set allocation per render)
+/// Use this instead of ChipSelector with multiSelect: false to avoid
+/// creating a new Set on every SwiftUI render cycle
+struct SingleSelectChipSelector: View {
+    let title: String
+    let options: [String]
+    @Binding var selectedValue: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            FlowLayout(spacing: 8) {
+                ForEach(options, id: \.self) { option in
+                    ChipButton(
+                        title: option,
+                        isSelected: selectedValue == option,
+                        action: {
+                            selectedValue = option
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+/// Optional single-select chip selector (allows no selection)
+/// Returns nil when nothing is selected
+struct OptionalSingleSelectChipSelector: View {
+    let title: String
+    let options: [String]
+    @Binding var selectedValue: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            FlowLayout(spacing: 8) {
+                ForEach(options, id: \.self) { option in
+                    ChipButton(
+                        title: option,
+                        isSelected: selectedValue == option,
+                        action: {
+                            if selectedValue == option {
+                                selectedValue = nil // Deselect
+                            } else {
+                                selectedValue = option
+                            }
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
 /// Individual chip button
+/// iOS 18 fix: Use Text + onTapGesture instead of Button to avoid
+/// hit-testing issues in custom Layout containers.
+/// See BUG_009_CHIP_SELECTOR.md for full analysis.
 struct ChipButton: View {
     let title: String
     let isSelected: Bool
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.subheadline)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(isSelected ? Color.accentColor : Color(.systemGray5))
-                .foregroundColor(isSelected ? .white : .primary)
-                .clipShape(Capsule())
-        }
+        Text(title)
+            .font(.subheadline)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(isSelected ? Color.accentColor : Color(.systemGray5))
+            .foregroundColor(isSelected ? .white : .primary)
+            .clipShape(Capsule())
+            .contentShape(Capsule()) // Ensures full capsule area is tappable
+            .onTapGesture {
+                action()
+            }
     }
 }
 

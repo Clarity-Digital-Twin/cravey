@@ -9,19 +9,23 @@ struct CravingListView: View {
         Group {
             if viewModel.isLoading {
                 ProgressView()
+                    .frame(maxWidth: .infinity, minHeight: 100)
             } else if viewModel.cravings.isEmpty {
                 EmptyStatePlaceholder()
             } else {
-                List(viewModel.cravings) { craving in
-                    CravingRow(craving: craving)
+                // Use LazyVStack instead of List for embedding in ScrollView
+                // List has internal scrolling that conflicts with parent ScrollView
+                LazyVStack(spacing: 0) {
+                    ForEach(viewModel.cravings) { craving in
+                        CravingRow(craving: craving)
+                            .padding(.horizontal)
+                        Divider()
+                            .padding(.leading)
+                    }
                 }
-                .listStyle(.plain)
             }
         }
         .task {
-            await viewModel.fetchCravings()
-        }
-        .refreshable {
             await viewModel.fetchCravings()
         }
     }
