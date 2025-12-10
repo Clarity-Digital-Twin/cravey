@@ -1,9 +1,9 @@
 # BUG-009: ChipSelector Button Actions Triggered Incorrectly
 
-**Status:** INVESTIGATING
+**Status:** RESOLVED
 **Severity:** P0 (Critical - Core UX broken)
 **Date Reported:** 2025-12-10
-**Environment:** iOS 26.0, iPhone 17 Pro Simulator, Swift 6.2, Xcode 26.0.1
+**Environment:** iOS 18.x, iPhone 16/17 Pro Simulator, Swift 6.0, Xcode 16.x
 
 ---
 

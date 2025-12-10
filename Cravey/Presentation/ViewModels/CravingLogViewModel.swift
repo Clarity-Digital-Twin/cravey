@@ -48,6 +48,7 @@ final class CravingLogViewModel {
 
         isLoading = true
         errorMessage = nil
+        defer { isLoading = false } // Ensures cleanup regardless of exit path
 
         do {
             _ = try await logCravingUseCase.execute(
@@ -63,8 +64,6 @@ final class CravingLogViewModel {
         } catch {
             errorMessage = error.localizedDescription
         }
-
-        isLoading = false
     }
 
     func confirmOldTimestamp() async {
@@ -100,19 +99,10 @@ final class CravingLogViewModel {
 
     /// Check if timestamp is >7 days old (DATA_MODEL_SPEC:117)
     var isTimestampOld: Bool {
-        let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? Date()
-        return timestamp < sevenDaysAgo
-    }
-
-    // BUG-008 FIX: Align with CravingListView color scheme
-    var intensityColor: String {
-        switch Int(intensity) {
-        case 1 ... 3: return "green"
-        case 4 ... 6: return "yellow"
-        case 7 ... 8: return "orange"
-        case 9 ... 10: return "red"
-        default: return "gray"
+        guard let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) else {
+            return false // Fail-safe: treat as not old if calculation fails
         }
+        return timestamp < sevenDaysAgo
     }
 
     var intensityDescription: String {

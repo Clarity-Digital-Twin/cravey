@@ -2,7 +2,8 @@ import Foundation
 
 /// Shared error type for all repository implementations
 /// Data layer - used by CravingRepository, UsageRepository, etc.
-enum RepositoryError: LocalizedError {
+/// Sendable conformance for Swift 6 concurrency safety across actor boundaries
+enum RepositoryError: LocalizedError, Sendable {
     case notFound(id: UUID? = nil)
     case saveFailed(underlying: Error)
     case fetchFailed(underlying: Error)

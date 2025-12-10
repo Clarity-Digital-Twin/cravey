@@ -106,8 +106,9 @@ struct HomeView: View {
                 if let viewModel = cravingLogViewModel {
                     CravingLogForm(viewModel: viewModel)
                 } else {
-                    // Placeholder while VM initializes
-                    Color.clear
+                    // Loading indicator while VM initializes
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .task {
                             cravingLogViewModel = container.makeCravingLogViewModel()
                         }
@@ -136,8 +137,9 @@ struct HomeView: View {
                 if let viewModel = usageLogViewModel {
                     UsageLogForm(viewModel: viewModel)
                 } else {
-                    // Placeholder while VM initializes
-                    Color.clear
+                    // Loading indicator while VM initializes
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .task {
                             usageLogViewModel = container.makeUsageLogViewModel()
                         }

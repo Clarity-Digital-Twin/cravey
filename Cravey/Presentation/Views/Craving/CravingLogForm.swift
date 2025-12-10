@@ -80,7 +80,10 @@ struct CravingLogForm: View {
             } message: {
                 Text("This craving is more than 7 days old. Are you sure you want to log it?")
             }
-            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
+            .alert("Error", isPresented: Binding(
+                get: { viewModel.errorMessage != nil },
+                set: { if !$0 { viewModel.errorMessage = nil } }
+            )) {
                 Button("OK") {
                     viewModel.errorMessage = nil
                 }

@@ -1,4 +1,7 @@
 import Foundation
+import os
+
+private let logger = Logger(subsystem: "com.cravey.app", category: "RecordingMapper")
 
 /// Mapper between RecordingEntity (Domain) and RecordingModel (Data/SwiftData)
 enum RecordingMapper {
@@ -26,7 +29,7 @@ enum RecordingMapper {
         if let parsed = RecordingType(rawValue: model.recordingType) {
             recordingType = parsed
         } else {
-            print("[RecordingMapper] Invalid recordingType '\(model.recordingType)' for id \(model.id), defaulting to .audio")
+            logger.warning("Invalid recordingType '\(model.recordingType)' for id \(model.id), defaulting to .audio")
             recordingType = .audio
         }
 
@@ -35,7 +38,7 @@ enum RecordingMapper {
         if let parsed = RecordingPurpose(rawValue: model.purpose) {
             purpose = parsed
         } else {
-            print("[RecordingMapper] Invalid purpose '\(model.purpose)' for id \(model.id), defaulting to .motivational")
+            logger.warning("Invalid purpose '\(model.purpose)' for id \(model.id), defaulting to .motivational")
             purpose = .motivational
         }
 
