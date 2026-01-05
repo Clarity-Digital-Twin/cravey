@@ -74,11 +74,11 @@ struct CravingRow: View {
 
     private func intensityColor(for intensity: Int) -> Color {
         switch intensity {
-        case 1 ... 3: return .green
-        case 4 ... 6: return .yellow
-        case 7 ... 8: return .orange
-        case 9 ... 10: return .red
-        default: return .gray
+        case 1 ... 3: .green
+        case 4 ... 6: .yellow
+        case 7 ... 8: .orange
+        case 9 ... 10: .red
+        default: .gray
         }
     }
 }

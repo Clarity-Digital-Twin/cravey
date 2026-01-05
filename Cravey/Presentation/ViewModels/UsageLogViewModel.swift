@@ -46,17 +46,17 @@ final class UsageLogViewModel {
 
     /// Validate form can be submitted
     var canSubmit: Bool {
-        return !selectedMethod.isEmpty && amount > 0
+        !selectedMethod.isEmpty && amount > 0
     }
 
     /// Character count for notes (show counter at 400+ chars)
     var notesCharacterCount: Int {
-        return notes.count
+        notes.count
     }
 
     /// Show notes character counter (at 400+ chars per UX_FLOW:391)
     var shouldShowNotesCounter: Bool {
-        return notes.count >= 400
+        notes.count >= 400
     }
 
     /// Check if timestamp is >7 days old (DATA_MODEL_SPEC:117)

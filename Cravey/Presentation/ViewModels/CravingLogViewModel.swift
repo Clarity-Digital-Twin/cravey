@@ -107,10 +107,10 @@ final class CravingLogViewModel {
 
     var intensityDescription: String {
         switch Int(intensity) {
-        case 1 ... 3: return "Mild - Manageable discomfort"
-        case 4 ... 6: return "Moderate - Noticeable urge"
-        case 7 ... 10: return "Intense - Strong urge"
-        default: return ""
+        case 1 ... 3: "Mild - Manageable discomfort"
+        case 4 ... 6: "Moderate - Noticeable urge"
+        case 7 ... 10: "Intense - Strong urge"
+        default: ""
         }
     }
 

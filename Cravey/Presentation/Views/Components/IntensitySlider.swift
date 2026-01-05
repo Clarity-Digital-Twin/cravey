@@ -37,17 +37,17 @@ struct IntensitySlider: View {
     static func formatLabel(for intensity: Int) -> String {
         switch intensity {
         case 1 ... 2:
-            return "\(intensity) - Very Mild"
+            "\(intensity) - Very Mild"
         case 3 ... 4:
-            return "\(intensity) - Mild"
+            "\(intensity) - Mild"
         case 5 ... 6:
-            return "\(intensity) - Moderate"
+            "\(intensity) - Moderate"
         case 7 ... 8:
-            return "\(intensity) - Strong"
+            "\(intensity) - Strong"
         case 9 ... 10:
-            return "\(intensity) - Overwhelming"
+            "\(intensity) - Overwhelming"
         default:
-            return "\(intensity)"
+            "\(intensity)"
         }
     }
 
@@ -55,17 +55,17 @@ struct IntensitySlider: View {
     static func emoji(for intensity: Int) -> String {
         switch intensity {
         case 1 ... 2:
-            return "😌"
+            "😌"
         case 3 ... 4:
-            return "🙂"
+            "🙂"
         case 5 ... 6:
-            return "😐"
+            "😐"
         case 7 ... 8:
-            return "😟"
+            "😟"
         case 9 ... 10:
-            return "😫"
+            "😫"
         default:
-            return "😐"
+            "😐"
         }
     }
 }

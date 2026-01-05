@@ -101,11 +101,11 @@ private struct StubRecordingRepository: RecordingRepositoryProtocol {
     }
 
     func fetchAll() async throws -> [RecordingEntity] {
-        return []
+        []
     }
 
     func fetch(byPurpose _: RecordingPurpose) async throws -> [RecordingEntity] {
-        return []
+        []
     }
 
     func delete(id _: UUID) async throws {
@@ -124,11 +124,11 @@ private struct StubMessageRepository: MessageRepositoryProtocol {
     }
 
     func fetchActive() async throws -> [MotivationalMessageEntity] {
-        return []
+        []
     }
 
     func fetch(byCategory _: MessageCategory) async throws -> [MotivationalMessageEntity] {
-        return []
+        []
     }
 
     func delete(id _: UUID) async throws {

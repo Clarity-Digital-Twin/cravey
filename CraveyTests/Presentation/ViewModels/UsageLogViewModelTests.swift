@@ -105,7 +105,7 @@ actor MockLogUsageUseCase: LogUsageUseCase {
         location: String?,
         notes: String?
     ) async throws -> UsageEntity {
-        return UsageEntity(
+        UsageEntity(
             timestamp: timestamp,
             method: method,
             amount: amount,

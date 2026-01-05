@@ -45,11 +45,11 @@ actor MockFetchUsageUseCase: FetchUsageUseCase {
 
         return [
             UsageEntity(timestamp: Date(), method: "Bowls", amount: 2.5),
-            UsageEntity(timestamp: Date().addingTimeInterval(-3600), method: "Edible", amount: 25.0)
+            UsageEntity(timestamp: Date().addingTimeInterval(-3600), method: "Edible", amount: 25.0),
         ]
     }
 
     func execute(since _: Date) async throws -> [UsageEntity] {
-        return try await execute()
+        try await execute()
     }
 }

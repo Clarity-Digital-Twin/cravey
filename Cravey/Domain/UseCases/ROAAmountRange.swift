@@ -12,15 +12,15 @@ enum ROAAmountRange {
     static func range(for method: String) -> [Double] {
         switch method {
         case "Bowls", "Joints", "Blunts":
-            return stride(from: 0.5, through: 5.0, by: 0.5).map { $0 }
+            stride(from: 0.5, through: 5.0, by: 0.5).map(\.self)
         case "Vape":
-            return Array(1 ... 10).map { Double($0) }
+            Array(1 ... 10).map { Double($0) }
         case "Dab":
-            return Array(1 ... 5).map { Double($0) }
+            Array(1 ... 5).map { Double($0) }
         case "Edible":
-            return stride(from: 5.0, through: 100.0, by: 5.0).map { $0 }
+            stride(from: 5.0, through: 100.0, by: 5.0).map(\.self)
         default:
-            return []
+            []
         }
     }
 
@@ -32,13 +32,13 @@ enum ROAAmountRange {
     /// Format amount for display (e.g., "2.5 bowls", "10mg")
     static func displayAmount(method: String, amount: Double) -> String {
         switch method {
-        case "Bowls": return formatDecimal(amount) + " bowls"
-        case "Joints": return formatDecimal(amount) + " joints"
-        case "Blunts": return formatDecimal(amount) + " blunts"
-        case "Vape": return "\(Int(amount)) pulls"
-        case "Dab": return "\(Int(amount)) dabs"
-        case "Edible": return "\(Int(amount))mg"
-        default: return "\(amount)"
+        case "Bowls": formatDecimal(amount) + " bowls"
+        case "Joints": formatDecimal(amount) + " joints"
+        case "Blunts": formatDecimal(amount) + " blunts"
+        case "Vape": "\(Int(amount)) pulls"
+        case "Dab": "\(Int(amount)) dabs"
+        case "Edible": "\(Int(amount))mg"
+        default: "\(amount)"
         }
     }
 

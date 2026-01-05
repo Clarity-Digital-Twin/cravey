@@ -112,7 +112,7 @@ extension MotivationalMessageEntity {
                 category: .progressReminder,
                 content: "Look how far you've come. Don't let one moment erase all your progress.",
                 displayPriority: 9
-            )
+            ),
         ]
     }
 }

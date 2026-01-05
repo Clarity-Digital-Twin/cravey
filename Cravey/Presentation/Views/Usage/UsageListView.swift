@@ -237,11 +237,11 @@ actor PreviewMockFetchUsageUseCase: FetchUsageUseCase {
                 triggers: ["Habit"],
                 location: "Home",
                 notes: nil
-            )
+            ),
         ]
     }
 
     func execute(since _: Date) async throws -> [UsageEntity] {
-        return try await execute()
+        try await execute()
     }
 }

@@ -83,7 +83,9 @@ struct HomeView: View {
                     }
                 }
             }
+
             // MARK: - Craving Log Sheet
+
             .sheet(isPresented: $showCravingLogSheet) {
                 // Detect if success occurred before reset
                 let didSucceed = cravingLogViewModel?.didSucceed ?? false
@@ -114,7 +116,9 @@ struct HomeView: View {
                         }
                 }
             }
+
             // MARK: - Usage Log Sheet
+
             .sheet(isPresented: $showUsageLogSheet) {
                 // Detect if success occurred before reset
                 let didSucceed = usageLogViewModel?.didSucceed ?? false
@@ -145,7 +149,9 @@ struct HomeView: View {
                         }
                 }
             }
+
             // MARK: - Success Toast
+
             .overlay(alignment: .top) {
                 // Success toast (appears AFTER sheet dismisses per UX_FLOW:396-405)
                 if showSuccessToast {
