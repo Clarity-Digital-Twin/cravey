@@ -15,9 +15,8 @@ final class DependencyContainer {
     // MARK: - Repositories (Data Layer)
 
     private(set) var cravingRepository: CravingRepositoryProtocol
-    private(set) var recordingRepository: RecordingRepositoryProtocol
-    private(set) var messageRepository: MessageRepositoryProtocol
     private(set) var usageRepository: UsageRepositoryProtocol
+    // Note: RecordingRepository and MessageRepository will be added in Phase 4
 
     // MARK: - Use Cases (Domain Layer)
 
@@ -44,6 +43,17 @@ final class DependencyContainer {
         CravingListViewModel(fetchCravingsUseCase: fetchCravingsUseCase)
     }
 
+    func makeDashboardViewModel() -> DashboardViewModel {
+        DashboardViewModel(
+            fetchCravingsUseCase: fetchCravingsUseCase,
+            fetchUsageUseCase: fetchUsageUseCase
+        )
+    }
+
+    func makeSettingsViewModel() -> SettingsViewModel {
+        SettingsViewModel(modelContext: modelContext)
+    }
+
     // MARK: - Initialization
 
     init(isPreview: Bool = false) {
@@ -64,13 +74,9 @@ final class DependencyContainer {
 
             // Initialize repositories
             let cravingRepo = CravingRepository(modelContext: modelContext)
-            let recordingRepo = StubRecordingRepository() // Stub until RecordingRepository implemented
-            let messageRepo = StubMessageRepository() // Stub until MessageRepository implemented
             let usageRepo = UsageRepository(modelContext: modelContext)
 
             cravingRepository = cravingRepo
-            recordingRepository = recordingRepo
-            messageRepository = messageRepo
             usageRepository = usageRepo
 
             // Initialize use cases
@@ -94,57 +100,5 @@ final class DependencyContainer {
 extension DependencyContainer {
     static var preview: DependencyContainer {
         DependencyContainer(isPreview: true)
-    }
-}
-
-// MARK: - Stub Implementations (Temporary)
-
-/// Stub implementation until RecordingRepository is fully implemented
-private struct StubRecordingRepository: RecordingRepositoryProtocol {
-    func save(_: RecordingEntity) async throws {
-        // TODO: Implement
-    }
-
-    func fetchAll() async throws -> [RecordingEntity] {
-        []
-    }
-
-    func fetch(byPurpose _: RecordingPurpose) async throws -> [RecordingEntity] {
-        []
-    }
-
-    func delete(id _: UUID) async throws {
-        // TODO: Implement
-    }
-
-    func update(_: RecordingEntity) async throws {
-        // TODO: Implement
-    }
-}
-
-/// Stub implementation until MessageRepository is fully implemented
-private struct StubMessageRepository: MessageRepositoryProtocol {
-    func save(_: MotivationalMessageEntity) async throws {
-        // TODO: Implement
-    }
-
-    func fetchActive() async throws -> [MotivationalMessageEntity] {
-        []
-    }
-
-    func fetch(byCategory _: MessageCategory) async throws -> [MotivationalMessageEntity] {
-        []
-    }
-
-    func delete(id _: UUID) async throws {
-        // TODO: Implement
-    }
-
-    func update(_: MotivationalMessageEntity) async throws {
-        // TODO: Implement
-    }
-
-    func seedDefaultMessagesIfNeeded() async throws {
-        // TODO: Implement
     }
 }

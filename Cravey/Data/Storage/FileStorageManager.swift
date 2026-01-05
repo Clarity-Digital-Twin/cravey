@@ -92,12 +92,12 @@ final class FileStorageManager {
             throw StorageError.invalidURL
         }
 
-        let asset = AVAsset(url: videoURL)
+        let asset = AVURLAsset(url: videoURL)
         let imageGenerator = AVAssetImageGenerator(asset: asset)
         imageGenerator.appliesPreferredTrackTransform = true
 
         let time = CMTime(seconds: 1, preferredTimescale: 60)
-        let cgImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+        let (cgImage, _) = try await imageGenerator.image(at: time)
 
         #if canImport(UIKit)
             let image = UIImage(cgImage: cgImage)
@@ -140,7 +140,7 @@ final class FileStorageManager {
             throw StorageError.invalidURL
         }
 
-        let asset = AVAsset(url: url)
+        let asset = AVURLAsset(url: url)
         let duration = try await asset.load(.duration)
         return CMTimeGetSeconds(duration)
     }

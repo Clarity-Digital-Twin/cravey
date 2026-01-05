@@ -37,22 +37,23 @@ final class Phase1ScreenshotTests: XCTestCase {
         sleep(1)
         takeScreenshot(named: "05_craving_form_intensity_7")
 
-        // Screenshot 5: Select triggers
-        let anxiousChip = app.buttons["Anxious"]
+        // Screenshot 5: Select triggers (chips are Text views with onTapGesture)
+        let anxiousChip = app.staticTexts["Anxious"]
         if anxiousChip.exists {
             anxiousChip.tap()
         }
-        let boredChip = app.buttons["Bored"]
+        let boredChip = app.staticTexts["Bored"]
         if boredChip.exists {
             boredChip.tap()
         }
         sleep(1)
         takeScreenshot(named: "06_craving_form_with_triggers")
 
-        // Screenshot 6: Select location
-        let homeChip = app.buttons["Home"]
-        if homeChip.exists {
-            homeChip.tap()
+        // Screenshot 6: Select location (use first match since "Home" appears in tab bar too)
+        // Look for location chips by scrolling to the section first
+        let workChip = app.staticTexts["Work"] // Work is unambiguous
+        if workChip.waitForExistence(timeout: 2) {
+            workChip.tap()
         }
         sleep(1)
         takeScreenshot(named: "07_craving_form_with_location")
@@ -71,15 +72,11 @@ final class Phase1ScreenshotTests: XCTestCase {
         XCTAssertTrue(saveButton.exists, "Save button should exist")
         saveButton.tap()
 
-        // Wait for success alert
-        let successAlert = app.alerts["Success"]
-        XCTAssertTrue(successAlert.waitForExistence(timeout: 5), "Success alert should appear")
+        // Wait for success toast (form dismisses, toast shows in HomeView)
+        let toast = app.staticTexts["Craving logged"]
+        XCTAssertTrue(toast.waitForExistence(timeout: 5), "Success toast should appear")
         sleep(1)
-        takeScreenshot(named: "09_success_alert")
-
-        // Screenshot 9: Dismiss alert
-        let okButton = successAlert.buttons["OK"]
-        okButton.tap()
+        takeScreenshot(named: "09_success_toast")
 
         // Wait for list to refresh
         sleep(2)
@@ -94,18 +91,16 @@ final class Phase1ScreenshotTests: XCTestCase {
         let slider2 = app.sliders.firstMatch
         slider2.adjust(toNormalizedSliderPosition: 0.3) // Intensity 3
 
-        let stressedChip = app.buttons["Stressed"]
+        let stressedChip = app.staticTexts["Stressed"]
         if stressedChip.exists {
             stressedChip.tap()
         }
 
         app.buttons["Save"].tap()
-        sleep(1)
 
-        let alert2 = app.alerts["Success"]
-        if alert2.waitForExistence(timeout: 3) {
-            alert2.buttons["OK"].tap()
-        }
+        // Wait for success toast
+        let toast2 = app.staticTexts["Craving logged"]
+        _ = toast2.waitForExistence(timeout: 3)
 
         sleep(2)
         takeScreenshot(named: "11_home_with_multiple_cravings")

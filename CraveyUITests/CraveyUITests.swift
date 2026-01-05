@@ -60,14 +60,11 @@ final class CraveyUITests: XCTestCase {
         // And: User taps Save
         saveButton.tap()
 
-        // Then: Success alert should appear
-        let successAlert = app.alerts["Success"]
-        XCTAssertTrue(successAlert.waitForExistence(timeout: 5))
+        // Then: Success toast should appear (sheet dismisses, toast shows in HomeView)
+        let toast = app.staticTexts["Craving logged"]
+        XCTAssertTrue(toast.waitForExistence(timeout: 5))
 
-        // When: User taps OK
-        successAlert.buttons["OK"].tap()
-
-        // Then: Form should dismiss and list should show craving
+        // Then: Form should dismiss and list should show craving (empty state gone)
         XCTAssertTrue(emptyStateGone(timeout: 2))
     }
 
