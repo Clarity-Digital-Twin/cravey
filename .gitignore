@@ -49,3 +49,7 @@ Recordings/
 .claude/
 .mcp.json
 *.local.json
+
+# Build reports
+build-report.xml/
+mcp_agent_mail/

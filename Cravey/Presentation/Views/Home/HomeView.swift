@@ -81,9 +81,12 @@ struct HomeView: View {
                         Image(systemName: "plus.circle.fill")
                             .font(.title2)
                     }
+                    .accessibilityIdentifier("addButton")
                 }
             }
+
             // MARK: - Craving Log Sheet
+
             .sheet(isPresented: $showCravingLogSheet) {
                 // Detect if success occurred before reset
                 let didSucceed = cravingLogViewModel?.didSucceed ?? false
@@ -114,7 +117,9 @@ struct HomeView: View {
                         }
                 }
             }
+
             // MARK: - Usage Log Sheet
+
             .sheet(isPresented: $showUsageLogSheet) {
                 // Detect if success occurred before reset
                 let didSucceed = usageLogViewModel?.didSucceed ?? false
@@ -145,7 +150,9 @@ struct HomeView: View {
                         }
                 }
             }
+
             // MARK: - Success Toast
+
             .overlay(alignment: .top) {
                 // Success toast (appears AFTER sheet dismisses per UX_FLOW:396-405)
                 if showSuccessToast {
@@ -153,6 +160,8 @@ struct HomeView: View {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundStyle(.green)
+                                // iOS 17+ symbol effect - bounce on appear
+                                .symbolEffect(.bounce, value: showSuccessToast)
                             Text(successMessage ?? "Logged")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
@@ -173,6 +182,8 @@ struct HomeView: View {
                     }
                 }
             }
+            // iOS 17+ declarative haptics for success toast
+            .sensoryFeedback(.success, trigger: showSuccessToast)
         }
     }
 }

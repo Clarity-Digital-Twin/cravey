@@ -9,6 +9,7 @@ final class CraveyUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments = ["--uitesting"]
     }
 
     func testAppLaunchesAndShowsEmptyState() throws {
@@ -24,8 +25,8 @@ final class CraveyUITests: XCTestCase {
         XCTAssertTrue(emptyStateMessage.waitForExistence(timeout: 2))
 
         // And: Plus button is visible
-        let plusButton = app.buttons.matching(identifier: "plus.circle.fill").firstMatch
-        XCTAssertTrue(plusButton.exists)
+        let plusButton = app.buttons["addButton"]
+        XCTAssertTrue(plusButton.waitForExistence(timeout: 2))
     }
 
     func testLogCravingFlow() throws {
@@ -33,7 +34,7 @@ final class CraveyUITests: XCTestCase {
         app.launch()
 
         // When: User taps + button
-        let plusButton = app.buttons.matching(identifier: "plus.circle.fill").firstMatch
+        let plusButton = app.buttons["addButton"]
         XCTAssertTrue(plusButton.waitForExistence(timeout: 5))
         plusButton.tap()
 
@@ -59,14 +60,11 @@ final class CraveyUITests: XCTestCase {
         // And: User taps Save
         saveButton.tap()
 
-        // Then: Success alert should appear
-        let successAlert = app.alerts["Success"]
-        XCTAssertTrue(successAlert.waitForExistence(timeout: 5))
+        // Then: Success toast should appear (sheet dismisses, toast shows in HomeView)
+        let toast = app.staticTexts["Craving logged"]
+        XCTAssertTrue(toast.waitForExistence(timeout: 5))
 
-        // When: User taps OK
-        successAlert.buttons["OK"].tap()
-
-        // Then: Form should dismiss and list should show craving
+        // Then: Form should dismiss and list should show craving (empty state gone)
         XCTAssertTrue(emptyStateGone(timeout: 2))
     }
 

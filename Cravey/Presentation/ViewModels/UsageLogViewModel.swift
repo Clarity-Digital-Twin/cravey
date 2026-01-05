@@ -1,5 +1,4 @@
 import Foundation
-import UIKit // For UINotificationFeedbackGenerator
 
 @Observable
 @MainActor
@@ -46,17 +45,17 @@ final class UsageLogViewModel {
 
     /// Validate form can be submitted
     var canSubmit: Bool {
-        return !selectedMethod.isEmpty && amount > 0
+        !selectedMethod.isEmpty && amount > 0
     }
 
     /// Character count for notes (show counter at 400+ chars)
     var notesCharacterCount: Int {
-        return notes.count
+        notes.count
     }
 
     /// Show notes character counter (at 400+ chars per UX_FLOW:391)
     var shouldShowNotesCounter: Bool {
-        return notes.count >= 400
+        notes.count >= 400
     }
 
     /// Check if timestamp is >7 days old (DATA_MODEL_SPEC:117)
@@ -105,16 +104,12 @@ final class UsageLogViewModel {
         await logUsage() // Proceed with save
     }
 
-    /// Trigger success feedback (haptic + signal success per UX_FLOW:396-405)
+    /// Signal success to parent (haptics handled by View via .sensoryFeedback)
     private func triggerSuccessFeedback() {
-        // Haptic feedback
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
-
         // Signal success to parent (form will dismiss, parent shows toast)
+        // Haptic feedback is now declaratively handled in the View layer
+        // using .sensoryFeedback(.success, trigger: didSucceed)
         didSucceed = true
-
-        // Note: Form reset happens when sheet reopens (HomeView sets VM to nil)
     }
 
     /// Reset amount to first valid option when method changes

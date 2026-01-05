@@ -73,32 +73,34 @@ struct CravingRow: View {
     }
 
     private func intensityColor(for intensity: Int) -> Color {
-        switch intensity {
-        case 1 ... 3: return .green
-        case 4 ... 6: return .yellow
-        case 7 ... 8: return .orange
-        case 9 ... 10: return .red
-        default: return .gray
-        }
+        IntensityColorScale.color(for: intensity)
     }
 }
 
-/// Empty state placeholder
+/// Empty state placeholder with animated symbol
 struct EmptyStatePlaceholder: View {
+    // Trigger symbol animation on appear
+    @State private var animateSymbol = false
+
     var body: some View {
         VStack(spacing: 16) {
             Image(systemName: "leaf.circle")
                 .font(.system(size: 60))
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
+                // iOS 17+ symbol effect - gentle pulse to draw attention
+                .symbolEffect(.pulse, options: .repeating.speed(0.5), value: animateSymbol)
 
             Text("No Cravings Logged")
                 .font(.headline)
 
             Text("Tap + to log your first craving")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
         }
         .padding()
+        .onAppear {
+            animateSymbol = true
+        }
     }
 }
 

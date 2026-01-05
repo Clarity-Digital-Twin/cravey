@@ -28,7 +28,7 @@ final class DefaultLogCravingUseCase: LogCravingUseCase {
         location: String?
     ) async throws -> CravingEntity {
         // Business rules / validation
-        guard intensity >= 1 && intensity <= 10 else {
+        guard intensity >= 1, intensity <= 10 else {
             throw CravingError.invalidIntensity
         }
 
@@ -60,9 +60,9 @@ enum CravingError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidIntensity:
-            return "Intensity must be between 1 and 10"
+            "Intensity must be between 1 and 10"
         case .futureTimestamp:
-            return "Timestamp cannot be in the future"
+            "Timestamp cannot be in the future"
         }
     }
 }

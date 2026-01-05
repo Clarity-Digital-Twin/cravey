@@ -50,11 +50,7 @@ struct UsageListView: View {
 
     @ViewBuilder
     private var emptyStateView: some View {
-        ContentUnavailableView {
-            Label("No Usage Logged", systemImage: "leaf")
-        } description: {
-            Text("Your usage history will appear here once you start logging.")
-        }
+        UsageEmptyStateView()
     }
 
     // MARK: - Usage List View
@@ -70,6 +66,33 @@ struct UsageListView: View {
                 Divider()
                     .padding(.leading)
             }
+        }
+    }
+}
+
+/// Empty state for usage list with animated symbol
+private struct UsageEmptyStateView: View {
+    @State private var animateSymbol = false
+
+    var body: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "leaf.circle")
+                .font(.system(size: 60))
+                .foregroundStyle(.secondary)
+                // iOS 17+ symbol effect - gentle pulse to draw attention
+                .symbolEffect(.pulse, options: .repeating.speed(0.5), value: animateSymbol)
+
+            Text("No Usage Logged")
+                .font(.headline)
+
+            Text("Your usage history will appear here once you start logging.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding()
+        .onAppear {
+            animateSymbol = true
         }
     }
 }
@@ -237,11 +260,11 @@ actor PreviewMockFetchUsageUseCase: FetchUsageUseCase {
                 triggers: ["Habit"],
                 location: "Home",
                 notes: nil
-            )
+            ),
         ]
     }
 
     func execute(since _: Date) async throws -> [UsageEntity] {
-        return try await execute()
+        try await execute()
     }
 }

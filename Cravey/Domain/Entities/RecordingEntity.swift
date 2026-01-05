@@ -48,8 +48,8 @@ enum RecordingType: String, Codable, CaseIterable {
 
     var fileExtension: String {
         switch self {
-        case .video: return "mov"
-        case .audio: return "m4a"
+        case .video: "mov"
+        case .audio: "m4a"
         }
     }
 }

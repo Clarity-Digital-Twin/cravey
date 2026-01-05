@@ -1,5 +1,4 @@
 import Foundation
-import UIKit // For UINotificationFeedbackGenerator (UX_FLOW:396-405)
 
 /// ViewModel for logging new cravings
 /// Presentation layer - prepares data for UI, handles user actions
@@ -73,16 +72,12 @@ final class CravingLogViewModel {
         await logCraving() // Reuse existing logic - no duplication
     }
 
-    /// Trigger success feedback (haptic + signal success per UX_FLOW:396-405)
+    /// Signal success to parent (haptics handled by View via .sensoryFeedback)
     private func triggerSuccessFeedback() {
-        // Haptic feedback
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
-
         // Signal success to parent (form will dismiss, parent shows toast)
+        // Haptic feedback is now declaratively handled in the View layer
+        // using .sensoryFeedback(.success, trigger: didSucceed)
         didSucceed = true
-
-        // Note: Form reset happens when sheet reopens (HomeView sets VM to nil)
     }
 
     func resetForm() {
@@ -107,10 +102,10 @@ final class CravingLogViewModel {
 
     var intensityDescription: String {
         switch Int(intensity) {
-        case 1 ... 3: return "Mild - Manageable discomfort"
-        case 4 ... 6: return "Moderate - Noticeable urge"
-        case 7 ... 10: return "Intense - Strong urge"
-        default: return ""
+        case 1 ... 3: "Mild - Manageable discomfort"
+        case 4 ... 6: "Moderate - Noticeable urge"
+        case 7 ... 10: "Intense - Strong urge"
+        default: ""
         }
     }
 

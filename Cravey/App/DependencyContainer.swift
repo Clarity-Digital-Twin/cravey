@@ -15,9 +15,8 @@ final class DependencyContainer {
     // MARK: - Repositories (Data Layer)
 
     private(set) var cravingRepository: CravingRepositoryProtocol
-    private(set) var recordingRepository: RecordingRepositoryProtocol
-    private(set) var messageRepository: MessageRepositoryProtocol
     private(set) var usageRepository: UsageRepositoryProtocol
+    // Note: RecordingRepository and MessageRepository will be added in Phase 4
 
     // MARK: - Use Cases (Domain Layer)
 
@@ -44,28 +43,40 @@ final class DependencyContainer {
         CravingListViewModel(fetchCravingsUseCase: fetchCravingsUseCase)
     }
 
+    func makeDashboardViewModel() -> DashboardViewModel {
+        DashboardViewModel(
+            fetchCravingsUseCase: fetchCravingsUseCase,
+            fetchUsageUseCase: fetchUsageUseCase
+        )
+    }
+
+    func makeSettingsViewModel() -> SettingsViewModel {
+        SettingsViewModel(modelContext: modelContext)
+    }
+
     // MARK: - Initialization
 
     init(isPreview: Bool = false) {
+        // Check for UI testing mode
+        let isUITesting = ProcessInfo.processInfo.arguments.contains("--uitesting")
+
         do {
             // Initialize infrastructure
-            modelContainer = if isPreview {
-                try ModelContainerSetup.createPreview()
+            if isUITesting {
+                modelContainer = try ModelContainerSetup.createUITesting()
+            } else if isPreview {
+                modelContainer = try ModelContainerSetup.createPreview()
             } else {
-                try ModelContainerSetup.create()
+                modelContainer = try ModelContainerSetup.create()
             }
             modelContext = ModelContext(modelContainer)
             fileStorage = FileStorageManager.shared
 
             // Initialize repositories
             let cravingRepo = CravingRepository(modelContext: modelContext)
-            let recordingRepo = StubRecordingRepository() // TODO: Implement RecordingRepository
-            let messageRepo = StubMessageRepository() // TODO: Implement MessageRepository
             let usageRepo = UsageRepository(modelContext: modelContext)
 
             cravingRepository = cravingRepo
-            recordingRepository = recordingRepo
-            messageRepository = messageRepo
             usageRepository = usageRepo
 
             // Initialize use cases
@@ -74,8 +85,8 @@ final class DependencyContainer {
             logUsageUseCase = DefaultLogUsageUseCase(repository: usageRepo)
             fetchUsageUseCase = DefaultFetchUsageUseCase(repository: usageRepo)
 
-            // Seed default data if needed
-            if !isPreview {
+            // Seed default data if needed (skip for UI testing)
+            if !isPreview, !isUITesting {
                 ModelContainerSetup.seedDefaultMessages(context: modelContext)
             }
         } catch {
@@ -89,57 +100,5 @@ final class DependencyContainer {
 extension DependencyContainer {
     static var preview: DependencyContainer {
         DependencyContainer(isPreview: true)
-    }
-}
-
-// MARK: - Stub Implementations (Temporary)
-
-/// Stub implementation until RecordingRepository is fully implemented
-private struct StubRecordingRepository: RecordingRepositoryProtocol {
-    func save(_: RecordingEntity) async throws {
-        // TODO: Implement
-    }
-
-    func fetchAll() async throws -> [RecordingEntity] {
-        return []
-    }
-
-    func fetch(byPurpose _: RecordingPurpose) async throws -> [RecordingEntity] {
-        return []
-    }
-
-    func delete(id _: UUID) async throws {
-        // TODO: Implement
-    }
-
-    func update(_: RecordingEntity) async throws {
-        // TODO: Implement
-    }
-}
-
-/// Stub implementation until MessageRepository is fully implemented
-private struct StubMessageRepository: MessageRepositoryProtocol {
-    func save(_: MotivationalMessageEntity) async throws {
-        // TODO: Implement
-    }
-
-    func fetchActive() async throws -> [MotivationalMessageEntity] {
-        return []
-    }
-
-    func fetch(byCategory _: MessageCategory) async throws -> [MotivationalMessageEntity] {
-        return []
-    }
-
-    func delete(id _: UUID) async throws {
-        // TODO: Implement
-    }
-
-    func update(_: MotivationalMessageEntity) async throws {
-        // TODO: Implement
-    }
-
-    func seedDefaultMessagesIfNeeded() async throws {
-        // TODO: Implement
     }
 }

@@ -5,6 +5,11 @@ import SwiftUI
 struct IntensitySlider: View {
     @Binding var value: Double
 
+    // Track value changes for haptic feedback
+    @State private var hapticTrigger = false
+    // Respect reduced motion accessibility setting
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -13,22 +18,40 @@ struct IntensitySlider: View {
                 Spacer()
                 Text(Self.emoji(for: Int(value)))
                     .font(.title)
+                    // iOS 17+ symbol-like content transition for smooth emoji swap
+                    // (disabled when reduce motion enabled)
+                    .contentTransition(reduceMotion ? .identity : .symbolEffect(.replace))
+                    .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: Int(value))
             }
 
             HStack {
                 Text("1")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .font(.caption)
                 Slider(value: $value, in: 1 ... 10, step: 1)
+                    // iOS 15+ gradient tint for visual intensity indication
+                    .tint(intensityColor(for: Int(value)))
                 Text("10")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .font(.caption)
             }
 
             Text(Self.formatLabel(for: Int(value)))
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
         }
+        // iOS 17+ declarative haptics on value change
+        .sensoryFeedback(.selection, trigger: hapticTrigger)
+        .onChange(of: Int(value)) { oldValue, newValue in
+            if oldValue != newValue {
+                hapticTrigger.toggle()
+            }
+        }
+    }
+
+    /// Returns intensity-appropriate color using unified scale
+    private func intensityColor(for intensity: Int) -> Color {
+        IntensityColorScale.color(for: intensity)
     }
 
     // MARK: - Testable Static Methods
@@ -37,17 +60,17 @@ struct IntensitySlider: View {
     static func formatLabel(for intensity: Int) -> String {
         switch intensity {
         case 1 ... 2:
-            return "\(intensity) - Very Mild"
+            "\(intensity) - Very Mild"
         case 3 ... 4:
-            return "\(intensity) - Mild"
+            "\(intensity) - Mild"
         case 5 ... 6:
-            return "\(intensity) - Moderate"
+            "\(intensity) - Moderate"
         case 7 ... 8:
-            return "\(intensity) - Strong"
+            "\(intensity) - Strong"
         case 9 ... 10:
-            return "\(intensity) - Overwhelming"
+            "\(intensity) - Overwhelming"
         default:
-            return "\(intensity)"
+            "\(intensity)"
         }
     }
 
@@ -55,17 +78,17 @@ struct IntensitySlider: View {
     static func emoji(for intensity: Int) -> String {
         switch intensity {
         case 1 ... 2:
-            return "😌"
+            "😌"
         case 3 ... 4:
-            return "🙂"
+            "🙂"
         case 5 ... 6:
-            return "😐"
+            "😐"
         case 7 ... 8:
-            return "😟"
+            "😟"
         case 9 ... 10:
-            return "😫"
+            "😫"
         default:
-            return "😐"
+            "😐"
         }
     }
 }

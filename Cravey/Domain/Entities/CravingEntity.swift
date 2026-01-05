@@ -38,10 +38,10 @@ struct CravingEntity: Identifiable, Codable, Equatable, Hashable, Sendable {
 extension CravingEntity {
     var intensityLevel: IntensityLevel {
         switch intensity {
-        case 1 ... 3: return .low
-        case 4 ... 6: return .moderate
-        case 7 ... 10: return .high
-        default: return .unknown
+        case 1 ... 3: .low
+        case 4 ... 6: .moderate
+        case 7 ... 10: .high
+        default: .unknown
         }
     }
 
