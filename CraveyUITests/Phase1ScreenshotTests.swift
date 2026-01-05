@@ -16,7 +16,7 @@ final class Phase1ScreenshotTests: XCTestCase {
         takeScreenshot(named: "02_home_tab_bar")
 
         // Screenshot 2: Tap + button to show menu
-        let plusButton = app.buttons.matching(identifier: "plus.circle.fill").firstMatch
+        let plusButton = app.buttons["addButton"]
         XCTAssertTrue(plusButton.waitForExistence(timeout: 5), "+ button should exist")
         plusButton.tap()
         sleep(1)
@@ -85,7 +85,7 @@ final class Phase1ScreenshotTests: XCTestCase {
         takeScreenshot(named: "10_home_with_craving")
 
         // Screenshot 10: Log another craving with different intensity
-        app.buttons.matching(identifier: "plus.circle.fill").firstMatch.tap()
+        app.buttons["addButton"].tap()
         sleep(1)
         app.buttons["Log Craving"].tap()
         sleep(1)

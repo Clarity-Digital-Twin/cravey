@@ -67,10 +67,12 @@ final class UsageLogUITests: XCTestCase {
 
     func testSuccessToastAppearsAndDisappears() throws {
         // Open form
-        let plusButton = app.buttons.matching(identifier: "plus.circle.fill").firstMatch
+        let plusButton = app.buttons["addButton"]
+        XCTAssertTrue(plusButton.waitForExistence(timeout: 5))
         plusButton.tap()
 
         let logUsageButton = app.buttons["Log Usage"]
+        XCTAssertTrue(logUsageButton.waitForExistence(timeout: 2))
         logUsageButton.tap()
 
         // Log usage
@@ -79,7 +81,7 @@ final class UsageLogUITests: XCTestCase {
         saveButton.tap()
 
         // Verify toast appears
-        let toast = app.staticTexts["Usage logged ✓"]
+        let toast = app.staticTexts["Usage logged"]
         XCTAssertTrue(
             toast.waitForExistence(timeout: 2),
             "Toast should appear immediately after sheet dismisses"
@@ -94,10 +96,12 @@ final class UsageLogUITests: XCTestCase {
 
     func testSaveButtonDisabledWithoutMethod() throws {
         // Open form
-        let plusButton = app.buttons.matching(identifier: "plus.circle.fill").firstMatch
+        let plusButton = app.buttons["addButton"]
+        XCTAssertTrue(plusButton.waitForExistence(timeout: 5))
         plusButton.tap()
 
         let logUsageButton = app.buttons["Log Usage"]
+        XCTAssertTrue(logUsageButton.waitForExistence(timeout: 2))
         logUsageButton.tap()
 
         let saveButton = app.buttons["Save"]
@@ -114,10 +118,12 @@ final class UsageLogUITests: XCTestCase {
 
     func testROAMethodsShowAsChipsNotMenu() throws {
         // Open form
-        let plusButton = app.buttons.matching(identifier: "plus.circle.fill").firstMatch
+        let plusButton = app.buttons["addButton"]
+        XCTAssertTrue(plusButton.waitForExistence(timeout: 5))
         plusButton.tap()
 
         let logUsageButton = app.buttons["Log Usage"]
+        XCTAssertTrue(logUsageButton.waitForExistence(timeout: 2))
         logUsageButton.tap()
 
         // Verify all 6 methods are visible as chips (not in a menu)
@@ -135,10 +141,12 @@ final class UsageLogUITests: XCTestCase {
 
     func testAmountUpdatesWhenMethodChanges() throws {
         // Open form
-        let plusButton = app.buttons.matching(identifier: "plus.circle.fill").firstMatch
+        let plusButton = app.buttons["addButton"]
+        XCTAssertTrue(plusButton.waitForExistence(timeout: 5))
         plusButton.tap()
 
         let logUsageButton = app.buttons["Log Usage"]
+        XCTAssertTrue(logUsageButton.waitForExistence(timeout: 2))
         logUsageButton.tap()
 
         // Wait for form to load (default: Bowls, 0.5)
