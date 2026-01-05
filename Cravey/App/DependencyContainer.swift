@@ -47,20 +47,25 @@ final class DependencyContainer {
     // MARK: - Initialization
 
     init(isPreview: Bool = false) {
+        // Check for UI testing mode
+        let isUITesting = ProcessInfo.processInfo.arguments.contains("--uitesting")
+
         do {
             // Initialize infrastructure
-            modelContainer = if isPreview {
-                try ModelContainerSetup.createPreview()
+            if isUITesting {
+                modelContainer = try ModelContainerSetup.createUITesting()
+            } else if isPreview {
+                modelContainer = try ModelContainerSetup.createPreview()
             } else {
-                try ModelContainerSetup.create()
+                modelContainer = try ModelContainerSetup.create()
             }
             modelContext = ModelContext(modelContainer)
             fileStorage = FileStorageManager.shared
 
             // Initialize repositories
             let cravingRepo = CravingRepository(modelContext: modelContext)
-            let recordingRepo = StubRecordingRepository() // TODO: Implement RecordingRepository
-            let messageRepo = StubMessageRepository() // TODO: Implement MessageRepository
+            let recordingRepo = StubRecordingRepository() // Stub until RecordingRepository implemented
+            let messageRepo = StubMessageRepository() // Stub until MessageRepository implemented
             let usageRepo = UsageRepository(modelContext: modelContext)
 
             cravingRepository = cravingRepo
@@ -74,8 +79,8 @@ final class DependencyContainer {
             logUsageUseCase = DefaultLogUsageUseCase(repository: usageRepo)
             fetchUsageUseCase = DefaultFetchUsageUseCase(repository: usageRepo)
 
-            // Seed default data if needed
-            if !isPreview {
+            // Seed default data if needed (skip for UI testing)
+            if !isPreview, !isUITesting {
                 ModelContainerSetup.seedDefaultMessages(context: modelContext)
             }
         } catch {

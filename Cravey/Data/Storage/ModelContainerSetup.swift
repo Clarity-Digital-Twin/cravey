@@ -54,6 +54,27 @@ enum ModelContainerSetup {
         return container
     }
 
+    /// Create an in-memory container for UI testing (empty database)
+    @MainActor
+    static func createUITesting() throws -> ModelContainer {
+        let schema = Schema([
+            CravingModel.self,
+            UsageModel.self,
+            RecordingModel.self,
+            MotivationalMessageModel.self,
+        ])
+
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: true
+        )
+
+        return try ModelContainer(
+            for: schema,
+            configurations: [modelConfiguration]
+        )
+    }
+
     /// Seed default motivational messages
     @MainActor
     static func seedDefaultMessages(context: ModelContext) {

@@ -9,6 +9,7 @@ final class CraveyUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments = ["--uitesting"]
     }
 
     func testAppLaunchesAndShowsEmptyState() throws {

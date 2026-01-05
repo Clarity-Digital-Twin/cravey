@@ -10,6 +10,7 @@ final class UsageLogUITests: XCTestCase {
     override func setUpWithError() throws {
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments = ["--uitesting"]
         app.launch()
     }
 
