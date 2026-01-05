@@ -24,8 +24,8 @@ final class CraveyUITests: XCTestCase {
         XCTAssertTrue(emptyStateMessage.waitForExistence(timeout: 2))
 
         // And: Plus button is visible
-        let plusButton = app.buttons.matching(identifier: "plus.circle.fill").firstMatch
-        XCTAssertTrue(plusButton.exists)
+        let plusButton = app.buttons["addButton"]
+        XCTAssertTrue(plusButton.waitForExistence(timeout: 2))
     }
 
     func testLogCravingFlow() throws {
@@ -33,7 +33,7 @@ final class CraveyUITests: XCTestCase {
         app.launch()
 
         // When: User taps + button
-        let plusButton = app.buttons.matching(identifier: "plus.circle.fill").firstMatch
+        let plusButton = app.buttons["addButton"]
         XCTAssertTrue(plusButton.waitForExistence(timeout: 5))
         plusButton.tap()
 

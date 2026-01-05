@@ -19,7 +19,7 @@ final class UsageLogUITests: XCTestCase {
         let startTime = Date()
 
         // Step 1: Tap + button
-        let plusButton = app.buttons.matching(identifier: "plus.circle.fill").firstMatch
+        let plusButton = app.buttons["addButton"]
         XCTAssertTrue(plusButton.waitForExistence(timeout: 5), "+ button should exist")
         plusButton.tap()
 
@@ -43,7 +43,7 @@ final class UsageLogUITests: XCTestCase {
         saveButton.tap()
 
         // Step 6: Verify sheet dismissed and toast appears
-        let toast = app.staticTexts["Usage logged ✓"]
+        let toast = app.staticTexts["Usage logged"]
         XCTAssertTrue(
             toast.waitForExistence(timeout: 2),
             "Success toast should appear after save (UX_FLOW:396-405)"

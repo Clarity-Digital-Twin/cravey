@@ -81,6 +81,7 @@ struct HomeView: View {
                         Image(systemName: "plus.circle.fill")
                             .font(.title2)
                     }
+                    .accessibilityIdentifier("addButton")
                 }
             }
 
