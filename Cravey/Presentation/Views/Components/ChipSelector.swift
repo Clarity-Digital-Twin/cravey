@@ -12,7 +12,7 @@ struct ChipSelector: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
 
             FlowLayout(spacing: 8) {
                 ForEach(options, id: \.self) { option in
@@ -58,7 +58,7 @@ struct SingleSelectChipSelector: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
 
             FlowLayout(spacing: 8) {
                 ForEach(options, id: \.self) { option in
@@ -86,7 +86,7 @@ struct OptionalSingleSelectChipSelector: View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
 
             FlowLayout(spacing: 8) {
                 ForEach(options, id: \.self) { option in
@@ -116,18 +116,34 @@ struct ChipButton: View {
     let isSelected: Bool
     let action: () -> Void
 
+    // Track selection changes for haptic feedback
+    @State private var selectionTrigger = false
+
     var body: some View {
         Text(title)
             .font(.subheadline)
             .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(isSelected ? Color.accentColor : Color(.systemGray5))
-            .foregroundColor(isSelected ? .white : .primary)
+            .padding(.vertical, 8) // Increased for better tap target
+            .background(
+                Group {
+                    if isSelected {
+                        Color.accentColor
+                    } else {
+                        // iOS 18+ material background for premium glass feel
+                        Capsule()
+                            .fill(.ultraThinMaterial)
+                    }
+                }
+            )
+            .foregroundStyle(isSelected ? .white : .primary)
             .clipShape(Capsule())
             .contentShape(Capsule()) // Ensures full capsule area is tappable
             .onTapGesture {
+                selectionTrigger.toggle()
                 action()
             }
+            // iOS 17+ declarative haptics for selection
+            .sensoryFeedback(.selection, trigger: selectionTrigger)
     }
 }
 

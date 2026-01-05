@@ -1,7 +1,7 @@
 # Cravey – Ralph Wiggum Loop Prompt (UI/UX Polish)
 
 ## Mission
-Elevate Cravey's UI/UX to **GOD TIER Apple HIG compliance** — a premium, polished health app that feels native to iOS 18/26 and would make Apple's design team proud.
+Elevate Cravey's UI/UX to **GOD TIER Apple HIG compliance** — a premium, polished health app that feels native to iOS 18+ and would make Apple's design team proud.
 
 **Target:** Screenshot-perfect UI across all screens. Every pixel intentional. Zero jank.
 
@@ -12,6 +12,7 @@ Elevate Cravey's UI/UX to **GOD TIER Apple HIG compliance** — a premium, polis
 - **Clean Architecture:** Presentation → Domain ← Data; Domain stays framework-free (no SwiftUI/SwiftData).
 - **Motivational interviewing tone:** non-judgmental language (avoid "failure", "streak broken").
 - **iOS 18+ minimum deployment target** (prepare for iOS 26 Liquid Glass when available).
+- **Orientation:** Portrait-only for MVP (lock in Info.plist). UI must be safe-area aware for future landscape support.
 
 ---
 
@@ -34,10 +35,73 @@ bd init  # Initialize beads in this repo
 ```
 
 **Usage During Loop:**
-1. At start of each iteration, run `bd ls --ready` to see actionable tasks
-2. Create beads for each UI/UX issue found: `bd add "Fix X" --depends-on bd-xxx`
+1. At start of each iteration, run `bd ready` to see actionable tasks
+2. Create beads for each UI/UX issue found: `bd create "Fix X" --depends-on bd-xxx`
 3. Mark completed: `bd done bd-xxx`
 4. Track progress: `bd status`
+
+---
+
+## iOS 18+ Modern APIs (REQUIRED)
+
+### 1. MeshGradient (Liquid Glass Foundation)
+Use `MeshGradient` for organic, fluid backgrounds on cards/headers:
+```swift
+MeshGradient(width: 3, height: 3, points: [
+    [0, 0], [0.5, 0], [1, 0],
+    [0, 0.5], [0.5, 0.5], [1, 0.5],
+    [0, 1], [0.5, 1], [1, 1]
+], colors: [
+    .blue.opacity(0.3), .purple.opacity(0.2), .indigo.opacity(0.3),
+    .cyan.opacity(0.2), .mint.opacity(0.1), .teal.opacity(0.2),
+    .blue.opacity(0.2), .purple.opacity(0.3), .indigo.opacity(0.2)
+])
+```
+Combine with `.ultraThinMaterial` overlay for glass effect.
+
+### 2. Declarative Haptics (`.sensoryFeedback`)
+**FORBIDDEN:** `UIImpactFeedbackGenerator`, `UINotificationFeedbackGenerator`
+**REQUIRED:** `.sensoryFeedback()` modifier on Views
+
+```swift
+// Success feedback
+.sensoryFeedback(.success, trigger: didSave)
+
+// Selection feedback
+.sensoryFeedback(.selection, trigger: selectedItem)
+
+// Impact with customization
+.sensoryFeedback(.impact(weight: .medium, intensity: 0.7), trigger: value)
+```
+
+### 3. Symbol Effects (`.symbolEffect`)
+Animate SF Symbols for premium feel:
+```swift
+Image(systemName: "checkmark.circle.fill")
+    .symbolEffect(.bounce, value: isComplete)
+
+Image(systemName: "flame.fill")
+    .symbolEffect(.pulse, options: .repeating, value: isActive)
+```
+
+### 4. Navigation Transitions (iOS 18)
+Use zoom transitions for detail views:
+```swift
+NavigationLink(value: item) {
+    CardView(item: item)
+}
+.navigationTransition(.zoom(sourceID: item.id, in: namespace))
+```
+
+### 5. Scroll Transitions
+Add entrance animations:
+```swift
+.scrollTransition { content, phase in
+    content
+        .opacity(phase.isIdentity ? 1 : 0.3)
+        .scaleEffect(phase.isIdentity ? 1 : 0.9)
+}
+```
 
 ---
 
@@ -49,18 +113,21 @@ bd init  # Initialize beads in this repo
    - [ ] Consistent font weights (SF Pro Display for titles, SF Pro Text for body)
    - [ ] Proper Dynamic Type scaling (all text must scale 1x → 7x)
    - [ ] Line heights and letter spacing per Apple HIG
+   - [ ] NO fixed font sizes (use semantic: `.title`, `.headline`, `.body`)
 
 2. **Spacing & Layout**
    - [ ] Consistent 16pt/20pt grid system
-   - [ ] Proper insets for safe areas
-   - [ ] Card/container padding consistency
+   - [ ] Proper insets for safe areas (`.safeAreaInset`)
+   - [ ] Card/container padding consistency (16pt standard)
    - [ ] Remove awkward gaps or cramped sections
+   - [ ] Use `.containerRelativeFrame` for responsive sizing
 
 3. **Color System**
-   - [ ] Semantic colors only (no hardcoded hex values)
+   - [ ] Semantic colors only (`.primary`, `.secondary`, `.accentColor`)
+   - [ ] NO hardcoded hex values or `Color(red:)`
    - [ ] Dark mode full support (test every screen)
    - [ ] Proper contrast ratios (WCAG AA minimum)
-   - [ ] Accent color usage consistency
+   - [ ] Use `MeshGradient` for premium backgrounds
 
 4. **Components**
    - [ ] All tap targets ≥44×44pt (Apple HIG requirement)
@@ -68,22 +135,32 @@ bd init  # Initialize beads in this repo
    - [ ] Form inputs match iOS native styling
    - [ ] Cards use proper corner radius (16pt standard)
    - [ ] `.ultraThinMaterial` for glassmorphism (iOS 26 ready)
+   - [ ] ChipSelector: Use material backgrounds, not flat colors
 
-5. **Animations & Transitions**
+5. **Haptics & Feedback**
+   - [ ] All saves/actions use `.sensoryFeedback(.success)`
+   - [ ] Selections use `.sensoryFeedback(.selection)`
+   - [ ] Slider changes use `.sensoryFeedback(.impact)`
+   - [ ] NO legacy UIKit haptic generators
+
+6. **Animations & Transitions**
    - [ ] Sheet presentations use spring animations
-   - [ ] Loading states have smooth transitions
-   - [ ] Success/error feedback with haptics
+   - [ ] Loading states have smooth transitions (shimmer effect)
+   - [ ] SF Symbols use `.symbolEffect(.bounce)` on state changes
+   - [ ] Scroll views use `.scrollTransition` for entry
    - [ ] Respect `UIAccessibility.isReduceMotionEnabled`
 
-6. **Empty States**
+7. **Empty States**
    - [ ] Every list has a beautiful empty state
    - [ ] Use SF Symbols with proper sizing (60pt icons)
+   - [ ] Symbols animate with `.symbolEffect(.pulse)`
    - [ ] Encouraging copy, not just "No data"
 
-7. **Navigation**
+8. **Navigation**
    - [ ] Tab bar icons consistent weight/style
    - [ ] Navigation titles use `.large` or `.inline` appropriately
    - [ ] Back buttons and toolbar items properly spaced
+   - [ ] Use `.navigationTransition(.zoom)` where appropriate
 
 ---
 
@@ -91,64 +168,42 @@ bd init  # Initialize beads in this repo
 
 ### Home Tab
 - [ ] "Log Craving" / "Log Usage" buttons are prominent, not cramped
+- [ ] Buttons use `.sensoryFeedback(.impact)` on tap
 - [ ] Section headers ("Recent Cravings", "Recent Usage") have proper styling
-- [ ] Empty states are warm and inviting
-- [ ] Toast overlay doesn't interfere with navigation
-- [ ] List items have sufficient padding
+- [ ] Empty states use `.symbolEffect(.pulse)` animation
+- [ ] Toast overlay uses `.sensoryFeedback(.success)` + `.symbolEffect(.bounce)`
+- [ ] List items have sufficient padding (16pt horizontal, 12pt vertical)
 
 ### Craving/Usage Log Forms
 - [ ] Form sections have proper headers
-- [ ] ChipSelector chips are properly sized and spaced
-- [ ] IntensitySlider feels native (matches iOS sliders)
+- [ ] ChipSelector uses `.ultraThinMaterial` or subtle `MeshGradient`
+- [ ] IntensitySlider feels native (consider gradient track)
+- [ ] Slider provides `.sensoryFeedback(.impact)` during drag
 - [ ] TextEditor has visible border/background
 - [ ] Character counters don't crowd the input
-- [ ] Save button has loading state
+- [ ] Save button has loading state + `.sensoryFeedback(.success)`
 
 ### Dashboard Tab
-- [ ] MetricCards have consistent styling
+- [ ] MetricCards use subtle `MeshGradient` or `.ultraThinMaterial`
 - [ ] Numbers are prominent (large, bold)
-- [ ] Units are secondary (smaller, gray)
-- [ ] Empty dashboard has beautiful placeholder
+- [ ] Units are secondary (smaller, `.secondary` color)
+- [ ] Icons use `.symbolEffect(.bounce)` on appear
+- [ ] Empty dashboard has beautiful placeholder with animated symbol
 - [ ] Cards have proper shadow/elevation (subtle)
+- [ ] Use `.scrollTransition` for card entry animations
 
 ### Settings Tab
 - [ ] List style matches iOS Settings app exactly
 - [ ] Destructive actions are properly red
 - [ ] Version info is properly styled
 - [ ] Export/Delete flows feel native
-
----
-
-## 2026 SwiftUI Best Practices (Apply Throughout)
-
-### From Apple HIG + WWDC25
-1. **Liquid Glass readiness** (iOS 26)
-   - Use `.glassEffect()` for card backgrounds when available
-   - Prepare for `GlassEffectContainer` adoption
-   - Current fallback: `.ultraThinMaterial` backgrounds
-
-2. **Modern SwiftUI patterns**
-   - `@Observable` not `ObservableObject`
-   - `NavigationStack` not `NavigationView`
-   - `@Environment(Type.self)` not `@EnvironmentObject`
-   - Deferred ViewModel initialization pattern
-
-3. **Accessibility-first**
-   - All views have `.accessibilityLabel()`
-   - VoiceOver navigation is logical
-   - Increase Contrast mode works
-   - Bold Text setting works
-
-4. **Performance**
-   - `LazyVStack` for long lists
-   - No unnecessary redraws (check with `Self._printChanges()`)
-   - Image caching where applicable
+- [ ] Success/error states use `.sensoryFeedback`
 
 ---
 
 ## Verification (UI/UX Specific)
 
-### Visual Verification (Manual + Automated)
+### Automated Checks
 
 ```bash
 set -euo pipefail
@@ -164,16 +219,25 @@ xcodebuild test -scheme Cravey \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' | xcbeautify
 
 # 3. No SwiftLint warnings in Views
-swiftlint --config .swiftlint.yml Cravey/Presentation/Views/
+swiftlint Cravey/Presentation/Views/
 
-# 4. No hardcoded colors (should use semantic colors)
+# 4. No hardcoded colors (should use semantic colors or MeshGradient)
 ! rg -n 'Color\(red:|Color\(#|UIColor\(' Cravey/Presentation/Views/
 
-# 5. All tap targets are accessible
-rg -n 'frame\(width:\s*[0-3][0-9],' Cravey/Presentation/Views/ && echo "WARNING: Small tap targets found"
+# 5. All tap targets are accessible (checks for width < 44)
+rg -n '\.frame\(.*width:\s*([0-9]|[1-3][0-9])\D' Cravey/Presentation/Views/ && echo "FAIL: Small tap targets found" && exit 1 || true
 
-# 6. Dynamic Type support check
-rg -n '\.font\(\.system\(size:' Cravey/Presentation/Views/ && echo "WARNING: Fixed font sizes found"
+# 6. Check for Legacy Haptics (FORBIDDEN)
+rg -n 'UIImpactFeedbackGenerator|UINotificationFeedbackGenerator' Cravey/Presentation/ && echo "FAIL: Use .sensoryFeedback modifier instead" && exit 1 || true
+
+# 7. Dynamic Type support check (no fixed font sizes in Views)
+rg -n '\.font\(\.system\(size:' Cravey/Presentation/Views/ && echo "FAIL: Use semantic font styles" && exit 1 || true
+
+# 8. Verify sensoryFeedback usage exists
+rg -n 'sensoryFeedback' Cravey/Presentation/Views/ || echo "WARNING: No haptic feedback found in Views"
+
+# 9. Verify symbolEffect usage exists
+rg -n 'symbolEffect' Cravey/Presentation/Views/ || echo "WARNING: No symbol animations found"
 ```
 
 ### Screenshot Verification Task
@@ -208,10 +272,12 @@ When **ALL** of the following are true, output:
 - [ ] No hardcoded colors or font sizes
 - [ ] All tap targets ≥44×44pt
 - [ ] Dark mode works perfectly on all screens
-- [ ] Empty states are beautiful and encouraging
+- [ ] Empty states are beautiful with animated symbols
 - [ ] Forms feel native iOS (match Apple Health app quality)
 - [ ] Cards have consistent styling (corner radius, padding, materials)
 - [ ] Typography hierarchy is clear and consistent
+- [ ] `.sensoryFeedback` used for all user actions (no legacy haptics)
+- [ ] `.symbolEffect` used for SF Symbol animations
 - [ ] Animations respect reduced motion settings
 - [ ] VoiceOver navigation is logical
 - [ ] Screenshots of all screens reviewed and approved
@@ -220,7 +286,7 @@ When **ALL** of the following are true, output:
 
 ## How to Iterate (Convergent Loop)
 
-1. **Start:** Run `bd ls --ready` to see pending UI/UX tasks
+1. **Start:** Run `bd ready` to see pending UI/UX tasks
 2. **Audit:** Take screenshots of current state
 3. **Identify:** Find the most jarring UI issue
 4. **Fix:** Make the smallest change that improves it
@@ -231,10 +297,34 @@ When **ALL** of the following are true, output:
 
 ---
 
+## Migration Priorities (First Fixes)
+
+Based on codebase audit, fix these FIRST:
+
+1. **Remove Legacy Haptics** (blocking)
+   - `CravingLogViewModel.swift:79` - uses `UINotificationFeedbackGenerator`
+   - `UsageLogViewModel.swift:111` - uses `UINotificationFeedbackGenerator`
+   - Move haptics to View layer using `.sensoryFeedback`
+
+2. **ChipSelector Material** (visual)
+   - Replace `Color(.systemGray5)` with `.ultraThinMaterial`
+   - Add subtle shadow for depth
+
+3. **Add Symbol Effects** (polish)
+   - Empty state icons: `.symbolEffect(.pulse)`
+   - Success checkmarks: `.symbolEffect(.bounce)`
+   - Dashboard icons: `.symbolEffect(.bounce)` on appear
+
+4. **Add Scroll Transitions** (premium feel)
+   - Dashboard cards: fade/scale on scroll
+   - List items: subtle entry animations
+
+---
+
 ## Reference Design Standards
 
-### Apple Health App (Gold Standard for Health Apps)
-- Clean card-based layout
+### Apple Health App (Gold Standard)
+- Clean card-based layout with subtle materials
 - Prominent metrics with clear hierarchy
 - Subtle animations, no gimmicks
 - Perfect Dark mode support
@@ -242,25 +332,32 @@ When **ALL** of the following are true, output:
 
 ### Apple HIG Links
 - [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
-- [Accessibility Guidelines](https://developer.apple.com/design/human-interface-guidelines/accessibility)
-- [Typography Guidelines](https://developer.apple.com/design/human-interface-guidelines/typography)
-- [Color Guidelines](https://developer.apple.com/design/human-interface-guidelines/color)
+- [Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility)
+- [Typography](https://developer.apple.com/design/human-interface-guidelines/typography)
+- [Color](https://developer.apple.com/design/human-interface-guidelines/color)
+- [Materials](https://developer.apple.com/design/human-interface-guidelines/materials)
 
-### iOS 26 Liquid Glass Resources
-- [Apple Liquid Glass Announcement](https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/)
-- [Build a SwiftUI app with the new design - WWDC25](https://developer.apple.com/videos/play/wwdc2025/323/)
-- [Applying Liquid Glass to custom views](https://developer.apple.com/documentation/SwiftUI/Applying-Liquid-Glass-to-custom-views)
+### iOS 18+ API References
+- [MeshGradient](https://developer.apple.com/documentation/swiftui/meshgradient)
+- [sensoryFeedback](https://developer.apple.com/documentation/swiftui/view/sensoryfeedback(_:trigger:))
+- [symbolEffect](https://developer.apple.com/documentation/swiftui/view/symboleffect(_:options:value:))
+- [scrollTransition](https://developer.apple.com/documentation/swiftui/view/scrolltransition(_:axis:transition:))
+
+### iOS 26 Liquid Glass (Future)
+- [Apple Announcement](https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/)
+- [WWDC25 Session](https://developer.apple.com/videos/play/wwdc2025/323/)
+- [Applying Liquid Glass](https://developer.apple.com/documentation/SwiftUI/Applying-Liquid-Glass-to-custom-views)
 
 ---
 
-## Context / Reference (do not treat as acceptance criteria)
+## Context / Reference
 - Tier 1 specs: `docs/MVP_PRODUCT_SPEC.md`, `docs/UX_FLOW_SPEC.md`, `docs/CLINICAL_CANNABIS_SPEC.md`
 - Architecture: `CLAUDE.md`, `ARCHITECTURE.md`
 - Previous work: App is functional, tests pass, this loop focuses purely on UI/UX polish
 
 ---
 
-## Non-Goals (out of scope for this loop)
+## Non-Goals (out of scope)
 - New features
 - Backend/data layer changes
 - Test coverage expansion (unless UI-related)

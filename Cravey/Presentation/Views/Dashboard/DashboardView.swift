@@ -81,12 +81,17 @@ struct MetricCard: View {
     let icon: String
     let color: Color
 
+    // Track appearance for symbol animation
+    @State private var didAppear = false
+
     var body: some View {
         HStack {
             Image(systemName: icon)
                 .font(.system(size: 40))
                 .foregroundStyle(color)
                 .frame(width: 60)
+                // iOS 17+ symbol effect - bounce on appear
+                .symbolEffect(.bounce, value: didAppear)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
@@ -107,6 +112,15 @@ struct MetricCard: View {
         }
         .padding()
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+        // iOS 18+ scroll transition for premium entry animation
+        .scrollTransition { content, phase in
+            content
+                .opacity(phase.isIdentity ? 1 : 0.3)
+                .scaleEffect(phase.isIdentity ? 1 : 0.9)
+        }
+        .onAppear {
+            didAppear = true
+        }
     }
 }
 
@@ -116,11 +130,14 @@ struct IntensityTrendCard: View {
     let sevenDayAvg: Double
     let thirtyDayAvg: Double
 
+    @State private var didAppear = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "chart.line.uptrend.xyaxis")
                     .foregroundStyle(.blue)
+                    .symbolEffect(.bounce, value: didAppear)
                 Text("Craving Intensity")
                     .font(.headline)
             }
@@ -164,6 +181,14 @@ struct IntensityTrendCard: View {
         }
         .padding()
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+        .scrollTransition { content, phase in
+            content
+                .opacity(phase.isIdentity ? 1 : 0.3)
+                .scaleEffect(phase.isIdentity ? 1 : 0.9)
+        }
+        .onAppear {
+            didAppear = true
+        }
     }
 
     private func intensityColor(_ intensity: Double) -> Color {
@@ -181,11 +206,14 @@ struct IntensityTrendCard: View {
 struct TopTriggersCard: View {
     let triggers: [(trigger: String, count: Int)]
 
+    @State private var didAppear = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundStyle(.purple)
+                    .symbolEffect(.bounce, value: didAppear)
                 Text("Top Triggers")
                     .font(.headline)
             }
@@ -213,6 +241,14 @@ struct TopTriggersCard: View {
         }
         .padding()
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+        .scrollTransition { content, phase in
+            content
+                .opacity(phase.isIdentity ? 1 : 0.3)
+                .scaleEffect(phase.isIdentity ? 1 : 0.9)
+        }
+        .onAppear {
+            didAppear = true
+        }
     }
 }
 
@@ -222,11 +258,14 @@ struct WeeklySummaryCard: View {
     let cravingCount: Int
     let usageCount: Int
 
+    @State private var didAppear = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "calendar")
                     .foregroundStyle(.teal)
+                    .symbolEffect(.bounce, value: didAppear)
                 Text("This Week")
                     .font(.headline)
             }
@@ -253,7 +292,7 @@ struct WeeklySummaryCard: View {
 
                 // Encouragement based on data
                 if usageCount == 0 {
-                    Text("🌟 Great week!")
+                    Text("Great week!")
                         .font(.subheadline)
                         .foregroundStyle(.green)
                 } else {
@@ -265,6 +304,14 @@ struct WeeklySummaryCard: View {
         }
         .padding()
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+        .scrollTransition { content, phase in
+            content
+                .opacity(phase.isIdentity ? 1 : 0.3)
+                .scaleEffect(phase.isIdentity ? 1 : 0.9)
+        }
+        .onAppear {
+            didAppear = true
+        }
     }
 }
 
