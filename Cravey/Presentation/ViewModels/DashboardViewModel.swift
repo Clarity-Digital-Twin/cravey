@@ -5,9 +5,11 @@ import Foundation
 @Observable
 @MainActor
 final class DashboardViewModel {
-    // MARK: - Dependencies
+    // MARK: - Dependencies (non-tracked)
 
+    @ObservationIgnored
     private let fetchCravingsUseCase: FetchCravingsUseCase
+    @ObservationIgnored
     private let fetchUsageUseCase: FetchUsageUseCase
 
     // MARK: - Published State
@@ -20,6 +22,7 @@ final class DashboardViewModel {
     var topTriggers: [(trigger: String, count: Int)] = []
     var weeklyCravingCount: Int = 0
     var weeklyUsageCount: Int = 0
+    var errorMessage: String?
 
     // MARK: - Initialization
 
@@ -32,11 +35,14 @@ final class DashboardViewModel {
 
     func loadMetrics() async {
         isLoading = true
+        errorMessage = nil
         defer { isLoading = false }
 
         do {
-            let cravings = try await fetchCravingsUseCase.execute()
-            let usages = try await fetchUsageUseCase.execute()
+            // Fetch cravings and usages concurrently for better performance
+            async let cravingsTask = fetchCravingsUseCase.execute()
+            async let usagesTask = fetchUsageUseCase.execute()
+            let (cravings, usages) = try await (cravingsTask, usagesTask)
 
             // Calculate current streak (days since last usage)
             currentStreak = calculateCurrentStreak(usages: usages)
@@ -63,6 +69,7 @@ final class DashboardViewModel {
             weeklyCravingCount = cravings.count { $0.timestamp >= oneWeekAgo }
             weeklyUsageCount = usages.count { $0.timestamp >= oneWeekAgo }
         } catch {
+            errorMessage = "Unable to load dashboard metrics"
             print("[DashboardViewModel] Failed to load metrics: \(error)")
         }
     }
@@ -71,8 +78,8 @@ final class DashboardViewModel {
 
     private func calculateCurrentStreak(usages: [UsageEntity]) -> Int {
         guard let lastUsage = usages.sorted(by: { $0.timestamp > $1.timestamp }).first else {
-            // No usage logged = infinite streak from app install
-            return Calendar.current.dateComponents([.day], from: Date(), to: Date()).day ?? 0
+            // No usage logged yet - return 0 (no tracked streak data available)
+            return 0
         }
 
         let calendar = Calendar.current

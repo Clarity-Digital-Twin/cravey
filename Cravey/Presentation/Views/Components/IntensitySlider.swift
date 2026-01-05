@@ -49,15 +49,9 @@ struct IntensitySlider: View {
         }
     }
 
-    /// Returns intensity-appropriate color (green → yellow → orange → red)
+    /// Returns intensity-appropriate color using unified scale
     private func intensityColor(for intensity: Int) -> Color {
-        switch intensity {
-        case 1 ... 3: .green
-        case 4 ... 5: .yellow
-        case 6 ... 7: .orange
-        case 8 ... 10: .red
-        default: .accentColor
-        }
+        IntensityColorScale.color(for: intensity)
     }
 
     // MARK: - Testable Static Methods

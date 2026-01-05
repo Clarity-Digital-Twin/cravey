@@ -195,12 +195,7 @@ struct IntensityTrendCard: View {
     }
 
     private func intensityColor(_ intensity: Double) -> Color {
-        switch intensity {
-        case 0 ..< 4: .green
-        case 4 ..< 7: .yellow
-        case 7 ..< 9: .orange
-        default: .red
-        }
+        IntensityColorScale.color(for: intensity)
     }
 }
 

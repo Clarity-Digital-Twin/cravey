@@ -3,12 +3,24 @@ import SwiftData
 
 /// Settings ViewModel - handles data export and deletion
 /// Presentation layer - Clean Architecture
+///
+/// Note: This ViewModel currently depends on Data layer (ModelContext, Models)
+/// for pragmatic reasons. A future refactor should introduce Domain UseCases
+/// (ExportDataUseCase, DeleteAllDataUseCase) to maintain strict Clean Architecture.
 @Observable
 @MainActor
 final class SettingsViewModel {
     // MARK: - Dependencies
 
+    @ObservationIgnored
     private let modelContext: ModelContext
+
+    @ObservationIgnored
+    private let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd-HHmmss"
+        return formatter
+    }()
 
     // MARK: - Published State
 
@@ -109,9 +121,7 @@ final class SettingsViewModel {
     // MARK: - Helpers
 
     private func formattedDate() -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd-HHmmss"
-        return formatter.string(from: Date())
+        dateFormatter.string(from: Date())
     }
 }
 
