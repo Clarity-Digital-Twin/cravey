@@ -26,9 +26,10 @@ Produce an iOS 18+ Cravey build that is **“APP STORE READY” by the objective
 - Passing: `CraveyTests` via `xcodebuild test … -only-testing:CraveyTests`.
 - Not done: `DashboardView` and `SettingsView` are placeholders.
 - Stubs: `DependencyContainer` uses stub recording/message repositories.
-- Build warnings: 3 iOS 18 deprecation warnings in `FileStorageManager`.
-- Formatting: `swiftformat --lint` currently fails.
+- Formatting: `swiftformat --lint` currently fails (7/57 files).
+- Linting: `swiftlint` reports 17 warnings (TODOs, function_parameter_count).
 - UI tests: `CraveyUITests` currently fail (out-of-date selectors/expectations).
+- Assets: `Cravey/Resources/Assets.xcassets/` directory does NOT exist - must be created with AppIcon, LaunchIcon, LaunchScreenBackground.
 
 ---
 
