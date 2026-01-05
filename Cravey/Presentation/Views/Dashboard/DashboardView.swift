@@ -83,6 +83,8 @@ struct MetricCard: View {
 
     // Track appearance for symbol animation
     @State private var didAppear = false
+    // Respect reduced motion accessibility setting
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         HStack {
@@ -90,7 +92,7 @@ struct MetricCard: View {
                 .font(.system(size: 40))
                 .foregroundStyle(color)
                 .frame(width: 60)
-                // iOS 17+ symbol effect - bounce on appear
+                // iOS 17+ symbol effect - bounce on appear (auto-respects reduce motion)
                 .symbolEffect(.bounce, value: didAppear)
 
             VStack(alignment: .leading, spacing: 4) {
@@ -100,7 +102,7 @@ struct MetricCard: View {
 
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(value)
-                        .font(.system(size: 36, weight: .bold))
+                        .font(.largeTitle.bold())
 
                     Text(unit)
                         .font(.caption)
@@ -112,11 +114,11 @@ struct MetricCard: View {
         }
         .padding()
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-        // iOS 18+ scroll transition for premium entry animation
+        // iOS 18+ scroll transition (disabled when reduce motion enabled)
         .scrollTransition { content, phase in
             content
-                .opacity(phase.isIdentity ? 1 : 0.3)
-                .scaleEffect(phase.isIdentity ? 1 : 0.9)
+                .opacity(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.3))
+                .scaleEffect(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.9))
         }
         .onAppear {
             didAppear = true
@@ -131,6 +133,7 @@ struct IntensityTrendCard: View {
     let thirtyDayAvg: Double
 
     @State private var didAppear = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -183,8 +186,8 @@ struct IntensityTrendCard: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
         .scrollTransition { content, phase in
             content
-                .opacity(phase.isIdentity ? 1 : 0.3)
-                .scaleEffect(phase.isIdentity ? 1 : 0.9)
+                .opacity(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.3))
+                .scaleEffect(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.9))
         }
         .onAppear {
             didAppear = true
@@ -207,6 +210,7 @@ struct TopTriggersCard: View {
     let triggers: [(trigger: String, count: Int)]
 
     @State private var didAppear = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -243,8 +247,8 @@ struct TopTriggersCard: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
         .scrollTransition { content, phase in
             content
-                .opacity(phase.isIdentity ? 1 : 0.3)
-                .scaleEffect(phase.isIdentity ? 1 : 0.9)
+                .opacity(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.3))
+                .scaleEffect(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.9))
         }
         .onAppear {
             didAppear = true
@@ -259,6 +263,7 @@ struct WeeklySummaryCard: View {
     let usageCount: Int
 
     @State private var didAppear = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -306,8 +311,8 @@ struct WeeklySummaryCard: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
         .scrollTransition { content, phase in
             content
-                .opacity(phase.isIdentity ? 1 : 0.3)
-                .scaleEffect(phase.isIdentity ? 1 : 0.9)
+                .opacity(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.3))
+                .scaleEffect(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.9))
         }
         .onAppear {
             didAppear = true

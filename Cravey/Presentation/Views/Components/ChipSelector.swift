@@ -123,7 +123,7 @@ struct ChipButton: View {
         Text(title)
             .font(.subheadline)
             .padding(.horizontal, 12)
-            .padding(.vertical, 8) // Increased for better tap target
+            .padding(.vertical, 12) // Ensures ≥44pt tap target (Apple HIG requirement)
             .background(
                 Group {
                     if isSelected {

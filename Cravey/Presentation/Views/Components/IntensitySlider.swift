@@ -5,6 +5,11 @@ import SwiftUI
 struct IntensitySlider: View {
     @Binding var value: Double
 
+    // Track value changes for haptic feedback
+    @State private var hapticTrigger = false
+    // Respect reduced motion accessibility setting
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -13,21 +18,45 @@ struct IntensitySlider: View {
                 Spacer()
                 Text(Self.emoji(for: Int(value)))
                     .font(.title)
+                    // iOS 17+ symbol-like content transition for smooth emoji swap
+                    // (disabled when reduce motion enabled)
+                    .contentTransition(reduceMotion ? .identity : .symbolEffect(.replace))
+                    .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: Int(value))
             }
 
             HStack {
                 Text("1")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .font(.caption)
                 Slider(value: $value, in: 1 ... 10, step: 1)
+                    // iOS 15+ gradient tint for visual intensity indication
+                    .tint(intensityColor(for: Int(value)))
                 Text("10")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .font(.caption)
             }
 
             Text(Self.formatLabel(for: Int(value)))
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
+        }
+        // iOS 17+ declarative haptics on value change
+        .sensoryFeedback(.selection, trigger: hapticTrigger)
+        .onChange(of: Int(value)) { oldValue, newValue in
+            if oldValue != newValue {
+                hapticTrigger.toggle()
+            }
+        }
+    }
+
+    /// Returns intensity-appropriate color (green → yellow → orange → red)
+    private func intensityColor(for intensity: Int) -> Color {
+        switch intensity {
+        case 1 ... 3: .green
+        case 4 ... 5: .yellow
+        case 6 ... 7: .orange
+        case 8 ... 10: .red
+        default: .accentColor
         }
     }
 

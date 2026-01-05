@@ -91,6 +91,8 @@ private struct SettingsContentView: View {
                 ShareSheet(items: [url])
             }
         }
+        // iOS 17+ declarative haptics for export success
+        .sensoryFeedback(.success, trigger: viewModel.showExportSheet)
         .confirmationDialog(
             "Delete All Data?",
             isPresented: $viewModel.showDeleteConfirmation,
@@ -120,6 +122,9 @@ private struct SettingsContentView: View {
         } message: {
             Text("All your data has been permanently deleted.")
         }
+        // iOS 17+ declarative haptics for success/error states
+        .sensoryFeedback(.success, trigger: viewModel.deleteSuccess)
+        .sensoryFeedback(.error, trigger: viewModel.showError)
     }
 }
 

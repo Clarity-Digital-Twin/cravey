@@ -160,6 +160,8 @@ struct HomeView: View {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundStyle(.green)
+                                // iOS 17+ symbol effect - bounce on appear
+                                .symbolEffect(.bounce, value: showSuccessToast)
                             Text(successMessage ?? "Logged")
                                 .font(.subheadline)
                                 .fontWeight(.medium)
@@ -180,6 +182,8 @@ struct HomeView: View {
                     }
                 }
             }
+            // iOS 17+ declarative haptics for success toast
+            .sensoryFeedback(.success, trigger: showSuccessToast)
         }
     }
 }
