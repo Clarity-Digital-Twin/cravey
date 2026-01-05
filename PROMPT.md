@@ -1,122 +1,276 @@
-# Cravey – Ralph Wiggum Loop Prompt (Convergent)
+# Cravey – Ralph Wiggum Loop Prompt (UI/UX Polish)
 
 ## Mission
-Produce an iOS 18+ Cravey build that is **“APP STORE READY” by the objective definition below**.
+Elevate Cravey's UI/UX to **GOD TIER Apple HIG compliance** — a premium, polished health app that feels native to iOS 18/26 and would make Apple's design team proud.
 
-**Important:** In this loop, “APP STORE READY” is a *technical* bar (build/tests/lint/assets). It does **not** include App Store Connect submission or human taste judgments.
+**Target:** Screenshot-perfect UI across all screens. Every pixel intentional. Zero jank.
+
+---
 
 ## Hard Constraints (must not violate)
 - **Privacy-first:** local-only data; no analytics; no tracking; no cloud sync; keep SwiftData `cloudKitDatabase: .none`.
 - **Clean Architecture:** Presentation → Domain ← Data; Domain stays framework-free (no SwiftUI/SwiftData).
-- **Motivational interviewing tone:** non-judgmental language (avoid “failure”, “streak broken”).
-
-## Non-Goals (cannot be completed in an AI loop)
-- App Store Connect setup, signing/provisioning/certificates, uploading builds, submitting for review.
-- Marketing assets and human-judgment work (real icon design, screenshot selection, copywriting, legal privacy policy text).
-
-## How to Iterate (to converge)
-1. Run **Verification (full)** exactly as written.
-2. Fix the *first* failing gate only (smallest coherent slice).
-3. Add/adjust tests to prevent regressions.
-4. Re-run the same failing gate until it passes.
-5. Repeat until all gates pass, then output the completion signal.
-
-## Current Baseline (repo truth)
-- Working: Home tab (log + list cravings and usage) with SwiftData persistence and DI.
-- Passing: `CraveyTests` via `xcodebuild test … -only-testing:CraveyTests`.
-- Not done: `DashboardView` and `SettingsView` are placeholders.
-- Stubs: `DependencyContainer` uses stub recording/message repositories.
-- Formatting: `swiftformat --lint` currently fails (7/57 files).
-- Linting: `swiftlint` reports 17 warnings (TODOs, function_parameter_count).
-- UI tests: `CraveyUITests` currently fail (out-of-date selectors/expectations).
-- Assets: `Cravey/Resources/Assets.xcassets/` directory does NOT exist - must be created with AppIcon, LaunchIcon, LaunchScreenBackground.
+- **Motivational interviewing tone:** non-judgmental language (avoid "failure", "streak broken").
+- **iOS 18+ minimum deployment target** (prepare for iOS 26 Liquid Glass when available).
 
 ---
 
-## Definition of Done (objective)
-When **ALL** commands in **Verification (full)** and **Verification (hard checks)** succeed with exit code `0`, output:
+## Beads Integration (Multi-Agent Memory)
 
+This loop uses **[Beads](https://github.com/steveyegge/beads)** — Steve Yegge's distributed, git-backed graph issue tracker for AI agents.
+
+**Why Beads:**
+- Persistent task memory across Ralph Wiggum iterations
+- Dependency-aware task graph (tasks chain like beads)
+- Git-versioned progress tracking in `.beads/` directory
+- Multi-agent coordination if spawning sub-agents
+
+**Setup (if not already installed):**
+```bash
+brew tap steveyegge/beads
+brew install beads
+pip install beads-mcp
+bd init  # Initialize beads in this repo
 ```
-<promise>APP STORE READY</promise>
-```
+
+**Usage During Loop:**
+1. At start of each iteration, run `bd ls --ready` to see actionable tasks
+2. Create beads for each UI/UX issue found: `bd add "Fix X" --depends-on bd-xxx`
+3. Mark completed: `bd done bd-xxx`
+4. Track progress: `bd status`
 
 ---
 
-## Verification (full)
-Run exactly these commands (order matters):
+## UI/UX Audit Checklist (Must Fix)
+
+### Visual Polish Issues to Address
+
+1. **Typography Hierarchy**
+   - [ ] Consistent font weights (SF Pro Display for titles, SF Pro Text for body)
+   - [ ] Proper Dynamic Type scaling (all text must scale 1x → 7x)
+   - [ ] Line heights and letter spacing per Apple HIG
+
+2. **Spacing & Layout**
+   - [ ] Consistent 16pt/20pt grid system
+   - [ ] Proper insets for safe areas
+   - [ ] Card/container padding consistency
+   - [ ] Remove awkward gaps or cramped sections
+
+3. **Color System**
+   - [ ] Semantic colors only (no hardcoded hex values)
+   - [ ] Dark mode full support (test every screen)
+   - [ ] Proper contrast ratios (WCAG AA minimum)
+   - [ ] Accent color usage consistency
+
+4. **Components**
+   - [ ] All tap targets ≥44×44pt (Apple HIG requirement)
+   - [ ] Buttons have proper hit states (pressed, disabled)
+   - [ ] Form inputs match iOS native styling
+   - [ ] Cards use proper corner radius (16pt standard)
+   - [ ] `.ultraThinMaterial` for glassmorphism (iOS 26 ready)
+
+5. **Animations & Transitions**
+   - [ ] Sheet presentations use spring animations
+   - [ ] Loading states have smooth transitions
+   - [ ] Success/error feedback with haptics
+   - [ ] Respect `UIAccessibility.isReduceMotionEnabled`
+
+6. **Empty States**
+   - [ ] Every list has a beautiful empty state
+   - [ ] Use SF Symbols with proper sizing (60pt icons)
+   - [ ] Encouraging copy, not just "No data"
+
+7. **Navigation**
+   - [ ] Tab bar icons consistent weight/style
+   - [ ] Navigation titles use `.large` or `.inline` appropriately
+   - [ ] Back buttons and toolbar items properly spaced
+
+---
+
+## Screen-by-Screen Audit Requirements
+
+### Home Tab
+- [ ] "Log Craving" / "Log Usage" buttons are prominent, not cramped
+- [ ] Section headers ("Recent Cravings", "Recent Usage") have proper styling
+- [ ] Empty states are warm and inviting
+- [ ] Toast overlay doesn't interfere with navigation
+- [ ] List items have sufficient padding
+
+### Craving/Usage Log Forms
+- [ ] Form sections have proper headers
+- [ ] ChipSelector chips are properly sized and spaced
+- [ ] IntensitySlider feels native (matches iOS sliders)
+- [ ] TextEditor has visible border/background
+- [ ] Character counters don't crowd the input
+- [ ] Save button has loading state
+
+### Dashboard Tab
+- [ ] MetricCards have consistent styling
+- [ ] Numbers are prominent (large, bold)
+- [ ] Units are secondary (smaller, gray)
+- [ ] Empty dashboard has beautiful placeholder
+- [ ] Cards have proper shadow/elevation (subtle)
+
+### Settings Tab
+- [ ] List style matches iOS Settings app exactly
+- [ ] Destructive actions are properly red
+- [ ] Version info is properly styled
+- [ ] Export/Delete flows feel native
+
+---
+
+## 2026 SwiftUI Best Practices (Apply Throughout)
+
+### From Apple HIG + WWDC25
+1. **Liquid Glass readiness** (iOS 26)
+   - Use `.glassEffect()` for card backgrounds when available
+   - Prepare for `GlassEffectContainer` adoption
+   - Current fallback: `.ultraThinMaterial` backgrounds
+
+2. **Modern SwiftUI patterns**
+   - `@Observable` not `ObservableObject`
+   - `NavigationStack` not `NavigationView`
+   - `@Environment(Type.self)` not `@EnvironmentObject`
+   - Deferred ViewModel initialization pattern
+
+3. **Accessibility-first**
+   - All views have `.accessibilityLabel()`
+   - VoiceOver navigation is logical
+   - Increase Contrast mode works
+   - Bold Text setting works
+
+4. **Performance**
+   - `LazyVStack` for long lists
+   - No unnecessary redraws (check with `Self._printChanges()`)
+   - Image caching where applicable
+
+---
+
+## Verification (UI/UX Specific)
+
+### Visual Verification (Manual + Automated)
 
 ```bash
 set -euo pipefail
 
-# Tooling (fail fast if the environment is missing prerequisites)
-xcodebuild -version
-xcodegen --version
-swiftlint version
-swiftformat --version
-xcbeautify --version
-
-# Project generation (project.yml is SSOT for the Xcode project)
+# 1. Build succeeds
 xcodegen generate
-
-# Formatting + lint
-swiftformat --lint --swiftversion 6.0 .
-swiftlint
-
-# Unit + integration tests (Swift Testing in CraveyTests)
-xcodebuild test -scheme Cravey \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
-  -only-testing:CraveyTests | xcbeautify
-
-# UI tests (XCTest in CraveyUITests)
-xcodebuild test -scheme Cravey \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
-  -only-testing:CraveyUITests | tee /tmp/cravey-uitests.log | xcbeautify
-rg -n 'Executed [1-9][0-9]* tests' /tmp/cravey-uitests.log >/dev/null
-
-# Release build must not emit iOS 18 deprecation warnings
 xcodebuild -scheme Cravey \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
-  -configuration Release \
-  build | tee /tmp/cravey-release-build.log | xcbeautify
-! rg -n 'deprecated in iOS 18\\.0' /tmp/cravey-release-build.log
+  build | xcbeautify
+
+# 2. All tests pass
+xcodebuild test -scheme Cravey \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' | xcbeautify
+
+# 3. No SwiftLint warnings in Views
+swiftlint --config .swiftlint.yml Cravey/Presentation/Views/
+
+# 4. No hardcoded colors (should use semantic colors)
+! rg -n 'Color\(red:|Color\(#|UIColor\(' Cravey/Presentation/Views/
+
+# 5. All tap targets are accessible
+rg -n 'frame\(width:\s*[0-3][0-9],' Cravey/Presentation/Views/ && echo "WARNING: Small tap targets found"
+
+# 6. Dynamic Type support check
+rg -n '\.font\(\.system\(size:' Cravey/Presentation/Views/ && echo "WARNING: Fixed font sizes found"
 ```
 
-## Verification (hard checks)
-These must also succeed with exit code `0`:
+### Screenshot Verification Task
 
+At each iteration, capture and review screenshots of:
+1. **Home Tab** (empty state)
+2. **Home Tab** (with data)
+3. **Log Craving Sheet** (full form)
+4. **Log Usage Sheet** (full form)
+5. **Dashboard Tab** (empty state)
+6. **Dashboard Tab** (with metrics)
+7. **Settings Tab**
+8. **Dark Mode** variants of all above
+
+Use simulator screenshots:
 ```bash
-set -euo pipefail
-
-# No shipping-path stubs/placeholders
-! rg -n 'StubRecordingRepository|StubMessageRepository' Cravey/App/DependencyContainer.swift
-! rg -n 'Coming in Phase' Cravey/Presentation/Views/Dashboard/DashboardView.swift
-! rg -n 'TODO:' Cravey/Presentation/Views/Dashboard/DashboardView.swift Cravey/Presentation/Views/Settings/SettingsView.swift
-
-# App Store minimum assets referenced by Info.plist (must exist on disk)
-test -d Cravey/Resources/Assets.xcassets/AppIcon.appiconset
-test -f Cravey/Resources/Assets.xcassets/AppIcon.appiconset/Contents.json
-test -d Cravey/Resources/Assets.xcassets/LaunchIcon.imageset
-test -d Cravey/Resources/Assets.xcassets/LaunchScreenBackground.colorset
+xcrun simctl io booted screenshot ~/Desktop/cravey-screenshots/$(date +%s).png
 ```
 
 ---
 
-## Functional Scope Required for Done (must be enforced by tests)
-To prevent “false completion”, `CraveyUITests` must deterministically validate:
-- App launches, tab bar is visible, and Home shows both empty states when there is no data.
-- Log Craving flow completes and Home updates accordingly.
-- Log Usage flow completes in <10 seconds and Home updates accordingly.
-- Dashboard tab renders the 5 MVP metric cards (streaks, intensity trend, top triggers, weekly summary).
-- Settings tab supports Export (JSON minimum) and Delete All Data (with confirmation), and delete clears Home lists.
+## Definition of Done (UI/UX Polish)
 
-**UI test stability rules:**
-- Use explicit `accessibilityIdentifier`s; do not rely on SF Symbol names or localized strings.
-- No screenshot tests required for completion.
-- Avoid `sleep()`; prefer `waitForExistence(timeout:)` and predicates.
+When **ALL** of the following are true, output:
+
+```
+<promise>UI/UX GOD TIER</promise>
+```
+
+### Checklist:
+- [ ] All verification commands pass (exit 0)
+- [ ] No hardcoded colors or font sizes
+- [ ] All tap targets ≥44×44pt
+- [ ] Dark mode works perfectly on all screens
+- [ ] Empty states are beautiful and encouraging
+- [ ] Forms feel native iOS (match Apple Health app quality)
+- [ ] Cards have consistent styling (corner radius, padding, materials)
+- [ ] Typography hierarchy is clear and consistent
+- [ ] Animations respect reduced motion settings
+- [ ] VoiceOver navigation is logical
+- [ ] Screenshots of all screens reviewed and approved
+
+---
+
+## How to Iterate (Convergent Loop)
+
+1. **Start:** Run `bd ls --ready` to see pending UI/UX tasks
+2. **Audit:** Take screenshots of current state
+3. **Identify:** Find the most jarring UI issue
+4. **Fix:** Make the smallest change that improves it
+5. **Verify:** Run verification commands
+6. **Record:** `bd done bd-xxx` and create new beads for found issues
+7. **Screenshot:** Capture new state for comparison
+8. **Repeat:** Until all screens are polished
+
+---
+
+## Reference Design Standards
+
+### Apple Health App (Gold Standard for Health Apps)
+- Clean card-based layout
+- Prominent metrics with clear hierarchy
+- Subtle animations, no gimmicks
+- Perfect Dark mode support
+- Accessibility-first design
+
+### Apple HIG Links
+- [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
+- [Accessibility Guidelines](https://developer.apple.com/design/human-interface-guidelines/accessibility)
+- [Typography Guidelines](https://developer.apple.com/design/human-interface-guidelines/typography)
+- [Color Guidelines](https://developer.apple.com/design/human-interface-guidelines/color)
+
+### iOS 26 Liquid Glass Resources
+- [Apple Liquid Glass Announcement](https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/)
+- [Build a SwiftUI app with the new design - WWDC25](https://developer.apple.com/videos/play/wwdc2025/323/)
+- [Applying Liquid Glass to custom views](https://developer.apple.com/documentation/SwiftUI/Applying-Liquid-Glass-to-custom-views)
 
 ---
 
 ## Context / Reference (do not treat as acceptance criteria)
-- Tier 1 specs: `docs/MVP_PRODUCT_SPEC.md`, `docs/UX_FLOW_SPEC.md`, `docs/CLINICAL_CANNABIS_SPEC.md`, `docs/DATA_MODEL_SPEC.md`
-- Phase guides: `docs/phases/PHASE_3.md` (Settings/Data Management), `docs/phases/PHASE_5.md` (Dashboard)
-- Architecture: `AGENTS.md`, `ARCHITECTURE.md`, `CLAUDE.md`
+- Tier 1 specs: `docs/MVP_PRODUCT_SPEC.md`, `docs/UX_FLOW_SPEC.md`, `docs/CLINICAL_CANNABIS_SPEC.md`
+- Architecture: `CLAUDE.md`, `ARCHITECTURE.md`
+- Previous work: App is functional, tests pass, this loop focuses purely on UI/UX polish
+
+---
+
+## Non-Goals (out of scope for this loop)
+- New features
+- Backend/data layer changes
+- Test coverage expansion (unless UI-related)
+- Performance optimization (unless visible jank)
+- App Store submission assets
+
+---
+
+**Remember:** This is a *health app* for people in vulnerable moments. Every UI decision should prioritize:
+1. **Clarity** — No confusion about what to do
+2. **Calm** — Visual design that soothes, not stimulates
+3. **Speed** — Get in, log, get out in <10 seconds
+4. **Trust** — Feels like Apple made it
