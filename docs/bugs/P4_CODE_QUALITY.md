@@ -29,6 +29,9 @@ private let logger = Logger(subsystem: "com.cravey", category: "DataSetup")
 logger.error("Failed to seed messages: \(error.localizedDescription)")
 ```
 
+### Status
+✅ **FIXED** (2026-01-24)
+
 ---
 
 ## QUALITY-002: SettingsViewModel Mixed Concerns
@@ -46,6 +49,13 @@ Single ViewModel handles:
 Split into focused ViewModels:
 - `ExportViewModel` - Export functionality
 - `SettingsViewModel` - Just settings UI state
+
+### Status
+✅ **CLOSED** (2026-01-24)
+
+### Rationale
+SettingsViewModel no longer depends on SwiftData/models; data export + deletion are behind use cases. Remaining work
+(JSON encoding + share sheet URL) is UI/presentation responsibility and not an architecture violation.
 
 ---
 
@@ -71,6 +81,9 @@ func canSaveFile(size: Int64) -> Bool {
     return (currentUsage + size) <= maxAllowed
 }
 ```
+
+### Status
+✅ **FIXED** (2026-01-24)
 
 ---
 
@@ -110,6 +123,9 @@ Add consistency:
 @Attribute(.unique) var id: UUID = UUID()
 ```
 
+### Status
+✅ **FIXED** (2026-01-24)
+
 ---
 
 ## QUALITY-009: MotivationalMessageModel Missing @Attribute(.unique)
@@ -127,6 +143,9 @@ Add:
 ```swift
 @Attribute(.unique) var id: UUID
 ```
+
+### Status
+✅ **FIXED** (2026-01-24)
 
 ---
 
@@ -147,6 +166,13 @@ Recording infrastructure exists, but is not used by any ViewModel/View:
 
 ### Fix
 - Either implement the Recordings feature end-to-end (preferred) or remove/feature-flag unused APIs until the feature is ready.
+
+### Status
+🟡 **DEFERRED** (2026-01-24)
+
+### Rationale
+Recording infrastructure is intentionally present for the upcoming Recordings feature. `FileStorageManager` is now used
+by “Delete All Data” (privacy cleanup), but recording capture/playback remains out of MVP scope for this loop.
 
 ---
 
@@ -170,6 +196,9 @@ let (current, longest) = calculateStreaks(usages: usages)
 currentStreak = current
 longestStreak = longest
 ```
+
+### Status
+✅ **FIXED** (2026-01-24)
 
 ---
 
@@ -198,6 +227,9 @@ guard let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: no
 }
 ```
 
+### Status
+✅ **FIXED** (2026-01-24)
+
 ---
 
 ## QUALITY-008: Test Mock Incomplete
@@ -221,19 +253,22 @@ func update(_ entity: CravingEntity) async throws {
 }
 ```
 
+### Status
+✅ **FIXED** (2026-01-24)
+
 ---
 
 ## Summary
 
-| Quality ID | Description | Effort |
+| Quality ID | Description | Status |
 |------------|-------------|--------|
-| QUALITY-001 | Print statements | Low |
-| QUALITY-002 | SettingsVM mixed concerns | Medium |
-| QUALITY-003 | No storage limits | Medium |
-| QUALITY-004 | Incomplete mappers (outdated doc) | Low |
-| QUALITY-005 | Missing @Attribute | Low |
-| QUALITY-009 | Missing @Attribute | Low |
-| QUALITY-010 | Unused recording infrastructure | Low |
-| QUALITY-006 | Redundant calculation | Low |
-| QUALITY-007 | Calendar fallback | Low |
-| QUALITY-008 | Test mock incomplete | Low |
+| QUALITY-001 | Print statements | ✅ FIXED |
+| QUALITY-002 | SettingsVM mixed concerns | ✅ CLOSED |
+| QUALITY-003 | No storage limits | ✅ FIXED |
+| QUALITY-004 | Incomplete mappers (outdated doc) | ✅ CLOSED |
+| QUALITY-005 | RecordingModel unique id | ✅ FIXED |
+| QUALITY-009 | MotivationalMessage unique id | ✅ FIXED |
+| QUALITY-010 | Unused recording infrastructure | 🟡 DEFERRED |
+| QUALITY-006 | Redundant calculation | ✅ FIXED |
+| QUALITY-007 | Calendar fallback | ✅ FIXED |
+| QUALITY-008 | Test mock incomplete | ✅ FIXED |

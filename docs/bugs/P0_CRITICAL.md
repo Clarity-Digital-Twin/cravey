@@ -10,12 +10,14 @@ These bugs can cause crashes, data loss, or prevent the app from running.
 ## BUG-001: DependencyContainer fatalError on Init Failure
 
 **File:** `Cravey/App/DependencyContainer.swift`
-**Line:** 93
+**Verify:** `rg -n "Falling back to in-memory" Cravey/App/DependencyContainer.swift`
 
 ### Problem
+Historical snippet (no longer present):
+
 ```swift
 } catch {
-    fatalError("Failed to initialize DependencyContainer: \(error)")
+    fatalError("Failed to initialize DependencyContainer: \\(error)")
 }
 ```
 
@@ -26,29 +28,21 @@ If ModelContainer or repository setup fails (disk full, corrupted data, etc.), t
 - User loses all data access
 - No way to recover without reinstalling
 
-### Fix
-Replace `fatalError` with proper error propagation:
-```swift
-// Option 1: Throwing initializer
-init() throws {
-    do {
-        // setup...
-    } catch {
-        throw DependencyContainerError.initializationFailed(error)
-    }
-}
+### Status
+✅ **FIXED** (2026-01-24)
 
-// Option 2: Fallback to in-memory storage
-catch {
-    print("[ERROR] Failed to init persistent storage, using in-memory: \(error)")
-    // Initialize with in-memory ModelContainer as fallback
-}
-```
+### Fix Implemented
+- Persistent init failure no longer crashes the app.
+- App falls back to an in-memory SwiftData container and surfaces a user-facing alert.
+
+**Related Files:**
+- `Cravey/App/DependencyContainer.swift`
+- `Cravey/App/CraveyApp.swift` (alert UI)
 
 ### Acceptance Criteria
-- [ ] App doesn't crash on init failure
-- [ ] User sees error message if storage unavailable
-- [ ] Fallback to read-only or in-memory mode if possible
+- [x] App does not crash on persistent storage init failure
+- [x] In-memory fallback mode activates
+- [x] User sees a storage-unavailable alert
 
 ---
 
@@ -69,5 +63,5 @@ catch {
 
 | Bug ID | Description | Status |
 |--------|-------------|--------|
-| BUG-001 | fatalError in DependencyContainer | OPEN |
+| BUG-001 | fatalError in DependencyContainer | ✅ FIXED |
 | BUG-002 | Swift 6 reduceMotion concurrency | ✅ FIXED |

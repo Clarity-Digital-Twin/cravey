@@ -2,14 +2,33 @@ import Foundation
 
 /// Protocol for logging usage (dependency inversion)
 protocol LogUsageUseCase: Sendable {
-    func execute(
-        timestamp: Date,
+    func execute(_ request: LogUsageRequest) async throws -> UsageEntity
+}
+
+/// Request object for logging usage (reduces parameter count, improves call-site clarity)
+struct LogUsageRequest: Sendable, Equatable {
+    let timestamp: Date
+    let method: String
+    let amount: Double
+    let triggers: [String]
+    let location: String?
+    let notes: String?
+
+    init(
+        timestamp: Date = Date(),
         method: String,
         amount: Double,
-        triggers: [String],
-        location: String?,
-        notes: String?
-    ) async throws -> UsageEntity
+        triggers: [String] = [],
+        location: String? = nil,
+        notes: String? = nil
+    ) {
+        self.timestamp = timestamp
+        self.method = method
+        self.amount = amount
+        self.triggers = triggers
+        self.location = location
+        self.notes = notes
+    }
 }
 
 /// Default implementation with validation
@@ -20,37 +39,30 @@ final class DefaultLogUsageUseCase: LogUsageUseCase {
         self.repository = repository
     }
 
-    func execute(
-        timestamp: Date = Date(),
-        method: String,
-        amount: Double,
-        triggers: [String] = [],
-        location: String? = nil,
-        notes: String? = nil
-    ) async throws -> UsageEntity {
+    func execute(_ request: LogUsageRequest) async throws -> UsageEntity {
         // Validate method (must be one of 6 ROAs)
-        guard ROAAmountRange.validMethods.contains(method) else {
+        guard ROAAmountRange.validMethods.contains(request.method) else {
             throw UsageError.invalidMethod
         }
 
         // Validate amount (must be >0)
-        guard amount > 0 else {
+        guard request.amount > 0 else {
             throw UsageError.invalidAmount
         }
 
         // Validate amount range for method
-        guard ROAAmountRange.isValid(method: method, amount: amount) else {
+        guard ROAAmountRange.isValid(method: request.method, amount: request.amount) else {
             throw UsageError.amountOutOfRange
         }
 
         // Create entity
         let entity = UsageEntity(
-            timestamp: timestamp,
-            method: method,
-            amount: amount,
-            triggers: triggers,
-            location: location,
-            notes: notes
+            timestamp: request.timestamp,
+            method: request.method,
+            amount: request.amount,
+            triggers: request.triggers,
+            location: request.location,
+            notes: request.notes
         )
 
         // Save to repository

@@ -1,16 +1,21 @@
 import Foundation
+import OSLog
 
 /// Dashboard ViewModel - computes metrics from craving and usage data
 /// Presentation layer - Clean Architecture
 @Observable
 @MainActor
 final class DashboardViewModel {
+    private static let logger = Logger(subsystem: "com.cravey", category: "DashboardViewModel")
+
     // MARK: - Dependencies (non-tracked)
 
     @ObservationIgnored
     private let fetchCravingsUseCase: FetchCravingsUseCase
     @ObservationIgnored
     private let fetchUsageUseCase: FetchUsageUseCase
+    @ObservationIgnored
+    private let nowProvider: @Sendable () -> Date
 
     // MARK: - Published State
 
@@ -26,9 +31,14 @@ final class DashboardViewModel {
 
     // MARK: - Initialization
 
-    init(fetchCravingsUseCase: FetchCravingsUseCase, fetchUsageUseCase: FetchUsageUseCase) {
+    init(
+        fetchCravingsUseCase: FetchCravingsUseCase,
+        fetchUsageUseCase: FetchUsageUseCase,
+        nowProvider: @escaping @Sendable () -> Date = Date.init
+    ) {
         self.fetchCravingsUseCase = fetchCravingsUseCase
         self.fetchUsageUseCase = fetchUsageUseCase
+        self.nowProvider = nowProvider
     }
 
     // MARK: - Data Loading
@@ -44,16 +54,20 @@ final class DashboardViewModel {
             async let usagesTask = fetchUsageUseCase.execute()
             let (cravings, usages) = try await (cravingsTask, usagesTask)
 
-            // Calculate current streak (days since last usage)
-            currentStreak = calculateCurrentStreak(usages: usages)
+            let now = nowProvider()
 
-            // Calculate longest streak
-            longestStreak = calculateLongestStreak(usages: usages)
+            // Streaks (days since last usage; longest gap between usages)
+            (currentStreak, longestStreak) = calculateStreaks(usages: usages, now: now)
 
             // Calculate average intensity (7-day and 30-day)
-            let now = Date()
-            let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: now) ?? now
-            let thirtyDaysAgo = Calendar.current.date(byAdding: .day, value: -30, to: now) ?? now
+            let calendar = Calendar.current
+            guard let sevenDaysAgo = calendar.date(byAdding: .day, value: -7, to: now),
+                  let thirtyDaysAgo = calendar.date(byAdding: .day, value: -30, to: now)
+            else {
+                Self.logger.fault("Calendar date math unexpectedly failed while loading dashboard metrics.")
+                errorMessage = "Unable to load dashboard metrics"
+                return
+            }
 
             let cravings7Day = cravings.filter { $0.timestamp >= sevenDaysAgo }
             let cravings30Day = cravings.filter { $0.timestamp >= thirtyDaysAgo }
@@ -65,40 +79,25 @@ final class DashboardViewModel {
             topTriggers = calculateTopTriggers(cravings: cravings, limit: 3)
 
             // Weekly counts
-            let oneWeekAgo = Calendar.current.date(byAdding: .day, value: -7, to: now) ?? now
-            weeklyCravingCount = cravings.count { $0.timestamp >= oneWeekAgo }
-            weeklyUsageCount = usages.count { $0.timestamp >= oneWeekAgo }
+            weeklyCravingCount = cravings.count { $0.timestamp >= sevenDaysAgo }
+            weeklyUsageCount = usages.count { $0.timestamp >= sevenDaysAgo }
         } catch {
             errorMessage = "Unable to load dashboard metrics"
-            print("[DashboardViewModel] Failed to load metrics: \(error)")
+            Self.logger.error("Failed to load dashboard metrics: \(error.localizedDescription)")
         }
     }
 
     // MARK: - Private Calculations
 
-    private func calculateCurrentStreak(usages: [UsageEntity]) -> Int {
-        guard let lastUsage = usages.sorted(by: { $0.timestamp > $1.timestamp }).first else {
-            // No usage logged yet - return 0 (no tracked streak data available)
-            return 0
-        }
+    private func calculateStreaks(usages: [UsageEntity], now: Date = Date()) -> (current: Int, longest: Int) {
+        guard !usages.isEmpty else { return (0, 0) }
 
-        let calendar = Calendar.current
-        let days = calendar.dateComponents([.day], from: lastUsage.timestamp, to: Date()).day ?? 0
-        return max(0, days)
-    }
-
-    private func calculateLongestStreak(usages: [UsageEntity]) -> Int {
         let sortedUsages = usages.sorted { $0.timestamp < $1.timestamp }
-
-        guard !sortedUsages.isEmpty else {
-            return currentStreak // If no usage, current streak is the longest
-        }
-
-        var longestDays = 0
         let calendar = Calendar.current
+        let lastUsage = sortedUsages[sortedUsages.count - 1]
+        let currentDays = max(0, calendar.dateComponents([.day], from: lastUsage.timestamp, to: now).day ?? 0)
 
-        // Check gap from app start (first log) to first usage
-        // For simplicity, use gap between consecutive usages
+        var longestDays = currentDays
 
         for idx in 0 ..< sortedUsages.count - 1 {
             let current = sortedUsages[idx].timestamp
@@ -107,10 +106,7 @@ final class DashboardViewModel {
             longestDays = max(longestDays, gap)
         }
 
-        // Also check current streak (from last usage to now)
-        longestDays = max(longestDays, currentStreak)
-
-        return longestDays
+        return (currentDays, longestDays)
     }
 
     private func calculateAverageIntensity(cravings: [CravingEntity]) -> Double {

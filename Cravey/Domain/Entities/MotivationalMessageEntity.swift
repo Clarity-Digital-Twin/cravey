@@ -2,116 +2,127 @@ import Foundation
 
 /// Domain entity representing a motivational message
 /// Pure Swift - no framework dependencies
-struct MotivationalMessageEntity: Identifiable, Codable, Equatable, Hashable {
+struct MotivationalMessageEntity: Identifiable, Codable, Equatable, Hashable, Sendable {
     let id: UUID
-    let createdAt: Date
-    let category: MessageCategory
     let content: String
-    let isActive: Bool
-    let isUserCreated: Bool
-    let displayPriority: Int
+    let category: MessageCategory
+
+    let isCustom: Bool
+    let priority: Int
     let timesShown: Int
     let lastShownAt: Date?
-    let wasHelpful: Bool?
+    let isActive: Bool
+
+    let createdAt: Date
+    let modifiedAt: Date?
 
     init(
         id: UUID = UUID(),
-        createdAt: Date = Date(),
-        category: MessageCategory,
         content: String,
+        category: MessageCategory,
+        isCustom: Bool = false,
+        priority: Int = 0,
         isActive: Bool = true,
-        isUserCreated: Bool = false,
-        displayPriority: Int = 5,
         timesShown: Int = 0,
         lastShownAt: Date? = nil,
-        wasHelpful: Bool? = nil
+        createdAt: Date = Date(),
+        modifiedAt: Date? = nil
     ) {
         self.id = id
-        self.createdAt = createdAt
-        self.category = category
         self.content = content
+        self.category = category
+        self.isCustom = isCustom
+        self.priority = priority
         self.isActive = isActive
-        self.isUserCreated = isUserCreated
-        self.displayPriority = displayPriority
         self.timesShown = timesShown
         self.lastShownAt = lastShownAt
-        self.wasHelpful = wasHelpful
+        self.createdAt = createdAt
+        self.modifiedAt = modifiedAt
     }
 }
 
-enum MessageCategory: String, Codable, CaseIterable {
-    case urgeManagement = "Urge Management"
-    case selfCompassion = "Self-Compassion"
-    case progressReminder = "Progress Reminder"
-    case healthBenefits = "Health Benefits"
-    case copingStrategies = "Coping Strategies"
-    case personalReason = "Personal Reason"
+enum MessageCategory: String, Codable, CaseIterable, Sendable {
+    case urge
+    case anxiety
+    case boredom
+    case social
+    case celebration
 }
 
 // MARK: - Business Logic
 
 extension MotivationalMessageEntity {
-    func markAsShown() -> MotivationalMessageEntity {
+    func markAsShown(now: Date = Date()) -> MotivationalMessageEntity {
         MotivationalMessageEntity(
             id: id,
-            createdAt: createdAt,
-            category: category,
             content: content,
+            category: category,
+            isCustom: isCustom,
+            priority: priority,
             isActive: isActive,
-            isUserCreated: isUserCreated,
-            displayPriority: displayPriority,
             timesShown: timesShown + 1,
-            lastShownAt: Date(),
-            wasHelpful: wasHelpful
-        )
-    }
-
-    func withFeedback(_ helpful: Bool) -> MotivationalMessageEntity {
-        MotivationalMessageEntity(
-            id: id,
+            lastShownAt: now,
             createdAt: createdAt,
-            category: category,
-            content: content,
-            isActive: isActive,
-            isUserCreated: isUserCreated,
-            displayPriority: displayPriority,
-            timesShown: timesShown,
-            lastShownAt: lastShownAt,
-            wasHelpful: helpful
+            modifiedAt: now
         )
     }
 
     static var defaultMessages: [MotivationalMessageEntity] {
         [
             MotivationalMessageEntity(
-                category: .urgeManagement,
-                content: "This craving will pass in 10-15 minutes. You've got this.",
-                displayPriority: 10
+                content: "You’ve resisted before. You can do it again.",
+                category: .urge,
+                priority: 1
             ),
             MotivationalMessageEntity(
-                category: .urgeManagement,
-                content: "Ride the wave. Cravings peak and then subside. You're stronger than this urge.",
-                displayPriority: 10
+                content: "This craving will pass. They always do.",
+                category: .urge,
+                priority: 2
             ),
             MotivationalMessageEntity(
-                category: .selfCompassion,
-                content: "Be kind to yourself. Recovery is a journey, not a destination.",
-                displayPriority: 8
+                content: "Every moment of resistance is progress.",
+                category: .urge,
+                priority: 3
             ),
             MotivationalMessageEntity(
-                category: .healthBenefits,
-                content: "Your body is healing. Your mind is clearing. Keep going.",
-                displayPriority: 7
+                content: "This feeling is temporary. Breathe through it.",
+                category: .anxiety,
+                priority: 1
             ),
             MotivationalMessageEntity(
-                category: .copingStrategies,
-                content: "Try: Deep breathing, call a friend, go for a walk, listen to your recording.",
-                displayPriority: 9
+                content: "Anxiety is uncomfortable, and you’re safe.",
+                category: .anxiety,
+                priority: 2
             ),
             MotivationalMessageEntity(
-                category: .progressReminder,
-                content: "Look how far you've come. Don't let one moment erase all your progress.",
-                displayPriority: 9
+                content: "Boredom isn’t an emergency. Find something else to do for 10 minutes.",
+                category: .boredom,
+                priority: 1
+            ),
+            MotivationalMessageEntity(
+                content: "This is just boredom, not a need. You’ve got this.",
+                category: .boredom,
+                priority: 2
+            ),
+            MotivationalMessageEntity(
+                content: "You can have fun without using. You’ve done it before.",
+                category: .social,
+                priority: 1
+            ),
+            MotivationalMessageEntity(
+                content: "Real friends support your choices.",
+                category: .social,
+                priority: 2
+            ),
+            MotivationalMessageEntity(
+                content: "You’re making progress. Every day counts.",
+                category: .celebration,
+                priority: 1
+            ),
+            MotivationalMessageEntity(
+                content: "Look how far you’ve come. Keep going.",
+                category: .celebration,
+                priority: 2
             ),
         ]
     }

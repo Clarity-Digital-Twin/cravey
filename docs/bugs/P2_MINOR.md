@@ -9,7 +9,11 @@ UI glitches, edge case issues, style violations.
 
 ## BUG-007: FileStorageManager Silent Directory Failure
 
-**File:** `Cravey/Data/Storage/FileStorageManager.swift:125`
+**File:** `Cravey/Data/Storage/FileStorageManager.swift`
+**Verify:** `rg -n \"Failed to resolve Documents directory\" Cravey/Data/Storage/FileStorageManager.swift`
+
+### Status
+✅ **FIXED** (2026-01-24)
 
 ### Problem
 ```swift
@@ -53,7 +57,10 @@ This issue is therefore a **duplicate** of BUG-005 (the protocol/API design), an
 
 ## BUG-009: UI Test Function Too Long
 
-**File:** `CraveyUITests/Phase1ScreenshotTests.swift:14`
+**File:** `CraveyUITests/Phase1ScreenshotTests.swift`
+
+### Status
+✅ **FIXED** (2026-01-24)
 
 ### Problem
 Test function spans 79 lines (limit is 50).
@@ -70,7 +77,10 @@ func testScreenshot_UsageForm() { ... }
 
 ## BUG-010: UI Test Line Too Long
 
-**File:** `CraveyUITests/UsageLogUITests.swift:63`
+**File:** `CraveyUITests/UsageLogUITests.swift`
+
+### Status
+✅ **FIXED** (2026-01-24)
 
 ### Problem
 Line has 121 characters (limit 120).
@@ -93,8 +103,12 @@ Break into multiple lines.
 ### Problem
 Collection literals have unnecessary trailing commas.
 
-### Fix
-Remove the trailing commas at the listed sites (or change SwiftLint config to allow trailing commas).
+### Status
+✅ **FIXED** (2026-01-24)
+
+### Fix Implemented
+- SwiftFormat is authoritative for formatting.
+- SwiftLint `trailing_comma` rule is disabled in `.swiftlint.yml` to match SwiftFormat expectations.
 
 ---
 
@@ -102,8 +116,8 @@ Remove the trailing commas at the listed sites (or change SwiftLint config to al
 
 | Bug ID | Description | Status |
 |--------|-------------|--------|
-| BUG-007 | Silent directory failure | OPEN |
+| BUG-007 | Silent directory failure | ✅ FIXED |
 | BUG-008 | Duplicate of BUG-005 | ✅ CLOSED |
-| BUG-009 | Test function too long | OPEN |
-| BUG-010 | Line too long | OPEN |
-| BUG-011 | Trailing commas (8x) | OPEN |
+| BUG-009 | Test function too long | ✅ FIXED |
+| BUG-010 | Line too long | ✅ FIXED |
+| BUG-011 | Trailing commas (8x) | ✅ FIXED |

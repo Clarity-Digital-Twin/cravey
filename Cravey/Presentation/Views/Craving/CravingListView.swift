@@ -5,28 +5,67 @@ import SwiftUI
 struct CravingListView: View {
     @Bindable var viewModel: CravingListViewModel
 
+    @State private var cravingToDelete: CravingEntity?
+    @State private var deleteHapticTrigger = false
+
     var body: some View {
         Group {
             if viewModel.isLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity, minHeight: 100)
+                    .listRowBackground(Color.clear)
             } else if viewModel.cravings.isEmpty {
                 EmptyStatePlaceholder()
+                    .listRowBackground(Color.clear)
             } else {
-                // Use LazyVStack instead of List for embedding in ScrollView
-                // List has internal scrolling that conflicts with parent ScrollView
-                LazyVStack(spacing: 0) {
-                    ForEach(viewModel.cravings) { craving in
-                        CravingRow(craving: craving)
-                            .padding(.horizontal)
-                        Divider()
-                            .padding(.leading)
-                    }
+                ForEach(viewModel.cravings) { craving in
+                    CravingRow(craving: craving)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                deleteHapticTrigger.toggle()
+                                cravingToDelete = craving
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                 }
             }
         }
         .task {
             await viewModel.fetchCravings()
+        }
+        .animation(.default, value: viewModel.cravings)
+        .sensoryFeedback(.warning, trigger: deleteHapticTrigger)
+        .confirmationDialog(
+            "Delete Craving?",
+            isPresented: Binding(
+                get: { cravingToDelete != nil },
+                set: { if !$0 { cravingToDelete = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                guard let cravingToDelete else { return }
+                Task {
+                    await viewModel.deleteCraving(id: cravingToDelete.id)
+                    self.cravingToDelete = nil
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                cravingToDelete = nil
+            }
+        } message: {
+            Text("This cannot be undone.")
+        }
+        .alert("Error", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )) {
+            Button("OK") { viewModel.errorMessage = nil }
+        } message: {
+            if let error = viewModel.errorMessage {
+                Text(error)
+            }
         }
     }
 }
@@ -107,7 +146,10 @@ struct EmptyStatePlaceholder: View {
 #Preview("With Cravings") {
     @Previewable @State var viewModel: CravingListViewModel = {
         let container = DependencyContainer.preview
-        let listViewModel = CravingListViewModel(fetchCravingsUseCase: container.fetchCravingsUseCase)
+        let listViewModel = CravingListViewModel(
+            fetchCravingsUseCase: container.fetchCravingsUseCase,
+            deleteCravingUseCase: container.deleteCravingUseCase
+        )
         return listViewModel
     }()
 

@@ -10,58 +10,70 @@ final class CravingRepository: CravingRepositoryProtocol {
     }
 
     func save(_ craving: CravingEntity) async throws {
-        let model = CravingMapper.toModel(craving)
-        modelContext.insert(model)
-        try modelContext.save()
+        try await MainActor.run {
+            let model = CravingMapper.toModel(craving)
+            modelContext.insert(model)
+            try modelContext.save()
+        }
     }
 
     func fetchAll() async throws -> [CravingEntity] {
-        let descriptor = FetchDescriptor<CravingModel>(
-            sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
-        )
-        let models = try modelContext.fetch(descriptor)
-        return models.map { CravingMapper.toEntity($0) }
+        try await MainActor.run {
+            let descriptor = FetchDescriptor<CravingModel>(
+                sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
+            )
+            let models = try modelContext.fetch(descriptor)
+            return models.map { CravingMapper.toEntity($0) }
+        }
     }
 
     func fetch(from startDate: Date, to endDate: Date) async throws -> [CravingEntity] {
-        let predicate = #Predicate<CravingModel> { model in
-            model.timestamp >= startDate && model.timestamp <= endDate
+        try await MainActor.run {
+            let predicate = #Predicate<CravingModel> { model in
+                model.timestamp >= startDate && model.timestamp <= endDate
+            }
+            let descriptor = FetchDescriptor<CravingModel>(
+                predicate: predicate,
+                sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
+            )
+            let models = try modelContext.fetch(descriptor)
+            return models.map { CravingMapper.toEntity($0) }
         }
-        let descriptor = FetchDescriptor<CravingModel>(
-            predicate: predicate,
-            sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
-        )
-        let models = try modelContext.fetch(descriptor)
-        return models.map { CravingMapper.toEntity($0) }
     }
 
     func delete(id: UUID) async throws {
-        let predicate = #Predicate<CravingModel> { $0.id == id }
-        try modelContext.delete(model: CravingModel.self, where: predicate)
-        try modelContext.save()
+        try await MainActor.run {
+            let predicate = #Predicate<CravingModel> { $0.id == id }
+            try modelContext.delete(model: CravingModel.self, where: predicate)
+            try modelContext.save()
+        }
     }
 
     func update(_ craving: CravingEntity) async throws {
-        let predicate = #Predicate<CravingModel> { $0.id == craving.id }
-        let descriptor = FetchDescriptor<CravingModel>(predicate: predicate)
+        try await MainActor.run {
+            let predicate = #Predicate<CravingModel> { $0.id == craving.id }
+            let descriptor = FetchDescriptor<CravingModel>(predicate: predicate)
 
-        guard let model = try modelContext.fetch(descriptor).first else {
-            throw RepositoryError.notFound(id: craving.id)
+            guard let model = try modelContext.fetch(descriptor).first else {
+                throw RepositoryError.notFound(id: craving.id)
+            }
+
+            // Update model properties
+            model.timestamp = craving.timestamp
+            model.intensity = craving.intensity
+            model.triggers = craving.triggers
+            model.notes = craving.notes
+            model.location = craving.location
+            model.modifiedAt = Date()
+
+            try modelContext.save()
         }
-
-        // Update model properties
-        model.timestamp = craving.timestamp
-        model.intensity = craving.intensity
-        model.triggers = craving.triggers
-        model.notes = craving.notes
-        model.location = craving.location
-        model.modifiedAt = Date()
-
-        try modelContext.save()
     }
 
     func count() async throws -> Int {
-        let descriptor = FetchDescriptor<CravingModel>()
-        return try modelContext.fetchCount(descriptor)
+        try await MainActor.run {
+            let descriptor = FetchDescriptor<CravingModel>()
+            return try modelContext.fetchCount(descriptor)
+        }
     }
 }

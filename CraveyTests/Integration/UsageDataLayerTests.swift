@@ -21,7 +21,7 @@ struct UsageDataLayerTests {
         let useCase = DefaultLogUsageUseCase(repository: repository)
 
         // Execute
-        let result = try await useCase.execute(
+        let request = LogUsageRequest(
             timestamp: Date(),
             method: "Bowls",
             amount: 2.5,
@@ -29,6 +29,7 @@ struct UsageDataLayerTests {
             location: "Home",
             notes: "Test note"
         )
+        let result = try await useCase.execute(request)
 
         // Verify entity returned
         #expect(result.method == "Bowls")
@@ -89,11 +90,7 @@ struct UsageDataLayerTests {
 
         for method in methods {
             let validAmount = ROAAmountRange.range(for: method).first ?? 1.0
-            let result = try await useCase.execute(
-                timestamp: Date(),
-                method: method,
-                amount: validAmount
-            )
+            let result = try await useCase.execute(LogUsageRequest(method: method, amount: validAmount))
             #expect(result.method == method)
         }
 
@@ -117,11 +114,7 @@ struct UsageDataLayerTests {
         let useCase = DefaultLogUsageUseCase(repository: repository)
 
         do {
-            _ = try await useCase.execute(
-                timestamp: Date(),
-                method: "InvalidMethod", // ❌ Not in valid list
-                amount: 2.0
-            )
+            _ = try await useCase.execute(LogUsageRequest(method: "InvalidMethod", amount: 2.0))
             Issue.record("Should have thrown invalidMethod error")
         } catch UsageError.invalidMethod {
             // ✅ Expected error
@@ -144,11 +137,7 @@ struct UsageDataLayerTests {
         let useCase = DefaultLogUsageUseCase(repository: repository)
 
         do {
-            _ = try await useCase.execute(
-                timestamp: Date(),
-                method: "Bowls",
-                amount: 0 // ❌ Must be >0
-            )
+            _ = try await useCase.execute(LogUsageRequest(method: "Bowls", amount: 0))
             Issue.record("Should have thrown invalidAmount error")
         } catch UsageError.invalidAmount {
             // ✅ Expected error
@@ -172,12 +161,7 @@ struct UsageDataLayerTests {
 
         // Test with all 10 HAALT triggers
         let allTriggers = TriggerOptions.all
-        let result = try await useCase.execute(
-            timestamp: Date(),
-            method: "Edible",
-            amount: 25.0,
-            triggers: allTriggers
-        )
+        let result = try await useCase.execute(LogUsageRequest(method: "Edible", amount: 25.0, triggers: allTriggers))
 
         #expect(result.triggers.count == 10)
         #expect(result.triggers.contains("Hungry"))

@@ -108,7 +108,7 @@ private struct SettingsContentView: View {
             Text(
                 """
                 This will permanently delete all your cravings, usage logs, \
-                and recordings. This action cannot be undone.
+                recordings, and motivational messages. This action cannot be undone.
                 """
             )
         }

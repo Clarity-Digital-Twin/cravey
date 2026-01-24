@@ -23,51 +23,37 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    // TODO: Quick Play section (Phase 4 - Recordings)
+            List {
+                // PHASE_4: Quick Play section (Recordings)
 
-                    // BUG-007 FIX: Add section headers to distinguish craving/usage lists
-                    // Craving Section
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Recent Cravings")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal)
-
-                        if let viewModel = cravingListViewModel {
-                            CravingListView(viewModel: viewModel)
-                        } else {
-                            ProgressView()
-                                .task {
-                                    cravingListViewModel = container.makeCravingListViewModel()
-                                }
-                        }
-                    }
-
-                    Divider()
-                        .padding(.horizontal)
-
-                    // Usage Section
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Recent Usage")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal)
-
-                        if let viewModel = usageListViewModel {
-                            UsageListView(viewModel: viewModel)
-                        } else {
-                            ProgressView()
-                                .task {
-                                    usageListViewModel = container.makeUsageListViewModel()
-                                }
-                        }
+                Section("Recent Cravings") {
+                    if let viewModel = cravingListViewModel {
+                        CravingListView(viewModel: viewModel)
+                    } else {
+                        ProgressView()
+                            .frame(maxWidth: .infinity, minHeight: 80)
+                            .listRowBackground(Color.clear)
+                            .task {
+                                cravingListViewModel = container.makeCravingListViewModel()
+                            }
                     }
                 }
-                .padding(.vertical)
+
+                Section("Recent Usage") {
+                    if let viewModel = usageListViewModel {
+                        UsageListView(viewModel: viewModel)
+                    } else {
+                        ProgressView()
+                            .frame(maxWidth: .infinity, minHeight: 80)
+                            .listRowBackground(Color.clear)
+                            .task {
+                                usageListViewModel = container.makeUsageListViewModel()
+                            }
+                    }
+                }
             }
-            .navigationTitle("Home")
+            .listStyle(.insetGrouped)
+            .navigationTitle("Cannabis Logs")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
@@ -177,7 +163,11 @@ struct HomeView: View {
                     .animation(.spring(duration: 0.3), value: showSuccessToast)
                     .task {
                         // Auto-dismiss toast after 2s
-                        try? await Task.sleep(for: .seconds(2))
+                        do {
+                            try await Task.sleep(for: .seconds(2))
+                        } catch {
+                            // Task cancelled (e.g., view disappeared) — safe to ignore
+                        }
                         showSuccessToast = false
                     }
                 }

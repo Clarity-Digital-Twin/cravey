@@ -6,6 +6,7 @@ import SwiftUI
 @main
 struct CraveyApp: App {
     @State private var dependencyContainer = DependencyContainer()
+    @State private var showStorageAlert = false
 
     var body: some Scene {
         WindowGroup {
@@ -20,12 +21,29 @@ struct CraveyApp: App {
                         Label("Progress", systemImage: "chart.bar.fill")
                     }
 
+                RecordingsView()
+                    .tabItem {
+                        Label("Recordings", systemImage: "play.rectangle.fill")
+                    }
+
                 SettingsView()
                     .tabItem {
                         Label("Settings", systemImage: "gearshape.fill")
                     }
             }
             .environment(dependencyContainer)
+            .task {
+                showStorageAlert = dependencyContainer.initializationError != nil
+            }
+            .alert("Storage Unavailable", isPresented: $showStorageAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                let description = dependencyContainer.initializationError?.errorDescription
+                    ?? "Cravey couldn’t open its local database."
+                let recovery = dependencyContainer.initializationError?.recoverySuggestion
+                    ?? "Your data may not persist after closing the app."
+                Text("\(description)\n\n\(recovery)")
+            }
         }
         .modelContainer(dependencyContainer.modelContainer)
 

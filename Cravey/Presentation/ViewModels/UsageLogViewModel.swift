@@ -81,7 +81,7 @@ final class UsageLogViewModel {
         defer { isLoading = false } // Ensures cleanup regardless of exit path
 
         do {
-            _ = try await logUsageUseCase.execute(
+            let request = LogUsageRequest(
                 timestamp: timestamp,
                 method: selectedMethod,
                 amount: amount,
@@ -89,6 +89,7 @@ final class UsageLogViewModel {
                 location: selectedLocation,
                 notes: notes.isEmpty ? nil : notes
             )
+            _ = try await logUsageUseCase.execute(request)
 
             // Trigger haptic + toast + reset form (UX_FLOW:396-405)
             triggerSuccessFeedback()

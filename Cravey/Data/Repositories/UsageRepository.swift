@@ -10,48 +10,58 @@ final class UsageRepository: UsageRepositoryProtocol {
     }
 
     func save(_ usage: UsageEntity) async throws {
-        let model = UsageMapper.toModel(usage)
-        modelContext.insert(model)
-        try modelContext.save()
+        try await MainActor.run {
+            let model = UsageMapper.toModel(usage)
+            modelContext.insert(model)
+            try modelContext.save()
+        }
     }
 
     func fetchAll() async throws -> [UsageEntity] {
-        let descriptor = FetchDescriptor<UsageModel>(
-            sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
-        )
-        let models = try modelContext.fetch(descriptor)
-        return models.map { UsageMapper.toEntity($0) }
+        try await MainActor.run {
+            let descriptor = FetchDescriptor<UsageModel>(
+                sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
+            )
+            let models = try modelContext.fetch(descriptor)
+            return models.map { UsageMapper.toEntity($0) }
+        }
     }
 
     func fetch(since date: Date) async throws -> [UsageEntity] {
-        let predicate = #Predicate<UsageModel> { usage in
-            usage.timestamp >= date
+        try await MainActor.run {
+            let predicate = #Predicate<UsageModel> { usage in
+                usage.timestamp >= date
+            }
+            let descriptor = FetchDescriptor<UsageModel>(
+                predicate: predicate,
+                sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
+            )
+            let models = try modelContext.fetch(descriptor)
+            return models.map { UsageMapper.toEntity($0) }
         }
-        let descriptor = FetchDescriptor<UsageModel>(
-            predicate: predicate,
-            sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
-        )
-        let models = try modelContext.fetch(descriptor)
-        return models.map { UsageMapper.toEntity($0) }
     }
 
     func delete(id: UUID) async throws {
-        let predicate = #Predicate<UsageModel> { usage in
-            usage.id == id
-        }
-        let descriptor = FetchDescriptor<UsageModel>(predicate: predicate)
-        let models = try modelContext.fetch(descriptor)
+        try await MainActor.run {
+            let predicate = #Predicate<UsageModel> { usage in
+                usage.id == id
+            }
+            let descriptor = FetchDescriptor<UsageModel>(predicate: predicate)
+            let models = try modelContext.fetch(descriptor)
 
-        guard let model = models.first else {
-            throw RepositoryError.notFound(id: id)
-        }
+            guard let model = models.first else {
+                throw RepositoryError.notFound(id: id)
+            }
 
-        modelContext.delete(model)
-        try modelContext.save()
+            modelContext.delete(model)
+            try modelContext.save()
+        }
     }
 
     func deleteAll() async throws {
-        try modelContext.delete(model: UsageModel.self)
-        try modelContext.save()
+        try await MainActor.run {
+            try modelContext.delete(model: UsageModel.self)
+            try modelContext.save()
+        }
     }
 }

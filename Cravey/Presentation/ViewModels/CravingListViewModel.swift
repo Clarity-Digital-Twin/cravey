@@ -10,9 +10,11 @@ final class CravingListViewModel {
     var errorMessage: String?
 
     private let fetchCravingsUseCase: FetchCravingsUseCase
+    private let deleteCravingUseCase: DeleteCravingUseCase
 
-    init(fetchCravingsUseCase: FetchCravingsUseCase) {
+    init(fetchCravingsUseCase: FetchCravingsUseCase, deleteCravingUseCase: DeleteCravingUseCase) {
         self.fetchCravingsUseCase = fetchCravingsUseCase
+        self.deleteCravingUseCase = deleteCravingUseCase
     }
 
     func fetchCravings() async {
@@ -26,5 +28,16 @@ final class CravingListViewModel {
         }
 
         isLoading = false
+    }
+
+    func deleteCraving(id: UUID) async {
+        errorMessage = nil
+
+        do {
+            try await deleteCravingUseCase.execute(id: id)
+            cravings.removeAll { $0.id == id }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 }

@@ -28,7 +28,7 @@ struct UsageLogIntegrationTests {
         viewModel.timestamp = Date()
         viewModel.selectedMethod = "Vape"
         viewModel.amount = 5.0
-        viewModel.selectedTriggers = ["Anxious", "Stressed"]
+        viewModel.selectedTriggers = ["Anxious", "Bored"]
         viewModel.selectedLocation = "Home"
         viewModel.notes = "Integration test - full chain validation"
 
@@ -51,7 +51,7 @@ struct UsageLogIntegrationTests {
         #expect(savedUsage.method == "Vape")
         #expect(savedUsage.amount == 5.0)
         // Triggers are stored as Set internally, so order may vary
-        #expect(Set(savedUsage.triggers) == Set(["Anxious", "Stressed"]))
+        #expect(Set(savedUsage.triggers) == Set(["Anxious", "Bored"]))
         #expect(savedUsage.location == "Home")
         #expect(savedUsage.notes == "Integration test - full chain validation")
     }
@@ -90,7 +90,8 @@ struct UsageLogIntegrationTests {
         // Create real repository, use case, and ViewModel
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultFetchUsageUseCase(repository: repository)
-        let viewModel = UsageListViewModel(fetchUsageUseCase: useCase)
+        let deleteUseCase = DefaultDeleteUsageUseCase(repository: repository)
+        let viewModel = UsageListViewModel(fetchUsageUseCase: useCase, deleteUsageUseCase: deleteUseCase)
 
         // Execute fetch via ViewModel (VM → UC → Repo → SwiftData)
         await viewModel.fetchUsage()

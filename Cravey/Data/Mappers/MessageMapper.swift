@@ -6,15 +6,15 @@ enum MessageMapper {
     static func toModel(_ entity: MotivationalMessageEntity) -> MotivationalMessageModel {
         MotivationalMessageModel(
             id: entity.id,
-            createdAt: entity.createdAt,
-            category: entity.category.rawValue,
             content: entity.content,
+            category: entity.category.rawValue,
+            isCustom: entity.isCustom,
+            priority: entity.priority,
             isActive: entity.isActive,
-            isUserCreated: entity.isUserCreated,
-            displayPriority: entity.displayPriority,
             timesShown: entity.timesShown,
             lastShownAt: entity.lastShownAt,
-            wasHelpful: entity.wasHelpful
+            createdAt: entity.createdAt,
+            modifiedAt: entity.modifiedAt
         )
     }
 
@@ -22,15 +22,15 @@ enum MessageMapper {
     static func toEntity(_ model: MotivationalMessageModel) -> MotivationalMessageEntity {
         MotivationalMessageEntity(
             id: model.id,
-            createdAt: model.createdAt,
-            category: MessageCategory(rawValue: model.category) ?? .personalReason,
             content: model.content,
+            category: MessageCategory(rawValue: model.category) ?? .urge,
+            isCustom: model.isCustom,
+            priority: model.priority,
             isActive: model.isActive,
-            isUserCreated: model.isUserCreated,
-            displayPriority: model.displayPriority,
             timesShown: model.timesShown,
             lastShownAt: model.lastShownAt,
-            wasHelpful: model.wasHelpful
+            createdAt: model.createdAt,
+            modifiedAt: model.modifiedAt
         )
     }
 }

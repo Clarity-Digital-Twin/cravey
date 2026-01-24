@@ -7,11 +7,11 @@
 
 | Priority | Count | Status |
 |----------|-------|--------|
-| P0 - Critical | 2 | 1 FIXED, 1 OPEN |
-| P1 - Major | 6 | OPEN |
-| P2 - Minor | 5 | 4 OPEN, 1 CLOSED |
-| P3 - Tech Debt | 7 | 6 OPEN, 1 DEFERRED |
-| P4 - Code Quality | 10 | 9 OPEN, 1 CLOSED |
+| P0 - Critical | 2 | 2 FIXED |
+| P1 - Major | 6 | 6 FIXED |
+| P2 - Minor | 5 | 5 CLOSED/FIXED |
+| P3 - Tech Debt | 7 | 6 FIXED, 1 DEFERRED |
+| P4 - Code Quality | 10 | 9 CLOSED/FIXED, 1 DEFERRED |
 
 ## Priority Definitions
 
@@ -32,17 +32,16 @@
 ## Top Priorities
 
 ### Must Fix Before Next Release
-1. **BUG-001** - DependencyContainer fatalError (P0)
-2. **DEBT-001** - SettingsViewModel Clean Architecture violation (P3 but high impact)
-3. **BUG-012** - “Delete All Data” doesn’t delete recordings/messages (P1)
+✅ No open P0/P1 issues.
 
 ### Should Fix Soon
-4. **BUG-003** - ModelContext thread safety documentation
-5. **BUG-004** - Swallowed errors in seed data
-6. **DEBT-005** - Streak logic documentation
+1. **DEBT-003** - Link TODOs to future specs (deferred)
+2. **QUALITY-010** - Recording infra usage cleanup (deferred)
 
 ### Fixed Recently
-- ✅ **BUG-002** - DashboardView Swift 6 concurrency (Fixed 2025-01-24)
+- ✅ **BUG-001** - DependencyContainer fatalError on init failure
+- ✅ **BUG-012** - “Delete All Data” deletes recordings/messages/files
+- ✅ **DEBT-001** - SettingsViewModel Clean Architecture violation
 
 ## How to Use
 

@@ -5,7 +5,7 @@ import XCTest
 /// Source: PHASE_2C.md lines 105, UX_FLOW_SPEC.md lines 396-405
 @MainActor
 final class UsageLogUITests: XCTestCase {
-    nonisolated(unsafe) var app: XCUIApplication!
+    private var app: XCUIApplication!
 
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -60,10 +60,11 @@ final class UsageLogUITests: XCTestCase {
         XCTAssertLessThan(
             duration,
             12.0,
-            "Usage logging flow must complete in <12 seconds in simulator (actual: \(String(format: "%.2f", duration))s)"
+            """
+            Usage logging flow must complete in <12 seconds in simulator \
+            (actual: \(String(format: "%.2f", duration))s)
+            """
         )
-
-        print("✅ Usage logging completed in \(String(format: "%.2f", duration))s")
     }
 
     // MARK: - Test 2: Verify Success Toast Behavior
@@ -91,8 +92,9 @@ final class UsageLogUITests: XCTestCase {
         )
 
         // Verify toast auto-dismisses after 2 seconds
-        sleep(3) // Wait 3s to ensure 2s timeout passed
-        XCTAssertFalse(toast.exists, "Toast should auto-dismiss after 2 seconds")
+        let disappearancePredicate = NSPredicate(format: "exists == false")
+        expectation(for: disappearancePredicate, evaluatedWith: toast)
+        waitForExpectations(timeout: 5)
     }
 
     // MARK: - Test 3: Verify Save Button Disabled for Invalid State

@@ -1,5 +1,6 @@
 import AVFoundation
 import Foundation
+import OSLog
 #if canImport(UIKit)
     import UIKit
 #endif
@@ -10,6 +11,7 @@ enum StorageError: LocalizedError {
     case fileNotFound
     case invalidURL
     case thumbnailGenerationFailed
+    case storageLimitExceeded
 
     var errorDescription: String? {
         switch self {
@@ -23,6 +25,8 @@ enum StorageError: LocalizedError {
             "Invalid file URL"
         case .thumbnailGenerationFailed:
             "Failed to generate thumbnail"
+        case .storageLimitExceeded:
+            "Not enough storage available to save this recording"
         }
     }
 }
@@ -31,7 +35,10 @@ enum StorageError: LocalizedError {
 final class FileStorageManager {
     static let shared = FileStorageManager()
 
+    private static let logger = Logger(subsystem: "com.cravey", category: "FileStorageManager")
+
     private let fileManager = FileManager.default
+    private let maxTotalRecordingBytes: Int64 = 500_000_000 // 500MB safety cap
 
     // Storage directories
     private var recordingsDirectory: URL {
@@ -77,8 +84,16 @@ final class FileStorageManager {
 
     /// Saves a recording file and returns the relative path
     func saveRecording(from tempURL: URL, recordingType: RecordingType) async throws -> String {
+        let tempAttributes = try fileManager.attributesOfItem(atPath: tempURL.path)
+        let tempFileSize = (tempAttributes[.size] as? Int64) ?? 0
+
+        let currentUsage = try getTotalStorageUsed()
+        guard currentUsage + tempFileSize <= maxTotalRecordingBytes else {
+            throw StorageError.storageLimitExceeded
+        }
+
         let recordings = try recordingsDirectory
-        let filename = "\(UUID().uuidString).\(recordingType.fileExtension)"
+        let filename = "\(recordingType.rawValue)_\(UUID().uuidString).\(recordingType.fileExtension)"
         let destinationURL = recordings.appendingPathComponent(filename)
 
         try fileManager.copyItem(at: tempURL, to: destinationURL)
@@ -110,7 +125,9 @@ final class FileStorageManager {
         #endif
 
         let thumbnailsDir = try thumbnailsDirectory
-        let filename = "\(UUID().uuidString).jpg"
+        let baseName = URL(fileURLWithPath: videoPath).deletingPathExtension().lastPathComponent
+        let safeBaseName = baseName.isEmpty ? UUID().uuidString : baseName
+        let filename = "\(safeBaseName)_thumb.jpg"
         let thumbnailURL = thumbnailsDir.appendingPathComponent(filename)
 
         try imageData.write(to: thumbnailURL)
@@ -122,16 +139,19 @@ final class FileStorageManager {
 
     /// Converts relative path to absolute URL
     func absoluteURL(for relativePath: String) -> URL? {
-        guard let documents = try? fileManager.url(
-            for: .documentDirectory,
-            in: .userDomainMask,
-            appropriateFor: nil,
-            create: false
-        ) else {
+        do {
+            let documents = try fileManager.url(
+                for: .documentDirectory,
+                in: .userDomainMask,
+                appropriateFor: nil,
+                create: false
+            )
+
+            return documents.appendingPathComponent(relativePath)
+        } catch {
+            Self.logger.error("Failed to resolve Documents directory: \(error.localizedDescription)")
             return nil
         }
-
-        return documents.appendingPathComponent(relativePath)
     }
 
     /// Gets the duration of a recording
@@ -171,6 +191,21 @@ final class FileStorageManager {
         if fileManager.fileExists(atPath: url.path) {
             try fileManager.removeItem(at: url)
         }
+    }
+
+    /// Deletes all recording files and thumbnails from on-disk storage.
+    /// Safe to call even if the directory does not exist.
+    func deleteAllRecordings() throws {
+        let documents = try fileManager.url(
+            for: .documentDirectory,
+            in: .userDomainMask,
+            appropriateFor: nil,
+            create: false
+        )
+
+        let recordingsDir = documents.appendingPathComponent("Recordings", isDirectory: true)
+        guard fileManager.fileExists(atPath: recordingsDir.path) else { return }
+        try fileManager.removeItem(at: recordingsDir)
     }
 
     // MARK: - Storage Info

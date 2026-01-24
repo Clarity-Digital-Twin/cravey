@@ -51,6 +51,8 @@ struct LogCravingUseCaseTests {
 
 actor MockCravingRepository: CravingRepositoryProtocol {
     var savedCravings: [CravingEntity] = []
+    var updateCallCount = 0
+    var lastUpdatedCraving: CravingEntity?
 
     func save(_ craving: CravingEntity) async throws {
         savedCravings.append(craving)
@@ -68,8 +70,9 @@ actor MockCravingRepository: CravingRepositoryProtocol {
         savedCravings.removeAll { $0.id == id }
     }
 
-    func update(_: CravingEntity) async throws {
-        // Mock implementation
+    func update(_ craving: CravingEntity) async throws {
+        updateCallCount += 1
+        lastUpdatedCraving = craving
     }
 
     func count() async throws -> Int {

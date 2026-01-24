@@ -62,7 +62,7 @@ struct CravingLogIntegrationTests {
         let craving = CravingModel(
             timestamp: Date(),
             intensity: 5,
-            triggers: ["Stressed"],
+            triggers: ["Anxious"],
             location: nil,
             notes: "Test"
         )
@@ -72,7 +72,8 @@ struct CravingLogIntegrationTests {
         // Setup: Real dependencies
         let repository = CravingRepository(modelContext: context)
         let useCase = DefaultFetchCravingsUseCase(repository: repository)
-        let viewModel = CravingListViewModel(fetchCravingsUseCase: useCase)
+        let deleteUseCase = DefaultDeleteCravingUseCase(repository: repository)
+        let viewModel = CravingListViewModel(fetchCravingsUseCase: useCase, deleteCravingUseCase: deleteUseCase)
 
         // When: Fetch cravings
         await viewModel.fetchCravings()
@@ -80,7 +81,7 @@ struct CravingLogIntegrationTests {
         // Then: Craving appears in ViewModel
         #expect(viewModel.cravings.count == 1)
         #expect(viewModel.cravings[0].intensity == 5)
-        #expect(viewModel.cravings[0].triggers == ["Stressed"])
+        #expect(viewModel.cravings[0].triggers == ["Anxious"])
     }
 
     @Test("Should log craving within 5 seconds (performance requirement)")

@@ -10,7 +10,10 @@ struct UsageListViewModelTests {
     @Test("fetchUsage should populate usageList")
     func fetchSuccess() async {
         let mockUseCase = MockFetchUsageUseCase()
-        let viewModel = UsageListViewModel(fetchUsageUseCase: mockUseCase)
+        let viewModel = UsageListViewModel(
+            fetchUsageUseCase: mockUseCase,
+            deleteUsageUseCase: MockDeleteUsageUseCase()
+        )
 
         await viewModel.fetchUsage()
 
@@ -23,7 +26,10 @@ struct UsageListViewModelTests {
     @Test("fetchUsage should handle empty list")
     func emptyState() async {
         let mockUseCase = MockFetchUsageUseCase(returnEmpty: true)
-        let viewModel = UsageListViewModel(fetchUsageUseCase: mockUseCase)
+        let viewModel = UsageListViewModel(
+            fetchUsageUseCase: mockUseCase,
+            deleteUsageUseCase: MockDeleteUsageUseCase()
+        )
 
         await viewModel.fetchUsage()
 
@@ -52,4 +58,8 @@ actor MockFetchUsageUseCase: FetchUsageUseCase {
     func execute(since _: Date) async throws -> [UsageEntity] {
         try await execute()
     }
+}
+
+actor MockDeleteUsageUseCase: DeleteUsageUseCase {
+    func execute(id _: UUID) async throws {}
 }

@@ -5,7 +5,7 @@ import Foundation
 enum LocationOptions {
     /// Location presets (note: "Current Location" is placeholder for Phase 2 GPS integration)
     static let presets: [String] = [
-        "Current Location", // TODO: Phase 2 - Wire CoreLocation GPS detection
+        "Current Location", // PHASE_2: Wire CoreLocation GPS detection
         "Home",
         "Work",
         "Social",

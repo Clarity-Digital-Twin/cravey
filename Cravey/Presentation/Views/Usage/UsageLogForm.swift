@@ -182,24 +182,17 @@ struct UsageLogForm: View {
 // MARK: - Preview Mock
 
 actor PreviewMockLogUsageUseCase: LogUsageUseCase {
-    func execute(
-        timestamp: Date,
-        method: String,
-        amount: Double,
-        triggers: [String],
-        location: String?,
-        notes: String?
-    ) async throws -> UsageEntity {
+    func execute(_ request: LogUsageRequest) async throws -> UsageEntity {
         // Simulate network delay
         try await Task.sleep(for: .milliseconds(500))
 
         return UsageEntity(
-            timestamp: timestamp,
-            method: method,
-            amount: amount,
-            triggers: triggers,
-            location: location,
-            notes: notes
+            timestamp: request.timestamp,
+            method: request.method,
+            amount: request.amount,
+            triggers: request.triggers,
+            location: request.location,
+            notes: request.notes
         )
     }
 }

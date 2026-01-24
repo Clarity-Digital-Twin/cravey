@@ -201,12 +201,12 @@ struct FlowLayout: Layout {
 }
 
 #Preview("Multi-Select") {
-    @Previewable @State var selectedTriggers: Set<String> = ["Anxious", "Stressed"]
+    @Previewable @State var selectedTriggers: Set<String> = ["Anxious", "Bored"]
 
     VStack {
         ChipSelector(
             title: "What triggered this?",
-            options: ["Anxious", "Bored", "Stressed", "Social", "Celebratory", "Habit"],
+            options: TriggerOptions.all,
             selectedValues: $selectedTriggers,
             multiSelect: true
         )
