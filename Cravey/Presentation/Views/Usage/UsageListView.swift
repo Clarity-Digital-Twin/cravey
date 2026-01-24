@@ -46,9 +46,9 @@ struct UsageListView: View {
         ) {
             Button("Delete", role: .destructive) {
                 guard let usageToDelete else { return }
+                self.usageToDelete = nil
                 Task {
                     await viewModel.deleteUsage(id: usageToDelete.id)
-                    self.usageToDelete = nil
                 }
             }
             Button("Cancel", role: .cancel) {

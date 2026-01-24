@@ -28,7 +28,10 @@ swiftlint lint --quiet
 
 echo "==> Invariants"
 # Privacy-first: ensure CloudKit is explicitly disabled
-rg -n "cloudKitDatabase:\\s*\\.none" Cravey/Data/Storage/ModelContainerSetup.swift >/dev/null
+if ! rg -n "cloudKitDatabase:\\s*\\.none" Cravey/Data/Storage/ModelContainerSetup.swift >/dev/null 2>&1; then
+  echo "FAIL: cloudKitDatabase: .none not found in Cravey/Data/Storage/ModelContainerSetup.swift (Privacy invariant)" >&2
+  exit 1
+fi
 
 # Clean Architecture: Domain must not import framework layers
 if rg -n "import\\s+(SwiftUI|SwiftData)" Cravey/Domain >/dev/null; then
@@ -39,6 +42,18 @@ fi
 echo "==> Unit tests (Mac Catalyst, code signing disabled)"
 DERIVED_DATA_PATH="$(mktemp -d /tmp/CraveyDerivedData.XXXXXX)"
 RESULT_BUNDLE_PATH="/tmp/CraveyTests.$(date +%s).xcresult"
+
+cleanup() {
+  local exit_code=$?
+  rm -rf "$DERIVED_DATA_PATH"
+
+  if [[ $exit_code -eq 0 ]]; then
+    rm -rf "$RESULT_BUNDLE_PATH"
+  else
+    echo "INFO: Keeping result bundle for inspection: $RESULT_BUNDLE_PATH" >&2
+  fi
+}
+trap cleanup EXIT
 
 if command -v xcbeautify >/dev/null 2>&1; then
   xcodebuild test \

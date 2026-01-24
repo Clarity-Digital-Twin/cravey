@@ -1,4 +1,7 @@
 import Foundation
+import OSLog
+
+private let logger = Logger(subsystem: "com.cravey.app", category: "MessageMapper")
 
 /// Mapper between MotivationalMessageEntity (Domain) and MotivationalMessageModel (Data/SwiftData)
 enum MessageMapper {
@@ -20,10 +23,18 @@ enum MessageMapper {
 
     /// Convert SwiftData Model → Domain Entity
     static func toEntity(_ model: MotivationalMessageModel) -> MotivationalMessageEntity {
-        MotivationalMessageEntity(
+        let category: MessageCategory
+        if let parsed = MessageCategory(rawValue: model.category) {
+            category = parsed
+        } else {
+            logger.warning("Invalid category '\(model.category)' for id \(model.id), defaulting to .urge")
+            category = .urge
+        }
+
+        return MotivationalMessageEntity(
             id: model.id,
             content: model.content,
-            category: MessageCategory(rawValue: model.category) ?? .urge,
+            category: category,
             isCustom: model.isCustom,
             priority: model.priority,
             isActive: model.isActive,

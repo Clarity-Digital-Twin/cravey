@@ -4,6 +4,7 @@ import Foundation
 @MainActor
 final class UsageLogViewModel {
     // Dependencies
+    @ObservationIgnored
     private let logUsageUseCase: LogUsageUseCase
 
     // Form fields (required)

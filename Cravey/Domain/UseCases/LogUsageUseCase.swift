@@ -32,7 +32,7 @@ struct LogUsageRequest: Sendable, Equatable {
 }
 
 /// Default implementation with validation
-final class DefaultLogUsageUseCase: LogUsageUseCase {
+final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
     private let repository: UsageRepositoryProtocol
 
     init(repository: UsageRepositoryProtocol) {
@@ -66,7 +66,13 @@ final class DefaultLogUsageUseCase: LogUsageUseCase {
         )
 
         // Save to repository
-        try await repository.save(entity)
+        do {
+            try await repository.save(entity)
+        } catch let cancellationError as CancellationError {
+            throw cancellationError
+        } catch {
+            throw UsageError.saveFailed
+        }
 
         return entity
     }

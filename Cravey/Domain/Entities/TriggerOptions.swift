@@ -1,6 +1,6 @@
 import Foundation
 
-/// Static trigger options for craving logging
+/// Static trigger options for craving/usage logging.
 /// HAALT Model (evidence-based relapse prevention framework)
 /// Source: CLINICAL_CANNABIS_SPEC.md lines 196-198
 enum TriggerOptions {

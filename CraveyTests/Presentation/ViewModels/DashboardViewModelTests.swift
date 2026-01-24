@@ -51,8 +51,8 @@ actor MockDashboardFetchCravingsUseCase: FetchCravingsUseCase {
         result
     }
 
-    func execute(from _: Date, to _: Date) async throws -> [CravingEntity] {
-        result
+    func execute(from startDate: Date, to endDate: Date) async throws -> [CravingEntity] {
+        result.filter { $0.timestamp >= startDate && $0.timestamp <= endDate }
     }
 }
 
@@ -67,7 +67,7 @@ actor MockDashboardFetchUsageUseCase: FetchUsageUseCase {
         result
     }
 
-    func execute(since _: Date) async throws -> [UsageEntity] {
-        result
+    func execute(since date: Date) async throws -> [UsageEntity] {
+        result.filter { $0.timestamp >= date }
     }
 }

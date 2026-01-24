@@ -196,6 +196,10 @@ final class FileStorageManager {
     /// Deletes all recording files and thumbnails from on-disk storage.
     /// Safe to call even if the directory does not exist.
     func deleteAllRecordings() throws {
+        try Self.deleteAllRecordings(fileManager: fileManager)
+    }
+
+    nonisolated static func deleteAllRecordings(fileManager: FileManager = .default) throws {
         let documents = try fileManager.url(
             for: .documentDirectory,
             in: .userDomainMask,

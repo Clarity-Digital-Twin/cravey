@@ -10,7 +10,7 @@ protocol FetchUsageUseCase: Sendable {
 }
 
 /// Default implementation
-final class DefaultFetchUsageUseCase: FetchUsageUseCase {
+final class DefaultFetchUsageUseCase: FetchUsageUseCase, Sendable {
     private let repository: UsageRepositoryProtocol
 
     init(repository: UsageRepositoryProtocol) {

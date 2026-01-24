@@ -77,7 +77,10 @@ final class Phase1ScreenshotTests: XCTestCase {
         if app.staticTexts["Habit"].exists { app.staticTexts["Habit"].tap() }
         app.buttons["Save"].tap()
 
-        _ = app.staticTexts["Craving logged"].waitForExistence(timeout: 3)
+        XCTAssertTrue(
+            app.staticTexts["Craving logged"].waitForExistence(timeout: 3),
+            "Success toast should appear after second craving save"
+        )
         takeScreenshot(named: "11_home_with_multiple_cravings")
 
         // Test pull-to-refresh

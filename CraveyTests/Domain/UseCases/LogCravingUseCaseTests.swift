@@ -73,6 +73,9 @@ actor MockCravingRepository: CravingRepositoryProtocol {
     func update(_ craving: CravingEntity) async throws {
         updateCallCount += 1
         lastUpdatedCraving = craving
+        if let index = savedCravings.firstIndex(where: { $0.id == craving.id }) {
+            savedCravings[index] = craving
+        }
     }
 
     func count() async throws -> Int {

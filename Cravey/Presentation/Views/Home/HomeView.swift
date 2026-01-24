@@ -4,18 +4,16 @@ import SwiftUI
 /// Presentation layer - Clean Architecture
 struct HomeView: View {
     @Environment(DependencyContainer.self) private var container
+    @Environment(CravingListViewModel.self) private var cravingListViewModel
+    @Environment(UsageListViewModel.self) private var usageListViewModel
 
     // Sheet state
     @State private var showCravingLogSheet = false
     @State private var showUsageLogSheet = false
 
-    // Log form ViewModels (deferred initialization pattern)
+    // Log form ViewModels (fresh per presentation)
     @State private var cravingLogViewModel: CravingLogViewModel?
     @State private var usageLogViewModel: UsageLogViewModel?
-
-    // List ViewModels (deferred initialization - not created inline)
-    @State private var cravingListViewModel: CravingListViewModel?
-    @State private var usageListViewModel: UsageListViewModel?
 
     // Toast state
     @State private var showSuccessToast = false
@@ -27,29 +25,11 @@ struct HomeView: View {
                 // PHASE_4: Quick Play section (Recordings)
 
                 Section("Recent Cravings") {
-                    if let viewModel = cravingListViewModel {
-                        CravingListView(viewModel: viewModel)
-                    } else {
-                        ProgressView()
-                            .frame(maxWidth: .infinity, minHeight: 80)
-                            .listRowBackground(Color.clear)
-                            .task {
-                                cravingListViewModel = container.makeCravingListViewModel()
-                            }
-                    }
+                    CravingListView(viewModel: cravingListViewModel)
                 }
 
                 Section("Recent Usage") {
-                    if let viewModel = usageListViewModel {
-                        UsageListView(viewModel: viewModel)
-                    } else {
-                        ProgressView()
-                            .frame(maxWidth: .infinity, minHeight: 80)
-                            .listRowBackground(Color.clear)
-                            .task {
-                                usageListViewModel = container.makeUsageListViewModel()
-                            }
-                    }
+                    UsageListView(viewModel: usageListViewModel)
                 }
             }
             .listStyle(.insetGrouped)
@@ -58,9 +38,11 @@ struct HomeView: View {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         Button("Log Craving") {
+                            cravingLogViewModel = container.makeCravingLogViewModel()
                             showCravingLogSheet = true
                         }
                         Button("Log Usage") {
+                            usageLogViewModel = container.makeUsageLogViewModel()
                             showUsageLogSheet = true
                         }
                     } label: {
@@ -82,7 +64,7 @@ struct HomeView: View {
 
                 // Refresh list after logging
                 Task {
-                    await cravingListViewModel?.fetchCravings()
+                    await cravingListViewModel.fetchCravings()
                 }
 
                 // Show success toast if craving was logged (UX_FLOW:396-405)
@@ -91,17 +73,7 @@ struct HomeView: View {
                     showSuccessToast = true
                 }
             } content: {
-                // 2025 Pattern: Deferred ViewModel initialization
-                if let viewModel = cravingLogViewModel {
-                    CravingLogForm(viewModel: viewModel)
-                } else {
-                    // Loading indicator while VM initializes
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .task {
-                            cravingLogViewModel = container.makeCravingLogViewModel()
-                        }
-                }
+                if let viewModel = cravingLogViewModel { CravingLogForm(viewModel: viewModel) }
             }
 
             // MARK: - Usage Log Sheet
@@ -115,7 +87,7 @@ struct HomeView: View {
 
                 // Refresh list after logging
                 Task {
-                    await usageListViewModel?.fetchUsage()
+                    await usageListViewModel.fetchUsage()
                 }
 
                 // Show success toast if usage was logged (UX_FLOW:396-405)
@@ -124,17 +96,7 @@ struct HomeView: View {
                     showSuccessToast = true
                 }
             } content: {
-                // 2025 Pattern: Deferred ViewModel initialization
-                if let viewModel = usageLogViewModel {
-                    UsageLogForm(viewModel: viewModel)
-                } else {
-                    // Loading indicator while VM initializes
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .task {
-                            usageLogViewModel = container.makeUsageLogViewModel()
-                        }
-                }
+                if let viewModel = usageLogViewModel { UsageLogForm(viewModel: viewModel) }
             }
 
             // MARK: - Success Toast
@@ -179,6 +141,10 @@ struct HomeView: View {
 }
 
 #Preview {
+    let container = DependencyContainer.preview
+
     HomeView()
-        .environment(DependencyContainer.preview)
+        .environment(container)
+        .environment(container.makeCravingListViewModel())
+        .environment(container.makeUsageListViewModel())
 }

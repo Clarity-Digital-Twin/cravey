@@ -12,7 +12,7 @@ protocol ExportUserDataUseCase: Sendable {
     func execute() async throws -> UserDataExport
 }
 
-final class DefaultExportUserDataUseCase: ExportUserDataUseCase {
+final class DefaultExportUserDataUseCase: ExportUserDataUseCase, Sendable {
     private let cravingRepository: CravingRepositoryProtocol
     private let usageRepository: UsageRepositoryProtocol
 

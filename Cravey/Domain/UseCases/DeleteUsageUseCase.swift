@@ -5,7 +5,7 @@ protocol DeleteUsageUseCase: Sendable {
     func execute(id: UUID) async throws
 }
 
-final class DefaultDeleteUsageUseCase: DeleteUsageUseCase {
+final class DefaultDeleteUsageUseCase: DeleteUsageUseCase, Sendable {
     private let repository: UsageRepositoryProtocol
 
     init(repository: UsageRepositoryProtocol) {

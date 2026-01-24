@@ -19,7 +19,7 @@ final class DashboardViewModel {
 
     // MARK: - Published State
 
-    var isLoading = false
+    var isLoading = true
     var currentStreak: Int = 0
     var longestStreak: Int = 0
     var averageIntensity7Day: Double = 0.0

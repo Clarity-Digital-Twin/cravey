@@ -35,6 +35,27 @@ struct UsageListViewModelTests {
 
         #expect(viewModel.usageList.isEmpty)
     }
+
+    // MARK: - Test 3: Delete
+
+    @Test("deleteUsage should remove item and call use case")
+    func deleteUsageRemovesItem() async throws {
+        let fetchUseCase = MockFetchUsageUseCase()
+        let deleteUseCase = MockDeleteUsageUseCase()
+        let viewModel = UsageListViewModel(
+            fetchUsageUseCase: fetchUseCase,
+            deleteUsageUseCase: deleteUseCase
+        )
+
+        await viewModel.fetchUsage()
+        let idToDelete = try #require(viewModel.usageList.first?.id)
+
+        await viewModel.deleteUsage(id: idToDelete)
+
+        #expect(viewModel.usageList.contains { $0.id == idToDelete } == false)
+        #expect(await deleteUseCase.executeCallCount == 1)
+        #expect(await deleteUseCase.lastDeletedID == idToDelete)
+    }
 }
 
 // MARK: - Mocks
@@ -61,5 +82,11 @@ actor MockFetchUsageUseCase: FetchUsageUseCase {
 }
 
 actor MockDeleteUsageUseCase: DeleteUsageUseCase {
-    func execute(id _: UUID) async throws {}
+    var executeCallCount = 0
+    var lastDeletedID: UUID?
+
+    func execute(id: UUID) async throws {
+        executeCallCount += 1
+        lastDeletedID = id
+    }
 }

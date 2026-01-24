@@ -140,8 +140,7 @@ final class DependencyContainer {
                 usageRepository: usageRepo
             ),
             deleteAllUserDataUseCase: SwiftDataDeleteAllUserDataUseCase(
-                modelContext: modelContext,
-                fileStorage: fileStorage
+                modelContext: modelContext
             )
         )
     }

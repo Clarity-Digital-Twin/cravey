@@ -5,18 +5,36 @@ import SwiftUI
 /// Clean Architecture: Composition Root
 @main
 struct CraveyApp: App {
-    @State private var dependencyContainer = DependencyContainer()
-    @State private var showStorageAlert = false
+    @State private var dependencyContainer: DependencyContainer
+    @State private var cravingListViewModel: CravingListViewModel
+    @State private var usageListViewModel: UsageListViewModel
+    @State private var dashboardViewModel: DashboardViewModel
+    @State private var settingsViewModel: SettingsViewModel
+    @State private var showStorageAlert: Bool
+
+    init() {
+        let container = DependencyContainer()
+
+        _dependencyContainer = State(initialValue: container)
+        _cravingListViewModel = State(initialValue: container.makeCravingListViewModel())
+        _usageListViewModel = State(initialValue: container.makeUsageListViewModel())
+        _dashboardViewModel = State(initialValue: container.makeDashboardViewModel())
+        _settingsViewModel = State(initialValue: container.makeSettingsViewModel())
+        _showStorageAlert = State(initialValue: container.initializationError != nil)
+    }
 
     var body: some Scene {
         WindowGroup {
             TabView {
                 HomeView()
+                    .environment(cravingListViewModel)
+                    .environment(usageListViewModel)
                     .tabItem {
                         Label("Home", systemImage: "house.fill")
                     }
 
                 DashboardView()
+                    .environment(dashboardViewModel)
                     .tabItem {
                         Label("Progress", systemImage: "chart.bar.fill")
                     }
@@ -27,14 +45,12 @@ struct CraveyApp: App {
                     }
 
                 SettingsView()
+                    .environment(settingsViewModel)
                     .tabItem {
                         Label("Settings", systemImage: "gearshape.fill")
                     }
             }
             .environment(dependencyContainer)
-            .task {
-                showStorageAlert = dependencyContainer.initializationError != nil
-            }
             .alert("Storage Unavailable", isPresented: $showStorageAlert) {
                 Button("OK", role: .cancel) {}
             } message: {

@@ -4,12 +4,15 @@ import Foundation
 @MainActor
 final class UsageListViewModel {
     // Dependencies
+    @ObservationIgnored
     private let fetchUsageUseCase: FetchUsageUseCase
+
+    @ObservationIgnored
     private let deleteUsageUseCase: DeleteUsageUseCase
 
     // State
     var usageList: [UsageEntity] = []
-    var isLoading: Bool = false
+    var isLoading: Bool = true
     var errorMessage: String?
 
     init(fetchUsageUseCase: FetchUsageUseCase, deleteUsageUseCase: DeleteUsageUseCase) {

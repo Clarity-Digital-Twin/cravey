@@ -46,9 +46,9 @@ struct CravingListView: View {
         ) {
             Button("Delete", role: .destructive) {
                 guard let cravingToDelete else { return }
+                self.cravingToDelete = nil
                 Task {
                     await viewModel.deleteCraving(id: cravingToDelete.id)
-                    self.cravingToDelete = nil
                 }
             }
             Button("Cancel", role: .cancel) {

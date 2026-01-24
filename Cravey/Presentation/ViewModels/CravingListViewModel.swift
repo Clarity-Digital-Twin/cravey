@@ -6,10 +6,13 @@ import Foundation
 @MainActor
 final class CravingListViewModel {
     var cravings: [CravingEntity] = []
-    var isLoading = false
+    var isLoading = true
     var errorMessage: String?
 
+    @ObservationIgnored
     private let fetchCravingsUseCase: FetchCravingsUseCase
+
+    @ObservationIgnored
     private let deleteCravingUseCase: DeleteCravingUseCase
 
     init(fetchCravingsUseCase: FetchCravingsUseCase, deleteCravingUseCase: DeleteCravingUseCase) {

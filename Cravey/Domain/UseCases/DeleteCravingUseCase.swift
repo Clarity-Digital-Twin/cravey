@@ -5,7 +5,7 @@ protocol DeleteCravingUseCase: Sendable {
     func execute(id: UUID) async throws
 }
 
-final class DefaultDeleteCravingUseCase: DeleteCravingUseCase {
+final class DefaultDeleteCravingUseCase: DeleteCravingUseCase, Sendable {
     private let repository: CravingRepositoryProtocol
 
     init(repository: CravingRepositoryProtocol) {
