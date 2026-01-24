@@ -87,6 +87,9 @@ struct MetricCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
+        // Capture @Environment value before Sendable closure (Swift 6 fix)
+        let isReduceMotion = reduceMotion
+
         HStack {
             Image(systemName: icon)
                 .font(.system(size: 40))
@@ -117,8 +120,8 @@ struct MetricCard: View {
         // iOS 18+ scroll transition (disabled when reduce motion enabled)
         .scrollTransition { content, phase in
             content
-                .opacity(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.3))
-                .scaleEffect(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.9))
+                .opacity(isReduceMotion ? 1 : (phase.isIdentity ? 1 : 0.3))
+                .scaleEffect(isReduceMotion ? 1 : (phase.isIdentity ? 1 : 0.9))
         }
         .onAppear {
             didAppear = true
@@ -136,6 +139,9 @@ struct IntensityTrendCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
+        // Capture @Environment value before Sendable closure (Swift 6 fix)
+        let isReduceMotion = reduceMotion
+
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "chart.line.uptrend.xyaxis")
@@ -186,8 +192,8 @@ struct IntensityTrendCard: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
         .scrollTransition { content, phase in
             content
-                .opacity(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.3))
-                .scaleEffect(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.9))
+                .opacity(isReduceMotion ? 1 : (phase.isIdentity ? 1 : 0.3))
+                .scaleEffect(isReduceMotion ? 1 : (phase.isIdentity ? 1 : 0.9))
         }
         .onAppear {
             didAppear = true
@@ -208,6 +214,9 @@ struct TopTriggersCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
+        // Capture @Environment value before Sendable closure (Swift 6 fix)
+        let isReduceMotion = reduceMotion
+
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "exclamationmark.triangle.fill")
@@ -242,8 +251,8 @@ struct TopTriggersCard: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
         .scrollTransition { content, phase in
             content
-                .opacity(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.3))
-                .scaleEffect(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.9))
+                .opacity(isReduceMotion ? 1 : (phase.isIdentity ? 1 : 0.3))
+                .scaleEffect(isReduceMotion ? 1 : (phase.isIdentity ? 1 : 0.9))
         }
         .onAppear {
             didAppear = true
@@ -261,6 +270,9 @@ struct WeeklySummaryCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
+        // Capture @Environment value before Sendable closure (Swift 6 fix)
+        let isReduceMotion = reduceMotion
+
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Image(systemName: "calendar")
@@ -306,8 +318,8 @@ struct WeeklySummaryCard: View {
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
         .scrollTransition { content, phase in
             content
-                .opacity(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.3))
-                .scaleEffect(reduceMotion ? 1 : (phase.isIdentity ? 1 : 0.9))
+                .opacity(isReduceMotion ? 1 : (phase.isIdentity ? 1 : 0.3))
+                .scaleEffect(isReduceMotion ? 1 : (phase.isIdentity ? 1 : 0.9))
         }
         .onAppear {
             didAppear = true
