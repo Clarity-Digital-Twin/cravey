@@ -57,7 +57,7 @@ struct IntensitySlider: View {
     // MARK: - Testable Static Methods
 
     /// Format intensity label with description
-    static func formatLabel(for intensity: Int) -> String {
+    nonisolated static func formatLabel(for intensity: Int) -> String {
         switch intensity {
         case 1 ... 2:
             "\(intensity) - Very Mild"
@@ -75,7 +75,7 @@ struct IntensitySlider: View {
     }
 
     /// Get emoji for intensity level
-    static func emoji(for intensity: Int) -> String {
+    nonisolated static func emoji(for intensity: Int) -> String {
         switch intensity {
         case 1 ... 2:
             "😌"

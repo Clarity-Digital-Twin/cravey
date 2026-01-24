@@ -1,4 +1,7 @@
 import Foundation
+import OSLog
+
+private let logger = Logger(subsystem: "com.cravey.app", category: "MessageMapper")
 
 /// Mapper between MotivationalMessageEntity (Domain) and MotivationalMessageModel (Data/SwiftData)
 enum MessageMapper {
@@ -6,31 +9,39 @@ enum MessageMapper {
     static func toModel(_ entity: MotivationalMessageEntity) -> MotivationalMessageModel {
         MotivationalMessageModel(
             id: entity.id,
-            createdAt: entity.createdAt,
-            category: entity.category.rawValue,
             content: entity.content,
+            category: entity.category.rawValue,
+            isCustom: entity.isCustom,
+            priority: entity.priority,
             isActive: entity.isActive,
-            isUserCreated: entity.isUserCreated,
-            displayPriority: entity.displayPriority,
             timesShown: entity.timesShown,
             lastShownAt: entity.lastShownAt,
-            wasHelpful: entity.wasHelpful
+            createdAt: entity.createdAt,
+            modifiedAt: entity.modifiedAt
         )
     }
 
     /// Convert SwiftData Model → Domain Entity
     static func toEntity(_ model: MotivationalMessageModel) -> MotivationalMessageEntity {
-        MotivationalMessageEntity(
+        let category: MessageCategory
+        if let parsed = MessageCategory(rawValue: model.category) {
+            category = parsed
+        } else {
+            logger.warning("Invalid category '\(model.category)' for id \(model.id), defaulting to .urge")
+            category = .urge
+        }
+
+        return MotivationalMessageEntity(
             id: model.id,
-            createdAt: model.createdAt,
-            category: MessageCategory(rawValue: model.category) ?? .personalReason,
             content: model.content,
+            category: category,
+            isCustom: model.isCustom,
+            priority: model.priority,
             isActive: model.isActive,
-            isUserCreated: model.isUserCreated,
-            displayPriority: model.displayPriority,
             timesShown: model.timesShown,
             lastShownAt: model.lastShownAt,
-            wasHelpful: model.wasHelpful
+            createdAt: model.createdAt,
+            modifiedAt: model.modifiedAt
         )
     }
 }

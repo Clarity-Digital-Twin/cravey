@@ -10,7 +10,10 @@ struct UsageListViewModelTests {
     @Test("fetchUsage should populate usageList")
     func fetchSuccess() async {
         let mockUseCase = MockFetchUsageUseCase()
-        let viewModel = UsageListViewModel(fetchUsageUseCase: mockUseCase)
+        let viewModel = UsageListViewModel(
+            fetchUsageUseCase: mockUseCase,
+            deleteUsageUseCase: MockDeleteUsageUseCase()
+        )
 
         await viewModel.fetchUsage()
 
@@ -23,11 +26,35 @@ struct UsageListViewModelTests {
     @Test("fetchUsage should handle empty list")
     func emptyState() async {
         let mockUseCase = MockFetchUsageUseCase(returnEmpty: true)
-        let viewModel = UsageListViewModel(fetchUsageUseCase: mockUseCase)
+        let viewModel = UsageListViewModel(
+            fetchUsageUseCase: mockUseCase,
+            deleteUsageUseCase: MockDeleteUsageUseCase()
+        )
 
         await viewModel.fetchUsage()
 
         #expect(viewModel.usageList.isEmpty)
+    }
+
+    // MARK: - Test 3: Delete
+
+    @Test("deleteUsage should remove item and call use case")
+    func deleteUsageRemovesItem() async throws {
+        let fetchUseCase = MockFetchUsageUseCase()
+        let deleteUseCase = MockDeleteUsageUseCase()
+        let viewModel = UsageListViewModel(
+            fetchUsageUseCase: fetchUseCase,
+            deleteUsageUseCase: deleteUseCase
+        )
+
+        await viewModel.fetchUsage()
+        let idToDelete = try #require(viewModel.usageList.first?.id)
+
+        await viewModel.deleteUsage(id: idToDelete)
+
+        #expect(viewModel.usageList.contains { $0.id == idToDelete } == false)
+        #expect(await deleteUseCase.executeCallCount == 1)
+        #expect(await deleteUseCase.lastDeletedID == idToDelete)
     }
 }
 
@@ -51,5 +78,15 @@ actor MockFetchUsageUseCase: FetchUsageUseCase {
 
     func execute(since _: Date) async throws -> [UsageEntity] {
         try await execute()
+    }
+}
+
+actor MockDeleteUsageUseCase: DeleteUsageUseCase {
+    var executeCallCount = 0
+    var lastDeletedID: UUID?
+
+    func execute(id: UUID) async throws {
+        executeCallCount += 1
+        lastDeletedID = id
     }
 }

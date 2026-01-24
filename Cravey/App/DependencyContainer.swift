@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import SwiftData
 
 /// Dependency Injection Container
@@ -6,11 +7,57 @@ import SwiftData
 @Observable
 @MainActor
 final class DependencyContainer {
+    enum StorageMode: String, Sendable {
+        case persistent
+        case inMemoryFallback
+    }
+
+    struct InitializationError: LocalizedError, Sendable {
+        let underlying: Error
+        let storageMode: StorageMode
+
+        var errorDescription: String? {
+            switch storageMode {
+            case .persistent:
+                "Cravey couldn’t open its local database. You can continue in a temporary mode, "
+                    + "but your data may not persist after closing the app."
+            case .inMemoryFallback:
+                "Cravey is running in a temporary mode. Your data may not persist after closing the app."
+            }
+        }
+
+        var recoverySuggestion: String? {
+            "If this keeps happening, try restarting your device. If the issue persists, you may need to "
+                + "delete the app’s local data from iOS Settings."
+        }
+    }
+
+    private static let logger = Logger(subsystem: "com.cravey", category: "DependencyContainer")
+
+    private struct Wiring {
+        let modelContainer: ModelContainer
+        let modelContext: ModelContext
+        let fileStorage: FileStorageManager
+        let cravingRepository: CravingRepositoryProtocol
+        let usageRepository: UsageRepositoryProtocol
+        let logCravingUseCase: LogCravingUseCase
+        let fetchCravingsUseCase: FetchCravingsUseCase
+        let deleteCravingUseCase: DeleteCravingUseCase
+        let logUsageUseCase: LogUsageUseCase
+        let fetchUsageUseCase: FetchUsageUseCase
+        let deleteUsageUseCase: DeleteUsageUseCase
+        let exportUserDataUseCase: ExportUserDataUseCase
+        let deleteAllUserDataUseCase: DeleteAllUserDataUseCase
+    }
+
     // MARK: - Infrastructure (Data Layer)
 
     let modelContainer: ModelContainer
     let modelContext: ModelContext
     let fileStorage: FileStorageManager
+
+    private(set) var storageMode: StorageMode = .persistent
+    private(set) var initializationError: InitializationError?
 
     // MARK: - Repositories (Data Layer)
 
@@ -22,8 +69,12 @@ final class DependencyContainer {
 
     private(set) var logCravingUseCase: LogCravingUseCase
     private(set) var fetchCravingsUseCase: FetchCravingsUseCase
+    private(set) var deleteCravingUseCase: DeleteCravingUseCase
     private(set) var logUsageUseCase: LogUsageUseCase
     private(set) var fetchUsageUseCase: FetchUsageUseCase
+    private(set) var deleteUsageUseCase: DeleteUsageUseCase
+    private(set) var exportUserDataUseCase: ExportUserDataUseCase
+    private(set) var deleteAllUserDataUseCase: DeleteAllUserDataUseCase
 
     // MARK: - View Models (Presentation Layer)
 
@@ -36,11 +87,17 @@ final class DependencyContainer {
     }
 
     func makeUsageListViewModel() -> UsageListViewModel {
-        UsageListViewModel(fetchUsageUseCase: fetchUsageUseCase)
+        UsageListViewModel(
+            fetchUsageUseCase: fetchUsageUseCase,
+            deleteUsageUseCase: deleteUsageUseCase
+        )
     }
 
     func makeCravingListViewModel() -> CravingListViewModel {
-        CravingListViewModel(fetchCravingsUseCase: fetchCravingsUseCase)
+        CravingListViewModel(
+            fetchCravingsUseCase: fetchCravingsUseCase,
+            deleteCravingUseCase: deleteCravingUseCase
+        )
     }
 
     func makeDashboardViewModel() -> DashboardViewModel {
@@ -51,46 +108,108 @@ final class DependencyContainer {
     }
 
     func makeSettingsViewModel() -> SettingsViewModel {
-        SettingsViewModel(modelContext: modelContext)
+        SettingsViewModel(
+            exportUserDataUseCase: exportUserDataUseCase,
+            deleteAllUserDataUseCase: deleteAllUserDataUseCase
+        )
     }
 
     // MARK: - Initialization
 
-    init(isPreview: Bool = false) {
+    private static func makeWiring(modelContainer: ModelContainer) -> Wiring {
+        let modelContext = ModelContext(modelContainer)
+        let fileStorage = FileStorageManager.shared
+
+        let cravingRepo = CravingRepository(modelContext: modelContext)
+        let usageRepo = UsageRepository(modelContext: modelContext)
+
+        return Wiring(
+            modelContainer: modelContainer,
+            modelContext: modelContext,
+            fileStorage: fileStorage,
+            cravingRepository: cravingRepo,
+            usageRepository: usageRepo,
+            logCravingUseCase: DefaultLogCravingUseCase(repository: cravingRepo),
+            fetchCravingsUseCase: DefaultFetchCravingsUseCase(repository: cravingRepo),
+            deleteCravingUseCase: DefaultDeleteCravingUseCase(repository: cravingRepo),
+            logUsageUseCase: DefaultLogUsageUseCase(repository: usageRepo),
+            fetchUsageUseCase: DefaultFetchUsageUseCase(repository: usageRepo),
+            deleteUsageUseCase: DefaultDeleteUsageUseCase(repository: usageRepo),
+            exportUserDataUseCase: DefaultExportUserDataUseCase(
+                cravingRepository: cravingRepo,
+                usageRepository: usageRepo
+            ),
+            deleteAllUserDataUseCase: SwiftDataDeleteAllUserDataUseCase(
+                modelContext: modelContext
+            )
+        )
+    }
+
+    private init(wiring: Wiring, storageMode: StorageMode, initializationError: InitializationError?) {
+        modelContainer = wiring.modelContainer
+        modelContext = wiring.modelContext
+        fileStorage = wiring.fileStorage
+
+        cravingRepository = wiring.cravingRepository
+        usageRepository = wiring.usageRepository
+
+        logCravingUseCase = wiring.logCravingUseCase
+        fetchCravingsUseCase = wiring.fetchCravingsUseCase
+        deleteCravingUseCase = wiring.deleteCravingUseCase
+
+        logUsageUseCase = wiring.logUsageUseCase
+        fetchUsageUseCase = wiring.fetchUsageUseCase
+        deleteUsageUseCase = wiring.deleteUsageUseCase
+
+        exportUserDataUseCase = wiring.exportUserDataUseCase
+        deleteAllUserDataUseCase = wiring.deleteAllUserDataUseCase
+
+        self.storageMode = storageMode
+        self.initializationError = initializationError
+    }
+
+    convenience init(isPreview: Bool = false) {
         // Check for UI testing mode
         let isUITesting = ProcessInfo.processInfo.arguments.contains("--uitesting")
 
+        let normalStorageMode: StorageMode = isPreview || isUITesting ? .inMemoryFallback : .persistent
+
         do {
             // Initialize infrastructure
-            if isUITesting {
-                modelContainer = try ModelContainerSetup.createUITesting()
+            let container = if isUITesting {
+                try ModelContainerSetup.createUITesting()
             } else if isPreview {
-                modelContainer = try ModelContainerSetup.createPreview()
+                try ModelContainerSetup.createPreview()
             } else {
-                modelContainer = try ModelContainerSetup.create()
+                try ModelContainerSetup.create()
             }
-            modelContext = ModelContext(modelContainer)
-            fileStorage = FileStorageManager.shared
-
-            // Initialize repositories
-            let cravingRepo = CravingRepository(modelContext: modelContext)
-            let usageRepo = UsageRepository(modelContext: modelContext)
-
-            cravingRepository = cravingRepo
-            usageRepository = usageRepo
-
-            // Initialize use cases
-            logCravingUseCase = DefaultLogCravingUseCase(repository: cravingRepo)
-            fetchCravingsUseCase = DefaultFetchCravingsUseCase(repository: cravingRepo)
-            logUsageUseCase = DefaultLogUsageUseCase(repository: usageRepo)
-            fetchUsageUseCase = DefaultFetchUsageUseCase(repository: usageRepo)
+            let wiring = Self.makeWiring(modelContainer: container)
+            self.init(wiring: wiring, storageMode: normalStorageMode, initializationError: nil)
 
             // Seed default data if needed (skip for UI testing)
             if !isPreview, !isUITesting {
                 ModelContainerSetup.seedDefaultMessages(context: modelContext)
             }
         } catch {
-            fatalError("Failed to initialize DependencyContainer: \(error)")
+            Self.logger.error(
+                """
+                Failed to initialize persistent storage. Falling back to in-memory.
+                Error: \(error.localizedDescription)
+                """
+            )
+
+            let initError = InitializationError(underlying: error, storageMode: .persistent)
+
+            do {
+                let container = try ModelContainerSetup.createUITesting()
+                let wiring = Self.makeWiring(modelContainer: container)
+                self.init(wiring: wiring, storageMode: .inMemoryFallback, initializationError: initError)
+            } catch {
+                Self.logger.fault(
+                    "Failed to initialize in-memory fallback storage. Error: \(error.localizedDescription)"
+                )
+                fatalError("Cravey cannot start due to an unrecoverable storage error.")
+            }
         }
     }
 }

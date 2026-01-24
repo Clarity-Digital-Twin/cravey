@@ -13,7 +13,7 @@ protocol LogCravingUseCase: Sendable {
     ) async throws -> CravingEntity
 }
 
-final class DefaultLogCravingUseCase: LogCravingUseCase {
+final class DefaultLogCravingUseCase: LogCravingUseCase, Sendable {
     private let repository: CravingRepositoryProtocol
 
     init(repository: CravingRepositoryProtocol) {

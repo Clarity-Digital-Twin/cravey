@@ -1,19 +1,17 @@
 import Foundation
-import SwiftData
 
 /// Settings ViewModel - handles data export and deletion
 /// Presentation layer - Clean Architecture
-///
-/// Note: This ViewModel currently depends on Data layer (ModelContext, Models)
-/// for pragmatic reasons. A future refactor should introduce Domain UseCases
-/// (ExportDataUseCase, DeleteAllDataUseCase) to maintain strict Clean Architecture.
 @Observable
 @MainActor
 final class SettingsViewModel {
     // MARK: - Dependencies
 
     @ObservationIgnored
-    private let modelContext: ModelContext
+    private let exportUserDataUseCase: ExportUserDataUseCase
+
+    @ObservationIgnored
+    private let deleteAllUserDataUseCase: DeleteAllUserDataUseCase
 
     @ObservationIgnored
     private let dateFormatter: DateFormatter = {
@@ -45,8 +43,9 @@ final class SettingsViewModel {
 
     // MARK: - Initialization
 
-    init(modelContext: ModelContext) {
-        self.modelContext = modelContext
+    init(exportUserDataUseCase: ExportUserDataUseCase, deleteAllUserDataUseCase: DeleteAllUserDataUseCase) {
+        self.exportUserDataUseCase = exportUserDataUseCase
+        self.deleteAllUserDataUseCase = deleteAllUserDataUseCase
     }
 
     // MARK: - Export
@@ -56,24 +55,7 @@ final class SettingsViewModel {
         defer { isExporting = false }
 
         do {
-            // Fetch all cravings
-            let cravingDescriptor = FetchDescriptor<CravingModel>(
-                sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
-            )
-            let cravings = try modelContext.fetch(cravingDescriptor)
-
-            // Fetch all usages
-            let usageDescriptor = FetchDescriptor<UsageModel>(
-                sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
-            )
-            let usages = try modelContext.fetch(usageDescriptor)
-
-            // Create export data
-            let exportData = ExportData(
-                exportDate: Date(),
-                cravings: cravings.map { CravingExport(from: $0) },
-                usages: usages.map { UsageExport(from: $0) }
-            )
+            let exportData = try await exportUserDataUseCase.execute()
 
             // Encode to JSON
             let encoder = JSONEncoder()
@@ -102,14 +84,7 @@ final class SettingsViewModel {
         defer { isDeleting = false }
 
         do {
-            // Delete all cravings
-            try modelContext.delete(model: CravingModel.self)
-
-            // Delete all usages
-            try modelContext.delete(model: UsageModel.self)
-
-            // Save context
-            try modelContext.save()
+            try await deleteAllUserDataUseCase.execute()
 
             deleteSuccess = true
         } catch {
@@ -122,51 +97,5 @@ final class SettingsViewModel {
 
     private func formattedDate() -> String {
         dateFormatter.string(from: Date())
-    }
-}
-
-// MARK: - Export Data Structures
-
-struct ExportData: Codable {
-    let exportDate: Date
-    let cravings: [CravingExport]
-    let usages: [UsageExport]
-}
-
-struct CravingExport: Codable {
-    let id: UUID
-    let timestamp: Date
-    let intensity: Int
-    let triggers: [String]
-    let location: String?
-    let notes: String?
-
-    init(from model: CravingModel) {
-        id = model.id
-        timestamp = model.timestamp
-        intensity = model.intensity
-        triggers = model.triggers
-        location = model.location
-        notes = model.notes
-    }
-}
-
-struct UsageExport: Codable {
-    let id: UUID
-    let timestamp: Date
-    let method: String
-    let amount: Double
-    let triggers: [String]
-    let location: String?
-    let notes: String?
-
-    init(from model: UsageModel) {
-        id = model.id
-        timestamp = model.timestamp
-        method = model.method
-        amount = model.amount
-        triggers = model.triggers
-        location = model.location
-        notes = model.notes
     }
 }

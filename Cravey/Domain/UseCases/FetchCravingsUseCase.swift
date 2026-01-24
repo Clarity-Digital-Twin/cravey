@@ -6,7 +6,7 @@ protocol FetchCravingsUseCase: Sendable {
     func execute(from startDate: Date, to endDate: Date) async throws -> [CravingEntity]
 }
 
-final class DefaultFetchCravingsUseCase: FetchCravingsUseCase {
+final class DefaultFetchCravingsUseCase: FetchCravingsUseCase, Sendable {
     private let repository: CravingRepositoryProtocol
 
     init(repository: CravingRepositoryProtocol) {

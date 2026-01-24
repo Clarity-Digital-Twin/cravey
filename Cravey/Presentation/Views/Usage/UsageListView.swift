@@ -6,6 +6,9 @@ import SwiftUI
 struct UsageListView: View {
     @Bindable var viewModel: UsageListViewModel
 
+    @State private var usageToDelete: UsageEntity?
+    @State private var deleteHapticTrigger = false
+
     var body: some View {
         Group {
             if viewModel.isLoading {
@@ -19,6 +22,7 @@ struct UsageListView: View {
         .task {
             await viewModel.fetchUsage()
         }
+        .animation(.default, value: viewModel.usageList)
         .alert("Error", isPresented: Binding(
             get: { viewModel.errorMessage != nil },
             set: { if !$0 { viewModel.errorMessage = nil } }
@@ -30,6 +34,28 @@ struct UsageListView: View {
             if let error = viewModel.errorMessage {
                 Text(error)
             }
+        }
+        .sensoryFeedback(.warning, trigger: deleteHapticTrigger)
+        .confirmationDialog(
+            "Delete Usage Log?",
+            isPresented: Binding(
+                get: { usageToDelete != nil },
+                set: { if !$0 { usageToDelete = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                guard let usageToDelete else { return }
+                self.usageToDelete = nil
+                Task {
+                    await viewModel.deleteUsage(id: usageToDelete.id)
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                usageToDelete = nil
+            }
+        } message: {
+            Text("This cannot be undone.")
         }
     }
 
@@ -44,6 +70,7 @@ struct UsageListView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, minHeight: 100)
+        .listRowBackground(Color.clear)
     }
 
     // MARK: - Empty State View
@@ -51,21 +78,23 @@ struct UsageListView: View {
     @ViewBuilder
     private var emptyStateView: some View {
         UsageEmptyStateView()
+            .listRowBackground(Color.clear)
     }
 
     // MARK: - Usage List View
 
     @ViewBuilder
     private var usageListView: some View {
-        // Use LazyVStack instead of List for embedding in ScrollView
-        // List has internal scrolling that conflicts with parent ScrollView
-        LazyVStack(spacing: 0) {
-            ForEach(viewModel.usageList) { usage in
-                UsageRowView(usage: usage)
-                    .padding(.horizontal)
-                Divider()
-                    .padding(.leading)
-            }
+        ForEach(viewModel.usageList) { usage in
+            UsageRowView(usage: usage)
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    Button(role: .destructive) {
+                        deleteHapticTrigger.toggle()
+                        usageToDelete = usage
+                    } label: {
+                        Label("Delete", systemImage: "trash")
+                    }
+                }
         }
     }
 }
@@ -166,7 +195,8 @@ struct UsageRowView: View {
 
 #Preview("Empty State") {
     @Previewable @State var viewModel = UsageListViewModel(
-        fetchUsageUseCase: PreviewMockFetchUsageUseCase(returnEmpty: true)
+        fetchUsageUseCase: PreviewMockFetchUsageUseCase(returnEmpty: true),
+        deleteUsageUseCase: PreviewMockDeleteUsageUseCase()
     )
 
     UsageListView(viewModel: viewModel)
@@ -174,7 +204,8 @@ struct UsageRowView: View {
 
 #Preview("Loading State") {
     @Previewable @State var viewModel = UsageListViewModel(
-        fetchUsageUseCase: PreviewMockFetchUsageUseCase(simulateLoading: true)
+        fetchUsageUseCase: PreviewMockFetchUsageUseCase(simulateLoading: true),
+        deleteUsageUseCase: PreviewMockDeleteUsageUseCase()
     )
 
     UsageListView(viewModel: viewModel)
@@ -182,7 +213,8 @@ struct UsageRowView: View {
 
 #Preview("Populated List") {
     @Previewable @State var viewModel = UsageListViewModel(
-        fetchUsageUseCase: PreviewMockFetchUsageUseCase()
+        fetchUsageUseCase: PreviewMockFetchUsageUseCase(),
+        deleteUsageUseCase: PreviewMockDeleteUsageUseCase()
     )
 
     UsageListView(viewModel: viewModel)
@@ -233,7 +265,7 @@ actor PreviewMockFetchUsageUseCase: FetchUsageUseCase {
                 timestamp: Date(),
                 method: "Vape",
                 amount: 5.0,
-                triggers: ["Anxious", "Stressed"],
+                triggers: ["Anxious", "Bored"],
                 location: "Home",
                 notes: "Felt anxious after work. Needed to decompress."
             ),
@@ -267,4 +299,8 @@ actor PreviewMockFetchUsageUseCase: FetchUsageUseCase {
     func execute(since _: Date) async throws -> [UsageEntity] {
         try await execute()
     }
+}
+
+actor PreviewMockDeleteUsageUseCase: DeleteUsageUseCase {
+    func execute(id _: UUID) async throws {}
 }

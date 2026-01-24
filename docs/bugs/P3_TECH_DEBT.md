@@ -54,9 +54,12 @@ protocol DeleteAllDataUseCase {
 3. Inject into SettingsViewModel via DependencyContainer
 
 ### Acceptance Criteria
-- [ ] SettingsViewModel has no SwiftData imports
-- [ ] Export/Delete logic in Domain use cases
-- [ ] SettingsViewModel only depends on protocols
+- [x] SettingsViewModel has no SwiftData imports
+- [x] Export/Delete logic lives behind Domain use cases
+- [x] SettingsViewModel depends only on use case protocols
+
+### Status
+✅ **FIXED** (2026-01-24)
 
 ---
 
@@ -83,6 +86,12 @@ The UI tests currently have multiple reliability issues:
 - Update tests to match real UI text/options (e.g., remove `"Stressed"` chip expectation).
 - Prefer `@MainActor` + `setUpWithError()` (or async `setUp()` where appropriate), and avoid `nonisolated(unsafe)` unless required.
 - Keep “screenshot capture” tests out of required CI gating (or mark them skipped).
+
+### Status
+✅ **FIXED (Stability Improvements)** (2026-01-24)
+
+**Verify:**
+- `rg -n \"\\bsleep\\(\" CraveyUITests` (should return no matches)
 
 ---
 
@@ -113,6 +122,9 @@ No try-catch around ModelContainer creation. If it fails, app crashes.
 ### Related To
 BUG-001 (P0) - Same root cause.
 
+### Status
+✅ **FIXED** (2026-01-24)
+
 ---
 
 ## DEBT-005: DashboardViewModel Streak Logic Unclear
@@ -134,6 +146,12 @@ Streak calculation logic is confusing:
 1. Add clear documentation for streak semantics
 2. Add unit tests for edge cases
 3. Consider renaming: `daysSinceLastUsage`, `longestCleanPeriod`
+
+### Status
+✅ **FIXED** (2026-01-24)
+
+**Verify:**
+- `CraveyTests/Presentation/ViewModels/DashboardViewModelTests.swift`
 
 ---
 
@@ -158,6 +176,13 @@ Master specs define message categories like `"urge"`, `"anxiety"`, `"boredom"`, 
   - Update seeding logic and mappers.
   - Add migration notes/tests for existing data.
 
+### Status
+✅ **FIXED** (2026-01-24)
+
+**Verify:**
+- `Cravey/Domain/Entities/MotivationalMessageEntity.swift` (categories + fields)
+- `Cravey/Data/Models/MotivationalMessageModel.swift` (spec fields)
+
 ---
 
 ## DEBT-007: Recording Model Drift vs Master Spec (Fields + Naming)
@@ -177,16 +202,23 @@ The master data model spec includes fields like `timestamp`, `modifiedAt`, `file
 - Choose a single source of truth (prefer `docs/master/DATA_MODEL_SPEC.md`).
 - Align `RecordingModel` + `RecordingEntity` + `RecordingMapper` accordingly before shipping recordings UI.
 
+### Status
+✅ **FIXED** (2026-01-24)
+
+**Verify:**
+- `Cravey/Domain/Entities/RecordingEntity.swift` (timestamp/type/purpose/filePath)
+- `Cravey/Data/Models/RecordingModel.swift` (spec fields)
+
 ---
 
 ## Summary
 
 | Debt ID | Description | Impact | Status |
 |---------|-------------|--------|--------|
-| DEBT-001 | SettingsViewModel Clean Arch violation | High | OPEN |
-| DEBT-002 | UI Tests brittle / out-of-sync | Medium | OPEN |
+| DEBT-001 | SettingsViewModel Clean Arch violation | High | ✅ FIXED |
+| DEBT-002 | UI Tests brittle / out-of-sync | Medium | ✅ FIXED |
 | DEBT-003 | TODO features not implemented | Low | DEFERRED |
-| DEBT-004 | No error recovery in init | High | OPEN |
-| DEBT-005 | Streak logic unclear | Medium | OPEN |
-| DEBT-006 | Message schema/category drift | Medium | OPEN |
-| DEBT-007 | Recording schema drift | Medium | OPEN |
+| DEBT-004 | No error recovery in init | High | ✅ FIXED |
+| DEBT-005 | Streak logic unclear | Medium | ✅ FIXED |
+| DEBT-006 | Message schema/category drift | Medium | ✅ FIXED |
+| DEBT-007 | Recording schema drift | Medium | ✅ FIXED |

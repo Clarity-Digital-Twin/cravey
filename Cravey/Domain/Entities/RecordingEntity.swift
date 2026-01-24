@@ -2,63 +2,72 @@ import Foundation
 
 /// Domain entity representing an audio/video recording
 /// Pure Swift - no framework dependencies
-struct RecordingEntity: Identifiable, Codable, Equatable, Hashable {
+struct RecordingEntity: Identifiable, Codable, Equatable, Hashable, Sendable {
     let id: UUID
-    let createdAt: Date
-    let recordingType: RecordingType
+    let timestamp: Date
+    let type: RecordingType
     let purpose: RecordingPurpose
-    let title: String
-    let notes: String?
-    let fileURL: String // Relative path
     let duration: TimeInterval
-    let thumbnailURL: String?
+    let filePath: String // Relative path (e.g., "Recordings/video_UUID.mov")
+    let thumbnailPath: String? // Relative path (e.g., "Recordings/Thumbnails/video_UUID_thumb.jpg")
+    let title: String?
+    let notes: String?
+
     let lastPlayedAt: Date?
     let playCount: Int
+    let createdAt: Date
+    let modifiedAt: Date?
 
     init(
         id: UUID = UUID(),
-        createdAt: Date = Date(),
-        recordingType: RecordingType,
+        timestamp: Date = Date(),
+        type: RecordingType,
         purpose: RecordingPurpose,
-        title: String,
-        fileURL: String,
-        duration: TimeInterval = 0,
+        duration: TimeInterval,
+        filePath: String,
+        thumbnailPath: String? = nil,
+        title: String? = nil,
         notes: String? = nil,
-        thumbnailURL: String? = nil,
         lastPlayedAt: Date? = nil,
-        playCount: Int = 0
+        playCount: Int = 0,
+        createdAt: Date = Date(),
+        modifiedAt: Date? = nil
     ) {
         self.id = id
-        self.createdAt = createdAt
-        self.recordingType = recordingType
+        self.timestamp = timestamp
+        self.type = type
         self.purpose = purpose
         self.title = title
-        self.fileURL = fileURL
+        self.filePath = filePath
         self.duration = duration
         self.notes = notes
-        self.thumbnailURL = thumbnailURL
+        self.thumbnailPath = thumbnailPath
         self.lastPlayedAt = lastPlayedAt
         self.playCount = playCount
+        self.createdAt = createdAt
+        self.modifiedAt = modifiedAt
     }
 }
 
-enum RecordingType: String, Codable, CaseIterable {
-    case video = "Video"
-    case audio = "Audio"
+enum RecordingType: String, Codable, CaseIterable, Sendable {
+    case video
+    case audio
 
     var fileExtension: String {
         switch self {
-        case .video: "mov"
-        case .audio: "m4a"
+        case .video:
+            "mov"
+        case .audio:
+            "m4a"
         }
     }
 }
 
-enum RecordingPurpose: String, Codable, CaseIterable {
-    case motivational = "Motivational"
-    case cravingMoment = "Craving Moment"
-    case reflection = "Reflection"
-    case milestone = "Milestone"
+enum RecordingPurpose: String, Codable, CaseIterable, Sendable {
+    case motivational
+    case milestone
+    case reflection
+    case craving
 }
 
 // MARK: - Business Logic
@@ -70,19 +79,21 @@ extension RecordingEntity {
         return String(format: "%d:%02d", minutes, seconds)
     }
 
-    func incrementPlayCount() -> RecordingEntity {
+    func incrementPlayCount(now: Date = Date()) -> RecordingEntity {
         RecordingEntity(
             id: id,
-            createdAt: createdAt,
-            recordingType: recordingType,
+            timestamp: timestamp,
+            type: type,
             purpose: purpose,
-            title: title,
-            fileURL: fileURL,
             duration: duration,
+            filePath: filePath,
+            thumbnailPath: thumbnailPath,
+            title: title,
             notes: notes,
-            thumbnailURL: thumbnailURL,
-            lastPlayedAt: Date(),
-            playCount: playCount + 1
+            lastPlayedAt: now,
+            playCount: playCount + 1,
+            createdAt: createdAt,
+            modifiedAt: now
         )
     }
 }

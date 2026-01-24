@@ -6,13 +6,18 @@ import Foundation
 @MainActor
 final class CravingListViewModel {
     var cravings: [CravingEntity] = []
-    var isLoading = false
+    var isLoading = true
     var errorMessage: String?
 
+    @ObservationIgnored
     private let fetchCravingsUseCase: FetchCravingsUseCase
 
-    init(fetchCravingsUseCase: FetchCravingsUseCase) {
+    @ObservationIgnored
+    private let deleteCravingUseCase: DeleteCravingUseCase
+
+    init(fetchCravingsUseCase: FetchCravingsUseCase, deleteCravingUseCase: DeleteCravingUseCase) {
         self.fetchCravingsUseCase = fetchCravingsUseCase
+        self.deleteCravingUseCase = deleteCravingUseCase
     }
 
     func fetchCravings() async {
@@ -26,5 +31,16 @@ final class CravingListViewModel {
         }
 
         isLoading = false
+    }
+
+    func deleteCraving(id: UUID) async {
+        errorMessage = nil
+
+        do {
+            try await deleteCravingUseCase.execute(id: id)
+            cravings.removeAll { $0.id == id }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 }

@@ -3,20 +3,11 @@ import SwiftUI
 /// Settings screen - app configuration with export and delete functionality
 /// Presentation layer - Clean Architecture
 struct SettingsView: View {
-    @Environment(DependencyContainer.self) private var container
-    @State private var viewModel: SettingsViewModel?
+    @Environment(SettingsViewModel.self) private var viewModel
 
     var body: some View {
         NavigationStack {
-            if let viewModel {
-                SettingsContentView(viewModel: viewModel)
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, minHeight: 200)
-                    .task {
-                        viewModel = container.makeSettingsViewModel()
-                    }
-            }
+            SettingsContentView(viewModel: viewModel)
         }
     }
 }
@@ -108,7 +99,7 @@ private struct SettingsContentView: View {
             Text(
                 """
                 This will permanently delete all your cravings, usage logs, \
-                and recordings. This action cannot be undone.
+                recordings, and motivational messages. This action cannot be undone.
                 """
             )
         }
@@ -141,6 +132,9 @@ struct ShareSheet: UIViewControllerRepresentable {
 }
 
 #Preview {
+    let container = DependencyContainer.preview
+
     SettingsView()
-        .environment(DependencyContainer.preview)
+        .environment(container.makeSettingsViewModel())
+        .environment(container)
 }

@@ -1,183 +1,69 @@
-# Cravey – Ralph Wiggum Loop Prompt (Home Screen Polish)
+# Cravey – Ralph Wiggum Loop Prompt (Loop-Ready Gate)
 
 ## Mission
-Polish the **Home Screen** with essential UX features: **swipe-to-delete** for logs and a **meaningful title** that reflects the app's purpose.
+Make this repo reliably converge inside an automated AI loop by enforcing a single, objective quality gate: project generation, formatting, linting, and unit tests must all pass.
 
-**Target:** Home screen feels complete, functional, and native iOS.
+This prompt intentionally avoids anything that requires human judgment (UX “feels good”, manual simulator tapping, etc.).
 
 ---
 
 ## Hard Constraints (must not violate)
 - **Privacy-first:** local-only data; no analytics; no tracking; no cloud sync; keep SwiftData `cloudKitDatabase: .none`.
-- **Clean Architecture:** Presentation → Domain ← Data; Domain stays framework-free (no SwiftUI/SwiftData).
-- **Motivational interviewing tone:** non-judgmental language (avoid "failure", "streak broken").
-- **iOS 18+ minimum deployment target**.
+- **Clean Architecture:** Presentation → Domain ← Data; Domain stays framework-free (no SwiftUI/SwiftData imports).
+- **Swift 6 strict concurrency:** no concurrency escape hatches in Presentation; SwiftData access must be MainActor/ModelActor safe.
+- **iOS 18+ minimum deployment target** (Mac Catalyst is allowed for CI testing).
 
 ---
 
-## Focus Tasks (This Loop)
-
-### 1. Swipe-to-Delete for Logs
-
-**Problem:** Users can log cravings and usage, but there's NO way to delete them. If someone accidentally logs something, they're stuck with it.
-
-**Solution:** Add standard iOS swipe-to-delete gesture to both:
-- **Recent Cravings** list items
-- **Recent Usage** list items
-
-**Implementation Requirements:**
-- Use `.swipeActions(edge: .trailing)` modifier on list rows
-- Red destructive delete button with trash icon
-- Confirmation alert before permanent deletion (this is sensitive data!)
-- Call appropriate delete use case through ViewModel
-- Add haptic feedback (`.sensoryFeedback(.warning)` on swipe reveal)
-- Animate row removal smoothly
-
-**Files to Modify:**
-- `Cravey/Presentation/Views/Home/CravingListView.swift` - Add swipe action
-- `Cravey/Presentation/Views/Usage/UsageListView.swift` - Add swipe action
-- `Cravey/Presentation/ViewModels/CravingListViewModel.swift` - Add delete method
-- `Cravey/Presentation/ViewModels/UsageListViewModel.swift` - Add delete method
-- `Cravey/Domain/UseCases/` - May need DeleteCravingUseCase, DeleteUsageUseCase
-- `Cravey/Domain/Repositories/` - Check if delete methods exist in protocols
-- `Cravey/Data/Repositories/` - Implement delete if needed
-
-**Reference Pattern:**
-```swift
-ForEach(items) { item in
-    ItemRow(item: item)
-        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            Button(role: .destructive) {
-                itemToDelete = item
-                showDeleteConfirmation = true
-            } label: {
-                Label("Delete", systemImage: "trash")
-            }
-        }
-}
-.alert("Delete Log?", isPresented: $showDeleteConfirmation) {
-    Button("Cancel", role: .cancel) {}
-    Button("Delete", role: .destructive) {
-        Task { await viewModel.delete(itemToDelete) }
-    }
-} message: {
-    Text("This cannot be undone.")
-}
-.sensoryFeedback(.success, trigger: didDelete)
-```
+## In Scope (this loop)
+- Make **every claim of completion** provable by commands with non-zero exits on failure.
+- Keep verification stable in headless/CI environments (no reliance on iOS Simulator runtimes).
+- Update only what is required to make the gate pass; log any follow-ups as bugs in `docs/bugs/`.
 
 ---
 
-### 2. Better Home Screen Title
-
-**Problem:** "Home" is generic and meaningless. Doesn't tell user what this screen is for.
-
-**Options to Consider:**
-- "Cannabis Logs" - Direct, clear
-- "My Logs" - Personal, simple
-- "Tracking" - Action-oriented
-- "Journal" - Recovery-focused
-- Keep "Home" as tab name, but use a different navigationTitle
-
-**Implementation:**
-- Update `HomeView.swift` `.navigationTitle()`
-- Consider if subtitle/header would add context
-- Tab bar can stay "Home" if that makes sense for navigation
-
-**User's Preference:** Something more relevant than just "Home" - suggests "Cannabis Logs" or similar.
+## Out of Scope / Cannot Be Done In A Loop
+- App Store submission (certificates, provisioning profiles, TestFlight/App Store Connect).
+- Designing app icons, marketing screenshots, or any subjective UI/UX evaluation.
+- Any manual “open app and check” steps.
 
 ---
 
-## Verification
+## Definition of Done (objectively verifiable)
+The loop is complete **only when** the verification script exits 0:
 
-### Automated Checks
 ```bash
-set -euo pipefail
-
-# 1. Build succeeds
-xcodebuild -scheme Cravey \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
-  build 2>&1 | xcbeautify
-
-# 2. All tests pass
-xcodebuild test -scheme Cravey \
-  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
-  -only-testing:CraveyTests 2>&1 | xcbeautify
-
-# 3. Verify swipe actions exist in list views
-rg -n 'swipeActions' Cravey/Presentation/Views/ || echo "FAIL: No swipe actions found"
-
-# 4. Verify delete functionality exists
-rg -n 'delete|Delete' Cravey/Presentation/ViewModels/CravingListViewModel.swift || echo "WARNING: No delete in CravingListViewModel"
-rg -n 'delete|Delete' Cravey/Presentation/ViewModels/UsageListViewModel.swift || echo "WARNING: No delete in UsageListViewModel"
+bash scripts/verify.sh
 ```
 
-### Manual Verification
-1. Launch app in Simulator
-2. Log a test craving
-3. Swipe left on the craving row → Delete button appears
-4. Tap Delete → Confirmation alert appears
-5. Confirm delete → Row animates away, haptic feedback fires
-6. Repeat for Usage logs
-7. Verify Home screen title is updated and meaningful
+### What `scripts/verify.sh` runs (for transparency)
+- `xcodegen generate`
+- `swiftformat --lint --swiftversion 6.0 .`
+- `swiftlint lint --quiet`
+- `xcodebuild test` for `CraveyTests` on **Mac Catalyst** with code signing disabled
+- Static invariants:
+  - `cloudKitDatabase: .none` present
+  - No `import SwiftUI` / `import SwiftData` in `Cravey/Domain`
 
 ---
 
-## Definition of Done
-
-When **ALL** of the following are true, output:
+## Completion Output Contract
+When (and only when) the Definition of Done passes, output exactly:
 
 ```
-<promise>HOME SCREEN COMPLETE</promise>
+<promise>LOOP READY</promise>
 ```
-
-### Checklist:
-- [ ] Swipe-to-delete works on Craving list items
-- [ ] Swipe-to-delete works on Usage list items
-- [ ] Delete shows confirmation alert (prevent accidents)
-- [ ] Delete actually removes from database (persists after app restart)
-- [ ] Haptic feedback on delete action
-- [ ] Smooth row removal animation
-- [ ] Home screen title updated to something meaningful
-- [ ] Build succeeds
-- [ ] All unit tests pass
-- [ ] No regressions in existing functionality
 
 ---
 
-## Architecture Notes
+## Convergence Guardrails (avoid infinite loops / false completion)
+- **Never** claim completion unless `bash scripts/verify.sh` is green.
+- Don’t “warn and continue” on a failed check; failed checks must stop the loop.
+- Avoid unrelated refactors; if you find a non-blocking improvement, log it in `docs/bugs/` and stop.
+- If tooling is missing, stop and output:
 
-### Clean Architecture Delete Flow
 ```
-View (swipe action)
-  → ViewModel.delete(entity)
-    → DeleteUseCase.execute(id)
-      → Repository.delete(id)
-        → ModelContext.delete(model)
+<blocker>MISSING TOOL: <name></blocker>
 ```
 
-### Existing Patterns to Follow
-- Look at `LogCravingUseCase` for use case pattern
-- Look at `CravingRepository` for repository pattern
-- Look at `SettingsView` delete flow for confirmation dialog pattern
-
----
-
-## Non-Goals (out of scope this loop)
-- Dashboard changes
-- Settings changes
-- New features beyond delete
-- Form modifications
-- Recording functionality
-
----
-
-## Context Files
-- `Cravey/Presentation/Views/Home/HomeView.swift` - Main home screen
-- `Cravey/Presentation/Views/Home/CravingListView.swift` - Craving list
-- `Cravey/Presentation/Views/Usage/UsageListView.swift` - Usage list
-- `CLAUDE.md` - Architecture reference
-
----
-
-**Remember:** This is about making the Home screen **functional and complete**. Users need to be able to fix mistakes by deleting accidental logs.
+with the exact command name (e.g., `xcodegen`, `swiftformat`, `swiftlint`, `xcodebuild`).

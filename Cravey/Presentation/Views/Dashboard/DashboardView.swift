@@ -3,70 +3,63 @@ import SwiftUI
 /// Dashboard screen - progress visualization with 5 MVP metric cards
 /// Presentation layer - Clean Architecture
 struct DashboardView: View {
-    @Environment(DependencyContainer.self) private var container
-    @State private var viewModel: DashboardViewModel?
+    @Environment(DashboardViewModel.self) private var viewModel
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                if let viewModel {
-                    if viewModel.isLoading {
-                        ProgressView("Loading metrics...")
-                            .frame(maxWidth: .infinity, minHeight: 200)
-                    } else {
-                        LazyVStack(spacing: 16) {
-                            // Card 1: Current Streak
-                            MetricCard(
-                                title: "Current Streak",
-                                value: "\(viewModel.currentStreak)",
-                                unit: "days clean",
-                                icon: "flame.fill",
-                                color: .orange
-                            )
-                            .accessibilityIdentifier("currentStreakCard")
-
-                            // Card 2: Longest Streak
-                            MetricCard(
-                                title: "Longest Streak",
-                                value: "\(viewModel.longestStreak)",
-                                unit: "days (all-time)",
-                                icon: "trophy.fill",
-                                color: .yellow
-                            )
-                            .accessibilityIdentifier("longestStreakCard")
-
-                            // Card 3: Average Intensity
-                            IntensityTrendCard(
-                                sevenDayAvg: viewModel.averageIntensity7Day,
-                                thirtyDayAvg: viewModel.averageIntensity30Day
-                            )
-                            .accessibilityIdentifier("intensityTrendCard")
-
-                            // Card 4: Top Triggers
-                            TopTriggersCard(triggers: viewModel.topTriggers)
-                                .accessibilityIdentifier("topTriggersCard")
-
-                            // Card 5: Weekly Summary
-                            WeeklySummaryCard(
-                                cravingCount: viewModel.weeklyCravingCount,
-                                usageCount: viewModel.weeklyUsageCount
-                            )
-                            .accessibilityIdentifier("weeklySummaryCard")
-                        }
-                        .padding()
-                    }
-                } else {
-                    ProgressView()
+                if viewModel.isLoading {
+                    ProgressView("Loading metrics...")
                         .frame(maxWidth: .infinity, minHeight: 200)
-                        .task {
-                            viewModel = container.makeDashboardViewModel()
-                            await viewModel?.loadMetrics()
-                        }
+                } else {
+                    LazyVStack(spacing: 16) {
+                        // Card 1: Current Streak
+                        MetricCard(
+                            title: "Current Streak",
+                            value: "\(viewModel.currentStreak)",
+                            unit: "days clean",
+                            icon: "flame.fill",
+                            color: .orange
+                        )
+                        .accessibilityIdentifier("currentStreakCard")
+
+                        // Card 2: Longest Streak
+                        MetricCard(
+                            title: "Longest Streak",
+                            value: "\(viewModel.longestStreak)",
+                            unit: "days (all-time)",
+                            icon: "trophy.fill",
+                            color: .yellow
+                        )
+                        .accessibilityIdentifier("longestStreakCard")
+
+                        // Card 3: Average Intensity
+                        IntensityTrendCard(
+                            sevenDayAvg: viewModel.averageIntensity7Day,
+                            thirtyDayAvg: viewModel.averageIntensity30Day
+                        )
+                        .accessibilityIdentifier("intensityTrendCard")
+
+                        // Card 4: Top Triggers
+                        TopTriggersCard(triggers: viewModel.topTriggers)
+                            .accessibilityIdentifier("topTriggersCard")
+
+                        // Card 5: Weekly Summary
+                        WeeklySummaryCard(
+                            cravingCount: viewModel.weeklyCravingCount,
+                            usageCount: viewModel.weeklyUsageCount
+                        )
+                        .accessibilityIdentifier("weeklySummaryCard")
+                    }
+                    .padding()
                 }
             }
             .navigationTitle("Progress")
+            .task {
+                await viewModel.loadMetrics()
+            }
             .refreshable {
-                await viewModel?.loadMetrics()
+                await viewModel.loadMetrics()
             }
         }
     }
@@ -328,6 +321,9 @@ struct WeeklySummaryCard: View {
 }
 
 #Preview {
+    let container = DependencyContainer.preview
+
     DashboardView()
-        .environment(DependencyContainer.preview)
+        .environment(container.makeDashboardViewModel())
+        .environment(container)
 }

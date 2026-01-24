@@ -482,7 +482,7 @@ final class RecordingModel {
 **File Storage Structure:**
 
 ```
-~/Library/Application Support/[BundleID]/
+App Sandbox (Documents)/
 └── Recordings/
     ├── video_[UUID].mov          // Video files
     ├── audio_[UUID].m4a          // Audio files

@@ -1,9 +1,12 @@
 import Foundation
+import OSLog
 import SwiftData
 
 /// ModelContainer setup for SwiftData
 /// Data layer - handles persistence configuration
 enum ModelContainerSetup {
+    private static let logger = Logger(subsystem: "com.cravey", category: "ModelContainerSetup")
+
     /// Create the production model container
     @MainActor
     static func create() throws -> ModelContainer {
@@ -78,20 +81,20 @@ enum ModelContainerSetup {
     /// Seed default motivational messages
     @MainActor
     static func seedDefaultMessages(context: ModelContext) {
-        let descriptor = FetchDescriptor<MotivationalMessageModel>()
-        let existingMessages = (try? context.fetch(descriptor)) ?? []
-
-        guard existingMessages.isEmpty else { return }
-
-        for message in MotivationalMessageEntity.defaultMessages {
-            let model = MessageMapper.toModel(message)
-            context.insert(model)
-        }
-
         do {
+            let descriptor = FetchDescriptor<MotivationalMessageModel>()
+            let existingMessages = try context.fetch(descriptor)
+
+            guard existingMessages.isEmpty else { return }
+
+            for message in MotivationalMessageEntity.defaultMessages {
+                let model = MessageMapper.toModel(message)
+                context.insert(model)
+            }
+
             try context.save()
         } catch {
-            print("[ModelContainerSetup] Failed to seed default messages: \(error)")
+            logger.error("Failed to seed default messages: \(error.localizedDescription)")
         }
     }
 
@@ -110,11 +113,11 @@ enum ModelContainerSetup {
 
         // Sample recording
         let recording = RecordingModel(
-            recordingType: RecordingType.audio.rawValue,
+            type: RecordingType.audio.rawValue,
             purpose: RecordingPurpose.motivational.rawValue,
-            title: "Remember Why You Started",
-            fileURL: "Recordings/sample.m4a",
             duration: 120,
+            filePath: "Recordings/audio_sample.m4a",
+            title: "Remember Why You Started",
             notes: "Recorded after 1 week clean"
         )
         context.insert(recording)
@@ -127,7 +130,7 @@ enum ModelContainerSetup {
         do {
             try context.save()
         } catch {
-            print("[ModelContainerSetup] Failed to seed preview data: \(error)")
+            logger.error("Failed to seed preview data: \(error.localizedDescription)")
         }
     }
 }

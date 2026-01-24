@@ -22,6 +22,7 @@ final class CravingLogViewModel {
     private var hasAcknowledgedOldTimestamp: Bool = false
 
     // Dependencies (injected)
+    @ObservationIgnored
     private let logCravingUseCase: LogCravingUseCase
 
     init(logCravingUseCase: LogCravingUseCase) {

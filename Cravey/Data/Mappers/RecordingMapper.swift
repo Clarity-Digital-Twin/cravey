@@ -9,16 +9,18 @@ enum RecordingMapper {
     static func toModel(_ entity: RecordingEntity) -> RecordingModel {
         RecordingModel(
             id: entity.id,
-            createdAt: entity.createdAt,
-            recordingType: entity.recordingType.rawValue,
+            timestamp: entity.timestamp,
+            type: entity.type.rawValue,
             purpose: entity.purpose.rawValue,
-            title: entity.title,
-            fileURL: entity.fileURL,
             duration: entity.duration,
+            filePath: entity.filePath,
+            thumbnailPath: entity.thumbnailPath,
+            title: entity.title,
             notes: entity.notes,
-            thumbnailURL: entity.thumbnailURL,
             lastPlayedAt: entity.lastPlayedAt,
-            playCount: entity.playCount
+            playCount: entity.playCount,
+            createdAt: entity.createdAt,
+            modifiedAt: entity.modifiedAt
         )
     }
 
@@ -26,10 +28,10 @@ enum RecordingMapper {
     static func toEntity(_ model: RecordingModel) -> RecordingEntity {
         // Parse recording type with fallback logging
         let recordingType: RecordingType
-        if let parsed = RecordingType(rawValue: model.recordingType) {
+        if let parsed = RecordingType(rawValue: model.type) {
             recordingType = parsed
         } else {
-            logger.warning("Invalid recordingType '\(model.recordingType)' for id \(model.id), defaulting to .audio")
+            logger.warning("Invalid recording type '\(model.type)' for id \(model.id), defaulting to .audio")
             recordingType = .audio
         }
 
@@ -44,16 +46,18 @@ enum RecordingMapper {
 
         return RecordingEntity(
             id: model.id,
-            createdAt: model.createdAt,
-            recordingType: recordingType,
+            timestamp: model.timestamp,
+            type: recordingType,
             purpose: purpose,
-            title: model.title,
-            fileURL: model.fileURL,
             duration: model.duration,
+            filePath: model.filePath,
+            thumbnailPath: model.thumbnailPath,
+            title: model.title,
             notes: model.notes,
-            thumbnailURL: model.thumbnailURL,
             lastPlayedAt: model.lastPlayedAt,
-            playCount: model.playCount
+            playCount: model.playCount,
+            createdAt: model.createdAt,
+            modifiedAt: model.modifiedAt
         )
     }
 }
