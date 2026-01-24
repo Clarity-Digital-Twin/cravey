@@ -6,6 +6,12 @@
 
 ## Files
 
+### PHASE_OVERVIEW_REPLACED_2025-01-24.md
+- **Date Archived:** 2025-01-24
+- **Reason:** Replaced by consolidated `docs/PROJECT_STATUS.md`
+- **Status:** Contained duplicate/conflicting status with CHECKPOINT_STATUS.md
+- **Superseded By:** PROJECT_STATUS.md (single source of truth)
+
 ### PHASE_1_GAP_ANALYSIS_OUTDATED_2025-11-02.md
 - **Date Archived:** 2025-11-02
 - **Reason:** Document claimed critical gaps that were either:

@@ -1,6 +1,7 @@
 # Cravey App - Claude Code Development Context
 
-**Last Updated:** 2025-10-11
+**Last Updated:** 2025-01-24
+**Current Status:** See `docs/PROJECT_STATUS.md` for authoritative status
 
 ## Project Overview
 Cravey is a **cannabis cessation support iOS app** (iOS 18+) built with Clean Architecture + MVVM using modern SwiftUI and SwiftData. The app helps users track cravings, record motivational videos/audio, and access supportive content during vulnerable moments.
@@ -251,24 +252,31 @@ Cravey/
 ├── Domain/                      # Pure Swift (NO frameworks)
 │   ├── Entities/               # Business models
 │   │   ├── CravingEntity.swift
+│   │   ├── UsageEntity.swift
 │   │   ├── RecordingEntity.swift
 │   │   └── MotivationalMessageEntity.swift
 │   ├── UseCases/               # Business logic
 │   │   ├── LogCravingUseCase.swift
-│   │   └── FetchCravingsUseCase.swift
+│   │   ├── FetchCravingsUseCase.swift
+│   │   ├── LogUsageUseCase.swift
+│   │   └── FetchUsageUseCase.swift
 │   └── Repositories/           # Protocols ONLY
 │       ├── CravingRepositoryProtocol.swift
+│       ├── UsageRepositoryProtocol.swift
 │       ├── RecordingRepositoryProtocol.swift
 │       └── MessageRepositoryProtocol.swift
 ├── Data/                        # Persistence + Storage
 │   ├── Models/                 # SwiftData @Model
 │   │   ├── CravingModel.swift
+│   │   ├── UsageModel.swift
 │   │   ├── RecordingModel.swift
 │   │   └── MotivationalMessageModel.swift
 │   ├── Repositories/           # Concrete implementations
-│   │   └── CravingRepository.swift  # ✅ Implemented
+│   │   ├── CravingRepository.swift  # ✅ Implemented
+│   │   └── UsageRepository.swift    # ✅ Implemented
 │   ├── Mappers/                # Entity ↔ Model conversion
 │   │   ├── CravingMapper.swift
+│   │   ├── UsageMapper.swift
 │   │   ├── RecordingMapper.swift
 │   │   └── MessageMapper.swift
 │   └── Storage/                # File I/O + ModelContainer
@@ -276,18 +284,26 @@ Cravey/
 │       └── ModelContainerSetup.swift
 └── Presentation/                # UI Layer
     ├── ViewModels/              # @Observable state
-    │   └── CravingLogViewModel.swift  # ✅ Implemented
-    └── Views/                   # SwiftUI (TODO)
-        └── (Placeholder ContentView)
+    │   ├── CravingLogViewModel.swift
+    │   ├── CravingListViewModel.swift
+    │   ├── UsageLogViewModel.swift
+    │   ├── UsageListViewModel.swift
+    │   ├── DashboardViewModel.swift
+    │   └── SettingsViewModel.swift
+    └── Views/                   # SwiftUI
+        ├── Home/HomeView.swift
+        ├── Craving/CravingLogForm.swift, CravingListView.swift
+        ├── Usage/UsageLogForm.swift, UsageListView.swift
+        ├── Dashboard/DashboardView.swift
+        ├── Settings/SettingsView.swift
+        └── Components/ChipSelector, IntensitySlider, etc.
 
-CraveyTests/                     # Unit Tests
+CraveyTests/                     # Unit Tests (32 passing)
 ├── Domain/UseCases/
-│   └── LogCravingUseCaseTests.swift  # ✅ 2/2 passing
+├── Integration/
 └── Presentation/ViewModels/
-    └── CravingLogViewModelTests.swift  # ✅ 2/2 passing
 
-CraveyUITests/                   # UI Tests (TODO)
-    └── CraveyUITests.swift
+CraveyUITests/                   # UI Tests (disabled - Swift 6 concurrency)
 ```
 
 ### Dependency Flow (Clean Architecture Rules)
@@ -383,15 +399,27 @@ gh pr create --title "Title" --body "Description"
 
 Tracks individual craving episodes:
 - `id: UUID` - Unique identifier
-- `timestamp: Date` - When craving occurred
+- `timestamp: Date` - When craving occurred (user-editable)
 - `intensity: Int` - Scale 1-10
-- `duration: Int?` - How long (minutes)
-- `trigger: String?` - What caused it
-- `notes: String?` - User notes
+- `triggers: [String]` - HAALT triggers (multi-select)
+- `location: String?` - Where it happened (preset or GPS)
+- `notes: String?` - User notes (500 char limit)
+- `createdAt: Date` - Auto-set on creation
+- `modifiedAt: Date?` - Set on update
+
+### UsageModel (@Model)
+**File:** `Cravey/Data/Models/UsageModel.swift`
+
+Tracks cannabis usage:
+- `id: UUID` - Unique identifier
+- `timestamp: Date` - When usage occurred
+- `method: String` - ROA (Bowls, Joints, Vape, etc.)
+- `amount: Double` - Amount consumed
+- `triggers: [String]` - HAALT triggers
 - `location: String?` - Where it happened
-- `managementStrategy: String?` - How they coped
-- `wasManagedSuccessfully: Bool` - Outcome
-- `recordings: [RecordingModel]` - @Relationship (one-to-many)
+- `notes: String?` - User notes (500 char limit)
+- `createdAt: Date` - Auto-set on creation
+- `modifiedAt: Date?` - Set on update
 
 ### RecordingModel (@Model)
 **File:** `Cravey/Data/Models/RecordingModel.swift`
@@ -461,22 +489,31 @@ ModelConfiguration(
 
 ## Implementation Status
 
-### ✅ Complete (Ready for Reference)
+> **See `docs/PROJECT_STATUS.md` for detailed current status.**
+
+### ✅ Working Features
+- **Craving Logging** - Full form with intensity, triggers, location, notes, timestamp
+- **Usage Logging** - Full form with ROA picker, amounts, triggers, location, notes
+- **Dashboard** - 5 metric cards, streak tracking, intensity trends
+- **Settings** - Export data (CSV/JSON), delete all data
+- **Home Screen** - Lists cravings + usage with swipe actions
+
+### ✅ Technical Foundation
 - Clean Architecture folder structure
-- Domain layer (all entities, protocols, 2 use cases)
-- Data layer (all models, CravingRepository, all mappers)
+- Domain layer (4 entities, 4 use cases, 4 protocols)
+- Data layer (4 models, 4 mappers, 2 repositories: Craving, Usage)
 - DependencyContainer with DI
-- CravingLogViewModel
-- Unit tests (4/4 passing)
-- Terminal build/test workflow
+- 6 ViewModels (CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings)
+- 10+ SwiftUI Views with reusable components
+- Unit tests (32 tests passing)
 - XcodeGen configuration
 
-### 🚧 TODO (Stub Implementations)
-- **RecordingRepository** - Protocol exists, stub implementation in DI
-- **MessageRepository** - Protocol exists, stub implementation in DI
-- **SwiftUI Views** - Currently placeholder ContentView
-- **AVFoundation Integration** - Recording/playback logic
-- **UI Tests** - Scaffolding exists, temporarily disabled (Swift 6 concurrency)
+### 🚧 TODO (Not Implemented)
+- **RecordingRepository** - Protocol exists, no concrete implementation
+- **MessageRepository** - Protocol exists, no concrete implementation
+- **Recording Views** - AVFoundation integration, recording/playback UI
+- **Onboarding** - WelcomeView, TourView not created
+- **UI Tests** - Disabled due to Swift 6 strict concurrency
 
 ---
 
@@ -657,11 +694,13 @@ settings:
 
 ## Documentation Files
 
-- **ARCHITECTURE.md** - Deep dive into Clean Architecture implementation
-- **GETTING_STARTED.md** - Quick 5-minute setup guide
-- **PROJECT_SETUP.md** - Xcode project creation instructions
+- **docs/PROJECT_STATUS.md** - **Single source of truth for current status**
+- **docs/ARCHITECTURE.md** - Deep dive into Clean Architecture implementation
+- **docs/GETTING_STARTED.md** - Quick 5-minute setup guide
+- **docs/PROJECT_SETUP.md** - Xcode project creation instructions
 - **CLAUDE.md** - This file (development context)
 - **README.md** - Public-facing project overview
+- **docs/_archive/** - Historical docs (do not reference)
 
 ---
 
@@ -684,12 +723,22 @@ settings:
 
 ## Next Development Priorities
 
-1. **Implement RecordingRepository & MessageRepository** (follow CravingRepository pattern)
-2. **Build AVFoundation recording logic** (audio/video capture + playback)
-3. **Create real SwiftUI Views** (replace placeholder)
-4. **Add more Use Cases** (FetchRecordings, SaveMessage, etc.)
-5. **Analytics Dashboard** (Swift Charts for progress visualization)
-6. **Enhanced Motivational Content** (smart message selection)
+> **See `docs/PROJECT_STATUS.md` for prioritized backlog.**
+
+Options after stabilization:
+
+### Option A: Quick Wins
+1. **Onboarding** - WelcomeView + TourView (improves first-launch)
+
+### Option B: Core Differentiator
+1. **Recordings Feature** - AVFoundation, RecordingRepository, UI
+   - Audio recording first (simpler)
+   - Video recording second (complex)
+   - Recording library UI
+
+### Option C: Launch Prep
+1. **TestFlight** - Beta testing
+2. **App Store assets** - Screenshots, description
 
 ---
 
