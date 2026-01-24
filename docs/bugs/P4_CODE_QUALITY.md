@@ -1,7 +1,7 @@
 # P4 - Code Quality Issues
 
 **Status:** ACTIVE
-**Last Updated:** 2025-01-24
+**Last Updated:** 2026-01-24
 
 Code smells, style issues, minor improvements.
 
@@ -74,27 +74,19 @@ func canSaveFile(size: Int64) -> Bool {
 
 ---
 
-## QUALITY-004: Incomplete Mappers (Stubs)
+## QUALITY-004: Incomplete Mappers (Stubs) ❌ INCORRECT / OUTDATED
 
 **Files:**
 - `Data/Mappers/RecordingMapper.swift`
 - `Data/Mappers/MessageMapper.swift`
 
-### Problem
-These mappers exist but may not properly map all fields since Recording/Message features aren't implemented.
+### Finding
+Both mappers are implemented and map fields in both directions:
+- `Cravey/Data/Mappers/RecordingMapper.swift`
+- `Cravey/Data/Mappers/MessageMapper.swift`
 
-### Risk
-If used, could cause data loss or corruption.
-
-### Fix
-Mark as not-implemented:
-```swift
-enum RecordingMapper {
-    static func toEntity(_ model: RecordingModel) -> RecordingEntity {
-        fatalError("RecordingMapper not implemented - see docs/future/RECORDINGS_SPEC.md")
-    }
-}
-```
+### Action
+- Mark this issue as **CLOSED** (documentation was stale).
 
 ---
 
@@ -104,7 +96,7 @@ enum RecordingMapper {
 
 ### Problem
 ```swift
-var id: UUID = UUID()  // Missing @Attribute(.unique)
+var id: UUID  // Missing @Attribute(.unique)
 ```
 
 Other models have it:
@@ -120,6 +112,44 @@ Add consistency:
 
 ---
 
+## QUALITY-009: MotivationalMessageModel Missing @Attribute(.unique)
+
+**File:** `Cravey/Data/Models/MotivationalMessageModel.swift:8`
+
+### Problem
+`MotivationalMessageModel.id` is not marked unique, unlike `CravingModel` and `UsageModel`.
+
+### Impact
+Potential for duplicate IDs and harder-to-reason-about fetch/update logic if messages become user-editable.
+
+### Fix
+Add:
+```swift
+@Attribute(.unique) var id: UUID
+```
+
+---
+
+## QUALITY-010: Unused Recording Infrastructure (Dead Code in Current App)
+
+**Files:**
+- `Cravey/App/DependencyContainer.swift:13,73`
+- `Cravey/Data/Storage/FileStorageManager.swift` (multiple unused public methods)
+
+### Problem
+Recording infrastructure exists, but is not used by any ViewModel/View:
+- `DependencyContainer.fileStorage` is never referenced outside initialization.
+- `FileStorageManager` APIs like `saveRecording`, `generateThumbnail`, `getDuration`, and `getTotalStorageUsed` have no call sites in the app.
+
+### Impact
+- Increases maintenance surface area and cognitive load.
+- Makes it easy for future work to wire recording behavior inconsistently with master specs.
+
+### Fix
+- Either implement the Recordings feature end-to-end (preferred) or remove/feature-flag unused APIs until the feature is ready.
+
+---
+
 ## QUALITY-006: DashboardViewModel Redundant Calculation
 
 **File:** `Cravey/Presentation/ViewModels/DashboardViewModel.swift`
@@ -131,10 +161,7 @@ currentStreak = calculateCurrentStreak(usages: usages)  // Calculates streak
 longestStreak = calculateLongestStreak(usages: usages)  // Recalculates similar logic
 ```
 
-Inside `calculateLongestStreak`:
-```swift
-longestDays = max(longestDays, currentStreak)  // Uses local var, not the class property
-```
+Note: `calculateLongestStreak` currently references the **property** `currentStreak` (not a local variable), but still re-sorts usages and duplicates date math.
 
 ### Fix
 Calculate once, reuse:
@@ -203,8 +230,10 @@ func update(_ entity: CravingEntity) async throws {
 | QUALITY-001 | Print statements | Low |
 | QUALITY-002 | SettingsVM mixed concerns | Medium |
 | QUALITY-003 | No storage limits | Medium |
-| QUALITY-004 | Incomplete mappers | Low |
+| QUALITY-004 | Incomplete mappers (outdated doc) | Low |
 | QUALITY-005 | Missing @Attribute | Low |
+| QUALITY-009 | Missing @Attribute | Low |
+| QUALITY-010 | Unused recording infrastructure | Low |
 | QUALITY-006 | Redundant calculation | Low |
 | QUALITY-007 | Calendar fallback | Low |
 | QUALITY-008 | Test mock incomplete | Low |

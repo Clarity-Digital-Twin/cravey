@@ -1,7 +1,7 @@
 # P2 - Minor Bugs
 
 **Status:** ACTIVE
-**Last Updated:** 2025-01-24
+**Last Updated:** 2026-01-24
 
 UI glitches, edge case issues, style violations.
 
@@ -17,7 +17,7 @@ guard let documents = try? fileManager.url(
     for: .documentDirectory,
     in: .userDomainMask,
     appropriateFor: nil,
-    create: true
+    create: false
 ) else { return nil }
 ```
 
@@ -42,10 +42,12 @@ do {
 **File:** `Cravey/Presentation/Views/Usage/UsageLogForm.swift:185`
 
 ### Problem
-Same as BUG-005 - helper function with 6 parameters.
+This is not a “helper” function — it is the `LogUsageUseCase.execute(...)` signature being implemented in a preview mock.
 
-### Fix
-Refactor to use struct or builder pattern.
+This issue is therefore a **duplicate** of BUG-005 (the protocol/API design), and will be resolved if/when BUG-005 is addressed.
+
+### Status
+**CLOSED (Duplicate of BUG-005)**
 
 ---
 
@@ -92,7 +94,7 @@ Break into multiple lines.
 Collection literals have unnecessary trailing commas.
 
 ### Fix
-Run `swiftformat .` to auto-fix all.
+Remove the trailing commas at the listed sites (or change SwiftLint config to allow trailing commas).
 
 ---
 
@@ -101,7 +103,7 @@ Run `swiftformat .` to auto-fix all.
 | Bug ID | Description | Status |
 |--------|-------------|--------|
 | BUG-007 | Silent directory failure | OPEN |
-| BUG-008 | 6 param helper function | OPEN |
+| BUG-008 | Duplicate of BUG-005 | ✅ CLOSED |
 | BUG-009 | Test function too long | OPEN |
 | BUG-010 | Line too long | OPEN |
 | BUG-011 | Trailing commas (8x) | OPEN |

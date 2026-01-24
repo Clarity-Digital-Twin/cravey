@@ -1,7 +1,7 @@
 # P1 - Major Bugs
 
 **Status:** ACTIVE
-**Last Updated:** 2025-01-24
+**Last Updated:** 2026-01-24
 
 Features not working as specified, significant issues that affect user experience.
 
@@ -165,6 +165,60 @@ Low - but should fix for consistency.
 
 ---
 
+## BUG-012: “Delete All Data” Does Not Delete Recordings/Messages (UI Claim Mismatch)
+
+**Files:**
+- `Cravey/Presentation/ViewModels/SettingsViewModel.swift:100-119`
+- `Cravey/Presentation/Views/Settings/SettingsView.swift:108-113`
+
+### Problem
+Settings UI states it will delete “cravings, usage logs, and recordings”, but the implementation deletes only:
+- `CravingModel`
+- `UsageModel`
+
+It does **not** delete:
+- `RecordingModel` entries (if/when present)
+- recording files in `FileStorageManager` storage
+- seeded `MotivationalMessageModel` entries
+
+### Impact
+- User expectation mismatch for a destructive action.
+- Potential privacy issue if users believe recordings are removed when they are not.
+
+### Fix
+- Expand deletion to include all stored models and any on-disk recording files.
+- Ensure Settings copy matches actual behavior.
+
+### Acceptance Criteria
+- [ ] After tapping “Delete Everything”, `CravingModel`, `UsageModel`, `RecordingModel`, and `MotivationalMessageModel` records are deleted (as intended).
+- [ ] Any on-disk recording files/thumbnails are deleted.
+- [ ] Settings confirmation text matches what is actually deleted.
+
+---
+
+## BUG-013: Recordings Tab Missing (Spec Drift)
+
+**File:** `Cravey/App/CraveyApp.swift:12-27`
+
+### Problem
+Master UX spec defines a 4-tab layout including a **Recordings** tab, but the app currently ships only:
+- Home
+- Progress
+- Settings
+
+### Impact
+- MVP feature gap (Recordings feature is not accessible).
+- Blocks implementation of “Quick Play” on Home.
+
+### Fix
+- Add the Recordings tab and minimal placeholder view, or explicitly mark as deferred and remove dependent UX copy.
+
+### Acceptance Criteria
+- [ ] Tab bar includes a Recordings tab wired to a concrete view.
+- [ ] Home no longer contains Recording-related TODOs that imply availability if feature is deferred.
+
+---
+
 ## Summary
 
 | Bug ID | Description | Status | Priority |
@@ -173,3 +227,5 @@ Low - but should fix for consistency.
 | BUG-004 | Swallowed errors in seed data | OPEN | High |
 | BUG-005 | 6 param function violation | OPEN | Medium |
 | BUG-006 | Task.sleep error ignored | OPEN | Low |
+| BUG-012 | Delete All Data incomplete | OPEN | High |
+| BUG-013 | Recordings tab missing | OPEN | Medium |

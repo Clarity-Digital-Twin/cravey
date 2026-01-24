@@ -1,7 +1,7 @@
 # P3 - Tech Debt
 
 **Status:** ACTIVE
-**Last Updated:** 2025-01-24
+**Last Updated:** 2026-01-24
 
 Architecture violations, incomplete implementations, design issues that need addressing.
 
@@ -60,7 +60,7 @@ protocol DeleteAllDataUseCase {
 
 ---
 
-## DEBT-002: UI Tests Not Functional (Swift 6 Issues)
+## DEBT-002: UI Tests Are Brittle / Out-of-Sync
 
 **Files:**
 - `CraveyUITests/CraveyUITests.swift`
@@ -68,35 +68,21 @@ protocol DeleteAllDataUseCase {
 - `CraveyUITests/Phase1ScreenshotTests.swift`
 
 ### Problem
-Swift 6 `@MainActor` isolation breaks UI test setup:
-```swift
-nonisolated(unsafe) var app: XCUIApplication!  // Workaround
-
-override func setUp() {
-    app = XCUIApplication()  // ❌ Main actor isolation error
-    app.launchArguments = ["--uitesting"]
-    app.launch()
-}
-```
+The UI tests currently have multiple reliability issues:
+- Heavy use of `sleep()` for timing (flaky under load / CI).
+- Screenshot-style tests are tightly coupled to UI structure and strings.
+- At least one test uses a trigger option that does not exist in the app UI (`"Stressed"`).
+- Uses `nonisolated(unsafe)` for `XCUIApplication` storage (works, but is a concurrency escape hatch).
 
 ### Impact
-- UI tests may not run properly
-- No automated UI regression testing
-- Manual testing burden
+- UI tests cannot be treated as a stable gate for regressions.
+- Higher risk of false failures (wasted time) or false confidence (tests not asserting the right thing).
 
 ### Fix
-```swift
-@MainActor
-final class CraveyUITests: XCTestCase {
-    var app: XCUIApplication!
-
-    override func setUp() async throws {
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting"]
-        app.launch()
-    }
-}
-```
+- Remove `sleep()` and replace with `waitForExistence` + explicit accessibility identifiers.
+- Update tests to match real UI text/options (e.g., remove `"Stressed"` chip expectation).
+- Prefer `@MainActor` + `setUpWithError()` (or async `setUp()` where appropriate), and avoid `nonisolated(unsafe)` unless required.
+- Keep “screenshot capture” tests out of required CI gating (or mark them skipped).
 
 ---
 
@@ -151,12 +137,56 @@ Streak calculation logic is confusing:
 
 ---
 
+## DEBT-006: Motivational Message Model/Domain Drift vs Master Spec
+
+**Files:**
+- `Cravey/Domain/Entities/MotivationalMessageEntity.swift:42-49`
+- `Cravey/Data/Models/MotivationalMessageModel.swift:8-17`
+
+### Problem
+Master specs define message categories like `"urge"`, `"anxiety"`, `"boredom"`, `"social"`, `"celebration"` plus fields like `isCustom` and `priority`. Current code uses a different category set and different field naming (`isUserCreated`, `displayPriority`, plus `wasHelpful`).
+
+### Impact
+- Implementing the Motivational Messages UI per `docs/master/` will require schema + domain alignment and likely a migration.
+- Risk of building UI against the wrong data semantics.
+
+### Fix
+- Decide whether to align code to `docs/master/` (authoritative) or update master specs (requires product/clinical approval).
+- If aligning to master:
+  - Update `MessageCategory` cases and raw values.
+  - Align model fields (`isCustom`, `priority`, `modifiedAt`, etc.).
+  - Update seeding logic and mappers.
+  - Add migration notes/tests for existing data.
+
+---
+
+## DEBT-007: Recording Model Drift vs Master Spec (Fields + Naming)
+
+**Files:**
+- `Cravey/Data/Models/RecordingModel.swift:8-23`
+- `Cravey/Domain/Entities/RecordingEntity.swift:5-16`
+
+### Problem
+The master data model spec includes fields like `timestamp`, `modifiedAt`, `filePath`, and `thumbnailPath`. Current `RecordingModel` uses different naming (`createdAt`, `fileURL`, `thumbnailURL`) and omits some spec fields.
+
+### Impact
+- Recording feature implementation (recordings tab, quick play, attachments) is blocked without agreeing on the schema.
+- Increased migration risk once recordings are actually written to disk/database.
+
+### Fix
+- Choose a single source of truth (prefer `docs/master/DATA_MODEL_SPEC.md`).
+- Align `RecordingModel` + `RecordingEntity` + `RecordingMapper` accordingly before shipping recordings UI.
+
+---
+
 ## Summary
 
 | Debt ID | Description | Impact | Status |
 |---------|-------------|--------|--------|
 | DEBT-001 | SettingsViewModel Clean Arch violation | High | OPEN |
-| DEBT-002 | UI Tests broken (Swift 6) | Medium | OPEN |
+| DEBT-002 | UI Tests brittle / out-of-sync | Medium | OPEN |
 | DEBT-003 | TODO features not implemented | Low | DEFERRED |
 | DEBT-004 | No error recovery in init | High | OPEN |
 | DEBT-005 | Streak logic unclear | Medium | OPEN |
+| DEBT-006 | Message schema/category drift | Medium | OPEN |
+| DEBT-007 | Recording schema drift | Medium | OPEN |

@@ -1,17 +1,17 @@
 # Bug Tracker
 
-**Last Updated:** 2025-01-24
-**Total Issues:** 24
+**Last Updated:** 2026-01-24
+**Total Issues:** 30
 
 ## Quick Stats
 
 | Priority | Count | Status |
 |----------|-------|--------|
 | P0 - Critical | 2 | 1 FIXED, 1 OPEN |
-| P1 - Major | 4 | OPEN |
-| P2 - Minor | 5 | OPEN |
-| P3 - Tech Debt | 5 | OPEN |
-| P4 - Code Quality | 8 | OPEN |
+| P1 - Major | 6 | OPEN |
+| P2 - Minor | 5 | 4 OPEN, 1 CLOSED |
+| P3 - Tech Debt | 7 | 6 OPEN, 1 DEFERRED |
+| P4 - Code Quality | 10 | 9 OPEN, 1 CLOSED |
 
 ## Priority Definitions
 
@@ -34,11 +34,12 @@
 ### Must Fix Before Next Release
 1. **BUG-001** - DependencyContainer fatalError (P0)
 2. **DEBT-001** - SettingsViewModel Clean Architecture violation (P3 but high impact)
+3. **BUG-012** - “Delete All Data” doesn’t delete recordings/messages (P1)
 
 ### Should Fix Soon
-3. **BUG-003** - ModelContext thread safety documentation
-4. **BUG-004** - Swallowed errors in seed data
-5. **DEBT-005** - Streak logic documentation
+4. **BUG-003** - ModelContext thread safety documentation
+5. **BUG-004** - Swallowed errors in seed data
+6. **DEBT-005** - Streak logic documentation
 
 ### Fixed Recently
 - ✅ **BUG-002** - DashboardView Swift 6 concurrency (Fixed 2025-01-24)

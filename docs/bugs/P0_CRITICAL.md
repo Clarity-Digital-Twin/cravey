@@ -1,7 +1,7 @@
 # P0 - Critical Bugs
 
 **Status:** ACTIVE
-**Last Updated:** 2025-01-24
+**Last Updated:** 2026-01-24
 
 These bugs can cause crashes, data loss, or prevent the app from running.
 
