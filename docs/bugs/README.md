@@ -7,11 +7,11 @@
 
 | Priority | Count | Status |
 |----------|-------|--------|
-| P0 - Critical | 4 | 3 FIXED, 1 OPEN |
+| P0 - Critical | 4 | 4 FIXED, 0 OPEN |
 | P1 - Major | 10 | 6 FIXED, 4 OPEN |
-| P2 - Minor | 10 | 8 FIXED, 1 CLOSED, 1 OPEN |
+| P2 - Minor | 10 | 9 FIXED, 1 CLOSED, 0 OPEN |
 | P3 - Tech Debt | 9 | 7 FIXED, 2 DEFERRED |
-| P4 - Code Quality | 14 | 8 FIXED, 2 CLOSED, 4 DEFERRED |
+| P4 - Code Quality | 14 | 10 FIXED, 2 CLOSED, 2 DEFERRED |
 
 ## Priority Definitions
 
@@ -32,18 +32,16 @@
 ## Top Priorities
 
 ### Must Fix Before Next Release
-1. **BUG-023** - DependencyContainer fatalError on unrecoverable storage
-2. **BUG-015** - First launch onboarding missing
-3. **BUG-016** - Home tab UX mismatch (primary actions + Quick Play)
-4. **BUG-017** - Dashboard spec gap (date filter + charts)
-5. **BUG-018** - Recordings feature stubbed
+1. **BUG-015** - First launch onboarding missing
+2. **BUG-016** - Home tab UX mismatch (primary actions + Quick Play)
+3. **BUG-017** - Dashboard spec gap (date filter + charts)
+4. **BUG-018** - Recordings feature stubbed
 
 ### Should Fix Soon
-1. **BUG-024** - UsageListViewModel hardcoded error message
-2. **DEBT-003** - Deferred phase features (Quick Play, GPS location)
-3. **DEBT-009** - File I/O on MainActor (recordings readiness)
-4. **QUALITY-010** - Recording infra usage cleanup
-5. **QUALITY-012** - Logger subsystem consistency
+1. **DEBT-003** - Deferred phase features (Quick Play, GPS location)
+2. **DEBT-009** - File I/O on MainActor (recordings readiness)
+3. **QUALITY-010** - Recording infra usage cleanup
+4. **QUALITY-012** - Logger subsystem consistency
 
 ### Fixed Recently
 - ✅ **BUG-014** - iOS Simulator builds blocked by SwiftLint script sandboxing
@@ -52,6 +50,10 @@
 - ✅ **BUG-020** - Intensity color scale aligned to spec
 - ✅ **BUG-021** - Dashboard top triggers include usage triggers
 - ✅ **BUG-022** - Domain validation for future timestamps + notes length
+- ✅ **BUG-023** - Removed startup fatalError; added AppUnavailable fallback
+- ✅ **BUG-024** - UsageListViewModel preserves error context
+- ✅ **QUALITY-013** - RecordingModel linkedCravings non-optional array
+- ✅ **QUALITY-014** - Consistent save error mapping in Log* use cases
 - ✅ **BUG-001** - DependencyContainer fatalError on init failure
 - ✅ **BUG-012** - “Delete All Data” deletes recordings/messages/files
 - ✅ **DEBT-001** - SettingsViewModel Clean Architecture violation

@@ -10,8 +10,9 @@ Code smells, style issues, minor improvements.
 ## QUALITY-001: Print Statements in Production Code
 
 **Files:**
-- `ModelContainerSetup.swift:94,130`
-- `DashboardViewModel.swift:73`
+- `Cravey/Data/Storage/ModelContainerSetup.swift`
+- `Cravey/Presentation/ViewModels/DashboardViewModel.swift`
+**Verify:** `! rg -n "\\bprint\\(" Cravey/Data/Storage/ModelContainerSetup.swift Cravey/Presentation/ViewModels/DashboardViewModel.swift` (should return no matches)
 
 ### Problem
 ```swift
@@ -37,7 +38,6 @@ logger.error("Failed to seed messages: \(error.localizedDescription)")
 ## QUALITY-002: SettingsViewModel Mixed Concerns
 
 **File:** `Cravey/Presentation/ViewModels/SettingsViewModel.swift`
-**Lines:** Full file (172 lines)
 
 ### Problem
 Single ViewModel handles:
@@ -105,7 +105,8 @@ Both mappers are implemented and map fields in both directions:
 
 ## QUALITY-005: RecordingModel Missing @Attribute(.unique)
 
-**File:** `Cravey/Data/Models/RecordingModel.swift:8`
+**File:** `Cravey/Data/Models/RecordingModel.swift`
+**Verify:** `rg -n "@Attribute\\(\\.unique\\) var id: UUID" Cravey/Data/Models/RecordingModel.swift`
 
 ### Problem
 ```swift
@@ -130,7 +131,8 @@ Add consistency:
 
 ## QUALITY-009: MotivationalMessageModel Missing @Attribute(.unique)
 
-**File:** `Cravey/Data/Models/MotivationalMessageModel.swift:8`
+**File:** `Cravey/Data/Models/MotivationalMessageModel.swift`
+**Verify:** `rg -n "@Attribute\\(\\.unique\\) var id: UUID" Cravey/Data/Models/MotivationalMessageModel.swift`
 
 ### Problem
 `MotivationalMessageModel.id` is not marked unique, unlike `CravingModel` and `UsageModel`.
@@ -152,7 +154,7 @@ Add:
 ## QUALITY-010: Unused Recording Infrastructure (Dead Code in Current App)
 
 **Files:**
-- `Cravey/App/DependencyContainer.swift:13,73`
+- `Cravey/App/DependencyContainer.swift`
 - `Cravey/Data/Storage/FileStorageManager.swift` (multiple unused public methods)
 
 ### Problem
@@ -179,7 +181,6 @@ by “Delete All Data” (privacy cleanup), but recording capture/playback remai
 ## QUALITY-006: DashboardViewModel Redundant Calculation
 
 **File:** `Cravey/Presentation/ViewModels/DashboardViewModel.swift`
-**Lines:** 47-51, 111
 
 ### Problem
 ```swift
@@ -205,7 +206,6 @@ longestStreak = longest
 ## QUALITY-007: Calendar Fallback May Be Wrong
 
 **File:** `Cravey/Presentation/ViewModels/DashboardViewModel.swift`
-**Lines:** 55-56
 
 ### Problem
 ```swift
@@ -234,7 +234,7 @@ guard let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: no
 
 ## QUALITY-008: Test Mock Incomplete
 
-**File:** `CraveyTests/Domain/UseCases/LogCravingUseCaseTests.swift:71`
+**File:** `CraveyTests/Domain/UseCases/LogCravingUseCaseTests.swift`
 
 ### Problem
 ```swift
@@ -298,19 +298,15 @@ debugging.
 
 ## QUALITY-013: RecordingModel Optional Array Type Inconsistency
 
-**File:** `Cravey/Data/Models/RecordingModel.swift:24,54`
-**Verify:** `rg -n "linkedCravings" Cravey/Data/Models/RecordingModel.swift`
+**File:** `Cravey/Data/Models/RecordingModel.swift`
+**Verify:** `rg -n "linkedCravings: \\[CravingModel\\] = \\[\\]" Cravey/Data/Models/RecordingModel.swift`
 
 ### Problem
 ```swift
-// Declaration (line 24):
 var linkedCravings: [CravingModel]?  // ← Optional array
-
-// Initialization (line 54):
-linkedCravings = []  // ← Non-optional value assigned
 ```
 
-Type is declared as optional array but initialized with non-optional value.
+Type semantics were unclear (optional array but always initialized as empty).
 
 ### Impact
 - SwiftData may not handle optional arrays optimally
@@ -322,34 +318,36 @@ var linkedCravings: [CravingModel] = []  // Non-optional with default
 ```
 
 ### Status
-🟡 **DEFERRED** (2026-01-25)
-
-**Rationale:** Recording feature not yet implemented. Fix when implementing recordings.
+✅ **FIXED** (2026-01-25)
 
 ---
 
 ## QUALITY-014: LogCravingUseCase Missing Save Error Handling
 
-**File:** `Cravey/Domain/UseCases/LogCravingUseCase.swift:55`
-**Verify:** `rg -n "try await repository.save" Cravey/Domain/UseCases/LogCravingUseCase.swift Cravey/Domain/UseCases/LogUsageUseCase.swift`
+**Files:**
+- `Cravey/Domain/UseCases/LogCravingUseCase.swift`
+- `Cravey/Domain/UseCases/LogUsageUseCase.swift`
+**Verify:**
+- `rg -n "saveFailed\\(underlying:" Cravey/Domain/UseCases/LogCravingUseCase.swift Cravey/Domain/UseCases/LogUsageUseCase.swift`
+- `bash scripts/verify.sh`
 
 ### Problem
 LogCravingUseCase and LogUsageUseCase handle repository errors inconsistently:
-- LogCravingUseCase: No error handling, propagates directly
-- LogUsageUseCase: Wraps in do-catch, converts to `saveFailed`
+- LogCravingUseCase: Propagated repository errors directly
+- LogUsageUseCase: Converted save failures into `UsageError.saveFailed`, losing context
 
 ### Impact
 - Inconsistent error semantics between craving and usage logging
-- LogUsageUseCase loses error context by converting to generic error
-- LogCravingUseCase preserves error but may expose implementation details
+- Harder to reason about error handling and to debug save failures reliably
 
-### Recommendation
-Current LogCravingUseCase is arguably better (preserves original error). Apply consistently.
+### Fix Implemented
+- Both use cases now:
+  - Re-throw `CancellationError` unchanged
+  - Map repository save failures into a domain-level `.saveFailed(underlying: ...)` error, preserving underlying error
+    details via `failureReason` while keeping a stable user-facing `errorDescription`.
 
 ### Status
-🟡 **DEFERRED** (2026-01-25)
-
-**Rationale:** Both patterns work; inconsistency is cosmetic.
+✅ **FIXED** (2026-01-25)
 
 ---
 
@@ -369,5 +367,5 @@ Current LogCravingUseCase is arguably better (preserves original error). Apply c
 | QUALITY-008 | Test mock incomplete | ✅ FIXED |
 | QUALITY-011 | Broken ChipSelector doc reference | ✅ FIXED |
 | QUALITY-012 | Logger subsystem inconsistency | 🟡 DEFERRED |
-| QUALITY-013 | RecordingModel optional array | 🟡 DEFERRED |
-| QUALITY-014 | LogCravingUseCase error handling | 🟡 DEFERRED |
+| QUALITY-013 | RecordingModel optional array | ✅ FIXED |
+| QUALITY-014 | LogCravingUseCase error handling | ✅ FIXED |

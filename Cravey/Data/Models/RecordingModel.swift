@@ -21,7 +21,7 @@ final class RecordingModel {
 
     // Relationship (one-to-many: one recording can be linked from many cravings)
     @Relationship(deleteRule: .nullify)
-    var linkedCravings: [CravingModel]?
+    var linkedCravings: [CravingModel] = []
 
     init(
         id: UUID = UUID(),
@@ -51,6 +51,5 @@ final class RecordingModel {
         self.thumbnailPath = thumbnailPath
         self.createdAt = createdAt
         self.modifiedAt = modifiedAt
-        linkedCravings = []
     }
 }

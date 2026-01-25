@@ -28,7 +28,7 @@ final class UsageListViewModel {
         do {
             usageList = try await fetchUsageUseCase.execute()
         } catch {
-            errorMessage = "Failed to load usage history"
+            errorMessage = error.localizedDescription
         }
 
         isLoading = false

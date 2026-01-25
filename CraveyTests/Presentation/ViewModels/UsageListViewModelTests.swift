@@ -56,18 +56,36 @@ struct UsageListViewModelTests {
         #expect(await deleteUseCase.executeCallCount == 1)
         #expect(await deleteUseCase.lastDeletedID == idToDelete)
     }
+
+    // MARK: - Test 4: Fetch Failure
+
+    @Test("fetchUsage should preserve error context on failure")
+    func fetchFailureShowsLocalizedError() async {
+        let mockUseCase = MockFetchUsageUseCase(shouldThrow: true)
+        let viewModel = UsageListViewModel(
+            fetchUsageUseCase: mockUseCase,
+            deleteUsageUseCase: MockDeleteUsageUseCase()
+        )
+
+        await viewModel.fetchUsage()
+
+        #expect(viewModel.errorMessage == MockFetchUsageError.fetchFailed.localizedDescription)
+    }
 }
 
 // MARK: - Mocks
 
 actor MockFetchUsageUseCase: FetchUsageUseCase {
     let returnEmpty: Bool
+    let shouldThrow: Bool
 
-    init(returnEmpty: Bool = false) {
+    init(returnEmpty: Bool = false, shouldThrow: Bool = false) {
         self.returnEmpty = returnEmpty
+        self.shouldThrow = shouldThrow
     }
 
     func execute() async throws -> [UsageEntity] {
+        if shouldThrow { throw MockFetchUsageError.fetchFailed }
         if returnEmpty { return [] }
 
         return [
@@ -78,6 +96,17 @@ actor MockFetchUsageUseCase: FetchUsageUseCase {
 
     func execute(since _: Date) async throws -> [UsageEntity] {
         try await execute()
+    }
+}
+
+enum MockFetchUsageError: LocalizedError {
+    case fetchFailed
+
+    var errorDescription: String? {
+        switch self {
+        case .fetchFailed:
+            "Mock fetch failed"
+        }
     }
 }
 

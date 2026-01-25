@@ -52,16 +52,32 @@ final class DefaultLogCravingUseCase: LogCravingUseCase, Sendable {
         )
 
         // Persist via repository
-        try await repository.save(craving)
+        do {
+            try await repository.save(craving)
+        } catch let cancellationError as CancellationError {
+            throw cancellationError
+        } catch {
+            throw CravingError.saveFailed(underlying: error.localizedDescription)
+        }
 
         return craving
     }
 }
 
-enum CravingError: LocalizedError {
+enum CravingError: LocalizedError, Sendable {
     case invalidIntensity
     case futureTimestamp
     case notesTooLong
+    case saveFailed(underlying: String)
+
+    var failureReason: String? {
+        switch self {
+        case let .saveFailed(underlying):
+            underlying
+        default:
+            nil
+        }
+    }
 
     var errorDescription: String? {
         switch self {
@@ -71,6 +87,8 @@ enum CravingError: LocalizedError {
             "Timestamp cannot be in the future"
         case .notesTooLong:
             "Notes cannot exceed 500 characters"
+        case .saveFailed:
+            "Failed to save craving"
         }
     }
 }

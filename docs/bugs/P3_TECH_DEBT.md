@@ -10,7 +10,6 @@ Architecture violations, incomplete implementations, design issues that need add
 ## DEBT-001: SettingsViewModel Violates Clean Architecture 🔴
 
 **File:** `Cravey/Presentation/ViewModels/SettingsViewModel.swift`
-**Lines:** 6, 48-49
 
 ### Problem
 ViewModel directly imports and uses Data layer classes:
@@ -129,7 +128,6 @@ BUG-001 (P0) - Same root cause.
 ## DEBT-005: DashboardViewModel Streak Logic Unclear
 
 **File:** `Cravey/Presentation/ViewModels/DashboardViewModel.swift`
-**Lines:** 79-114
 
 ### Problem
 Streak calculation logic is confusing:
@@ -157,8 +155,8 @@ Streak calculation logic is confusing:
 ## DEBT-006: Motivational Message Model/Domain Drift vs Master Spec
 
 **Files:**
-- `Cravey/Domain/Entities/MotivationalMessageEntity.swift:42-49`
-- `Cravey/Data/Models/MotivationalMessageModel.swift:8-17`
+- `Cravey/Domain/Entities/MotivationalMessageEntity.swift`
+- `Cravey/Data/Models/MotivationalMessageModel.swift`
 
 ### Problem
 Master specs define message categories like `"urge"`, `"anxiety"`, `"boredom"`, `"social"`, `"celebration"` plus fields like `isCustom` and `priority`. Current code uses a different category set and different field naming (`isUserCreated`, `displayPriority`, plus `wasHelpful`).
@@ -187,8 +185,8 @@ Master specs define message categories like `"urge"`, `"anxiety"`, `"boredom"`, 
 ## DEBT-007: Recording Model Drift vs Master Spec (Fields + Naming)
 
 **Files:**
-- `Cravey/Data/Models/RecordingModel.swift:8-23`
-- `Cravey/Domain/Entities/RecordingEntity.swift:5-16`
+- `Cravey/Data/Models/RecordingModel.swift`
+- `Cravey/Domain/Entities/RecordingEntity.swift`
 
 ### Problem
 The master data model spec includes fields like `timestamp`, `modifiedAt`, `filePath`, and `thumbnailPath`. Current `RecordingModel` uses different naming (`createdAt`, `fileURL`, `thumbnailURL`) and omits some spec fields.
@@ -235,7 +233,7 @@ verification gate.
 ## DEBT-009: FileStorageManager Performs Potentially Heavy I/O on MainActor
 
 **File:** `Cravey/Data/Storage/FileStorageManager.swift`
-**Verify:** `rg -n "@MainActor\\s*\\n\\s*final class FileStorageManager" Cravey/Data/Storage/FileStorageManager.swift`
+**Verify:** `rg -n -U "@MainActor\\s*\\n\\s*final class FileStorageManager" Cravey/Data/Storage/FileStorageManager.swift`
 
 ### Problem
 `FileStorageManager` is `@MainActor`, but contains synchronous file operations that can become expensive:

@@ -49,7 +49,6 @@ If ModelContainer or repository setup fails (disk full, corrupted data, etc.), t
 ## BUG-002: Swift 6 Concurrency - DashboardView reduceMotion ✅ FIXED
 
 **File:** `Cravey/Presentation/Views/Dashboard/DashboardView.swift`
-**Lines:** 120-121, 189-190, 245-246, 309-310
 
 ### Problem
 ~~`@Environment(\.accessibilityReduceMotion)` accessed inside `@Sendable` `.scrollTransition {}` closures.~~
@@ -83,25 +82,39 @@ SwiftLint from reading the repo/config, producing build errors like:
 
 ---
 
-## BUG-023: DependencyContainer Still Calls fatalError on Unrecoverable Storage Failure
+## BUG-023: Startup Crashes on Unrecoverable Storage Failure (fatalError)
 
 **File:** `Cravey/App/DependencyContainer.swift`
-**Verify:** `rg -n "fatalError\\(\"Cravey cannot start" Cravey/App/DependencyContainer.swift`
+**Verify:**
+- `! rg -n "fatalError\\(" Cravey/App/DependencyContainer.swift` (should return no matches)
+- `rg -n "throw StartupFailure" Cravey/App/DependencyContainer.swift`
+- `rg -n "AppUnavailableView\\(" Cravey/App/CraveyApp.swift`
+- `bash scripts/verify.sh`
 
 ### Problem
-If both persistent storage initialization and the in-memory fallback initialization fail, the app calls `fatalError(...)`
-and crashes during startup.
+If both persistent storage initialization and the in-memory fallback initialization fail, the app used to call
+`fatalError(...)` and crash during startup.
 
 ### Impact
 - App won’t launch
 - No user-facing recovery path (beyond reinstall/device restart)
 
 ### Status
-🔴 **OPEN** (2026-01-25)
+✅ **FIXED** (2026-01-25)
 
-### Recommendation
-- Replace `fatalError` with a non-crashing “App Unavailable” UI state that does not require a `ModelContainer` to render.
-  (This likely requires making `.modelContainer(...)` conditional and rendering a fallback root view.)
+### Fix Implemented
+- `DependencyContainer` now throws a `StartupFailure` error instead of calling `fatalError`.
+- `CraveyApp` conditionally renders:
+  - The normal app scene (with `.modelContainer(...)`) when startup succeeds
+  - An `AppUnavailableView` fallback when startup fails (no `ModelContainer` required)
+- Added a unit test that simulates both containers failing via injected factories:
+  - `CraveyTests/App/DependencyContainerTests.swift`
+
+### Acceptance Criteria
+- [x] No `fatalError` call remains in startup code paths
+- [x] Unrecoverable startup failure renders `AppUnavailableView` instead of crashing
+- [x] Unit test covers double-failure path
+- [x] `bash scripts/verify.sh` passes
 
 ---
 
@@ -112,4 +125,4 @@ and crashes during startup.
 | BUG-001 | fatalError in DependencyContainer | ✅ FIXED |
 | BUG-002 | Swift 6 reduceMotion concurrency | ✅ FIXED |
 | BUG-014 | iOS Simulator builds fail due to SwiftLint script sandboxing | ✅ FIXED |
-| BUG-023 | fatalError on unrecoverable storage failure | 🔴 OPEN |
+| BUG-023 | Startup fatalError on unrecoverable storage failure | ✅ FIXED |

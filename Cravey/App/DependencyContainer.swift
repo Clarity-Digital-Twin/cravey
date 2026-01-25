@@ -12,6 +12,20 @@ final class DependencyContainer {
         case inMemoryFallback
     }
 
+    struct StartupFailure: LocalizedError, Sendable {
+        let persistentErrorDescription: String
+        let inMemoryErrorDescription: String
+
+        var errorDescription: String? {
+            "Cravey couldn’t start because its local database is unavailable."
+        }
+
+        var recoverySuggestion: String? {
+            "Try restarting your device. If the issue persists, you may need to delete the app’s local data "
+                + "from iOS Settings."
+        }
+    }
+
     struct InitializationError: LocalizedError, Sendable {
         let underlying: Error
         let storageMode: StorageMode
@@ -168,20 +182,26 @@ final class DependencyContainer {
         self.initializationError = initializationError
     }
 
-    convenience init(isPreview: Bool = false) {
+    convenience init(
+        isPreview: Bool = false,
+        arguments: [String] = ProcessInfo.processInfo.arguments,
+        makePersistentContainer: @MainActor () throws -> ModelContainer = { try ModelContainerSetup.create() },
+        makePreviewContainer: @MainActor () throws -> ModelContainer = { try ModelContainerSetup.createPreview() },
+        makeInMemoryContainer: @MainActor () throws -> ModelContainer = { try ModelContainerSetup.createUITesting() }
+    ) throws {
         // Check for UI testing mode
-        let isUITesting = ProcessInfo.processInfo.arguments.contains("--uitesting")
+        let isUITesting = arguments.contains("--uitesting")
 
         let normalStorageMode: StorageMode = isPreview || isUITesting ? .inMemoryFallback : .persistent
 
         do {
             // Initialize infrastructure
             let container = if isUITesting {
-                try ModelContainerSetup.createUITesting()
+                try makeInMemoryContainer()
             } else if isPreview {
-                try ModelContainerSetup.createPreview()
+                try makePreviewContainer()
             } else {
-                try ModelContainerSetup.create()
+                try makePersistentContainer()
             }
             let wiring = Self.makeWiring(modelContainer: container)
             self.init(wiring: wiring, storageMode: normalStorageMode, initializationError: nil)
@@ -201,14 +221,23 @@ final class DependencyContainer {
             let initError = InitializationError(underlying: error, storageMode: .persistent)
 
             do {
-                let container = try ModelContainerSetup.createUITesting()
+                let container = try makeInMemoryContainer()
                 let wiring = Self.makeWiring(modelContainer: container)
                 self.init(wiring: wiring, storageMode: .inMemoryFallback, initializationError: initError)
+
+                // Ensure default messages exist even in fallback mode (skip for UI testing).
+                if !isUITesting {
+                    ModelContainerSetup.seedDefaultMessages(context: modelContext)
+                }
             } catch {
                 Self.logger.fault(
                     "Failed to initialize in-memory fallback storage. Error: \(error.localizedDescription)"
                 )
-                fatalError("Cravey cannot start due to an unrecoverable storage error.")
+
+                throw StartupFailure(
+                    persistentErrorDescription: initError.underlying.localizedDescription,
+                    inMemoryErrorDescription: error.localizedDescription
+                )
             }
         }
     }
@@ -218,6 +247,22 @@ final class DependencyContainer {
 
 extension DependencyContainer {
     static var preview: DependencyContainer {
-        DependencyContainer(isPreview: true)
+        do {
+            return try DependencyContainer(isPreview: true)
+        } catch {
+            logger.fault("Failed to create preview DependencyContainer: \(error.localizedDescription)")
+
+            do {
+                let container = try ModelContainerSetup.createUITesting()
+                let wiring = makeWiring(modelContainer: container)
+                return DependencyContainer(
+                    wiring: wiring,
+                    storageMode: .inMemoryFallback,
+                    initializationError: nil
+                )
+            } catch {
+                preconditionFailure("Failed to create preview DependencyContainer: \(error.localizedDescription)")
+            }
+        }
     }
 }

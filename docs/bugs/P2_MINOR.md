@@ -43,7 +43,7 @@ do {
 
 ## BUG-008: UsageLogForm 6 Parameter Helper
 
-**File:** `Cravey/Presentation/Views/Usage/UsageLogForm.swift:185`
+**File:** `Cravey/Presentation/Views/Usage/UsageLogForm.swift`
 
 ### Problem
 This is not a “helper” function — it is the `LogUsageUseCase.execute(...)` signature being implemented in a preview mock.
@@ -58,6 +58,7 @@ This issue is therefore a **duplicate** of BUG-005 (the protocol/API design), an
 ## BUG-009: UI Test Function Too Long
 
 **File:** `CraveyUITests/Phase1ScreenshotTests.swift`
+**Verify:** `rg -n "func testCaptureAllPhase1Screens\\(" CraveyUITests/Phase1ScreenshotTests.swift`
 
 ### Status
 ✅ **FIXED** (2026-01-24)
@@ -66,12 +67,11 @@ This issue is therefore a **duplicate** of BUG-005 (the protocol/API design), an
 Test function spans 79 lines (limit is 50).
 
 ### Fix
-Split into smaller, focused test functions:
-```swift
-func testScreenshot_HomeView() { ... }
-func testScreenshot_CravingForm() { ... }
-func testScreenshot_UsageForm() { ... }
-```
+Extracted the long flow into smaller helper functions, leaving a short orchestrator test method:
+- `testCaptureAllPhase1Screens()`
+- `captureHomeAndPlusMenu()`
+- `captureCravingFlowScreens()`
+- `capturePostSaveAndTabs()`
 
 ---
 
@@ -194,11 +194,14 @@ Domain use cases did not fully enforce spec invariants when called programmatica
 
 ## BUG-024: UsageListViewModel Hardcoded Error Message
 
-**File:** `Cravey/Presentation/ViewModels/UsageListViewModel.swift:31`
-**Verify:** `rg -n '"Failed to load usage history"' Cravey/Presentation/ViewModels/UsageListViewModel.swift`
+**File:** `Cravey/Presentation/ViewModels/UsageListViewModel.swift`
+**Verify:**
+- `! rg -n '"Failed to load usage history"' Cravey/Presentation/ViewModels/UsageListViewModel.swift` (should return no matches)
+- `rg -n "errorMessage = error\\.localizedDescription" Cravey/Presentation/ViewModels/UsageListViewModel.swift`
+- `rg -n "fetchFailureShowsLocalizedError" CraveyTests/Presentation/ViewModels/UsageListViewModelTests.swift`
 
 ### Status
-🔴 **OPEN** (2026-01-25)
+✅ **FIXED** (2026-01-25)
 
 ### Problem
 ```swift
@@ -207,7 +210,7 @@ Domain use cases did not fully enforce spec invariants when called programmatica
 }
 ```
 
-Contrast with `CravingListViewModel.swift:30` which correctly preserves error:
+Contrast with `Cravey/Presentation/ViewModels/CravingListViewModel.swift` which correctly preserves error:
 ```swift
 errorMessage = error.localizedDescription  // ← Correct
 ```
@@ -217,12 +220,9 @@ errorMessage = error.localizedDescription  // ← Correct
 - Makes debugging production issues impossible
 - Inconsistent with craving list error handling
 
-### Fix
-```swift
-} catch {
-    errorMessage = error.localizedDescription
-}
-```
+### Fix Implemented
+- Use `error.localizedDescription` (matches `CravingListViewModel` behavior).
+- Added a unit test for failure-path error propagation.
 
 ---
 
@@ -239,4 +239,4 @@ errorMessage = error.localizedDescription  // ← Correct
 | BUG-020 | Intensity color scale mismatch | ✅ FIXED |
 | BUG-021 | Dashboard triggers ignored usage | ✅ FIXED |
 | BUG-022 | Domain validation gaps | ✅ FIXED |
-| BUG-024 | UsageListViewModel hardcoded error | 🔴 OPEN |
+| BUG-024 | UsageListViewModel hardcoded error | ✅ FIXED |

@@ -81,7 +81,7 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
         } catch let cancellationError as CancellationError {
             throw cancellationError
         } catch {
-            throw UsageError.saveFailed
+            throw UsageError.saveFailed(underlying: error.localizedDescription)
         }
 
         return entity
@@ -89,13 +89,22 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
 }
 
 /// Usage-specific errors
-enum UsageError: LocalizedError {
+enum UsageError: LocalizedError, Sendable {
     case invalidMethod
     case invalidAmount
     case futureTimestamp
     case amountOutOfRange
     case notesTooLong
-    case saveFailed
+    case saveFailed(underlying: String)
+
+    var failureReason: String? {
+        switch self {
+        case let .saveFailed(underlying):
+            underlying
+        default:
+            nil
+        }
+    }
 
     var errorDescription: String? {
         switch self {
