@@ -61,13 +61,13 @@ IOS_SIMULATOR_NAME="${IOS_SIMULATOR_NAME:-iPhone 17 Pro}"
 if ! xcrun simctl list devices available | rg -Fq "${IOS_SIMULATOR_NAME} ("; then
   echo "WARN: iOS Simulator '${IOS_SIMULATOR_NAME}' not found. Falling back to the first available iPhone simulator." >&2
   IOS_SIMULATOR_NAME="$(
-    xcrun simctl list devices available | sed -nE '/-- iOS /,/-- /{s/^[[:space:]]*(iPhone[^\\(]+) \\(.*/\1/p}' \
+    xcrun simctl list devices available | sed -nE '/-- iOS /,/-- /{s/^[[:space:]]*(iPhone[^\\(]+) \\(.*/\1/p;}' \
       | head -n 1 | xargs
   )"
 
   if [[ -z "${IOS_SIMULATOR_NAME}" ]]; then
     IOS_SIMULATOR_NAME="$(
-      xcrun simctl list devices available | sed -nE '/-- iOS /,/-- /{s/^[[:space:]]*([^\\(]+) \\(.*/\1/p}' \
+      xcrun simctl list devices available | sed -nE '/-- iOS /,/-- /{s/^[[:space:]]*([^\\(]+) \\(.*/\1/p;}' \
         | head -n 1 | xargs
     )"
   fi
