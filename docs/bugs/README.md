@@ -1,7 +1,7 @@
 # Bug Tracker
 
 **Last Updated:** 2026-01-25
-**Total Issues:** 44
+**Total Issues:** 47
 
 ## Quick Stats
 
@@ -9,9 +9,9 @@
 |----------|-------|--------|
 | P0 - Critical | 4 | 3 FIXED, 1 OPEN |
 | P1 - Major | 10 | 6 FIXED, 4 OPEN |
-| P2 - Minor | 9 | 8 FIXED, 1 CLOSED |
+| P2 - Minor | 10 | 8 FIXED, 1 CLOSED, 1 OPEN |
 | P3 - Tech Debt | 9 | 7 FIXED, 2 DEFERRED |
-| P4 - Code Quality | 12 | 8 FIXED, 2 CLOSED, 2 DEFERRED |
+| P4 - Code Quality | 14 | 8 FIXED, 2 CLOSED, 4 DEFERRED |
 
 ## Priority Definitions
 
@@ -39,10 +39,11 @@
 5. **BUG-018** - Recordings feature stubbed
 
 ### Should Fix Soon
-1. **DEBT-003** - Deferred phase features (Quick Play, GPS location)
-2. **DEBT-009** - File I/O on MainActor (recordings readiness)
-3. **QUALITY-010** - Recording infra usage cleanup
-4. **QUALITY-012** - Logger subsystem consistency
+1. **BUG-024** - UsageListViewModel hardcoded error message
+2. **DEBT-003** - Deferred phase features (Quick Play, GPS location)
+3. **DEBT-009** - File I/O on MainActor (recordings readiness)
+4. **QUALITY-010** - Recording infra usage cleanup
+5. **QUALITY-012** - Logger subsystem consistency
 
 ### Fixed Recently
 - ✅ **BUG-014** - iOS Simulator builds blocked by SwiftLint script sandboxing

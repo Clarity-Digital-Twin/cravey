@@ -192,6 +192,40 @@ Domain use cases did not fully enforce spec invariants when called programmatica
 
 ---
 
+## BUG-024: UsageListViewModel Hardcoded Error Message
+
+**File:** `Cravey/Presentation/ViewModels/UsageListViewModel.swift:31`
+**Verify:** `rg -n '"Failed to load usage history"' Cravey/Presentation/ViewModels/UsageListViewModel.swift`
+
+### Status
+🔴 **OPEN** (2026-01-25)
+
+### Problem
+```swift
+} catch {
+    errorMessage = "Failed to load usage history"  // ← Loses error details
+}
+```
+
+Contrast with `CravingListViewModel.swift:30` which correctly preserves error:
+```swift
+errorMessage = error.localizedDescription  // ← Correct
+```
+
+### Impact
+- Users and developers lose diagnostic information about WHY data loading failed
+- Makes debugging production issues impossible
+- Inconsistent with craving list error handling
+
+### Fix
+```swift
+} catch {
+    errorMessage = error.localizedDescription
+}
+```
+
+---
+
 ## Summary
 
 | Bug ID | Description | Status |
@@ -205,3 +239,4 @@ Domain use cases did not fully enforce spec invariants when called programmatica
 | BUG-020 | Intensity color scale mismatch | ✅ FIXED |
 | BUG-021 | Dashboard triggers ignored usage | ✅ FIXED |
 | BUG-022 | Domain validation gaps | ✅ FIXED |
+| BUG-024 | UsageListViewModel hardcoded error | 🔴 OPEN |

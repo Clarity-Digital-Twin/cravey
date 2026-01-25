@@ -296,6 +296,63 @@ debugging.
 
 ---
 
+## QUALITY-013: RecordingModel Optional Array Type Inconsistency
+
+**File:** `Cravey/Data/Models/RecordingModel.swift:24,54`
+**Verify:** `rg -n "linkedCravings" Cravey/Data/Models/RecordingModel.swift`
+
+### Problem
+```swift
+// Declaration (line 24):
+var linkedCravings: [CravingModel]?  // ← Optional array
+
+// Initialization (line 54):
+linkedCravings = []  // ← Non-optional value assigned
+```
+
+Type is declared as optional array but initialized with non-optional value.
+
+### Impact
+- SwiftData may not handle optional arrays optimally
+- Type semantics unclear to future maintainers
+
+### Fix
+```swift
+var linkedCravings: [CravingModel] = []  // Non-optional with default
+```
+
+### Status
+🟡 **DEFERRED** (2026-01-25)
+
+**Rationale:** Recording feature not yet implemented. Fix when implementing recordings.
+
+---
+
+## QUALITY-014: LogCravingUseCase Missing Save Error Handling
+
+**File:** `Cravey/Domain/UseCases/LogCravingUseCase.swift:55`
+**Verify:** `rg -n "try await repository.save" Cravey/Domain/UseCases/LogCravingUseCase.swift Cravey/Domain/UseCases/LogUsageUseCase.swift`
+
+### Problem
+LogCravingUseCase and LogUsageUseCase handle repository errors inconsistently:
+- LogCravingUseCase: No error handling, propagates directly
+- LogUsageUseCase: Wraps in do-catch, converts to `saveFailed`
+
+### Impact
+- Inconsistent error semantics between craving and usage logging
+- LogUsageUseCase loses error context by converting to generic error
+- LogCravingUseCase preserves error but may expose implementation details
+
+### Recommendation
+Current LogCravingUseCase is arguably better (preserves original error). Apply consistently.
+
+### Status
+🟡 **DEFERRED** (2026-01-25)
+
+**Rationale:** Both patterns work; inconsistency is cosmetic.
+
+---
+
 ## Summary
 
 | Quality ID | Description | Status |
@@ -312,3 +369,5 @@ debugging.
 | QUALITY-008 | Test mock incomplete | ✅ FIXED |
 | QUALITY-011 | Broken ChipSelector doc reference | ✅ FIXED |
 | QUALITY-012 | Logger subsystem inconsistency | 🟡 DEFERRED |
+| QUALITY-013 | RecordingModel optional array | 🟡 DEFERRED |
+| QUALITY-014 | LogCravingUseCase error handling | 🟡 DEFERRED |
