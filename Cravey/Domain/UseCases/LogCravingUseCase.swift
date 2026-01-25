@@ -82,13 +82,13 @@ enum CravingError: LocalizedError, Sendable {
     var errorDescription: String? {
         switch self {
         case .invalidIntensity:
-            "Intensity must be between 1 and 10"
+            "Please choose an intensity between 1 and 10"
         case .futureTimestamp:
-            "Timestamp cannot be in the future"
+            "The timestamp can't be in the future"
         case .notesTooLong:
-            "Notes cannot exceed 500 characters"
+            "Notes are limited to 500 characters"
         case .saveFailed:
-            "Failed to save craving"
+            "We couldn't save your entry. Please try again."
         }
     }
 }

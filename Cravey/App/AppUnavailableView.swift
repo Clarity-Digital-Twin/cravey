@@ -54,11 +54,10 @@ struct AppUnavailableView: View {
 }
 
 #Preview {
-    AppUnavailableView(
-        error: DependencyContainer.StartupFailure(
-            persistentErrorDescription: "Disk full",
-            inMemoryErrorDescription: "Schema invalid"
-        ),
-        onRetry: nil
+    @Previewable var failure = DependencyContainer.StartupFailure(
+        persistentErrorDescription: "Disk full",
+        inMemoryErrorDescription: "Schema invalid"
     )
+
+    AppUnavailableView(error: failure, onRetry: nil)
 }

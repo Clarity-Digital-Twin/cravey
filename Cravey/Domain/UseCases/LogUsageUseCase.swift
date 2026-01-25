@@ -109,17 +109,17 @@ enum UsageError: LocalizedError, Sendable {
     var errorDescription: String? {
         switch self {
         case .invalidMethod:
-            "Invalid method. Must be one of: Bowls, Joints, Blunts, Vape, Dab, Edible"
+            "Please select a valid method (Bowls, Joints, Blunts, Vape, Dab, or Edible)"
         case .invalidAmount:
-            "Amount must be greater than zero"
+            "Please enter an amount greater than zero"
         case .futureTimestamp:
-            "Timestamp cannot be in the future"
+            "The timestamp can't be in the future"
         case .amountOutOfRange:
-            "Amount is outside valid range for this method"
+            "Please choose an amount within the valid range for this method"
         case .notesTooLong:
-            "Notes cannot exceed 500 characters"
+            "Notes are limited to 500 characters"
         case .saveFailed:
-            "Failed to save usage"
+            "We couldn't save your entry. Please try again."
         }
     }
 }

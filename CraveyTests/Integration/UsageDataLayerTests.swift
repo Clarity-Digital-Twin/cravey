@@ -196,7 +196,27 @@ struct UsageDataLayerTests {
         }
     }
 
-    // MARK: - Test 8: HAALT Triggers Validation
+    // MARK: - Test 8: Notes at Boundary (500 chars accepted)
+
+    @Test("Should accept notes at exactly 500 characters")
+    @MainActor
+    func notesAtLimit() async throws {
+        let schema = Schema([UsageModel.self])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: config)
+        let context = ModelContext(container)
+
+        let repository = UsageRepository(modelContext: context)
+        let useCase = DefaultLogUsageUseCase(repository: repository)
+
+        let maxNotes = String(repeating: "a", count: 500)
+        let result = try await useCase.execute(LogUsageRequest(method: "Bowls", amount: 1.0, notes: maxNotes))
+
+        #expect(result.notes == maxNotes)
+        #expect(result.notes?.count == 500)
+    }
+
+    // MARK: - Test 9: HAALT Triggers Validation
 
     @Test("Should accept HAALT triggers array")
     @MainActor

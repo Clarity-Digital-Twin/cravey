@@ -24,14 +24,16 @@ final class UsageListViewModel {
     func fetchUsage() async {
         isLoading = true
         errorMessage = nil
+        defer { isLoading = false }
 
         do {
             usageList = try await fetchUsageUseCase.execute()
+        } catch is CancellationError {
+            // Cancellation is flow control, not an error to surface
+            return
         } catch {
             errorMessage = error.localizedDescription
         }
-
-        isLoading = false
     }
 
     func deleteUsage(id: UUID) async {

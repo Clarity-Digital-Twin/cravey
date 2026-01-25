@@ -135,7 +135,13 @@ final class DashboardViewModel {
         }
 
         return triggerCounts
-            .sorted { $0.value > $1.value }
+            .sorted {
+                // Primary: descending by count. Secondary: ascending by name for deterministic ordering on ties.
+                if $0.value == $1.value {
+                    return $0.key.localizedCaseInsensitiveCompare($1.key) == .orderedAscending
+                }
+                return $0.value > $1.value
+            }
             .prefix(limit)
             .map { (trigger: $0.key, count: $0.value) }
     }
