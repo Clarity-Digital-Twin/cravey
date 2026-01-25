@@ -110,7 +110,7 @@ struct OptionalSingleSelectChipSelector: View {
 /// Individual chip button
 /// iOS 18 fix: Use Text + onTapGesture instead of Button to avoid
 /// hit-testing issues in custom Layout containers.
-/// See BUG_009_CHIP_SELECTOR.md for full analysis.
+/// See docs/_archive/specs/BUG_009_CHIP_SELECTOR_FIXED_2025-01-05.md for full analysis.
 struct ChipButton: View {
     let title: String
     let isSelected: Bool

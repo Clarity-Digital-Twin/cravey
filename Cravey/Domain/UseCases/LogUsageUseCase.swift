@@ -50,9 +50,19 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
             throw UsageError.invalidAmount
         }
 
+        // Validate timestamp not in future
+        guard request.timestamp <= Date() else {
+            throw UsageError.futureTimestamp
+        }
+
         // Validate amount range for method
         guard ROAAmountRange.isValid(method: request.method, amount: request.amount) else {
             throw UsageError.amountOutOfRange
+        }
+
+        // Validate notes length (500 char limit per DATA_MODEL_SPEC.md:122)
+        if let notes = request.notes, notes.count > 500 {
+            throw UsageError.notesTooLong
         }
 
         // Create entity
@@ -82,7 +92,9 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
 enum UsageError: LocalizedError {
     case invalidMethod
     case invalidAmount
+    case futureTimestamp
     case amountOutOfRange
+    case notesTooLong
     case saveFailed
 
     var errorDescription: String? {
@@ -91,8 +103,12 @@ enum UsageError: LocalizedError {
             "Invalid method. Must be one of: Bowls, Joints, Blunts, Vape, Dab, Edible"
         case .invalidAmount:
             "Amount must be greater than zero"
+        case .futureTimestamp:
+            "Timestamp cannot be in the future"
         case .amountOutOfRange:
             "Amount is outside valid range for this method"
+        case .notesTooLong:
+            "Notes cannot exceed 500 characters"
         case .saveFailed:
             "Failed to save usage"
         }

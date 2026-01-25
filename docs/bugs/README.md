@@ -1,17 +1,17 @@
 # Bug Tracker
 
-**Last Updated:** 2026-01-24
-**Total Issues:** 30
+**Last Updated:** 2026-01-25
+**Total Issues:** 44
 
 ## Quick Stats
 
 | Priority | Count | Status |
 |----------|-------|--------|
-| P0 - Critical | 2 | 2 FIXED |
-| P1 - Major | 6 | 6 FIXED |
-| P2 - Minor | 5 | 5 CLOSED/FIXED |
-| P3 - Tech Debt | 7 | 6 FIXED, 1 DEFERRED |
-| P4 - Code Quality | 10 | 9 CLOSED/FIXED, 1 DEFERRED |
+| P0 - Critical | 4 | 3 FIXED, 1 OPEN |
+| P1 - Major | 10 | 6 FIXED, 4 OPEN |
+| P2 - Minor | 9 | 8 FIXED, 1 CLOSED |
+| P3 - Tech Debt | 9 | 7 FIXED, 2 DEFERRED |
+| P4 - Code Quality | 12 | 8 FIXED, 2 CLOSED, 2 DEFERRED |
 
 ## Priority Definitions
 
@@ -32,13 +32,25 @@
 ## Top Priorities
 
 ### Must Fix Before Next Release
-✅ No open P0/P1 issues.
+1. **BUG-023** - DependencyContainer fatalError on unrecoverable storage
+2. **BUG-015** - First launch onboarding missing
+3. **BUG-016** - Home tab UX mismatch (primary actions + Quick Play)
+4. **BUG-017** - Dashboard spec gap (date filter + charts)
+5. **BUG-018** - Recordings feature stubbed
 
 ### Should Fix Soon
-1. **DEBT-003** - Link TODOs to future specs (deferred)
-2. **QUALITY-010** - Recording infra usage cleanup (deferred)
+1. **DEBT-003** - Deferred phase features (Quick Play, GPS location)
+2. **DEBT-009** - File I/O on MainActor (recordings readiness)
+3. **QUALITY-010** - Recording infra usage cleanup
+4. **QUALITY-012** - Logger subsystem consistency
 
 ### Fixed Recently
+- ✅ **BUG-014** - iOS Simulator builds blocked by SwiftLint script sandboxing
+- ✅ **DEBT-008** - Verification script now compiles iOS Simulator
+- ✅ **BUG-019** - Disabled interactive sheet dismiss during save
+- ✅ **BUG-020** - Intensity color scale aligned to spec
+- ✅ **BUG-021** - Dashboard top triggers include usage triggers
+- ✅ **BUG-022** - Domain validation for future timestamps + notes length
 - ✅ **BUG-001** - DependencyContainer fatalError on init failure
 - ✅ **BUG-012** - “Delete All Data” deletes recordings/messages/files
 - ✅ **DEBT-001** - SettingsViewModel Clean Architecture violation

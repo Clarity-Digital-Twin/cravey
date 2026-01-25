@@ -75,8 +75,8 @@ final class DashboardViewModel {
             averageIntensity7Day = calculateAverageIntensity(cravings: cravings7Day)
             averageIntensity30Day = calculateAverageIntensity(cravings: cravings30Day)
 
-            // Calculate top triggers
-            topTriggers = calculateTopTriggers(cravings: cravings, limit: 3)
+            // Calculate top triggers (combined cravings + usage)
+            topTriggers = calculateTopTriggers(cravings: cravings, usages: usages, limit: 3)
 
             // Weekly counts
             weeklyCravingCount = cravings.count { $0.timestamp >= sevenDaysAgo }
@@ -115,11 +115,21 @@ final class DashboardViewModel {
         return Double(total) / Double(cravings.count)
     }
 
-    private func calculateTopTriggers(cravings: [CravingEntity], limit: Int) -> [(trigger: String, count: Int)] {
+    private func calculateTopTriggers(
+        cravings: [CravingEntity],
+        usages: [UsageEntity],
+        limit: Int
+    ) -> [(trigger: String, count: Int)] {
         var triggerCounts: [String: Int] = [:]
 
         for craving in cravings {
             for trigger in craving.triggers {
+                triggerCounts[trigger, default: 0] += 1
+            }
+        }
+
+        for usage in usages {
+            for trigger in usage.triggers {
                 triggerCounts[trigger, default: 0] += 1
             }
         }

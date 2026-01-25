@@ -136,6 +136,7 @@ struct UsageLogForm: View {
                     dismiss()
                 }
             }
+            .interactiveDismissDisabled(viewModel.isLoading)
             .disabled(viewModel.isLoading)
             // iOS 17+ declarative haptics (replaces legacy UINotificationFeedbackGenerator)
             .sensoryFeedback(.success, trigger: viewModel.didSucceed)

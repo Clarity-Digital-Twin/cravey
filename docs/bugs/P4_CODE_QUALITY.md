@@ -1,7 +1,7 @@
 # P4 - Code Quality Issues
 
 **Status:** ACTIVE
-**Last Updated:** 2026-01-24
+**Last Updated:** 2026-01-25
 
 Code smells, style issues, minor improvements.
 
@@ -258,6 +258,44 @@ func update(_ entity: CravingEntity) async throws {
 
 ---
 
+## QUALITY-011: Broken Internal Doc Reference (ChipSelector)
+
+**File:** `Cravey/Presentation/Views/Components/ChipSelector.swift`
+**Verify:** `rg -n "BUG_009_CHIP_SELECTOR" Cravey/Presentation/Views/Components/ChipSelector.swift`
+
+### Problem
+The code referenced `BUG_009_CHIP_SELECTOR.md`, but the actual write-up lived under `docs/_archive/…`, making the
+reference effectively dead.
+
+### Status
+✅ **FIXED** (2026-01-25)
+
+### Fix Implemented
+- Updated the comment to reference:
+  - `docs/_archive/specs/BUG_009_CHIP_SELECTOR_FIXED_2025-01-05.md`
+
+---
+
+## QUALITY-012: Logger Subsystem Inconsistency
+
+**Files:**
+- `Cravey/App/DependencyContainer.swift` (`com.cravey`)
+- `Cravey/Data/Storage/ModelContainerSetup.swift` (`com.cravey`)
+- `Cravey/Data/Mappers/RecordingMapper.swift` (`com.cravey.app`)
+- `Cravey/Data/Mappers/MessageMapper.swift` (`com.cravey.app`)
+
+### Problem
+Logger subsystems are inconsistent, which makes filtering logs harder and increases the chance of missed signals during
+debugging.
+
+### Status
+🟡 **DEFERRED** (2026-01-25)
+
+### Recommendation
+- Standardize the subsystem to the app bundle identifier (`com.cravey.app`).
+
+---
+
 ## Summary
 
 | Quality ID | Description | Status |
@@ -272,3 +310,5 @@ func update(_ entity: CravingEntity) async throws {
 | QUALITY-006 | Redundant calculation | ✅ FIXED |
 | QUALITY-007 | Calendar fallback | ✅ FIXED |
 | QUALITY-008 | Test mock incomplete | ✅ FIXED |
+| QUALITY-011 | Broken ChipSelector doc reference | ✅ FIXED |
+| QUALITY-012 | Logger subsystem inconsistency | 🟡 DEFERRED |

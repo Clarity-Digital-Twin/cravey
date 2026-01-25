@@ -8,13 +8,17 @@ final class CraveyUITests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+    }
+
+    private func launchApp() {
         app = XCUIApplication()
         app.launchArguments = ["--uitesting"]
+        app.launch()
     }
 
     func testAppLaunchesAndShowsEmptyState() throws {
         // Given: App is launched
-        app.launch()
+        launchApp()
 
         // Then: Main tab bar is visible
         let homeTab = app.tabBars.buttons["Home"]
@@ -31,7 +35,7 @@ final class CraveyUITests: XCTestCase {
 
     func testLogCravingFlow() throws {
         // Given: App is launched
-        app.launch()
+        launchApp()
 
         // When: User taps + button
         let plusButton = app.buttons["addButton"]

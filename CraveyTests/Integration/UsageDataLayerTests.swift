@@ -146,7 +146,57 @@ struct UsageDataLayerTests {
         }
     }
 
-    // MARK: - Test 6: HAALT Triggers Validation
+    // MARK: - Test 6: Future Timestamp Validation
+
+    @Test("Should reject future timestamp")
+    @MainActor
+    func futureTimestamp() async throws {
+        let schema = Schema([UsageModel.self])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: config)
+        let context = ModelContext(container)
+
+        let repository = UsageRepository(modelContext: context)
+        let useCase = DefaultLogUsageUseCase(repository: repository)
+
+        do {
+            _ = try await useCase.execute(
+                LogUsageRequest(timestamp: Date().addingTimeInterval(60), method: "Bowls", amount: 1.0)
+            )
+            Issue.record("Should have thrown futureTimestamp error")
+        } catch UsageError.futureTimestamp {
+            // ✅ Expected error
+        } catch {
+            Issue.record("Wrong error type: \(error)")
+        }
+    }
+
+    // MARK: - Test 7: Notes Length Validation
+
+    @Test("Should reject notes longer than 500 characters")
+    @MainActor
+    func notesTooLong() async throws {
+        let schema = Schema([UsageModel.self])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: config)
+        let context = ModelContext(container)
+
+        let repository = UsageRepository(modelContext: context)
+        let useCase = DefaultLogUsageUseCase(repository: repository)
+
+        let longNotes = String(repeating: "a", count: 501)
+
+        do {
+            _ = try await useCase.execute(LogUsageRequest(method: "Bowls", amount: 1.0, notes: longNotes))
+            Issue.record("Should have thrown notesTooLong error")
+        } catch UsageError.notesTooLong {
+            // ✅ Expected error
+        } catch {
+            Issue.record("Wrong error type: \(error)")
+        }
+    }
+
+    // MARK: - Test 8: HAALT Triggers Validation
 
     @Test("Should accept HAALT triggers array")
     @MainActor

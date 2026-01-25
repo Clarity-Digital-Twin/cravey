@@ -45,6 +45,50 @@ struct LogCravingUseCaseTests {
             )
         }
     }
+
+    @Test("Should reject future timestamp")
+    func rejectFutureTimestamp() async throws {
+        let mockRepo = MockCravingRepository()
+        let useCase = DefaultLogCravingUseCase(repository: mockRepo)
+
+        do {
+            _ = try await useCase.execute(
+                timestamp: Date().addingTimeInterval(60),
+                intensity: 5,
+                triggers: [],
+                notes: nil,
+                location: nil
+            )
+            Issue.record("Should have thrown futureTimestamp error")
+        } catch CravingError.futureTimestamp {
+            // ✅ Expected
+        } catch {
+            Issue.record("Wrong error type: \(error)")
+        }
+    }
+
+    @Test("Should reject notes longer than 500 characters")
+    func rejectNotesTooLong() async throws {
+        let mockRepo = MockCravingRepository()
+        let useCase = DefaultLogCravingUseCase(repository: mockRepo)
+
+        let longNotes = String(repeating: "a", count: 501)
+
+        do {
+            _ = try await useCase.execute(
+                timestamp: Date(),
+                intensity: 5,
+                triggers: [],
+                notes: longNotes,
+                location: nil
+            )
+            Issue.record("Should have thrown notesTooLong error")
+        } catch CravingError.notesTooLong {
+            // ✅ Expected
+        } catch {
+            Issue.record("Wrong error type: \(error)")
+        }
+    }
 }
 
 // MARK: - Mock Repository

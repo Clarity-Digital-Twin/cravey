@@ -39,7 +39,6 @@ if rg -n "import\\s+(SwiftUI|SwiftData)" Cravey/Domain >/dev/null; then
   exit 1
 fi
 
-echo "==> Unit tests (Mac Catalyst, code signing disabled)"
 DERIVED_DATA_PATH="$(mktemp -d /tmp/CraveyDerivedData.XXXXXX)"
 RESULT_BUNDLE_PATH="/tmp/CraveyTests.$(date +%s).xcresult"
 
@@ -55,6 +54,30 @@ cleanup() {
 }
 trap cleanup EXIT
 
+echo "==> iOS Simulator build (compile check)"
+IOS_SIMULATOR_NAME="${IOS_SIMULATOR_NAME:-iPhone 17 Pro}"
+
+if command -v xcbeautify >/dev/null 2>&1; then
+  xcodebuild build \
+    -project Cravey.xcodeproj \
+    -scheme Cravey \
+    -destination "platform=iOS Simulator,name=${IOS_SIMULATOR_NAME}" \
+    CODE_SIGNING_ALLOWED=NO \
+    CODE_SIGNING_REQUIRED=NO \
+    CODE_SIGN_IDENTITY="" \
+    -derivedDataPath "$DERIVED_DATA_PATH" 2>&1 | xcbeautify
+else
+  xcodebuild build \
+    -project Cravey.xcodeproj \
+    -scheme Cravey \
+    -destination "platform=iOS Simulator,name=${IOS_SIMULATOR_NAME}" \
+    CODE_SIGNING_ALLOWED=NO \
+    CODE_SIGNING_REQUIRED=NO \
+    CODE_SIGN_IDENTITY="" \
+    -derivedDataPath "$DERIVED_DATA_PATH"
+fi
+
+echo "==> Unit tests (Mac Catalyst, code signing disabled)"
 if command -v xcbeautify >/dev/null 2>&1; then
   xcodebuild test \
     -project Cravey.xcodeproj \

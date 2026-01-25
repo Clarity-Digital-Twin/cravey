@@ -1,7 +1,7 @@
 # P2 - Minor Bugs
 
 **Status:** ACTIVE
-**Last Updated:** 2026-01-24
+**Last Updated:** 2026-01-25
 
 UI glitches, edge case issues, style violations.
 
@@ -112,6 +112,86 @@ Collection literals have unnecessary trailing commas.
 
 ---
 
+## BUG-019: Sheets Can Be Dismissed During Save (Lost Success Feedback)
+
+**Files:**
+- `Cravey/Presentation/Views/Craving/CravingLogForm.swift`
+- `Cravey/Presentation/Views/Usage/UsageLogForm.swift`
+**Verify:** `rg -n "interactiveDismissDisabled\\(" Cravey/Presentation/Views/Craving/CravingLogForm.swift Cravey/Presentation/Views/Usage/UsageLogForm.swift`
+
+### Status
+✅ **FIXED** (2026-01-25)
+
+### Problem
+If the user swipes down to dismiss the sheet while a save is in-flight (`isLoading == true`), the save can still
+complete, but the parent view may not receive the success signal in time to reliably show the toast or refresh lists.
+
+### Fix Implemented
+- Disabled interactive sheet dismissal while saving:
+  - `.interactiveDismissDisabled(viewModel.isLoading)`
+
+---
+
+## BUG-020: Intensity Color Scale Mismatch (9 Should Be Orange, Not Red)
+
+**File:** `Cravey/Presentation/Utilities/IntensityColorScale.swift`
+**Spec:** `docs/master/MVP_PRODUCT_SPEC.md` (Craving Intensity scale: 7-9 strong, 10 overwhelming)
+**Verify:** `rg -n "case 7 \\.\\.\\. 9|case 10" Cravey/Presentation/Utilities/IntensityColorScale.swift`
+
+### Status
+✅ **FIXED** (2026-01-25)
+
+### Problem
+Intensity colors treated 9 as “severe/red” instead of “strong/orange,” conflicting with the spec’s 7–9 grouping.
+
+### Fix Implemented
+- Updated intensity color mapping:
+  - 7–9 → orange
+  - 10 → red
+
+---
+
+## BUG-021: Dashboard Top Triggers Ignored Usage Triggers
+
+**File:** `Cravey/Presentation/ViewModels/DashboardViewModel.swift`
+**Spec:** `docs/master/MVP_PRODUCT_SPEC.md` (Trigger breakdown applies to cravings + usage combined)
+**Verify:** `rg -n "calculateTopTriggers\\(cravings:.*usages:" Cravey/Presentation/ViewModels/DashboardViewModel.swift`
+
+### Status
+✅ **FIXED** (2026-01-25)
+
+### Problem
+`topTriggers` was computed only from craving triggers, ignoring usage triggers, leading to incorrect dashboard insights.
+
+### Fix Implemented
+- Count triggers across both `CravingEntity.triggers` and `UsageEntity.triggers`.
+
+---
+
+## BUG-022: Domain Validation Gaps (Future Timestamp + Notes Length)
+
+**Files:**
+- `Cravey/Domain/UseCases/LogCravingUseCase.swift`
+- `Cravey/Domain/UseCases/LogUsageUseCase.swift`
+**Verify:**
+- `rg -n "futureTimestamp|notesTooLong" Cravey/Domain/UseCases/LogCravingUseCase.swift Cravey/Domain/UseCases/LogUsageUseCase.swift`
+- `bash scripts/verify.sh`
+
+### Status
+✅ **FIXED** (2026-01-25)
+
+### Problem
+Domain use cases did not fully enforce spec invariants when called programmatically:
+- Usage logging allowed future timestamps (UI prevented it, Domain didn’t).
+- Notes length limits were not enforced in Domain.
+
+### Fix Implemented
+- Added Domain-level validation:
+  - Reject future timestamps
+  - Reject notes > 500 characters
+
+---
+
 ## Summary
 
 | Bug ID | Description | Status |
@@ -121,3 +201,7 @@ Collection literals have unnecessary trailing commas.
 | BUG-009 | Test function too long | ✅ FIXED |
 | BUG-010 | Line too long | ✅ FIXED |
 | BUG-011 | Trailing commas (8x) | ✅ FIXED |
+| BUG-019 | Sheet dismiss during save | ✅ FIXED |
+| BUG-020 | Intensity color scale mismatch | ✅ FIXED |
+| BUG-021 | Dashboard triggers ignored usage | ✅ FIXED |
+| BUG-022 | Domain validation gaps | ✅ FIXED |

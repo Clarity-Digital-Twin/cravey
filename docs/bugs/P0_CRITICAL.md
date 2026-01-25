@@ -1,7 +1,7 @@
 # P0 - Critical Bugs
 
 **Status:** ACTIVE
-**Last Updated:** 2026-01-24
+**Last Updated:** 2026-01-25
 
 These bugs can cause crashes, data loss, or prevent the app from running.
 
@@ -57,6 +57,52 @@ If ModelContainer or repository setup fails (disk full, corrupted data, etc.), t
 ### Status
 **FIXED** in commit `0a19b34` - Captured value before closure in all 4 card components.
 
+## BUG-014: iOS Simulator Builds Fail Due to SwiftLint Script Sandboxing
+
+**File:** `project.yml`
+**Verify:**
+- `rg -n "ENABLE_USER_SCRIPT_SANDBOXING" project.yml`
+- `xcodegen generate && xcodebuild test -scheme Cravey -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:CraveyTests | xcbeautify`
+
+### Problem
+`xcodebuild` for iOS Simulator fails if `swiftlint` is installed locally. Xcode's User Script Sandboxing blocks
+SwiftLint from reading the repo/config, producing build errors like:
+
+- `Sandbox: swiftlint(...) deny file-read-data ...`
+
+### Impact
+- iOS Simulator builds/tests fail (CI + local dev blocked)
+- False confidence: `scripts/verify.sh` passes on Mac Catalyst while iOS builds are broken
+
+### Status
+✅ **FIXED** (2026-01-25)
+
+### Fix Implemented
+- Disabled User Script Sandboxing in `project.yml` via `ENABLE_USER_SCRIPT_SANDBOXING: "NO"` to allow the SwiftLint
+  build phase to read sources/config across all destinations.
+
+---
+
+## BUG-023: DependencyContainer Still Calls fatalError on Unrecoverable Storage Failure
+
+**File:** `Cravey/App/DependencyContainer.swift`
+**Verify:** `rg -n "fatalError\\(\"Cravey cannot start" Cravey/App/DependencyContainer.swift`
+
+### Problem
+If both persistent storage initialization and the in-memory fallback initialization fail, the app calls `fatalError(...)`
+and crashes during startup.
+
+### Impact
+- App won’t launch
+- No user-facing recovery path (beyond reinstall/device restart)
+
+### Status
+🔴 **OPEN** (2026-01-25)
+
+### Recommendation
+- Replace `fatalError` with a non-crashing “App Unavailable” UI state that does not require a `ModelContainer` to render.
+  (This likely requires making `.modelContainer(...)` conditional and rendering a fallback root view.)
+
 ---
 
 ## Summary
@@ -65,3 +111,5 @@ If ModelContainer or repository setup fails (disk full, corrupted data, etc.), t
 |--------|-------------|--------|
 | BUG-001 | fatalError in DependencyContainer | ✅ FIXED |
 | BUG-002 | Swift 6 reduceMotion concurrency | ✅ FIXED |
+| BUG-014 | iOS Simulator builds fail due to SwiftLint script sandboxing | ✅ FIXED |
+| BUG-023 | fatalError on unrecoverable storage failure | 🔴 OPEN |

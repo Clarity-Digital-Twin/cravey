@@ -6,12 +6,16 @@ final class Phase1ScreenshotTests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+    }
+
+    private func launchApp() {
         app = XCUIApplication()
         app.launchArguments = ["--uitesting"]
         app.launch()
     }
 
     func testCaptureAllPhase1Screens() throws {
+        launchApp()
         captureHomeAndPlusMenu()
         captureCravingFlowScreens()
         capturePostSaveAndTabs()
