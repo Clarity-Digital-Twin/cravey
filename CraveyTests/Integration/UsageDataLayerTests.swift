@@ -5,16 +5,21 @@ import Testing
 
 @Suite("Usage Data Layer Integration Tests (Phase 2A)")
 struct UsageDataLayerTests {
+    @MainActor
+    private static func makeInMemoryContext() throws -> ModelContext {
+        let schema = Schema([UsageModel.self])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: config)
+        return ModelContext(container)
+    }
+
     // MARK: - Test 1: End-to-End Validation
 
     @Test("Should log usage end-to-end (UseCase → Repository → SwiftData)")
     @MainActor
     func endToEndUsageLog() async throws {
         // Setup in-memory SwiftData
-        let schema = Schema([UsageModel.self])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: schema, configurations: config)
-        let context = ModelContext(container)
+        let context = try Self.makeInMemoryContext()
 
         // Create real repository and use case
         let repository = UsageRepository(modelContext: context)
@@ -50,10 +55,7 @@ struct UsageDataLayerTests {
     @MainActor
     func fetchUsage() async throws {
         // Setup
-        let schema = Schema([UsageModel.self])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: schema, configurations: config)
-        let context = ModelContext(container)
+        let context = try Self.makeInMemoryContext()
 
         // Insert test data directly
         let model1 = UsageModel(timestamp: Date(), method: "Vape", amount: 5.0)
@@ -78,10 +80,7 @@ struct UsageDataLayerTests {
     @Test("Should accept all 6 valid ROA methods")
     @MainActor
     func allROAMethods() async throws {
-        let schema = Schema([UsageModel.self])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: schema, configurations: config)
-        let context = ModelContext(container)
+        let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultLogUsageUseCase(repository: repository)
@@ -105,10 +104,7 @@ struct UsageDataLayerTests {
     @Test("Should reject invalid ROA method")
     @MainActor
     func testInvalidMethod() async throws {
-        let schema = Schema([UsageModel.self])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: schema, configurations: config)
-        let context = ModelContext(container)
+        let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultLogUsageUseCase(repository: repository)
@@ -128,10 +124,7 @@ struct UsageDataLayerTests {
     @Test("Should reject amount = 0")
     @MainActor
     func zeroAmount() async throws {
-        let schema = Schema([UsageModel.self])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: schema, configurations: config)
-        let context = ModelContext(container)
+        let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultLogUsageUseCase(repository: repository)
@@ -151,10 +144,7 @@ struct UsageDataLayerTests {
     @Test("Should reject future timestamp")
     @MainActor
     func futureTimestamp() async throws {
-        let schema = Schema([UsageModel.self])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: schema, configurations: config)
-        let context = ModelContext(container)
+        let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultLogUsageUseCase(repository: repository)
@@ -176,10 +166,7 @@ struct UsageDataLayerTests {
     @Test("Should reject notes longer than 500 characters")
     @MainActor
     func notesTooLong() async throws {
-        let schema = Schema([UsageModel.self])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: schema, configurations: config)
-        let context = ModelContext(container)
+        let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultLogUsageUseCase(repository: repository)
@@ -201,10 +188,7 @@ struct UsageDataLayerTests {
     @Test("Should accept notes at exactly 500 characters")
     @MainActor
     func notesAtLimit() async throws {
-        let schema = Schema([UsageModel.self])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: schema, configurations: config)
-        let context = ModelContext(container)
+        let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultLogUsageUseCase(repository: repository)
@@ -221,10 +205,7 @@ struct UsageDataLayerTests {
     @Test("Should accept HAALT triggers array")
     @MainActor
     func hAALTTriggers() async throws {
-        let schema = Schema([UsageModel.self])
-        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: schema, configurations: config)
-        let context = ModelContext(container)
+        let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultLogUsageUseCase(repository: repository)

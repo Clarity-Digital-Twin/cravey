@@ -10,15 +10,9 @@ final class CraveyUITests: XCTestCase {
         continueAfterFailure = false
     }
 
-    private func launchApp() {
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting"]
-        app.launch()
-    }
-
     func testAppLaunchesAndShowsEmptyState() throws {
         // Given: App is launched
-        launchApp()
+        app = launchCraveyApp()
 
         // Then: Main tab bar is visible
         let homeTab = app.tabBars.buttons["Home"]
@@ -35,7 +29,7 @@ final class CraveyUITests: XCTestCase {
 
     func testLogCravingFlow() throws {
         // Given: App is launched
-        launchApp()
+        app = launchCraveyApp()
 
         // When: User taps + button
         let plusButton = app.buttons["addButton"]

@@ -1,3 +1,5 @@
 disabled_rules:
+  # SwiftFormat is the formatting source of truth (see scripts/verify.sh).
+  # These rules conflict with SwiftFormat's output and would cause redundant CI noise.
   - trailing_comma
   - opening_brace

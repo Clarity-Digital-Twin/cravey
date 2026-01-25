@@ -9,9 +9,7 @@ final class Phase1ScreenshotTests: XCTestCase {
     }
 
     private func launchApp() {
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting"]
-        app.launch()
+        app = launchCraveyApp()
     }
 
     func testCaptureAllPhase1Screens() throws {

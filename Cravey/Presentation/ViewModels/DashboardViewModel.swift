@@ -123,13 +123,13 @@ final class DashboardViewModel {
         var triggerCounts: [String: Int] = [:]
 
         for craving in cravings {
-            for trigger in craving.triggers {
+            for trigger in Set(craving.triggers) {
                 triggerCounts[trigger, default: 0] += 1
             }
         }
 
         for usage in usages {
-            for trigger in usage.triggers {
+            for trigger in Set(usage.triggers) {
                 triggerCounts[trigger, default: 0] += 1
             }
         }

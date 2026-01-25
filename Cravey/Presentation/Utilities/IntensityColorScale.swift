@@ -23,11 +23,17 @@ enum IntensityColorScale {
     /// Returns the appropriate color for a given intensity average (Double)
     /// Used for dashboard metrics where averages may be fractional
     static func color(for intensity: Double) -> Color {
+        guard intensity >= 1, intensity <= 10 else { return .gray }
+
         switch intensity {
-        case ..<4: .green
-        case 4 ..< 7: .yellow
-        case 7 ..< 10: .orange
-        default: .red
+        case ..<4:
+            return .green
+        case 4 ..< 7:
+            return .yellow
+        case 7 ..< 10:
+            return .orange
+        default:
+            return .red
         }
     }
 }

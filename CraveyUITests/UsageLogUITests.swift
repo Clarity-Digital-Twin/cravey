@@ -11,16 +11,10 @@ final class UsageLogUITests: XCTestCase {
         continueAfterFailure = false
     }
 
-    private func launchApp() {
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting"]
-        app.launch()
-    }
-
     // MARK: - Test 1: <10 Second Flow Validation (PHASE_2C:105)
 
     func testUsageLogCompleteFlowUnder10Seconds() throws {
-        launchApp()
+        app = launchCraveyApp()
         let startTime = Date()
 
         // Step 1: Tap + button
@@ -74,7 +68,7 @@ final class UsageLogUITests: XCTestCase {
     // MARK: - Test 2: Verify Success Toast Behavior
 
     func testSuccessToastAppearsAndDisappears() throws {
-        launchApp()
+        app = launchCraveyApp()
         // Open form
         let plusButton = app.buttons["addButton"]
         XCTAssertTrue(plusButton.waitForExistence(timeout: 5))
@@ -105,7 +99,7 @@ final class UsageLogUITests: XCTestCase {
     // MARK: - Test 3: Verify Save Button Disabled for Invalid State
 
     func testSaveButtonDisabledWithoutMethod() throws {
-        launchApp()
+        app = launchCraveyApp()
         // Open form
         let plusButton = app.buttons["addButton"]
         XCTAssertTrue(plusButton.waitForExistence(timeout: 5))
@@ -128,7 +122,7 @@ final class UsageLogUITests: XCTestCase {
     // MARK: - Test 4: Verify ROA Chip Selector (Not Menu)
 
     func testROAMethodsShowAsChipsNotMenu() throws {
-        launchApp()
+        app = launchCraveyApp()
         // Open form
         let plusButton = app.buttons["addButton"]
         XCTAssertTrue(plusButton.waitForExistence(timeout: 5))
@@ -152,7 +146,7 @@ final class UsageLogUITests: XCTestCase {
     // MARK: - Test 5: Verify Amount Updates When Method Changes
 
     func testAmountUpdatesWhenMethodChanges() throws {
-        launchApp()
+        app = launchCraveyApp()
         // Open form
         let plusButton = app.buttons["addButton"]
         XCTAssertTrue(plusButton.waitForExistence(timeout: 5))
