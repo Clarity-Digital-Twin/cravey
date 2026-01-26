@@ -86,9 +86,9 @@ struct CraveyApp: App {
                     Button("OK", role: .cancel) {}
                 } message: {
                     let description = dependencyContainer.initializationError?.errorDescription
-                        ?? "Cravey couldn’t open its local database."
+                        ?? "We couldn't access your local data yet."
                     let recovery = dependencyContainer.initializationError?.recoverySuggestion
-                        ?? "Your data may not persist after closing the app."
+                        ?? "Your entries may not be saved after you close the app."
                     Text("\(description)\n\n\(recovery)")
                 }
                 .modelContainer(dependencyContainer.modelContainer)

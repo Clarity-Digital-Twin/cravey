@@ -17,7 +17,7 @@ settings:
     SWIFT_VERSION: "6.0"
     SWIFT_STRICT_CONCURRENCY: "complete"
     ENABLE_PREVIEWS: true
-    # Xcode 26 enables User Script Sandboxing by default, which breaks SwiftLint's
+    # User Script Sandboxing can break SwiftLint's
     # filesystem traversal during iOS Simulator builds (Sandbox deny file-read-data).
     # Linting is already gated via `scripts/verify.sh`; disabling sandboxing here
     # keeps local builds/tests working across destinations.

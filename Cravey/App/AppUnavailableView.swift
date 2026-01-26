@@ -10,16 +10,19 @@ struct AppUnavailableView: View {
                 .font(.system(size: 48))
                 .foregroundStyle(.orange)
 
-            Text("Cravey can’t start")
+            Text("We're having trouble starting Cravey")
                 .font(.title2.bold())
 
-            Text(error?.errorDescription ?? "Cravey couldn’t open its local database.")
+            Text(error?.errorDescription ?? "We couldn't access your local data yet.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
 
-            Text(error?.recoverySuggestion ?? "Try restarting your device and try again.")
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
+            Text(
+                error?.recoverySuggestion
+                    ?? "Please try again in a moment. If this continues, restarting your device can help."
+            )
+            .multilineTextAlignment(.center)
+            .foregroundStyle(.secondary)
 
             #if DEBUG
                 if let error {

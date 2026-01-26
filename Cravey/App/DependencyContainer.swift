@@ -17,12 +17,11 @@ final class DependencyContainer {
         let inMemoryErrorDescription: String
 
         var errorDescription: String? {
-            "Cravey couldn’t start because its local database is unavailable."
+            "We couldn't access your local data right now."
         }
 
         var recoverySuggestion: String? {
-            "Try restarting your device. If the issue persists, you may need to delete the app’s local data "
-                + "from iOS Settings."
+            "Please try again in a moment. If this continues, restarting your device can help."
         }
     }
 
@@ -33,16 +32,15 @@ final class DependencyContainer {
         var errorDescription: String? {
             switch storageMode {
             case .persistent:
-                "Cravey couldn’t open its local database. You can continue in a temporary mode, "
-                    + "but your data may not persist after closing the app."
+                "We couldn't access your local data, so Cravey is running in a temporary mode. "
+                    + "Your entries may not be saved after you close the app."
             case .inMemoryFallback:
-                "Cravey is running in a temporary mode. Your data may not persist after closing the app."
+                "Cravey is running in a temporary mode. Your entries may not be saved after you close the app."
             }
         }
 
         var recoverySuggestion: String? {
-            "If this keeps happening, try restarting your device. If the issue persists, you may need to "
-                + "delete the app’s local data from iOS Settings."
+            "If this keeps happening, restarting your device can help."
         }
     }
 
