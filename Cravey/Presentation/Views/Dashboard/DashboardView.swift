@@ -17,7 +17,7 @@ struct DashboardView: View {
                         MetricCard(
                             title: "Current Streak",
                             value: "\(viewModel.currentStreak)",
-                            unit: "days clean",
+                            unit: "days abstinent",
                             icon: "flame.fill",
                             color: .orange
                         )
