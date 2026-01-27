@@ -20,22 +20,22 @@ Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built 
 | **Craving Logging** | Working | Full form: intensity, triggers, location, notes, timestamp |
 | **Usage Logging** | Working | Full form: ROA picker, amounts, triggers, location, notes |
 | **Dashboard** | Working | 5 metric cards, streak tracking, intensity trends |
-| **Settings** | Working | Export cravings + usage (JSON), delete all data |
+| **Settings** | Working | Export (CSV/JSON) + delete-all (logs + recordings + custom messages) |
 | **Home Screen** | Working | Lists cravings + usage with swipe actions |
 
 ### Technical Foundation
 | Layer | Files | Status |
 |-------|-------|--------|
 | **Domain (Entities)** | 5 | CravingEntity, UsageEntity, RecordingEntity, MotivationalMessageEntity, TriggerOptions |
-| **Domain (Use Cases)** | 9 | Log/Fetch/Delete (Craving/Usage), Export/DeleteAll, plus ROAAmountRange helper |
+| **Domain (Use Cases)** | 10 | Log/Fetch/Delete (Craving/Usage), Export/DeleteAll, plus ROAAmountRange helper |
 | **Domain (Protocols)** | 4 | CravingRepositoryProtocol, UsageRepositoryProtocol, RecordingRepositoryProtocol, MessageRepositoryProtocol |
 | **Data (Models)** | 4 | CravingModel, UsageModel, RecordingModel, MotivationalMessageModel |
 | **Data (Mappers)** | 4 | All mappers implemented |
-| **Data (Repositories)** | 2 | CravingRepository, UsageRepository (concrete implementations) |
+| **Data (Repositories)** | 4 | CravingRepository, UsageRepository, RecordingRepository, MessageRepository (concrete implementations) |
 | **Data (Use Cases)** | 1 | SwiftDataDeleteAllUserDataUseCase (DeleteAllUserDataUseCase implementation) |
 | **Presentation (ViewModels)** | 6 | CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings |
-| **Presentation (Views + Components)** | 13 | Home, Dashboard, Settings, Craving/Usage forms+lists, reusable components |
-| **Tests** | 11 files | 42 Swift Testing tests, all passing (`CraveyTests`) |
+| **Presentation (Views + Components)** | 15 | Home, Dashboard, Settings (incl. export flow), Craving/Usage forms+lists, reusable components |
+| **Tests** | 15 files | 42 Swift Testing tests, all passing (`CraveyTests`) |
 
 ### Architecture Compliance
 - Clean Architecture enforced (Domain has no SwiftUI/SwiftData imports)
@@ -51,8 +51,8 @@ Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built 
 
 | Component | What Exists | What's Missing |
 |-----------|-------------|----------------|
-| **RecordingRepository** | Protocol defined | No concrete implementation |
-| **MessageRepository** | Protocol defined | No concrete implementation |
+| **Recordings Feature** | Models + repository | AVFoundation capture/playback + user-facing UI |
+| **Motivational Messages Feature** | Models + repository | Message selection UI + use cases |
 | **Recording Use Cases** | Entity defined | No SaveRecording/FetchRecordings use cases |
 | **Recording ViewModels** | - | RecordingViewModel, RecordingLibraryViewModel |
 | **Recording Views** | - | RecordingView, RecordingLibraryView, playback UI |

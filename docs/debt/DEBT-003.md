@@ -1,6 +1,6 @@
 # DEBT-003: DateFormatter Created Per SettingsViewModel Instance
 
-**Status:** OPEN
+**Status:** FIXED
 **Priority:** P4
 **File:** `Cravey/Presentation/ViewModels/SettingsViewModel.swift:17-21`
 
@@ -26,3 +26,5 @@ DateFormatters should be shared/cached.
 ## Fix
 
 Use static property: `private static let exportDateFormatter = ...`
+
+✅ Implemented as a shared `exportFileDateFormatter`.

@@ -1,6 +1,6 @@
 # DEBT-004: Inconsistent nowProvider Injection
 
-**Status:** OPEN
+**Status:** FIXED
 **Priority:** P4
 **Files:**
 - `Cravey/Presentation/ViewModels/DashboardViewModel.swift` (has nowProvider)
@@ -18,3 +18,5 @@ Consistent approach to time-dependent logic across all ViewModels.
 ## Fix
 
 Either inject `nowProvider` in all ViewModels, or remove from DashboardViewModel (less testable but consistent).
+
+✅ Implemented by injecting `nowProvider` into `CravingLogViewModel` and `UsageLogViewModel` (defaults to `Date.init`).

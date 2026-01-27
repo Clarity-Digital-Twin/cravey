@@ -1,6 +1,6 @@
 # DEBT-001: Duplicate Timestamp Warning Logic
 
-**Status:** OPEN
+**Status:** FIXED
 **Priority:** P4
 **Files:**
 - `Cravey/Presentation/ViewModels/CravingLogViewModel.swift`
@@ -28,3 +28,5 @@ Single source of truth for this logic.
 ## Fix
 
 Create `TimestampValidation` utility with shared threshold constant.
+
+✅ Implemented in `Cravey/Presentation/Utilities/TimestampValidation.swift` and used by both ViewModels.

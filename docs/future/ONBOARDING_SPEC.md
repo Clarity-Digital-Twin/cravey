@@ -1280,18 +1280,15 @@ func testExportCSV() async throws {
   - **Implementation note:** PHASE_2 must add this method to UsageRepositoryProtocol (same pattern as CravingRepositoryProtocol)
 - ⚠️ `UsageRepository` implementation must exist with both `fetchAll()` and `delete(id:)` methods
 
-### From Baseline (Recordings - Stub):
-- ⚠️ `RecordingEntity` exists (baseline)
-- ⚠️ `RecordingRepositoryProtocol.fetchAll()` method exists (stub)
-- ⚠️ `RecordingRepositoryProtocol.delete(id:)` method exists (stub)
-- ⚠️ `RecordingRepository` stub exists (PHASE_4 replaces with real implementation)
+### From Baseline (Recordings):
+- ✅ `RecordingEntity` exists (baseline)
+- ✅ `RecordingRepositoryProtocol` exists
+- ✅ `RecordingRepository` concrete implementation exists (SwiftData-backed)
 
 **Action Required:**
 1. ✅ **PHASE_1 must be complete** before starting this phase (CravingRepository needed for export/delete)
 2. ✅ **PHASE_2 must be complete** before starting this phase (UsageRepository needed for export/delete)
-3. ⚠️ **RecordingRepository stub is OK** - Export/delete will work with stub (returns empty array), real implementation comes in PHASE_4
-
-**Note:** Export functionality will work even if PHASE_4 (Recordings) is not complete - it will simply export empty recordings array from stub repository.
+3. ✅ Export functionality will work even if the end-user recordings feature is not complete — it will export an empty recordings array until recordings are created.
 
 ---
 

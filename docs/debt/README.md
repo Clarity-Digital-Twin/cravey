@@ -6,11 +6,14 @@
 
 | ID | Description | Priority | Status |
 |----|-------------|----------|--------|
-| DEBT-001 | Duplicate timestamp warning logic | P4 | OPEN |
 | DEBT-002 | FileStorageManager singleton pattern | P3 | OPEN |
-| DEBT-003 | DateFormatter created per instance | P4 | OPEN |
-| DEBT-004 | Inconsistent nowProvider injection | P4 | OPEN |
-| DEBT-005 | Dead / unused UI code in CraveyApp | P4 | OPEN |
+ 
+## Fixed (Recent)
+
+- DEBT-001 - Fixed (shared timestamp validation utility)
+- DEBT-003 - Fixed (shared export file date formatter)
+- DEBT-004 - Fixed (consistent nowProvider injection)
+- DEBT-005 - Fixed (removed unused app entrypoint UI code)
 
 ## Priority Definitions
 

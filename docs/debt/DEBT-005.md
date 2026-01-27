@@ -1,8 +1,8 @@
 # DEBT-005: Dead / Unused UI Code in CraveyApp
 
-**Status:** OPEN
+**Status:** FIXED
 **Priority:** P4
-**File:** `Cravey/App/CraveyApp.swift:144`
+**File:** `Cravey/App/CraveyApp.swift`
 
 ## Problem
 
@@ -24,3 +24,5 @@ The app entry point should contain only the real composition root and code that 
 
 - Remove `PlaceholderContentView` if it is no longer needed.
 - Move macOS-only settings views into a dedicated file behind `#if os(macOS)` (or remove until macOS is explicitly supported).
+
+✅ Implemented by removing the unused placeholder + macOS-only settings scaffolding from `CraveyApp.swift`.

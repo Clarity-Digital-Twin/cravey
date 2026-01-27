@@ -11,13 +11,13 @@ Pre-release. The objective quality gate is `bash scripts/verify.sh` (project gen
 - **Craving logging**: Intensity (1–10), HAALT triggers, location presets, notes, timestamp
 - **Usage logging**: ROA method + clinically-validated amount ranges, triggers, location, notes, timestamp
 - **Progress dashboard**: Streaks, averages, top triggers, weekly summary
-- **Settings**: Export cravings + usage (JSON), delete all local data
+- **Settings**: Export (CSV/JSON) + delete-all (logs + recordings + custom messages)
 - **Privacy**: Local-only storage (SwiftData CloudKit disabled), no analytics/tracking
 
 ## Planned / Scaffolded (Not Implemented Yet)
 
-- **Motivational recordings** (audio/video via AVFoundation): models/entities exist; capture/playback UI + repository/use cases pending
-- **Motivational messages**: model exists; selection UI/use cases pending
+- **Motivational recordings** (audio/video via AVFoundation): models/repository exist; capture/playback UI + use cases pending
+- **Motivational messages**: model/repository exist; selection UI/use cases pending
 - **Onboarding**: welcome/tour flow pending
 
 ## Development

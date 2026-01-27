@@ -9,6 +9,14 @@
 
 > ⚠️ **Deferred spec:** This document is planning guidance only. It is not a statement that the feature exists in the current app. Keep `bash scripts/verify.sh` green while implementing any future work.
 
+## 🔎 Current Implementation Notes (2026-01-27)
+
+- ✅ `RecordingRepository` and `MessageRepository` are implemented (SwiftData-backed).
+- ✅ Export supports CSV/JSON and includes recordings/messages metadata.
+- 🚧 AVFoundation capture/playback and the recordings UI are still not implemented.
+
+Parts of this planning document that mention “stub repositories” are now outdated.
+
 ## 🎯 Phase Goal
 
 **Shippable Deliverable:** Users can **record motivational content** (audio + video), play it back during cravings, and access Top 3 recordings from Home tab.
@@ -29,14 +37,14 @@
 ### Data Layer
 - ✅ `RecordingModel.swift` - SwiftData @Model (created in baseline)
 - ✅ `RecordingMapper.swift` - Entity ↔ Model conversion
-- ⚠️ `RecordingRepository.swift` - **STUB ONLY** (will replace with real implementation)
+- ✅ `RecordingRepository.swift` - SwiftData-backed implementation (metadata only; capture/playback still pending)
 
 ### Presentation Layer
 - ✅ `FileStorageManager.swift` - File I/O helper (used for recording files)
 - ✅ `HomeView.swift` - Exists (will add Quick Play section)
 
 ### DependencyContainer
-- ✅ `RecordingRepository` injected (currently stub pattern)
+- ✅ `RecordingRepository` injected
 - ✅ `@Environment` setup for repository access
 
 **Key Components Already Available:**
@@ -56,7 +64,7 @@
 - [ ] `Domain/UseCases/DeleteRecordingUseCase.swift` (CREATE - delete file + DB entry)
 
 ### Part 2: Data Layer (1 repository file)
-- [ ] `Data/Repositories/RecordingRepository.swift` (REPLACE STUB - real SwiftData implementation)
+- [x] `Data/Repositories/RecordingRepository.swift` (SwiftData implementation)
 
 ### Part 3: Presentation Layer - Coordinators (2 files)
 - [ ] `Presentation/Coordinators/AudioRecordingCoordinator.swift` (CREATE - AVAudioRecorder wrapper)

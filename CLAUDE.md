@@ -496,13 +496,13 @@ ModelConfiguration(
 - **Craving Logging** - Full form with intensity, triggers, location, notes, timestamp
 - **Usage Logging** - Full form with ROA picker, amounts, triggers, location, notes
 - **Dashboard** - 5 metric cards, streak tracking, intensity trends
-- **Settings** - Export cravings + usage (JSON), delete all data
+- **Settings** - Export (CSV/JSON) + delete-all (logs + recordings + custom messages)
 - **Home Screen** - Lists cravings + usage with swipe actions
 
 ### ✅ Technical Foundation
 - Clean Architecture folder structure
-- Domain layer (5 entities, 9 use case files, 4 protocols)
-- Data layer (4 models, 4 mappers, 2 repositories: Craving, Usage, plus 1 SwiftData-backed DeleteAllUserData use case)
+- Domain layer (5 entities, 10 use case files, 4 protocols)
+- Data layer (4 models, 4 mappers, 4 repositories: Craving, Usage, Recording, Message, plus 1 SwiftData-backed DeleteAllUserData use case)
 - DependencyContainer with DI
 - 6 ViewModels (CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings)
 - 10+ SwiftUI Views with reusable components
@@ -510,8 +510,6 @@ ModelConfiguration(
 - XcodeGen configuration
 
 ### 🚧 TODO (Not Implemented)
-- **RecordingRepository** - Protocol exists, no concrete implementation
-- **MessageRepository** - Protocol exists, no concrete implementation
 - **Recording Views** - AVFoundation integration, recording/playback UI
 - **Onboarding** - WelcomeView, TourView not created
 - **UI Tests** - Scaffolding exists; not part of the automated convergence gate

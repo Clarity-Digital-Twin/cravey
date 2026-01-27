@@ -4,18 +4,17 @@
 
 ## Open Bugs
 
-| ID | Description | Priority | Status |
-|----|-------------|----------|--------|
-| BUG-026 | Craving timestamp shows awkward format | P2 | OPEN |
-| BUG-027 | Delete all data not atomic | P2 | OPEN |
-| BUG-028 | RecordingMapper silent enum downgrade | P3 | OPEN |
-| BUG-029 | Export data missing CSV + incomplete payload | P1 | OPEN |
-| BUG-030 | MessageMapper silent enum downgrade | P3 | OPEN |
+_None._
 
 ## Fixed (Recent)
 
 - BUG-001 through BUG-024 - See `docs/_archive/bugs/`
 - BUG-025 - Closed (no longer reproducible; see `docs/bugs/BUG-025.md`)
+- BUG-026 - Fixed (craving timestamp formatting)
+- BUG-027 - Fixed (delete-all safety + spec alignment)
+- BUG-028 - Fixed (recording enum forward-compatibility)
+- BUG-029 - Fixed (CSV/JSON export + complete payload)
+- BUG-030 - Fixed (message enum forward-compatibility)
 
 ## Priority Definitions
 
