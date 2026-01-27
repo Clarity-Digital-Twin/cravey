@@ -41,7 +41,12 @@ final class DefaultExportUserDataUseCase: ExportUserDataUseCase, Sendable {
         async let recordingsTask = recordingRepository.fetchAll()
         async let messagesTask = messageRepository.fetchAll()
 
-        let (cravings, usages, recordings, messages) = try await (cravingsTask, usagesTask, recordingsTask, messagesTask)
+        let (cravings, usages, recordings, messages) = try await (
+            cravingsTask,
+            usagesTask,
+            recordingsTask,
+            messagesTask
+        )
 
         return UserDataExport(
             schemaVersion: UserDataExport.currentSchemaVersion,

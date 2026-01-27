@@ -1,6 +1,72 @@
 import Foundation
 
 enum UserDataExportFileBuilder {
+    private static let csvHeader = [
+        "record_type",
+        "id",
+        "timestamp",
+        "created_at",
+        "modified_at",
+        "craving_intensity",
+        "craving_triggers",
+        "craving_location",
+        "craving_notes",
+        "usage_method",
+        "usage_amount",
+        "usage_triggers",
+        "usage_location",
+        "usage_notes",
+        "recording_type",
+        "recording_purpose",
+        "recording_duration_seconds",
+        "recording_file_path",
+        "recording_thumbnail_path",
+        "recording_title",
+        "recording_notes",
+        "recording_play_count",
+        "recording_last_played_at",
+        "message_content",
+        "message_category",
+        "message_is_custom",
+        "message_priority",
+        "message_is_active",
+        "message_times_shown",
+        "message_last_shown_at",
+    ]
+
+    private enum CSVColumn: Int {
+        case recordType = 0
+        case id
+        case timestamp
+        case createdAt
+        case modifiedAt
+        case cravingIntensity
+        case cravingTriggers
+        case cravingLocation
+        case cravingNotes
+        case usageMethod
+        case usageAmount
+        case usageTriggers
+        case usageLocation
+        case usageNotes
+        case recordingType
+        case recordingPurpose
+        case recordingDurationSeconds
+        case recordingFilePath
+        case recordingThumbnailPath
+        case recordingTitle
+        case recordingNotes
+        case recordingPlayCount
+        case recordingLastPlayedAt
+        case messageContent
+        case messageCategory
+        case messageIsCustom
+        case messagePriority
+        case messageIsActive
+        case messageTimesShown
+        case messageLastShownAt
+    }
+
     enum ExportFileBuilderError: LocalizedError, Sendable {
         case utf8EncodingFailed
 
@@ -26,182 +92,14 @@ enum UserDataExportFileBuilder {
     }
 
     static func makeCSVString(export: UserDataExport) -> String {
-        let header = [
-            "record_type",
-            "id",
-            "timestamp",
-            "created_at",
-            "modified_at",
-            "craving_intensity",
-            "craving_triggers",
-            "craving_location",
-            "craving_notes",
-            "usage_method",
-            "usage_amount",
-            "usage_triggers",
-            "usage_location",
-            "usage_notes",
-            "recording_type",
-            "recording_purpose",
-            "recording_duration_seconds",
-            "recording_file_path",
-            "recording_thumbnail_path",
-            "recording_title",
-            "recording_notes",
-            "recording_play_count",
-            "recording_last_played_at",
-            "message_content",
-            "message_category",
-            "message_is_custom",
-            "message_priority",
-            "message_is_active",
-            "message_times_shown",
-            "message_last_shown_at",
-        ]
-
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
 
-        var rows: [[String]] = [header]
-
-        for craving in export.cravings {
-            rows.append([
-                "craving",
-                craving.id.uuidString,
-                formatter.string(from: craving.timestamp),
-                formatter.string(from: craving.createdAt),
-                craving.modifiedAt.map(formatter.string(from:)) ?? "",
-                String(craving.intensity),
-                craving.triggers.joined(separator: "; "),
-                craving.location ?? "",
-                craving.notes ?? "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-            ])
-        }
-
-        for usage in export.usages {
-            rows.append([
-                "usage",
-                usage.id.uuidString,
-                formatter.string(from: usage.timestamp),
-                formatter.string(from: usage.createdAt),
-                usage.modifiedAt.map(formatter.string(from:)) ?? "",
-                "",
-                "",
-                "",
-                "",
-                usage.method,
-                String(usage.amount),
-                usage.triggers.joined(separator: "; "),
-                usage.location ?? "",
-                usage.notes ?? "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-            ])
-        }
-
-        for recording in export.recordings {
-            rows.append([
-                "recording",
-                recording.id.uuidString,
-                formatter.string(from: recording.timestamp),
-                formatter.string(from: recording.createdAt),
-                recording.modifiedAt.map(formatter.string(from:)) ?? "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                recording.type.rawValue,
-                recording.purpose.rawValue,
-                String(recording.duration),
-                recording.filePath,
-                recording.thumbnailPath ?? "",
-                recording.title ?? "",
-                recording.notes ?? "",
-                String(recording.playCount),
-                recording.lastPlayedAt.map(formatter.string(from:)) ?? "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-            ])
-        }
-
-        for message in export.messages {
-            rows.append([
-                "message",
-                message.id.uuidString,
-                "",
-                formatter.string(from: message.createdAt),
-                message.modifiedAt.map(formatter.string(from:)) ?? "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                message.content,
-                message.category.rawValue,
-                String(message.isCustom),
-                String(message.priority),
-                String(message.isActive),
-                String(message.timesShown),
-                message.lastShownAt.map(formatter.string(from:)) ?? "",
-            ])
-        }
+        var rows: [[String]] = [csvHeader]
+        rows.append(contentsOf: export.cravings.map { cravingCSVRow(craving: $0, formatter: formatter) })
+        rows.append(contentsOf: export.usages.map { usageCSVRow(usage: $0, formatter: formatter) })
+        rows.append(contentsOf: export.recordings.map { recordingCSVRow(recording: $0, formatter: formatter) })
+        rows.append(contentsOf: export.messages.map { messageCSVRow(message: $0, formatter: formatter) })
 
         return rows.map { $0.map(csvEscape).joined(separator: ",") }.joined(separator: "\n") + "\n"
     }
@@ -219,6 +117,74 @@ enum UserDataExportFileBuilder {
             throw ExportFileBuilderError.utf8EncodingFailed
         }
         return data
+    }
+
+    private static func cravingCSVRow(craving: CravingEntity, formatter: ISO8601DateFormatter) -> [String] {
+        var row = emptyCSVRow()
+        row[CSVColumn.recordType.rawValue] = "craving"
+        row[CSVColumn.id.rawValue] = craving.id.uuidString
+        row[CSVColumn.timestamp.rawValue] = formatter.string(from: craving.timestamp)
+        row[CSVColumn.createdAt.rawValue] = formatter.string(from: craving.createdAt)
+        row[CSVColumn.modifiedAt.rawValue] = craving.modifiedAt.map(formatter.string(from:)) ?? ""
+        row[CSVColumn.cravingIntensity.rawValue] = String(craving.intensity)
+        row[CSVColumn.cravingTriggers.rawValue] = craving.triggers.joined(separator: "; ")
+        row[CSVColumn.cravingLocation.rawValue] = craving.location ?? ""
+        row[CSVColumn.cravingNotes.rawValue] = craving.notes ?? ""
+        return row
+    }
+
+    private static func usageCSVRow(usage: UsageEntity, formatter: ISO8601DateFormatter) -> [String] {
+        var row = emptyCSVRow()
+        row[CSVColumn.recordType.rawValue] = "usage"
+        row[CSVColumn.id.rawValue] = usage.id.uuidString
+        row[CSVColumn.timestamp.rawValue] = formatter.string(from: usage.timestamp)
+        row[CSVColumn.createdAt.rawValue] = formatter.string(from: usage.createdAt)
+        row[CSVColumn.modifiedAt.rawValue] = usage.modifiedAt.map(formatter.string(from:)) ?? ""
+        row[CSVColumn.usageMethod.rawValue] = usage.method
+        row[CSVColumn.usageAmount.rawValue] = String(usage.amount)
+        row[CSVColumn.usageTriggers.rawValue] = usage.triggers.joined(separator: "; ")
+        row[CSVColumn.usageLocation.rawValue] = usage.location ?? ""
+        row[CSVColumn.usageNotes.rawValue] = usage.notes ?? ""
+        return row
+    }
+
+    private static func recordingCSVRow(recording: RecordingEntity, formatter: ISO8601DateFormatter) -> [String] {
+        var row = emptyCSVRow()
+        row[CSVColumn.recordType.rawValue] = "recording"
+        row[CSVColumn.id.rawValue] = recording.id.uuidString
+        row[CSVColumn.timestamp.rawValue] = formatter.string(from: recording.timestamp)
+        row[CSVColumn.createdAt.rawValue] = formatter.string(from: recording.createdAt)
+        row[CSVColumn.modifiedAt.rawValue] = recording.modifiedAt.map(formatter.string(from:)) ?? ""
+        row[CSVColumn.recordingType.rawValue] = recording.type.rawValue
+        row[CSVColumn.recordingPurpose.rawValue] = recording.purpose.rawValue
+        row[CSVColumn.recordingDurationSeconds.rawValue] = String(recording.duration)
+        row[CSVColumn.recordingFilePath.rawValue] = recording.filePath
+        row[CSVColumn.recordingThumbnailPath.rawValue] = recording.thumbnailPath ?? ""
+        row[CSVColumn.recordingTitle.rawValue] = recording.title ?? ""
+        row[CSVColumn.recordingNotes.rawValue] = recording.notes ?? ""
+        row[CSVColumn.recordingPlayCount.rawValue] = String(recording.playCount)
+        row[CSVColumn.recordingLastPlayedAt.rawValue] = recording.lastPlayedAt.map(formatter.string(from:)) ?? ""
+        return row
+    }
+
+    private static func messageCSVRow(message: MotivationalMessageEntity, formatter: ISO8601DateFormatter) -> [String] {
+        var row = emptyCSVRow()
+        row[CSVColumn.recordType.rawValue] = "message"
+        row[CSVColumn.id.rawValue] = message.id.uuidString
+        row[CSVColumn.createdAt.rawValue] = formatter.string(from: message.createdAt)
+        row[CSVColumn.modifiedAt.rawValue] = message.modifiedAt.map(formatter.string(from:)) ?? ""
+        row[CSVColumn.messageContent.rawValue] = message.content
+        row[CSVColumn.messageCategory.rawValue] = message.category.rawValue
+        row[CSVColumn.messageIsCustom.rawValue] = String(message.isCustom)
+        row[CSVColumn.messagePriority.rawValue] = String(message.priority)
+        row[CSVColumn.messageIsActive.rawValue] = String(message.isActive)
+        row[CSVColumn.messageTimesShown.rawValue] = String(message.timesShown)
+        row[CSVColumn.messageLastShownAt.rawValue] = message.lastShownAt.map(formatter.string(from:)) ?? ""
+        return row
+    }
+
+    private static func emptyCSVRow() -> [String] {
+        Array(repeating: "", count: csvHeader.count)
     }
 
     private static func csvEscape(_ rawValue: String) -> String {

@@ -20,7 +20,14 @@ struct DeleteAllUserDataUseCaseTests {
 
         context.insert(CravingModel(timestamp: Date(), intensity: 5))
         context.insert(UsageModel(timestamp: Date(), method: "Bowls", amount: 1.0))
-        context.insert(RecordingModel(type: "audio", purpose: "motivational", duration: 10, filePath: "Recordings/a.m4a"))
+        context.insert(
+            RecordingModel(
+                type: "audio",
+                purpose: "motivational",
+                duration: 10,
+                filePath: "Recordings/a.m4a"
+            )
+        )
         context.insert(MotivationalMessageModel(content: "Default", category: "urge", isCustom: false))
         context.insert(MotivationalMessageModel(content: "Custom", category: "urge", isCustom: true))
         try context.save()
