@@ -1,7 +1,8 @@
-# Cravey App - Claude Code Development Context
+# Cravey App - AI Agent Development Context
 
 **Last Updated:** 2026-01-27
 **Current Status:** See `docs/PROJECT_STATUS.md` for authoritative status
+**Parity:** `AGENTS.md` and `CLAUDE.md` are redundant copies and must be kept in sync.
 
 ## Project Overview
 Cravey is a **cannabis cessation support iOS app** (iOS 18+) built with Clean Architecture + MVVM using modern SwiftUI and SwiftData. The app helps users track cravings, record motivational videos/audio, and access supportive content during vulnerable moments.
@@ -700,7 +701,7 @@ settings:
 - **docs/specs/** - Active engineering specs
 - **docs/bugs/** - Bug tracker
 - **docs/debt/** - Technical debt tracker
-- **CLAUDE.md** - This file (development context)
+- **AGENTS.md / CLAUDE.md** - Development context (redundant copies; keep in sync)
 - **README.md** - Public-facing project overview
 - **docs/_archive/** - Historical docs (do not reference)
 
