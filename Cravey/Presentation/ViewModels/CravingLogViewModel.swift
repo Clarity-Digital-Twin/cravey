@@ -13,7 +13,15 @@ final class CravingLogViewModel: Identifiable {
     var intensity: Double = 5
     var timestamp: Date = .init() // REQUIRED: Auto "now", editable (CLINICAL_CANNABIS_SPEC.md:193)
     var selectedTriggers: Set<String> = []
-    var notes: String = ""
+    var notes: String = "" {
+        didSet {
+            // Enforce 500 char limit (DATA_MODEL_SPEC:275, UX_FLOW:391)
+            if notes.count > 500 {
+                notes = String(notes.prefix(500))
+            }
+        }
+    }
+
     var selectedLocation: String? // BUG-004 FIX: Optional to avoid Set allocation in binding
     var isLoading: Bool = false
     var didSucceed: Bool = false // Signal success to parent (UX_FLOW:396-405) - toast, not alert
@@ -46,12 +54,6 @@ final class CravingLogViewModel: Identifiable {
         if isTimestampOld, !hasAcknowledgedOldTimestamp {
             showTimestampWarning = true
             return // Wait for user to confirm
-        }
-
-        // Validate notes length (500 char limit per DATA_MODEL_SPEC.md:275)
-        if notes.count > 500 {
-            errorMessage = "Notes cannot exceed 500 characters"
-            return
         }
 
         guard canSubmit else { return }
@@ -121,12 +123,8 @@ final class CravingLogViewModel: Identifiable {
         !isLoading
     }
 
-    var notesCharacterCount: String {
-        "\(notes.count)/500"
-    }
-
-    var notesExceedsLimit: Bool {
-        notes.count > 500
+    var notesCharacterCount: Int {
+        notes.count
     }
 
     /// BUG-006 FIX: Only show counter at 400+ chars (matches UsageLogViewModel)

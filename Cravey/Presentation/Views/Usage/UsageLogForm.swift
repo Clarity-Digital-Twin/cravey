@@ -17,7 +17,7 @@ struct UsageLogForm: View {
                 // MARK: - Timestamp Section
 
                 Section {
-                    TimestampPicker(date: $viewModel.timestamp)
+                    TimestampPicker(title: nil, date: $viewModel.timestamp)
                 } header: {
                     Text("When")
                 }
@@ -44,7 +44,10 @@ struct UsageLogForm: View {
                 Section {
                     ChipSelector(
                         title: "What triggered this?",
-                        options: TriggerOptions.all,
+                        groups: [
+                            .init(title: "Primary (HAALT)", options: TriggerOptions.primary),
+                            .init(title: "Secondary", options: TriggerOptions.secondary),
+                        ],
                         selectedValues: $viewModel.selectedTriggers,
                         multiSelect: true
                     )

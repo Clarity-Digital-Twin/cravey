@@ -97,6 +97,7 @@ struct LogView: View {
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                         }
+                        .accessibilityIdentifier("successToast")
                         .padding()
                         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
                         .padding(.horizontal)

@@ -41,6 +41,17 @@ struct CravingLogViewModelTests {
         #expect(viewModel.didSucceed == false) // Not succeeded yet
         #expect(viewModel.errorMessage == nil) // No error
     }
+
+    @Test("Notes should enforce 500 character limit")
+    func notesEnforcesCharacterLimit() {
+        let mockUseCase = MockLogCravingUseCase()
+        let viewModel = CravingLogViewModel(logCravingUseCase: mockUseCase)
+
+        viewModel.notes = String(repeating: "a", count: 501)
+
+        #expect(viewModel.notes.count == 500)
+        #expect(viewModel.notesCharacterCount == 500)
+    }
 }
 
 // MARK: - Mock Use Case

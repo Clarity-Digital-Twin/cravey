@@ -22,7 +22,10 @@ struct CravingLogForm: View {
                 Section("Details (Optional)") {
                     ChipSelector(
                         title: "What triggered this?",
-                        options: TriggerOptions.all,
+                        groups: [
+                            .init(title: "Primary (HAALT)", options: TriggerOptions.primary),
+                            .init(title: "Secondary", options: TriggerOptions.secondary),
+                        ],
                         selectedValues: $viewModel.selectedTriggers,
                         multiSelect: true
                     )
@@ -42,9 +45,9 @@ struct CravingLogForm: View {
                         if viewModel.shouldShowNotesCounter {
                             HStack {
                                 Spacer()
-                                Text(viewModel.notesCharacterCount)
+                                Text("\(viewModel.notesCharacterCount)/500")
                                     .font(.caption)
-                                    .foregroundColor(viewModel.notesExceedsLimit ? .red : .secondary)
+                                    .foregroundStyle(viewModel.notesCharacterCount == 500 ? .red : .secondary)
                             }
                         }
                     }

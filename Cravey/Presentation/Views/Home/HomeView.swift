@@ -5,13 +5,9 @@ import SwiftUI
 struct HomeView: View {
     @Environment(DashboardViewModel.self) private var viewModel
 
-    private static let motivationMessages: [String] = [
-        "Every moment of resistance is progress.",
-        "Setbacks are part of the journey — be kind to yourself.",
-        "You don’t need to do this perfectly. Just keep going.",
-        "Breathe. Notice the urge. Let it pass.",
-        "Small wins add up. You’re building momentum.",
-    ]
+    private static let motivationMessages: [String] = MotivationalMessageEntity
+        .defaultMessages
+        .map(\.content)
 
     var body: some View {
         NavigationStack {

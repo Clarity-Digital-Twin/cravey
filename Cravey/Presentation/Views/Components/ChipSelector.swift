@@ -3,10 +3,33 @@ import SwiftUI
 /// Chip selector component (multi-select or single-select)
 /// Presentation layer - reusable component
 struct ChipSelector: View {
+    struct Group: Identifiable {
+        let title: String?
+        let options: [String]
+
+        var id: String {
+            "\(title ?? "ungrouped"):\(options.joined(separator: "|"))"
+        }
+    }
+
     let title: String
-    let options: [String]
+    let groups: [Group]
     @Binding var selectedValues: Set<String>
     let multiSelect: Bool
+
+    init(title: String, options: [String], selectedValues: Binding<Set<String>>, multiSelect: Bool) {
+        self.title = title
+        groups = [Group(title: nil, options: options)]
+        _selectedValues = selectedValues
+        self.multiSelect = multiSelect
+    }
+
+    init(title: String, groups: [Group], selectedValues: Binding<Set<String>>, multiSelect: Bool) {
+        self.title = title
+        self.groups = groups
+        _selectedValues = selectedValues
+        self.multiSelect = multiSelect
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -14,15 +37,25 @@ struct ChipSelector: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-            FlowLayout(spacing: 8) {
-                ForEach(options, id: \.self) { option in
-                    ChipButton(
-                        title: option,
-                        isSelected: selectedValues.contains(option),
-                        action: {
-                            toggleSelection(option)
+            VStack(alignment: .leading, spacing: 12) {
+                ForEach(groups) { group in
+                    if let groupTitle = group.title {
+                        Text(groupTitle)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    FlowLayout(spacing: 8) {
+                        ForEach(group.options, id: \.self) { option in
+                            ChipButton(
+                                title: option,
+                                isSelected: selectedValues.contains(option),
+                                action: {
+                                    toggleSelection(option)
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
         }
@@ -153,22 +186,33 @@ struct FlowLayout: Layout {
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache _: inout ()) -> CGSize {
         let rows = computeRows(proposal: proposal, subviews: subviews)
-        let height = rows.reduce(0) { $0 + $1.maxHeight + spacing }
-        return CGSize(width: proposal.width ?? 0, height: height)
+        let height =
+            rows.reduce(0) { $0 + $1.maxHeight }
+                + max(0, CGFloat(rows.count - 1)) * spacing
+
+        let width = proposal.width ?? {
+            let total = subviews.reduce(0) { $0 + $1.sizeThatFits(.unspecified).width }
+            return total + max(0, CGFloat(subviews.count - 1)) * spacing
+        }()
+
+        return CGSize(width: width, height: height)
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache _: inout ()) {
         let rows = computeRows(proposal: proposal, subviews: subviews)
         var yPosition = bounds.minY
 
-        for row in rows {
+        for (rowIndex, row) in rows.enumerated() {
             var xPosition = bounds.minX
             for index in row.indices {
                 let size = subviews[index].sizeThatFits(.unspecified)
                 subviews[index].place(at: CGPoint(x: xPosition, y: yPosition), proposal: .unspecified)
                 xPosition += size.width + spacing
             }
-            yPosition += row.maxHeight + spacing
+            yPosition += row.maxHeight
+            if rowIndex < rows.count - 1 {
+                yPosition += spacing
+            }
         }
     }
 

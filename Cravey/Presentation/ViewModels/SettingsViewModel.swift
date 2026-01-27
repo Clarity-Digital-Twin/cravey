@@ -36,7 +36,7 @@ final class SettingsViewModel {
     // MARK: - App Info
 
     var appVersion: String {
-        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0"
     }
 
     var buildNumber: String {
