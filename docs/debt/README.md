@@ -6,9 +6,8 @@
 
 | ID | Priority | Description | File |
 |----|----------|-------------|------|
-| DEBT-007 | **P2** | **UI tests not in gate** (ViewModel coverage closed) | CraveyUITests |
 | DEBT-009 | P3 | GPS "Current Location" spec not implemented | `LocationOptions.swift` |
- 
+
 ## Fixed (Recent)
 
 - DEBT-001 - Fixed (shared timestamp validation utility)
@@ -17,6 +16,7 @@
 - DEBT-004 - Fixed (consistent nowProvider injection)
 - DEBT-005 - Fixed (removed unused app entrypoint UI code)
 - DEBT-006 - Fixed (semver versioning in Info.plist template)
+- DEBT-007 - Fixed (UI tests passing; `--ui` flag added to verify.sh)
 - DEBT-008 - Fixed (consistent notes limit enforcement)
 - DEBT-010 - Fixed (Home motivation now repository-backed with timesShown tracking)
 - DEBT-011 - Fixed (RecordingRepository.delete now deletes files + model)
