@@ -54,6 +54,7 @@ final class SettingsViewModel {
 
     func exportData(format: ExportFormat) async {
         isExporting = true
+        exportSuccess = false
         defer { isExporting = false }
 
         do {
@@ -100,9 +101,6 @@ final class SettingsViewModel {
     func handleExportShareCompletion(completed: Bool) {
         showShareSheet = false
         exportURL = nil
-
-        if completed {
-            exportSuccess = true
-        }
+        exportSuccess = completed
     }
 }

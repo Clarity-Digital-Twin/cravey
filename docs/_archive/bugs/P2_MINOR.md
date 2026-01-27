@@ -2,7 +2,7 @@
 
 > ⚠️ Archived: Historical bug tracker. The current bug tracker lives in `docs/bugs/`.
 
-**Status:** ACTIVE
+**Status:** ARCHIVED
 **Last Updated:** 2026-01-25
 
 UI glitches, edge case issues, style violations.

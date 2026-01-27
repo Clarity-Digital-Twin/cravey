@@ -38,11 +38,15 @@ struct HomeView: View {
                             .accessibilityIdentifier("motivationCard")
 
                         if let errorMessage = viewModel.errorMessage {
-                            Text(errorMessage)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .frame(maxWidth: .infinity, alignment: .center)
-                                .padding(.top, 8)
+                            Text(
+                                errorMessage.isEmpty
+                                    ? "We couldn't load your dashboard. Please try again."
+                                    : errorMessage
+                            )
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.top, 8)
                         }
                     }
                     .padding()
