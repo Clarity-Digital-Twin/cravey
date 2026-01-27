@@ -11,9 +11,11 @@
 Transform the current 3-tab cluttered UI into a clean 4-tab structure:
 
 ```
-BEFORE (3 tabs):  🏠 Home  📊 Progress  ⚙️ Settings
+BEFORE (current): 🏠 Home  📊 Progress  🎬 Recordings  ⚙️ Settings
 AFTER (4 tabs):   🏠 Home  📝 Log  📊 History  ⚙️ Settings
 ```
+
+**Note:** The Recordings feature is not implemented yet (AVFoundation + UI). This redesign removes the Recordings tab for now; it can return later as a 5th tab when the feature ships.
 
 ---
 
@@ -64,9 +66,14 @@ A simple view with two big buttons: "Log Craving" and "Log Usage".
    - `@State private var cravingLogViewModel: CravingLogViewModel?`
    - `@State private var usageLogViewModel: UsageLogViewModel?`
 
-5. **Success Toast**
-   - After logging, show success toast (reuse pattern from current HomeView)
+5. **Dependency Injection**
+   - Use `@Environment(DependencyContainer.self)` to create fresh log ViewModels per sheet presentation.
+   - Use `@Environment(CravingListViewModel.self)` and `@Environment(UsageListViewModel.self)` to refresh History data after a successful save.
+
+6. **Success Toast**
+   - After the sheet dismisses, show success toast (reuse pattern from current HomeView / UX_FLOW:396-405)
    - Toast: "Craving logged" or "Usage logged"
+   - Implementation detail: read `viewModel.didSucceed` in the sheet `onDismiss` before resetting the stored ViewModel, then trigger the toast.
 
 ### Wireframe
 ```
@@ -126,11 +133,13 @@ A view with a segmented control to toggle between Cravings and Usage lists.
 4. **ViewModels**
    - Receive `CravingListViewModel` from environment
    - Receive `UsageListViewModel` from environment
-   - Fetch data on appear for selected segment
+   - Switching segments should fetch data for that segment at least once
+     - OK to rely on existing `.task { await viewModel.fetch…() }` behavior inside the embedded list views.
 
 5. **Empty State**
    - Show appropriate empty state per segment
    - "No cravings logged yet" / "No usage logged yet"
+   - Ensure empty-state copy does not reference the old "+" button (logging now lives in the Log tab).
 
 ### Wireframe
 ```
@@ -186,7 +195,9 @@ Strip HomeView down to a pure dashboard. Remove all lists and logging logic.
    - Large number showing days abstinent
    - "DAYS abstinent" label
    - "Since [start date]" subtitle
-   - Calculate from: Date() minus first usage/craving OR user-set quit date
+   - Calculate from: `DashboardViewModel.currentStreak` (days since most recent usage entry)
+   - "Since" displays the date of the most recent usage entry
+   - If no usage entries exist, show `0` days and a supportive subtitle like "Start by logging a usage entry"
 
 4. **Today's Stats**
    - Two small cards side-by-side
@@ -277,7 +288,8 @@ Change from 3-tab to 4-tab structure.
 
 3. **Remove**
    - Remove old "Progress" tab (DashboardView standalone)
-   - DashboardView content merges into HomeView
+   - Remove Recordings tab (feature deferred)
+   - DashboardView content merges into HomeView (or HomeView replaces it entirely)
 
 4. **Default Tab**
    - App launches to Home tab (index 0)
@@ -303,6 +315,7 @@ Remove orphaned code after restructure.
 
 1. **Files to Potentially Remove**
    - Check if `DashboardView.swift` is still needed (content moved to HomeView)
+   - Check if `RecordingsView.swift` is still needed (tab removed)
    - Remove any unused view files
 
 2. **Code to Remove**
