@@ -14,7 +14,8 @@ final class SettingsViewModel {
     private let deleteAllUserDataUseCase: DeleteAllUserDataUseCase
 
     @ObservationIgnored
-    private let dateFormatter: DateFormatter = {
+    @MainActor
+    private static let exportFileDateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd-HHmmss"
         return formatter
@@ -25,11 +26,12 @@ final class SettingsViewModel {
     var isExporting = false
     var isDeleting = false
     var showDeleteConfirmation = false
-    var showExportSheet = false
+    var showShareSheet = false
     var exportURL: URL?
     var errorMessage: String?
     var showError = false
     var deleteSuccess = false
+    var exportSuccess = false
 
     // MARK: - App Info
 
@@ -50,29 +52,25 @@ final class SettingsViewModel {
 
     // MARK: - Export
 
-    func exportData() async {
+    func exportData(format: ExportFormat) async {
         isExporting = true
         defer { isExporting = false }
 
         do {
             let exportData = try await exportUserDataUseCase.execute()
-
-            // Encode to JSON
-            let encoder = JSONEncoder()
-            encoder.dateEncodingStrategy = .iso8601
-            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-            let jsonData = try encoder.encode(exportData)
+            let fileData = try UserDataExportFileBuilder.makeFileData(export: exportData, format: format)
 
             // Write to temp file
             let tempDir = FileManager.default.temporaryDirectory
-            let fileName = "cravey-export-\(formattedDate()).json"
+            let fileExtension = UserDataExportFileBuilder.fileExtension(for: format)
+            let fileName = "cravey_export_\(formattedDate()).\(fileExtension)"
             let fileURL = tempDir.appendingPathComponent(fileName)
-            try jsonData.write(to: fileURL)
+            try fileData.write(to: fileURL)
 
             exportURL = fileURL
-            showExportSheet = true
+            showShareSheet = true
         } catch {
-            errorMessage = "Failed to export data: \(error.localizedDescription)"
+            errorMessage = "We couldn’t export your data. Please try again."
             showError = true
         }
     }
@@ -96,6 +94,15 @@ final class SettingsViewModel {
     // MARK: - Helpers
 
     private func formattedDate() -> String {
-        dateFormatter.string(from: Date())
+        Self.exportFileDateFormatter.string(from: Date())
+    }
+
+    func handleExportShareCompletion(completed: Bool) {
+        showShareSheet = false
+        exportURL = nil
+
+        if completed {
+            exportSuccess = true
+        }
     }
 }

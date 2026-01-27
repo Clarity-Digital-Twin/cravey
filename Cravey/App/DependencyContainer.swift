@@ -52,6 +52,8 @@ final class DependencyContainer {
         let fileStorage: FileStorageManager
         let cravingRepository: CravingRepositoryProtocol
         let usageRepository: UsageRepositoryProtocol
+        let recordingRepository: RecordingRepositoryProtocol
+        let messageRepository: MessageRepositoryProtocol
         let logCravingUseCase: LogCravingUseCase
         let fetchCravingsUseCase: FetchCravingsUseCase
         let deleteCravingUseCase: DeleteCravingUseCase
@@ -75,7 +77,8 @@ final class DependencyContainer {
 
     private(set) var cravingRepository: CravingRepositoryProtocol
     private(set) var usageRepository: UsageRepositoryProtocol
-    // Note: RecordingRepository and MessageRepository will be added in Phase 4
+    private(set) var recordingRepository: RecordingRepositoryProtocol
+    private(set) var messageRepository: MessageRepositoryProtocol
 
     // MARK: - Use Cases (Domain Layer)
 
@@ -134,6 +137,8 @@ final class DependencyContainer {
 
         let cravingRepo = CravingRepository(modelContext: modelContext)
         let usageRepo = UsageRepository(modelContext: modelContext)
+        let recordingRepo = RecordingRepository(modelContext: modelContext)
+        let messageRepo = MessageRepository(modelContext: modelContext)
 
         return Wiring(
             modelContainer: modelContainer,
@@ -141,6 +146,8 @@ final class DependencyContainer {
             fileStorage: fileStorage,
             cravingRepository: cravingRepo,
             usageRepository: usageRepo,
+            recordingRepository: recordingRepo,
+            messageRepository: messageRepo,
             logCravingUseCase: DefaultLogCravingUseCase(repository: cravingRepo),
             fetchCravingsUseCase: DefaultFetchCravingsUseCase(repository: cravingRepo),
             deleteCravingUseCase: DefaultDeleteCravingUseCase(repository: cravingRepo),
@@ -149,7 +156,9 @@ final class DependencyContainer {
             deleteUsageUseCase: DefaultDeleteUsageUseCase(repository: usageRepo),
             exportUserDataUseCase: DefaultExportUserDataUseCase(
                 cravingRepository: cravingRepo,
-                usageRepository: usageRepo
+                usageRepository: usageRepo,
+                recordingRepository: recordingRepo,
+                messageRepository: messageRepo
             ),
             deleteAllUserDataUseCase: SwiftDataDeleteAllUserDataUseCase(
                 modelContext: modelContext
@@ -164,6 +173,8 @@ final class DependencyContainer {
 
         cravingRepository = wiring.cravingRepository
         usageRepository = wiring.usageRepository
+        recordingRepository = wiring.recordingRepository
+        messageRepository = wiring.messageRepository
 
         logCravingUseCase = wiring.logCravingUseCase
         fetchCravingsUseCase = wiring.fetchCravingsUseCase

@@ -16,6 +16,7 @@ struct SettingsView: View {
 
 private struct SettingsContentView: View {
     @Bindable var viewModel: SettingsViewModel
+    @State private var showExportFlow = false
 
     var body: some View {
         List {
@@ -30,20 +31,19 @@ private struct SettingsContentView: View {
 
             Section("Data") {
                 Button {
-                    Task {
-                        await viewModel.exportData()
-                    }
+                    showExportFlow = true
                 } label: {
                     HStack {
                         Label("Export Data", systemImage: "square.and.arrow.up")
                         Spacer()
-                        if viewModel.isExporting {
-                            ProgressView()
-                        }
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .disabled(viewModel.isExporting)
                 .accessibilityIdentifier("exportDataButton")
+                .sheet(isPresented: $showExportFlow) {
+                    ExportDataSheet(viewModel: viewModel)
+                }
 
                 Button(role: .destructive) {
                     viewModel.showDeleteConfirmation = true
@@ -77,13 +77,6 @@ private struct SettingsContentView: View {
             }
         }
         .navigationTitle("Settings")
-        .sheet(isPresented: $viewModel.showExportSheet) {
-            if let url = viewModel.exportURL {
-                ShareSheet(items: [url])
-            }
-        }
-        // iOS 17+ declarative haptics for export success
-        .sensoryFeedback(.success, trigger: viewModel.showExportSheet)
         .confirmationDialog(
             "Delete All Data?",
             isPresented: $viewModel.showDeleteConfirmation,
@@ -99,7 +92,7 @@ private struct SettingsContentView: View {
             Text(
                 """
                 This will permanently delete all your cravings, usage logs, \
-                recordings, and motivational messages. This action cannot be undone.
+                recordings, and any custom motivational messages. This action cannot be undone.
                 """
             )
         }
@@ -111,24 +104,43 @@ private struct SettingsContentView: View {
         .alert("Data Deleted", isPresented: $viewModel.deleteSuccess) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("All your data has been permanently deleted.")
+            Text("Your logs, recordings, and custom messages have been deleted.")
+        }
+        .overlay(alignment: .top) {
+            if viewModel.exportSuccess {
+                VStack {
+                    HStack {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                            .symbolEffect(.bounce, value: viewModel.exportSuccess)
+                        Text("Data exported")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                    }
+                    .padding()
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+
+                    Spacer()
+                }
+                .transition(.move(edge: .top).combined(with: .opacity))
+                .animation(.spring(duration: 0.3), value: viewModel.exportSuccess)
+                .task {
+                    do {
+                        try await Task.sleep(for: .seconds(2))
+                    } catch {
+                        // Task cancelled — safe to ignore
+                    }
+                    viewModel.exportSuccess = false
+                }
+            }
         }
         // iOS 17+ declarative haptics for success/error states
         .sensoryFeedback(.success, trigger: viewModel.deleteSuccess)
+        .sensoryFeedback(.success, trigger: viewModel.exportSuccess)
         .sensoryFeedback(.error, trigger: viewModel.showError)
     }
-}
-
-// MARK: - Share Sheet
-
-struct ShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
-
-    func makeUIViewController(context _: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: items, applicationActivities: nil)
-    }
-
-    func updateUIViewController(_: UIActivityViewController, context _: Context) {}
 }
 
 #Preview {
