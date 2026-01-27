@@ -1,6 +1,6 @@
 # Technical Debt Tracker
 
-**Last Updated:** 2026-01-26
+**Last Updated:** 2026-01-27
 
 ## Open Debt
 
@@ -10,6 +10,7 @@
 | DEBT-002 | FileStorageManager singleton pattern | P3 | OPEN |
 | DEBT-003 | DateFormatter created per instance | P4 | OPEN |
 | DEBT-004 | Inconsistent nowProvider injection | P4 | OPEN |
+| DEBT-005 | Dead / unused UI code in CraveyApp | P4 | OPEN |
 
 ## Priority Definitions
 

@@ -11,7 +11,7 @@ Pre-release. The objective quality gate is `bash scripts/verify.sh` (project gen
 - **Craving logging**: Intensity (1–10), HAALT triggers, location presets, notes, timestamp
 - **Usage logging**: ROA method + clinically-validated amount ranges, triggers, location, notes, timestamp
 - **Progress dashboard**: Streaks, averages, top triggers, weekly summary
-- **Settings**: Export data (CSV/JSON), delete all local data
+- **Settings**: Export cravings + usage (JSON), delete all local data
 - **Privacy**: Local-only storage (SwiftData CloudKit disabled), no analytics/tracking
 
 ## Planned / Scaffolded (Not Implemented Yet)

@@ -20,7 +20,7 @@ Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built 
 | **Craving Logging** | Working | Full form: intensity, triggers, location, notes, timestamp |
 | **Usage Logging** | Working | Full form: ROA picker, amounts, triggers, location, notes |
 | **Dashboard** | Working | 5 metric cards, streak tracking, intensity trends |
-| **Settings** | Working | Export data (CSV/JSON), delete all data |
+| **Settings** | Working | Export cravings + usage (JSON), delete all data |
 | **Home Screen** | Working | Lists cravings + usage with swipe actions |
 
 ### Technical Foundation

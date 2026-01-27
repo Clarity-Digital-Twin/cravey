@@ -496,7 +496,7 @@ ModelConfiguration(
 - **Craving Logging** - Full form with intensity, triggers, location, notes, timestamp
 - **Usage Logging** - Full form with ROA picker, amounts, triggers, location, notes
 - **Dashboard** - 5 metric cards, streak tracking, intensity trends
-- **Settings** - Export data (CSV/JSON), delete all data
+- **Settings** - Export cravings + usage (JSON), delete all data
 - **Home Screen** - Lists cravings + usage with swipe actions
 
 ### ✅ Technical Foundation
