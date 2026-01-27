@@ -23,5 +23,6 @@
 
 ## Priority Definitions
 
+- **P2** - Important. Tests are the safety net; privacy/data hygiene.
 - **P3** - Architecture concerns. Pay down incrementally.
 - **P4** - Code quality. Fix opportunistically.

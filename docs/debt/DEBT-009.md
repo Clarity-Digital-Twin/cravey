@@ -10,7 +10,7 @@
 The master specs include a location option:
 - **Current Location (GPS auto-detect via CoreLocation, local storage only)**
 
-The app does not currently integrate CoreLocation, request location permission, or store coordinates. A placeholder "Current Location" chip was removed from `LocationOptions.presets` to avoid misleading users into thinking GPS is active.
+The app does not currently integrate CoreLocation, request location permission, or store coordinates. No "Current Location" chip exists in `LocationOptions.presets` to avoid misleading users into thinking GPS is active.
 
 ## Impact
 
