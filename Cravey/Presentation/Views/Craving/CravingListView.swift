@@ -132,7 +132,7 @@ struct EmptyStatePlaceholder: View {
             Text("No Cravings Logged")
                 .font(.headline)
 
-            Text("Tap + to log your first craving")
+            Text("Go to the Log tab to log your first craving")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
