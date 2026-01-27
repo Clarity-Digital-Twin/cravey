@@ -137,7 +137,7 @@ final class DependencyContainer {
 
         let cravingRepo = CravingRepository(modelContext: modelContext)
         let usageRepo = UsageRepository(modelContext: modelContext)
-        let recordingRepo = RecordingRepository(modelContext: modelContext)
+        let recordingRepo = RecordingRepository(modelContext: modelContext, fileStorage: fileStorage)
         let messageRepo = MessageRepository(modelContext: modelContext)
 
         return Wiring(

@@ -1,12 +1,17 @@
 import Foundation
+import OSLog
 import SwiftData
 
 /// SwiftData implementation of RecordingRepositoryProtocol
 final class RecordingRepository: RecordingRepositoryProtocol {
-    private nonisolated(unsafe) let modelContext: ModelContext
+    private static let logger = Logger(subsystem: "com.cravey", category: "RecordingRepository")
 
-    init(modelContext: ModelContext) {
+    private nonisolated(unsafe) let modelContext: ModelContext
+    private let fileStorage: any RecordingFileDeleting
+
+    init(modelContext: ModelContext, fileStorage: any RecordingFileDeleting) {
         self.modelContext = modelContext
+        self.fileStorage = fileStorage
     }
 
     func save(_ recording: RecordingEntity) async throws {
@@ -40,7 +45,8 @@ final class RecordingRepository: RecordingRepositoryProtocol {
     }
 
     func delete(id: UUID) async throws {
-        try await MainActor.run {
+        // 1. Fetch model to get file paths before deletion
+        let (filePath, thumbnailPath) = try await MainActor.run {
             let predicate = #Predicate<RecordingModel> { $0.id == id }
             let descriptor = FetchDescriptor<RecordingModel>(predicate: predicate)
             let models = try modelContext.fetch(descriptor)
@@ -49,8 +55,30 @@ final class RecordingRepository: RecordingRepositoryProtocol {
                 throw RepositoryError.notFound(id: id)
             }
 
+            let paths = (model.filePath, model.thumbnailPath)
+
+            // 2. Delete SwiftData model first (so UI reflects deletion)
             modelContext.delete(model)
             try modelContext.save()
+
+            return paths
+        }
+
+        // 3. Delete on-disk files (best-effort - log errors but don't fail)
+        // This order ensures user sees deletion even if file cleanup fails.
+        // Orphan files will be cleaned up by "delete all data" eventually.
+        do {
+            try await fileStorage.deleteRecording(at: filePath)
+        } catch {
+            Self.logger.warning("Failed to delete recording file at \(filePath): \(error.localizedDescription)")
+        }
+
+        if let thumbnailPath {
+            do {
+                try await fileStorage.deleteThumbnail(at: thumbnailPath)
+            } catch {
+                Self.logger.warning("Failed to delete thumbnail at \(thumbnailPath): \(error.localizedDescription)")
+            }
         }
     }
 

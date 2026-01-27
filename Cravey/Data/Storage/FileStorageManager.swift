@@ -31,7 +31,13 @@ enum StorageError: LocalizedError {
     }
 }
 
-actor FileStorageManager {
+/// Protocol for file deletion operations (enables testing with mocks)
+protocol RecordingFileDeleting: Sendable {
+    func deleteRecording(at relativePath: String) async throws
+    func deleteThumbnail(at relativePath: String?) async throws
+}
+
+actor FileStorageManager: RecordingFileDeleting {
     private static let logger = Logger(subsystem: "com.cravey", category: "FileStorageManager")
 
     private let fileManager: FileManager
