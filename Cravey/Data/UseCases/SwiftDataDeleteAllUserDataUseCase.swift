@@ -97,7 +97,7 @@ final class SwiftDataDeleteAllUserDataUseCase: DeleteAllUserDataUseCase, Sendabl
         }
     }
 
-    private struct StagedRecordingsDeletion: Sendable {
+    struct StagedRecordingsDeletion: Sendable {
         let recordingsDirectory: URL
         let stagedDirectory: URL
     }
@@ -148,5 +148,4 @@ final class SwiftDataDeleteAllUserDataUseCase: DeleteAllUserDataUseCase, Sendabl
 
         try fileManager.moveItem(at: stagedDeletion.stagedDirectory, to: stagedDeletion.recordingsDirectory)
     }
-}
 }
