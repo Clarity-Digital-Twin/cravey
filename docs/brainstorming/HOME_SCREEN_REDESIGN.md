@@ -14,18 +14,18 @@
 │  │    Log Usage)           │    │
 │  └─────────────────────────┘    │
 │                                 │
-│  Recent Cravings               │
+│  Recent Cravings                │
 │  ┌─────────────────────────┐    │
 │  │ 5  2 hr, 1 min          │    │ ← Intensity badge + time
-│  │    Sad                   │    │ ← One trigger shown
+│  │    Sad                  │    │ ← One trigger shown
 │  └─────────────────────────┘    │
 │                                 │
-│  Recent Usage                  │
+│  Recent Usage                   │
 │  ┌─────────────────────────┐    │
 │  │ Bowls        0.5 bowls  │    │
 │  │ Jan 26, 2026 at 6:30 PM │    │ ← Different date format!
 │  │ ⚡ Sad                   │    │
-│  │ 📍 Home                  │    │
+│  │ 📍 Home                 │    │
 │  └─────────────────────────┘    │
 │                                 │
 │ ═══════════════════════════════ │
@@ -87,10 +87,10 @@ Split craving and usage into their own dedicated tabs. Home becomes a dashboard 
 │   └───────────────────────┘     │
 │                                 │
 │   Today                         │
-│   ┌───────┐    ┌───────┐        │
-│   │ 2     │    │ 0     │        │
-│   │cravings│    │ uses  │        │ ← Quick stats
-│   └───────┘    └───────┘        │
+│   ┌────────┐    ┌───────┐       │
+│   │ 2      │    │ 0     │       │
+│   │cravings│    │ uses  │       │ ← Quick stats
+│   └────────┘    └───────┘       │
 │                                 │
 │   ┌─────────────────────────┐   │
 │   │ 💪 "Every urge resisted │   │ ← Motivational message
@@ -388,244 +388,6 @@ FLOATING ACTION BUTTON (always visible)
 | **Log** | Two big buttons: "Log Craving" and "Log Usage". Tapping either opens the form sheet. |
 | **History** | Segmented control [Cravings \| Usage] at top, list of entries below. Swipe to delete. Tap to edit. |
 | **Settings** | Export data, delete all data, app info |
-
----
-
-## EXPLICIT Screen-by-Screen Wireframes (Option A-Alt: 4 Tabs)
-
-### Screen 1: HOME TAB (Dashboard Only - NO Lists)
-
-```
-┌─────────────────────────────────┐
-│ ←  My Recovery            ⚙️    │  ← Nav bar (optional settings shortcut)
-│                                 │
-│   ┌───────────────────────┐     │
-│   │                       │     │
-│   │       12              │     │  ← BIG number
-│   │      DAYS             │     │
-│   │    abstinent          │     │  ← Label
-│   │                       │     │
-│   │   Since Jan 14, 2026  │     │  ← Start date
-│   └───────────────────────┘     │
-│                                 │
-│   Today's Activity              │  ← Section header
-│   ┌───────────┬───────────┐     │
-│   │     2     │     0     │     │
-│   │ cravings  │   uses    │     │  ← Quick stats (tap to go to History)
-│   └───────────┴───────────┘     │
-│                                 │
-│   ┌─────────────────────────┐   │
-│   │  💪 "Every urge you     │   │
-│   │     resist makes you    │   │  ← Motivational message (rotates)
-│   │     stronger"           │   │
-│   └─────────────────────────┘   │
-│                                 │
-│   ┌─────────────────────────┐   │
-│   │  🎬 Watch a Recording   │   │  ← FUTURE: Quick access to recordings
-│   └─────────────────────────┘   │
-│                                 │
-│ ═══════════════════════════════ │
-│ 🏠      📝       📊       ⚙️    │
-│ Home    Log    History Settings │  ← Tab bar (Home selected)
-└─────────────────────────────────┘
-```
-
-**What's NOT on Home:**
-- ❌ No craving list
-- ❌ No usage list
-- ❌ No forms
-- ❌ No clutter
-
----
-
-### Screen 2: LOG TAB (Action Buttons Only)
-
-```
-┌─────────────────────────────────┐
-│           Log Entry             │  ← Simple title
-│                                 │
-│                                 │
-│                                 │
-│   What would you like to log?   │  ← Prompt
-│                                 │
-│   ┌─────────────────────────┐   │
-│   │                         │   │
-│   │    🧠 Log Craving       │   │  ← BIG tappable button
-│   │                         │   │
-│   │    Track an urge you    │   │
-│   │    resisted             │   │  ← Helper text
-│   │                         │   │
-│   └─────────────────────────┘   │
-│                                 │
-│   ┌─────────────────────────┐   │
-│   │                         │   │
-│   │    🌿 Log Usage         │   │  ← BIG tappable button
-│   │                         │   │
-│   │    Record cannabis      │   │
-│   │    consumption          │   │  ← Helper text
-│   │                         │   │
-│   └─────────────────────────┘   │
-│                                 │
-│                                 │
-│ ═══════════════════════════════ │
-│ 🏠      📝       📊       ⚙️    │
-│ Home    Log    History Settings │  ← Tab bar (Log selected)
-└─────────────────────────────────┘
-```
-
-**Tap "Log Craving" → Opens CravingLogForm as sheet**
-**Tap "Log Usage" → Opens UsageLogForm as sheet**
-
----
-
-### Screen 3: HISTORY TAB (Segmented Lists)
-
-```
-┌─────────────────────────────────┐
-│           History               │
-│                                 │
-│   ┌───────────┬───────────┐     │
-│   │ Cravings  │   Usage   │     │  ← Segmented control (toggle)
-│   │  (sel)    │           │     │
-│   └───────────┴───────────┘     │
-│                                 │
-│   ┌─────────────────────────┐   │
-│   │ 🟡 5    2 hours ago     │   │  ← Intensity badge + relative time
-│   │    Sad, Bored           │   │  ← Triggers
-│   │    📍 Home              │   │  ← Location (optional)
-│   └─────────────────────────┘   │
-│   ┌─────────────────────────┐   │
-│   │ 🟠 7    Yesterday       │   │
-│   │    Stressed, Hungry     │   │
-│   │    📍 Work              │   │
-│   └─────────────────────────┘   │
-│   ┌─────────────────────────┐   │
-│   │ 🟢 3    2 days ago      │   │
-│   │    Bored                │   │
-│   └─────────────────────────┘   │
-│                                 │
-│   [Load more...]                │
-│                                 │
-│ ═══════════════════════════════ │
-│ 🏠      📝       📊       ⚙️    │
-│ Home    Log    History Settings │  ← Tab bar (History selected)
-└─────────────────────────────────┘
-```
-
-**Toggle to "Usage":**
-
-```
-┌─────────────────────────────────┐
-│           History               │
-│                                 │
-│   ┌───────────┬───────────┐     │
-│   │ Cravings  │   Usage   │     │
-│   │           │   (sel)   │     │  ← Usage selected
-│   └───────────┴───────────┘     │
-│                                 │
-│   ┌─────────────────────────┐   │
-│   │ 🌿 Bowls    0.5 bowls   │   │  ← Method + amount
-│   │    Yesterday 6:30 PM    │   │  ← Timestamp
-│   │    Sad                  │   │  ← Triggers
-│   │    📍 Home              │   │  ← Location
-│   └─────────────────────────┘   │
-│   ┌─────────────────────────┐   │
-│   │ 🌿 Vape     3 hits      │   │
-│   │    Jan 24, 2026         │   │
-│   │    Bored, Anxious       │   │
-│   └─────────────────────────┘   │
-│                                 │
-│ ═══════════════════════════════ │
-│ 🏠      📝       📊       ⚙️    │
-│ Home    Log    History Settings │
-└─────────────────────────────────┘
-```
-
-**Swipe left on any row → Delete**
-**Tap any row → Edit sheet (future)**
-
----
-
-### Screen 4: SETTINGS TAB (Unchanged)
-
-```
-┌─────────────────────────────────┐
-│           Settings              │
-│                                 │
-│   Data                          │
-│   ┌─────────────────────────┐   │
-│   │ 📤 Export Data          │   │  ← Exports JSON
-│   └─────────────────────────┘   │
-│   ┌─────────────────────────┐   │
-│   │ 🗑️ Delete All Data      │   │  ← Confirmation required
-│   └─────────────────────────┘   │
-│                                 │
-│   About                         │
-│   ┌─────────────────────────┐   │
-│   │ ℹ️ Version 1.0.0        │   │
-│   └─────────────────────────┘   │
-│                                 │
-│                                 │
-│                                 │
-│                                 │
-│                                 │
-│                                 │
-│ ═══════════════════════════════ │
-│ 🏠      📝       📊       ⚙️    │
-│ Home    Log    History Settings │  ← Tab bar (Settings selected)
-└─────────────────────────────────┘
-```
-
----
-
-## Navigation Flow Diagram
-
-```
-                    APP LAUNCH
-                        │
-                        ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                         TAB BAR                                 │
-├─────────────┬─────────────┬─────────────┬─────────────────────┤
-│             │             │             │                      │
-│   🏠 HOME   │   📝 LOG    │  📊 HISTORY │   ⚙️ SETTINGS        │
-│             │             │             │                      │
-│  Dashboard  │  2 Buttons  │  Segmented  │   Export/Delete     │
-│  - Hero     │  - Craving  │  [Crav|Use] │                      │
-│  - Stats    │  - Usage    │  + List     │                      │
-│  - Motiv.   │             │             │                      │
-│             │      │      │             │                      │
-└─────────────┴──────┼──────┴─────────────┴─────────────────────┘
-                     │
-         ┌───────────┴───────────┐
-         │                       │
-         ▼                       ▼
-   ┌───────────┐           ┌───────────┐
-   │  Craving  │           │   Usage   │
-   │   Form    │           │   Form    │
-   │  (Sheet)  │           │  (Sheet)  │
-   └───────────┘           └───────────┘
-         │                       │
-         └───────────┬───────────┘
-                     │
-                     ▼
-              Success Toast
-              "Craving logged" or "Usage logged"
-                     │
-                     ▼
-              Stay on Log tab (or navigate to History?)
-```
-
----
-
-## Summary: The Split is CLEAN
-
-| Data Type | Where to LOG it | Where to VIEW it |
-|-----------|-----------------|------------------|
-| **Cravings** | Log tab → "Log Craving" button → Sheet | History tab → "Cravings" segment |
-| **Usage** | Log tab → "Log Usage" button → Sheet | History tab → "Usage" segment |
-
-**Home tab shows NEITHER list.** It's just your status + motivation.
 
 ---
 
