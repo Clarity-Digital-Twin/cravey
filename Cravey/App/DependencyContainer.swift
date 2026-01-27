@@ -62,6 +62,8 @@ final class DependencyContainer {
         let deleteUsageUseCase: DeleteUsageUseCase
         let exportUserDataUseCase: ExportUserDataUseCase
         let deleteAllUserDataUseCase: DeleteAllUserDataUseCase
+        let selectMotivationalMessageUseCase: SelectMotivationalMessageUseCase
+        let markMessageShownUseCase: MarkMessageShownUseCase
     }
 
     // MARK: - Infrastructure (Data Layer)
@@ -90,6 +92,8 @@ final class DependencyContainer {
     private(set) var deleteUsageUseCase: DeleteUsageUseCase
     private(set) var exportUserDataUseCase: ExportUserDataUseCase
     private(set) var deleteAllUserDataUseCase: DeleteAllUserDataUseCase
+    private(set) var selectMotivationalMessageUseCase: SelectMotivationalMessageUseCase
+    private(set) var markMessageShownUseCase: MarkMessageShownUseCase
 
     // MARK: - View Models (Presentation Layer)
 
@@ -129,6 +133,13 @@ final class DependencyContainer {
         )
     }
 
+    func makeHomeMotivationViewModel() -> HomeMotivationViewModel {
+        HomeMotivationViewModel(
+            selectMessageUseCase: selectMotivationalMessageUseCase,
+            markShownUseCase: markMessageShownUseCase
+        )
+    }
+
     // MARK: - Initialization
 
     private static func makeWiring(modelContainer: ModelContainer) -> Wiring {
@@ -162,6 +173,12 @@ final class DependencyContainer {
             ),
             deleteAllUserDataUseCase: SwiftDataDeleteAllUserDataUseCase(
                 modelContext: modelContext
+            ),
+            selectMotivationalMessageUseCase: DefaultSelectMotivationalMessageUseCase(
+                repository: messageRepo
+            ),
+            markMessageShownUseCase: DefaultMarkMessageShownUseCase(
+                repository: messageRepo
             )
         )
     }
@@ -186,6 +203,8 @@ final class DependencyContainer {
 
         exportUserDataUseCase = wiring.exportUserDataUseCase
         deleteAllUserDataUseCase = wiring.deleteAllUserDataUseCase
+        selectMotivationalMessageUseCase = wiring.selectMotivationalMessageUseCase
+        markMessageShownUseCase = wiring.markMessageShownUseCase
 
         self.storageMode = storageMode
         self.initializationError = initializationError

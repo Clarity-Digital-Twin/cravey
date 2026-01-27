@@ -10,6 +10,7 @@ struct CraveyApp: App {
     @State private var usageListViewModel: UsageListViewModel?
     @State private var dashboardViewModel: DashboardViewModel?
     @State private var settingsViewModel: SettingsViewModel?
+    @State private var homeMotivationViewModel: HomeMotivationViewModel?
     @State private var startupFailure: DependencyContainer.StartupFailure?
     @State private var showStorageAlert: Bool
 
@@ -22,6 +23,7 @@ struct CraveyApp: App {
             _usageListViewModel = State(initialValue: container.makeUsageListViewModel())
             _dashboardViewModel = State(initialValue: container.makeDashboardViewModel())
             _settingsViewModel = State(initialValue: container.makeSettingsViewModel())
+            _homeMotivationViewModel = State(initialValue: container.makeHomeMotivationViewModel())
             _startupFailure = State(initialValue: nil)
             _showStorageAlert = State(initialValue: container.initializationError != nil)
         } catch let error as DependencyContainer.StartupFailure {
@@ -30,6 +32,7 @@ struct CraveyApp: App {
             _usageListViewModel = State(initialValue: nil)
             _dashboardViewModel = State(initialValue: nil)
             _settingsViewModel = State(initialValue: nil)
+            _homeMotivationViewModel = State(initialValue: nil)
             _startupFailure = State(initialValue: error)
             _showStorageAlert = State(initialValue: false)
         } catch {
@@ -38,6 +41,7 @@ struct CraveyApp: App {
             _usageListViewModel = State(initialValue: nil)
             _dashboardViewModel = State(initialValue: nil)
             _settingsViewModel = State(initialValue: nil)
+            _homeMotivationViewModel = State(initialValue: nil)
             _startupFailure = State(
                 initialValue: DependencyContainer.StartupFailure(
                     persistentErrorDescription: error.localizedDescription,
@@ -54,7 +58,8 @@ struct CraveyApp: App {
                let cravingListViewModel,
                let usageListViewModel,
                let dashboardViewModel,
-               let settingsViewModel
+               let settingsViewModel,
+               let homeMotivationViewModel
             {
                 TabView {
                     HomeView()
@@ -84,6 +89,7 @@ struct CraveyApp: App {
                 .environment(usageListViewModel)
                 .environment(dashboardViewModel)
                 .environment(settingsViewModel)
+                .environment(homeMotivationViewModel)
                 .alert("Storage Unavailable", isPresented: $showStorageAlert) {
                     Button("OK", role: .cancel) {}
                 } message: {
@@ -112,6 +118,7 @@ struct CraveyApp: App {
             usageListViewModel = container.makeUsageListViewModel()
             dashboardViewModel = container.makeDashboardViewModel()
             settingsViewModel = container.makeSettingsViewModel()
+            homeMotivationViewModel = container.makeHomeMotivationViewModel()
             startupFailure = nil
             showStorageAlert = container.initializationError != nil
         } catch let error as DependencyContainer.StartupFailure {
@@ -120,6 +127,7 @@ struct CraveyApp: App {
             usageListViewModel = nil
             dashboardViewModel = nil
             settingsViewModel = nil
+            homeMotivationViewModel = nil
             startupFailure = error
             showStorageAlert = false
         } catch {
@@ -128,6 +136,7 @@ struct CraveyApp: App {
             usageListViewModel = nil
             dashboardViewModel = nil
             settingsViewModel = nil
+            homeMotivationViewModel = nil
             startupFailure = DependencyContainer.StartupFailure(
                 persistentErrorDescription: error.localizedDescription,
                 inMemoryErrorDescription: error.localizedDescription

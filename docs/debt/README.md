@@ -8,7 +8,6 @@
 |----|----------|-------------|------|
 | DEBT-007 | **P2** | **UI tests not in gate** (ViewModel coverage closed) | CraveyUITests |
 | DEBT-009 | P3 | GPS "Current Location" spec not implemented | `LocationOptions.swift` |
-| DEBT-010 | P3 | Home motivation card not repository-backed | `HomeView.swift`, MessageRepository |
  
 ## Fixed (Recent)
 
@@ -19,6 +18,7 @@
 - DEBT-005 - Fixed (removed unused app entrypoint UI code)
 - DEBT-006 - Fixed (semver versioning in Info.plist template)
 - DEBT-008 - Fixed (consistent notes limit enforcement)
+- DEBT-010 - Fixed (Home motivation now repository-backed with timesShown tracking)
 - DEBT-011 - Fixed (RecordingRepository.delete now deletes files + model)
 
 ## Priority Definitions
