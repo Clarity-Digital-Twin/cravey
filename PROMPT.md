@@ -8,17 +8,18 @@ This prompt intentionally avoids anything that requires human judgment (UX “fe
 ---
 
 ## Hard Constraints (must not violate)
-- **Privacy-first:** local-only data; no analytics; no tracking; no cloud sync; keep SwiftData `cloudKitDatabase: .none`.
-- **Clean Architecture:** Presentation → Domain ← Data; Domain stays framework-free (no SwiftUI/SwiftData imports).
-- **Swift 6 strict concurrency:** no concurrency escape hatches in Presentation; SwiftData access must be MainActor/ModelActor safe.
-- **iOS 18+ minimum deployment target** (Mac Catalyst is allowed for CI testing).
+- **Privacy-first:** keep SwiftData `cloudKitDatabase: .none` (verified by `scripts/verify.sh`).
+- **Clean Architecture:** Presentation → Domain ← Data (verified by `scripts/verify.sh` invariants).
+  - Domain must not import SwiftUI/SwiftData
+  - Presentation must not import SwiftData or reference ModelContext
+- **Swift concurrency hygiene:** Presentation must not use `nonisolated(unsafe)` (verified by `scripts/verify.sh`).
+- **Platform:** iOS deployment target must be 18.0 in `project.yml` (verified by `scripts/verify.sh`). Mac Catalyst is allowed for CI testing.
 
 ---
 
 ## In Scope (this loop)
 - Make **every claim of completion** provable by commands with non-zero exits on failure.
 - Keep verification stable in headless/CI environments (prefer Mac Catalyst for tests; use an iOS Simulator compile check when available).
-- Update only what is required to make the gate pass; log any follow-ups as bugs in `docs/bugs/`.
 
 ---
 
@@ -45,6 +46,8 @@ bash scripts/verify.sh
 - Static invariants:
   - `cloudKitDatabase: .none` present
   - No `import SwiftUI` / `import SwiftData` in `Cravey/Domain`
+  - No `import SwiftData`, no `ModelContext`, and no `nonisolated(unsafe)` in `Cravey/Presentation`
+  - `project.yml` contains `deploymentTarget.iOS: 18.0`
 
 ---
 

@@ -101,45 +101,60 @@ private struct SettingsContentView: View {
         } message: {
             Text(viewModel.errorMessage ?? "An unknown error occurred")
         }
-        .alert("Data Deleted", isPresented: $viewModel.deleteSuccess) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("Your logs, recordings, and custom messages have been deleted.")
-        }
         .overlay(alignment: .top) {
-            if viewModel.exportSuccess {
-                VStack {
-                    HStack {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundStyle(.green)
-                            .symbolEffect(.bounce, value: viewModel.exportSuccess)
-                        Text("Data exported")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                    }
-                    .padding()
-                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-                    .padding(.horizontal)
-                    .padding(.top, 8)
+            VStack {
+                SuccessBanner(
+                    systemImage: "checkmark.circle.fill",
+                    text: "Data exported",
+                    isPresented: $viewModel.exportSuccess
+                )
 
-                    Spacer()
-                }
-                .transition(.move(edge: .top).combined(with: .opacity))
-                .animation(.spring(duration: 0.3), value: viewModel.exportSuccess)
-                .task {
-                    do {
-                        try await Task.sleep(for: .seconds(2))
-                    } catch {
-                        // Task cancelled — safe to ignore
-                    }
-                    viewModel.exportSuccess = false
-                }
+                SuccessBanner(
+                    systemImage: "trash.circle.fill",
+                    text: "All data deleted",
+                    isPresented: $viewModel.deleteSuccess
+                )
+
+                Spacer()
             }
         }
         // iOS 17+ declarative haptics for success/error states
         .sensoryFeedback(.success, trigger: viewModel.deleteSuccess)
         .sensoryFeedback(.success, trigger: viewModel.exportSuccess)
         .sensoryFeedback(.error, trigger: viewModel.showError)
+    }
+}
+
+private struct SuccessBanner: View {
+    let systemImage: String
+    let text: String
+    @Binding var isPresented: Bool
+
+    var body: some View {
+        if isPresented {
+            HStack {
+                Image(systemName: systemImage)
+                    .foregroundStyle(.green)
+                    .symbolEffect(.bounce, value: isPresented)
+                Text(text)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+            .padding()
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal)
+            .padding(.top, 8)
+            .transition(.move(edge: .top).combined(with: .opacity))
+            .animation(.spring(duration: 0.3), value: isPresented)
+            .task {
+                do {
+                    try await Task.sleep(for: .seconds(2))
+                } catch {
+                    // Task cancelled — safe to ignore
+                }
+                isPresented = false
+            }
+        }
     }
 }
 

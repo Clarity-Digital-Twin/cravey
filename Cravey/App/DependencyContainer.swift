@@ -133,7 +133,7 @@ final class DependencyContainer {
 
     private static func makeWiring(modelContainer: ModelContainer) -> Wiring {
         let modelContext = ModelContext(modelContainer)
-        let fileStorage = FileStorageManager.shared
+        let fileStorage = FileStorageManager()
 
         let cravingRepo = CravingRepository(modelContext: modelContext)
         let usageRepo = UsageRepository(modelContext: modelContext)

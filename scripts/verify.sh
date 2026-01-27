@@ -40,6 +40,29 @@ if rg -n "import\\s+(SwiftUI|SwiftData)" Cravey/Domain >/dev/null; then
   exit 1
 fi
 
+# Clean Architecture: Presentation must not import SwiftData or reference ModelContext
+if rg -n "import\\s+SwiftData" Cravey/Presentation >/dev/null; then
+  echo "FAIL: Presentation imports SwiftData (Clean Architecture violation)" >&2
+  exit 1
+fi
+
+if rg -n "\\bModelContext\\b" Cravey/Presentation >/dev/null; then
+  echo "FAIL: Presentation references ModelContext (Clean Architecture violation)" >&2
+  exit 1
+fi
+
+# Swift concurrency hygiene: no unsafe isolation escape hatches in Presentation
+if rg -n "nonisolated\\(unsafe\\)" Cravey/Presentation >/dev/null; then
+  echo "FAIL: Presentation uses nonisolated(unsafe) (Concurrency violation)" >&2
+  exit 1
+fi
+
+# Platform: enforce iOS 18.0 minimum deployment target in XcodeGen SSOT
+if ! rg -n "^\\s*iOS:\\s*18\\.0\\s*$" project.yml >/dev/null 2>&1; then
+  echo "FAIL: iOS: 18.0 deployment target not found in project.yml (Platform invariant)" >&2
+  exit 1
+fi
+
 DERIVED_DATA_PATH="$(mktemp -d /tmp/CraveyDerivedData.XXXXXX)"
 RESULT_BUNDLE_PATH="/tmp/CraveyTests.$(date +%s).xcresult"
 

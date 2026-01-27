@@ -1,8 +1,10 @@
 # DEBT-002: FileStorageManager Singleton Pattern
 
-**Status:** OPEN
+**Status:** FIXED
 **Priority:** P3
-**File:** `Cravey/Data/Storage/FileStorageManager.swift:35-36`
+**Files:**
+- `Cravey/Data/Storage/FileStorageManager.swift`
+- `Cravey/App/DependencyContainer.swift`
 
 ## Problem
 
@@ -22,4 +24,6 @@ FileStorageManager should be injectable through DependencyContainer for testabil
 
 ## Fix
 
-Remove singleton, inject through DependencyContainer like other services.
+Remove the singleton, make FileStorageManager injectable, and wire it through DependencyContainer like other services.
+
+✅ Implemented by converting `FileStorageManager` to an actor (no global `shared`) and instantiating it in `DependencyContainer.makeWiring(modelContainer:)`.

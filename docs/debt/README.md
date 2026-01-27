@@ -4,13 +4,12 @@
 
 ## Open Debt
 
-| ID | Description | Priority | Status |
-|----|-------------|----------|--------|
-| DEBT-002 | FileStorageManager singleton pattern | P3 | OPEN |
+_None._
  
 ## Fixed (Recent)
 
 - DEBT-001 - Fixed (shared timestamp validation utility)
+- DEBT-002 - Fixed (FileStorageManager injectable actor; removed singleton)
 - DEBT-003 - Fixed (shared export file date formatter)
 - DEBT-004 - Fixed (consistent nowProvider injection)
 - DEBT-005 - Fixed (removed unused app entrypoint UI code)

@@ -470,7 +470,7 @@ Pre-populated and user-created messages:
 
 **Important:**
 - File paths stored as **relative strings** in SwiftData
-- `FileStorageManager.shared` handles all file I/O
+- `DependencyContainer.fileStorage` provides file I/O (injectable `FileStorageManager`)
 - Delete file AND database entry together
 - Use `nonisolated(unsafe)` for ModelContext in Swift 6 strict concurrency
 
