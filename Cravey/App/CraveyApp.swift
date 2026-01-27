@@ -58,8 +58,7 @@ struct CraveyApp: App {
             {
                 TabView {
                     HomeView()
-                        .environment(cravingListViewModel)
-                        .environment(usageListViewModel)
+                        .environment(dashboardViewModel)
                         .tabItem {
                             Label("Home", systemImage: "house.fill")
                         }

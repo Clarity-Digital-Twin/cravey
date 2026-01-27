@@ -22,6 +22,9 @@ final class DashboardViewModel {
     var isLoading = true
     var currentStreak: Int = 0
     var longestStreak: Int = 0
+    var mostRecentUsageDate: Date?
+    var todayCravingCount: Int = 0
+    var todayUsageCount: Int = 0
     var averageIntensity7Day: Double = 0.0
     var averageIntensity30Day: Double = 0.0
     var topTriggers: [(trigger: String, count: Int)] = []
@@ -58,6 +61,7 @@ final class DashboardViewModel {
 
             // Streaks (days since last usage; longest gap between usages)
             (currentStreak, longestStreak) = calculateStreaks(usages: usages, now: now)
+            mostRecentUsageDate = usages.max { $0.timestamp < $1.timestamp }?.timestamp
 
             // Calculate average intensity (7-day and 30-day)
             let calendar = Calendar.current
@@ -81,6 +85,18 @@ final class DashboardViewModel {
             // Weekly counts
             weeklyCravingCount = cravings.count { $0.timestamp >= sevenDaysAgo }
             weeklyUsageCount = usages.count { $0.timestamp >= sevenDaysAgo }
+
+            // Today's counts (calendar day)
+            let startOfToday = calendar.startOfDay(for: now)
+            guard let startOfTomorrow = calendar.date(byAdding: .day, value: 1, to: startOfToday) else {
+                Self.logger.fault("Calendar date math unexpectedly failed while computing today's counts.")
+                todayCravingCount = 0
+                todayUsageCount = 0
+                return
+            }
+
+            todayCravingCount = cravings.count { $0.timestamp >= startOfToday && $0.timestamp < startOfTomorrow }
+            todayUsageCount = usages.count { $0.timestamp >= startOfToday && $0.timestamp < startOfTomorrow }
         } catch {
             errorMessage = "Unable to load dashboard metrics"
             Self.logger.error("Failed to load dashboard metrics: \(error.localizedDescription)")

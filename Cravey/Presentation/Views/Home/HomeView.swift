@@ -1,142 +1,68 @@
 import SwiftUI
 
-/// Home screen - main entry point for logging cravings/usage
+/// Home tab - dashboard-only overview (no lists, no logging).
 /// Presentation layer - Clean Architecture
 struct HomeView: View {
-    @Environment(DependencyContainer.self) private var container
-    @Environment(CravingListViewModel.self) private var cravingListViewModel
-    @Environment(UsageListViewModel.self) private var usageListViewModel
+    @Environment(DashboardViewModel.self) private var viewModel
 
-    // Sheet state
-    @State private var showCravingLogSheet = false
-    @State private var showUsageLogSheet = false
-
-    // Log form ViewModels (fresh per presentation)
-    @State private var cravingLogViewModel: CravingLogViewModel?
-    @State private var usageLogViewModel: UsageLogViewModel?
-
-    // Toast state
-    @State private var showSuccessToast = false
-    @State private var successMessage: String?
+    private static let motivationMessages: [String] = [
+        "Every moment of resistance is progress.",
+        "Setbacks are part of the journey — be kind to yourself.",
+        "You don’t need to do this perfectly. Just keep going.",
+        "Breathe. Notice the urge. Let it pass.",
+        "Small wins add up. You’re building momentum.",
+    ]
 
     var body: some View {
         NavigationStack {
-            List {
-                // PHASE_4: Quick Play section (Recordings)
-
-                Section("Recent Cravings") {
-                    CravingListView(viewModel: cravingListViewModel)
-                }
-
-                Section("Recent Usage") {
-                    UsageListView(viewModel: usageListViewModel)
-                }
-            }
-            .listStyle(.insetGrouped)
-            .navigationTitle("Cannabis Logs")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Menu {
-                        Button("Log Craving") {
-                            cravingLogViewModel = container.makeCravingLogViewModel()
-                            showCravingLogSheet = true
-                        }
-                        Button("Log Usage") {
-                            usageLogViewModel = container.makeUsageLogViewModel()
-                            showUsageLogSheet = true
-                        }
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title2)
-                    }
-                    .accessibilityIdentifier("addButton")
-                }
-            }
-
-            // MARK: - Craving Log Sheet
-
-            .sheet(isPresented: $showCravingLogSheet) {
-                // Detect if success occurred before reset
-                let didSucceed = cravingLogViewModel?.didSucceed ?? false
-
-                // Reset form state when sheet dismisses
-                cravingLogViewModel = nil
-
-                // Refresh list after logging
-                Task {
-                    await cravingListViewModel.fetchCravings()
-                }
-
-                // Show success toast if craving was logged (UX_FLOW:396-405)
-                if didSucceed {
-                    successMessage = "Craving logged"
-                    showSuccessToast = true
-                }
-            } content: {
-                if let viewModel = cravingLogViewModel { CravingLogForm(viewModel: viewModel) }
-            }
-
-            // MARK: - Usage Log Sheet
-
-            .sheet(isPresented: $showUsageLogSheet) {
-                // Detect if success occurred before reset
-                let didSucceed = usageLogViewModel?.didSucceed ?? false
-
-                // Reset form state when sheet dismisses
-                usageLogViewModel = nil
-
-                // Refresh list after logging
-                Task {
-                    await usageListViewModel.fetchUsage()
-                }
-
-                // Show success toast if usage was logged (UX_FLOW:396-405)
-                if didSucceed {
-                    successMessage = "Usage logged"
-                    showSuccessToast = true
-                }
-            } content: {
-                if let viewModel = usageLogViewModel { UsageLogForm(viewModel: viewModel) }
-            }
-
-            // MARK: - Success Toast
-
-            .overlay(alignment: .top) {
-                // Success toast (appears AFTER sheet dismisses per UX_FLOW:396-405)
-                if showSuccessToast {
-                    VStack {
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(.green)
-                                // iOS 17+ symbol effect - bounce on appear
-                                .symbolEffect(.bounce, value: showSuccessToast)
-                            Text(successMessage ?? "Logged")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                        }
+            ScrollView {
+                if viewModel.isLoading {
+                    ProgressView("Loading…")
+                        .frame(maxWidth: .infinity, minHeight: 200)
                         .padding()
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-                        .padding(.horizontal)
-                        .padding(.top, 8)
+                } else {
+                    LazyVStack(spacing: 16) {
+                        HeroStreakCard(
+                            daysAbstinent: viewModel.currentStreak,
+                            sinceDate: viewModel.mostRecentUsageDate
+                        )
+                        .accessibilityIdentifier("heroStreakCard")
 
-                        Spacer()
-                    }
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                    .animation(.spring(duration: 0.3), value: showSuccessToast)
-                    .task {
-                        // Auto-dismiss toast after 2s
-                        do {
-                            try await Task.sleep(for: .seconds(2))
-                        } catch {
-                            // Task cancelled (e.g., view disappeared) — safe to ignore
+                        TodayStatsCard(
+                            cravingCount: viewModel.todayCravingCount,
+                            usageCount: viewModel.todayUsageCount
+                        )
+                        .accessibilityIdentifier("todayStatsCard")
+
+                        MotivationCard(message: motivationMessage)
+                            .accessibilityIdentifier("motivationCard")
+
+                        if let errorMessage = viewModel.errorMessage {
+                            Text(errorMessage)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.top, 8)
                         }
-                        showSuccessToast = false
                     }
+                    .padding()
                 }
             }
-            // iOS 17+ declarative haptics for success toast
-            .sensoryFeedback(.success, trigger: showSuccessToast)
+            .navigationTitle("My Recovery")
+            .task {
+                await viewModel.loadMetrics()
+            }
+            .refreshable {
+                await viewModel.loadMetrics()
+            }
         }
+    }
+
+    private var motivationMessage: String {
+        let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
+        let messages = Self.motivationMessages
+        guard !messages.isEmpty else { return "" }
+        return messages[dayOfYear % messages.count]
     }
 }
 
@@ -144,7 +70,111 @@ struct HomeView: View {
     let container = DependencyContainer.preview
 
     HomeView()
+        .environment(container.makeDashboardViewModel())
         .environment(container)
-        .environment(container.makeCravingListViewModel())
-        .environment(container.makeUsageListViewModel())
+}
+
+private struct HeroStreakCard: View {
+    let daysAbstinent: Int
+    let sinceDate: Date?
+
+    var body: some View {
+        VStack(spacing: 8) {
+            Text("\(daysAbstinent)")
+                .font(.system(size: 64, weight: .bold, design: .rounded))
+
+            Text("DAYS")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .tracking(1)
+
+            Text("abstinent")
+                .font(.title3.weight(.semibold))
+
+            Text(sinceText)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+
+    private var sinceText: String {
+        guard let sinceDate else {
+            return "Start by logging a usage entry"
+        }
+        let date = sinceDate.formatted(date: .abbreviated, time: .omitted)
+        return "Since \(date)"
+    }
+}
+
+private struct TodayStatsCard: View {
+    let cravingCount: Int
+    let usageCount: Int
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Today")
+                .font(.headline)
+
+            HStack(spacing: 12) {
+                StatCard(
+                    value: "\(cravingCount)",
+                    label: "cravings",
+                    tint: .yellow
+                )
+
+                StatCard(
+                    value: "\(usageCount)",
+                    label: "uses",
+                    tint: usageCount > 0 ? .orange : .green
+                )
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
+}
+
+private struct StatCard: View {
+    let value: String
+    let label: String
+    let tint: Color
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Text(value)
+                .font(.title.bold())
+                .foregroundStyle(tint)
+
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .background(tint.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+private struct MotivationCard: View {
+    let message: String
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Text("💪")
+                .font(.title2)
+
+            Text("“\(message)”")
+                .font(.subheadline)
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.leading)
+
+            Spacer(minLength: 0)
+        }
+        .padding()
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+    }
 }
