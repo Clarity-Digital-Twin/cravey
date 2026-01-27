@@ -1,7 +1,7 @@
 # Cravey Project Status
 
 **Last Updated:** 2026-01-27
-**Build Gate:** `bash scripts/verify.sh` ✅ (42 Swift Testing tests passing)
+**Build Gate:** `bash scripts/verify.sh` ✅ (48 Swift Testing tests passing)
 **App Version:** Pre-release (development)
 
 ---
@@ -21,7 +21,7 @@ Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built 
 | **Usage Logging** | Working | Full form: ROA picker, amounts, triggers, location, notes |
 | **Dashboard** | Working | 5 metric cards, streak tracking, intensity trends |
 | **Settings** | Working | Export (CSV/JSON) + delete-all (logs + recordings + custom messages) |
-| **Home Screen** | Working | Lists cravings + usage with swipe actions |
+| **Home Screen** | Working | 4-tab structure: Home (dashboard), Log (actions), History (lists), Settings |
 
 ### Technical Foundation
 | Layer | Files | Status |
@@ -34,8 +34,8 @@ Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built 
 | **Data (Repositories)** | 4 | CravingRepository, UsageRepository, RecordingRepository, MessageRepository (concrete implementations) |
 | **Data (Use Cases)** | 1 | SwiftDataDeleteAllUserDataUseCase (DeleteAllUserDataUseCase implementation) |
 | **Presentation (ViewModels)** | 6 | CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings |
-| **Presentation (Views + Components)** | 15 | Home, Dashboard, Settings (incl. export flow), Craving/Usage forms+lists, reusable components |
-| **Tests** | 15 files | 42 Swift Testing tests, all passing (`CraveyTests`) |
+| **Presentation (Views + Components)** | 16 | Home (dashboard), Log, History, Settings (incl. export flow), Craving/Usage forms+lists, reusable components |
+| **Tests** | 15 files | 48 Swift Testing tests, all passing (`CraveyTests`) |
 
 ### Architecture Compliance
 - Clean Architecture enforced (Domain has no SwiftUI/SwiftData imports)
@@ -165,6 +165,7 @@ swiftlint
 
 | Date | Change |
 |------|--------|
+| 2026-01-27 | UI redesign complete: 4-tab structure (Home/Log/History/Settings), 48 tests |
 | 2026-01-27 | Refreshed status to match current implementation + verification gate |
 | 2025-01-24 | Created PROJECT_STATUS.md, consolidated status docs, archived outdated files |
 | 2025-01-05 | Dashboard, Settings, UI/UX Polish completed |

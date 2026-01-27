@@ -1,7 +1,7 @@
 # UI Redesign Implementation Spec
 
 **Created:** 2026-01-26
-**Status:** READY TO IMPLEMENT
+**Status:** ✅ IMPLEMENTED (2026-01-27)
 **Source:** `docs/brainstorming/HOME_SCREEN_REDESIGN.md`
 
 ---
@@ -97,12 +97,12 @@ A simple view with two big buttons: "Log Craving" and "Log Usage".
 ```
 
 ### Acceptance Criteria
-- [ ] LogView.swift exists at correct path
-- [ ] Two buttons render correctly
-- [ ] Tapping "Log Craving" opens CravingLogForm sheet
-- [ ] Tapping "Log Usage" opens UsageLogForm sheet
-- [ ] Success toast appears after logging
-- [ ] Preview works
+- [x] LogView.swift exists at correct path
+- [x] Two buttons render correctly
+- [x] Tapping "Log Craving" opens CravingLogForm sheet
+- [x] Tapping "Log Usage" opens UsageLogForm sheet
+- [x] Success toast appears after logging
+- [x] Preview works
 
 ---
 
@@ -158,13 +158,13 @@ A view with a segmented control to toggle between Cravings and Usage lists.
 ```
 
 ### Acceptance Criteria
-- [ ] HistoryView.swift exists at correct path
-- [ ] Segmented control toggles between Cravings/Usage
-- [ ] CravingListView content displays when Cravings selected
-- [ ] UsageListView content displays when Usage selected
-- [ ] Swipe-to-delete works
-- [ ] Empty states display correctly
-- [ ] Preview works
+- [x] HistoryView.swift exists at correct path
+- [x] Segmented control toggles between Cravings/Usage
+- [x] CravingListView content displays when Cravings selected
+- [x] UsageListView content displays when Usage selected
+- [x] Swipe-to-delete works
+- [x] Empty states display correctly
+- [x] Preview works
 
 ---
 
@@ -236,13 +236,13 @@ Strip HomeView down to a pure dashboard. Remove all lists and logging logic.
 ```
 
 ### Acceptance Criteria
-- [ ] HomeView no longer contains any List sections
-- [ ] HomeView no longer has "+" toolbar button
-- [ ] Hero metric displays days abstinent
-- [ ] Today's craving/usage counts display
-- [ ] Motivational message displays
-- [ ] No sheet presentation logic in HomeView
-- [ ] Preview works
+- [x] HomeView no longer contains any List sections
+- [x] HomeView no longer has "+" toolbar button
+- [x] Hero metric displays days abstinent
+- [x] Today's craving/usage counts display
+- [x] Motivational message displays
+- [x] No sheet presentation logic in HomeView
+- [x] Preview works
 
 ---
 
@@ -295,12 +295,12 @@ Change from 3-tab to 4-tab structure.
    - App launches to Home tab (index 0)
 
 ### Acceptance Criteria
-- [ ] TabView has exactly 4 tabs: Home, Log, History, Settings
-- [ ] Tab icons and labels correct
-- [ ] All environment objects properly injected
-- [ ] App launches to Home tab
-- [ ] Navigation between all tabs works
-- [ ] Build succeeds with no warnings
+- [x] TabView has exactly 4 tabs: Home, Log, History, Settings
+- [x] Tab icons and labels correct
+- [x] All environment objects properly injected
+- [x] App launches to Home tab
+- [x] Navigation between all tabs works
+- [x] Build succeeds with no warnings
 
 ---
 
@@ -329,11 +329,11 @@ Remove orphaned code after restructure.
    - No unused file warnings from SwiftLint
 
 ### Acceptance Criteria
-- [ ] No dead/orphaned view files
-- [ ] No unused imports
-- [ ] All tests pass
-- [ ] SwiftLint passes
-- [ ] Build succeeds
+- [x] No dead/orphaned view files
+- [x] No unused imports
+- [x] All tests pass
+- [x] SwiftLint passes
+- [x] Build succeeds
 
 ---
 
@@ -341,34 +341,34 @@ Remove orphaned code after restructure.
 
 After all specs complete:
 
-- [ ] App launches to Home tab with dashboard
-- [ ] Home shows hero metric (days abstinent)
-- [ ] Home shows today's craving/usage counts
-- [ ] Home shows motivational message
-- [ ] Log tab shows two buttons
-- [ ] Tap "Log Craving" → form sheet opens
-- [ ] Submit craving → toast appears → sheet closes
-- [ ] Tap "Log Usage" → form sheet opens
-- [ ] Submit usage → toast appears → sheet closes
-- [ ] History tab shows segmented control
-- [ ] Toggle to Cravings → craving list appears
-- [ ] Toggle to Usage → usage list appears
-- [ ] Swipe to delete works in History
-- [ ] Settings tab unchanged, still works
-- [ ] Export data works
-- [ ] Delete all data works
-- [ ] All 42 unit tests pass
+- [x] App launches to Home tab with dashboard
+- [x] Home shows hero metric (days abstinent)
+- [x] Home shows today's craving/usage counts
+- [x] Home shows motivational message
+- [x] Log tab shows two buttons
+- [x] Tap "Log Craving" → form sheet opens
+- [x] Submit craving → toast appears → sheet closes
+- [x] Tap "Log Usage" → form sheet opens
+- [x] Submit usage → toast appears → sheet closes
+- [x] History tab shows segmented control
+- [x] Toggle to Cravings → craving list appears
+- [x] Toggle to Usage → usage list appears
+- [x] Swipe to delete works in History
+- [x] Settings tab unchanged, still works
+- [x] Export data works
+- [x] Delete all data works
+- [x] All 48 unit tests pass
 
 ---
 
 ## File Summary
 
-| Action | File Path |
-|--------|-----------|
-| **CREATE** | `Cravey/Presentation/Views/Log/LogView.swift` |
-| **CREATE** | `Cravey/Presentation/Views/History/HistoryView.swift` |
-| **MODIFY** | `Cravey/Presentation/Views/Home/HomeView.swift` |
-| **MODIFY** | `Cravey/App/CraveyApp.swift` |
-| **REVIEW** | `Cravey/Presentation/Views/Dashboard/DashboardView.swift` |
-| **REVIEW** | `Cravey/Presentation/Views/Craving/CravingListView.swift` |
-| **REVIEW** | `Cravey/Presentation/Views/Usage/UsageListView.swift` |
+| Action | File Path | Status |
+|--------|-----------|--------|
+| **CREATE** | `Cravey/Presentation/Views/Log/LogView.swift` | ✅ Done |
+| **CREATE** | `Cravey/Presentation/Views/History/HistoryView.swift` | ✅ Done |
+| **MODIFY** | `Cravey/Presentation/Views/Home/HomeView.swift` | ✅ Done |
+| **MODIFY** | `Cravey/App/CraveyApp.swift` | ✅ Done |
+| **DELETE** | `Cravey/Presentation/Views/Dashboard/DashboardView.swift` | ✅ Removed |
+| **KEEP** | `Cravey/Presentation/Views/Craving/CravingListView.swift` | ✅ Embedded in HistoryView |
+| **KEEP** | `Cravey/Presentation/Views/Usage/UsageListView.swift` | ✅ Embedded in HistoryView |
