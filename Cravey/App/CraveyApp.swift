@@ -58,29 +58,30 @@ struct CraveyApp: App {
             {
                 TabView {
                     HomeView()
-                        .environment(dashboardViewModel)
                         .tabItem {
                             Label("Home", systemImage: "house.fill")
                         }
 
-                    DashboardView()
-                        .environment(dashboardViewModel)
+                    LogView()
                         .tabItem {
-                            Label("Progress", systemImage: "chart.bar.fill")
+                            Label("Log", systemImage: "plus.circle.fill")
                         }
 
-                    RecordingsView()
+                    HistoryView()
                         .tabItem {
-                            Label("Recordings", systemImage: "play.rectangle.fill")
+                            Label("History", systemImage: "clock.fill")
                         }
 
                     SettingsView()
-                        .environment(settingsViewModel)
                         .tabItem {
                             Label("Settings", systemImage: "gearshape.fill")
                         }
                 }
                 .environment(dependencyContainer)
+                .environment(cravingListViewModel)
+                .environment(usageListViewModel)
+                .environment(dashboardViewModel)
+                .environment(settingsViewModel)
                 .alert("Storage Unavailable", isPresented: $showStorageAlert) {
                     Button("OK", role: .cancel) {}
                 } message: {
