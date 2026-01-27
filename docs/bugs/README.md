@@ -4,7 +4,10 @@
 
 ## Open Bugs
 
-_None._
+| ID | Priority | Description | File |
+|----|----------|-------------|------|
+| BUG-031 | P4 | Timestamp picker not centered | `TimestampPicker.swift` |
+| BUG-032 | P4 | Trigger chips layout could be better organized | `ChipSelector.swift` |
 
 ## Fixed (Recent)
 

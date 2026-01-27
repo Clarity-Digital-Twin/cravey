@@ -4,7 +4,11 @@
 
 ## Open Debt
 
-_None._
+| ID | Priority | Description | File |
+|----|----------|-------------|------|
+| DEBT-006 | P4 | Version should use semver 0.x.x (pre-release) | `iOS.Info.plist.template` |
+| DEBT-007 | P3 | Test coverage needs expansion | Multiple |
+| DEBT-008 | P4 | Notes character limit enforcement inconsistency | ViewModels |
  
 ## Fixed (Recent)
 
