@@ -1390,7 +1390,7 @@ User taps [Cancel]:
 // Single confirmation alert (iOS standard)
 Alert(
     title: "Delete All Data?",
-    message: "This will permanently delete all cravings, usage logs, and recordings. This cannot be undone.",
+    message: "This will permanently delete all cravings, usage logs, recordings, and any custom messages. This cannot be undone.",
     primaryButton: .destructive(Text("Delete")) {
         deleteAllData()
     },
@@ -1399,19 +1399,14 @@ Alert(
 
 // Deletion logic
 func deleteAllData() {
-    // Delete SwiftData models
-    try? modelContext.delete(model: CravingModel.self)
-    try? modelContext.delete(model: UsageModel.self)
-    try? modelContext.delete(model: RecordingModel.self)
-
-    // Delete recording files
-    FileStorageManager.shared.deleteAllRecordings()
-
-    // Save context
-    try? modelContext.save()
-
-    // Show confirmation
-    showToast("All data deleted")
+    Task {
+        do {
+            try await deleteAllUserDataUseCase.execute()
+            showToast("All data deleted")
+        } catch {
+            showError(error.localizedDescription)
+        }
+    }
 }
 ```
 

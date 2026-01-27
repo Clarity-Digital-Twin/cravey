@@ -47,6 +47,7 @@ enum MessageCategory: String, Codable, CaseIterable, Sendable {
     case boredom
     case social
     case celebration
+    case unknown
 }
 
 // MARK: - Business Logic

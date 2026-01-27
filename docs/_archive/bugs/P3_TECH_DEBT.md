@@ -1,7 +1,9 @@
 # P3 - Tech Debt
 
+> ⚠️ Archived: Historical bug tracker. The current debt tracker lives in `docs/debt/`.
+
 **Status:** ACTIVE
-**Last Updated:** 2026-01-24
+**Last Updated:** 2026-01-25
 
 Architecture violations, incomplete implementations, design issues that need addressing.
 
@@ -10,7 +12,6 @@ Architecture violations, incomplete implementations, design issues that need add
 ## DEBT-001: SettingsViewModel Violates Clean Architecture 🔴
 
 **File:** `Cravey/Presentation/ViewModels/SettingsViewModel.swift`
-**Lines:** 6, 48-49
 
 ### Problem
 ViewModel directly imports and uses Data layer classes:
@@ -95,20 +96,19 @@ The UI tests currently have multiple reliability issues:
 
 ---
 
-## DEBT-003: Incomplete TODO Features
+## DEBT-003: Deferred Phase Features (Quick Play, GPS Location)
 
 **Files:**
-- `HomeView.swift:28` - "TODO: Quick Play section (Phase 4 - Recordings)"
-- `LocationOptions.swift:8` - "TODO: Phase 2 - Wire CoreLocation GPS detection"
+- `Cravey/Presentation/Views/Home/HomeView.swift` - `PHASE_4: Quick Play section (Recordings)`
+- `Cravey/Presentation/Views/Components/LocationOptions.swift` - `PHASE_2: Wire CoreLocation GPS detection`
+**Verify:** `rg -n "PHASE_4:|PHASE_2:" Cravey/Presentation/Views/Home/HomeView.swift Cravey/Presentation/Views/Components/LocationOptions.swift`
 
 ### Impact
 Features specified in master specs but not implemented.
 
 ### Decision
-These are deferred to future phases. TODOs should reference the future spec:
-```swift
-// TODO: See docs/future/RECORDINGS_SPEC.md
-```
+These are deferred to future phases, but should remain explicitly referenced (and searchable) in code with `PHASE_X`
+markers that link back to the authoritative spec section.
 
 ---
 
@@ -130,7 +130,6 @@ BUG-001 (P0) - Same root cause.
 ## DEBT-005: DashboardViewModel Streak Logic Unclear
 
 **File:** `Cravey/Presentation/ViewModels/DashboardViewModel.swift`
-**Lines:** 79-114
 
 ### Problem
 Streak calculation logic is confusing:
@@ -158,8 +157,8 @@ Streak calculation logic is confusing:
 ## DEBT-006: Motivational Message Model/Domain Drift vs Master Spec
 
 **Files:**
-- `Cravey/Domain/Entities/MotivationalMessageEntity.swift:42-49`
-- `Cravey/Data/Models/MotivationalMessageModel.swift:8-17`
+- `Cravey/Domain/Entities/MotivationalMessageEntity.swift`
+- `Cravey/Data/Models/MotivationalMessageModel.swift`
 
 ### Problem
 Master specs define message categories like `"urge"`, `"anxiety"`, `"boredom"`, `"social"`, `"celebration"` plus fields like `isCustom` and `priority`. Current code uses a different category set and different field naming (`isUserCreated`, `displayPriority`, plus `wasHelpful`).
@@ -188,8 +187,8 @@ Master specs define message categories like `"urge"`, `"anxiety"`, `"boredom"`, 
 ## DEBT-007: Recording Model Drift vs Master Spec (Fields + Naming)
 
 **Files:**
-- `Cravey/Data/Models/RecordingModel.swift:8-23`
-- `Cravey/Domain/Entities/RecordingEntity.swift:5-16`
+- `Cravey/Data/Models/RecordingModel.swift`
+- `Cravey/Domain/Entities/RecordingEntity.swift`
 
 ### Problem
 The master data model spec includes fields like `timestamp`, `modifiedAt`, `filePath`, and `thumbnailPath`. Current `RecordingModel` uses different naming (`createdAt`, `fileURL`, `thumbnailURL`) and omits some spec fields.
@@ -211,14 +210,61 @@ The master data model spec includes fields like `timestamp`, `modifiedAt`, `file
 
 ---
 
+## DEBT-008: Verification Script Didn’t Compile iOS (Platform Blind Spot)
+
+**File:** `scripts/verify.sh`
+**Verify:** `bash scripts/verify.sh`
+
+### Problem
+`scripts/verify.sh` only ran Mac Catalyst unit tests. iOS Simulator builds could be broken without failing the primary
+verification gate.
+
+### Impact
+- Platform-specific regressions can slip through (iOS vs Mac Catalyst)
+- “Green verify” can be a false completion signal
+
+### Status
+✅ **FIXED** (2026-01-25)
+
+### Fix Implemented
+- Added an iOS Simulator compile step to `scripts/verify.sh` (defaults to `iPhone 17 Pro`, override via
+  `IOS_SIMULATOR_NAME`).
+
+---
+
+## DEBT-009: FileStorageManager Performs Potentially Heavy I/O on MainActor
+
+**File:** `Cravey/Data/Storage/FileStorageManager.swift`
+**Verify:** `rg -n -U "@MainActor\\s*\\n\\s*final class FileStorageManager" Cravey/Data/Storage/FileStorageManager.swift`
+
+### Problem
+`FileStorageManager` is `@MainActor`, but contains synchronous file operations that can become expensive:
+- Copying large media files
+- Directory enumeration
+- Thumbnail generation
+
+### Impact
+- Risk of UI stalls once recordings are implemented and heavily used
+
+### Status
+🟡 **DEFERRED** (2026-01-25)
+
+### Recommendation
+- Keep UI-facing APIs `async` and move heavy file work off-main (structured tasks / background executor), while still
+  keeping state updates on MainActor.
+
+---
+
 ## Summary
 
 | Debt ID | Description | Impact | Status |
 |---------|-------------|--------|--------|
 | DEBT-001 | SettingsViewModel Clean Arch violation | High | ✅ FIXED |
 | DEBT-002 | UI Tests brittle / out-of-sync | Medium | ✅ FIXED |
-| DEBT-003 | TODO features not implemented | Low | DEFERRED |
+| DEBT-003 | Deferred phase features | Low | DEFERRED |
 | DEBT-004 | No error recovery in init | High | ✅ FIXED |
 | DEBT-005 | Streak logic unclear | Medium | ✅ FIXED |
 | DEBT-006 | Message schema/category drift | Medium | ✅ FIXED |
 | DEBT-007 | Recording schema drift | Medium | ✅ FIXED |
+| DEBT-008 | Verify script platform blind spot | High | ✅ FIXED |
+| DEBT-009 | File I/O on MainActor | Medium | DEFERRED |

@@ -506,16 +506,23 @@ enum RecordingPurpose: String {
 }
 ```
 
+**Implementation Note (2026-01-27):** The codebase includes an additional `.unknown` case for forward-compatibility when decoding persisted values. UI should treat unknown values as non-selectable and avoid crashing.
+
 **File Management Helper:**
 
 ```swift
 // This logic lives in FileStorageManager (not in Model)
 
-struct FileStorageManager {
-    static let shared = FileStorageManager()
-
+// NOTE (2026-01-27): In the current codebase this is implemented as an injectable, actor-isolated
+// service (no global singleton). This snippet is pseudocode for the required behavior.
+actor FileStorageManager {
+    private let fileManager: FileManager
     private let recordingsDirectory = "Recordings"
     private let thumbnailsDirectory = "Recordings/Thumbnails"
+
+    init(fileManager: FileManager = .default) {
+        self.fileManager = fileManager
+    }
 
     func generateFilePath(id: UUID, type: RecordingType) -> String {
         let ext = type == .video ? "mov" : "m4a"
@@ -523,21 +530,21 @@ struct FileStorageManager {
     }
 
     func generateThumbnailPath(id: UUID) -> String {
-        return "\(thumbnailsDirectory)/video_\(id.uuidString)_thumb.jpg"
+        "\(thumbnailsDirectory)/video_\(id.uuidString)_thumb.jpg"
     }
 
     func deleteRecording(filePath: String, thumbnailPath: String?) throws {
-        let fileURL = documentsURL.appendingPathComponent(filePath)
-        try FileManager.default.removeItem(at: fileURL)
+        let fileURL = try documentsURL().appendingPathComponent(filePath)
+        try fileManager.removeItem(at: fileURL)
 
-        if let thumbPath = thumbnailPath {
-            let thumbURL = documentsURL.appendingPathComponent(thumbPath)
-            try? FileManager.default.removeItem(at: thumbURL)
+        if let thumbnailPath {
+            let thumbURL = try documentsURL().appendingPathComponent(thumbnailPath)
+            try? fileManager.removeItem(at: thumbURL)
         }
     }
 
-    private var documentsURL: URL {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    private func documentsURL() throws -> URL {
+        try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
     }
 }
 ```
@@ -555,9 +562,9 @@ struct FileStorageManager {
    - Recording still accessible in Recordings tab
 
 3. **Delete All Data:**
-   - Delete ALL RecordingModel entries
-   - Delete ALL files from Recordings directory
-   - Cascading delete to all CravingModel entries
+   - Delete all user data models (CravingModel, UsageModel, RecordingModel, custom MotivationalMessageModel)
+   - Delete all files from the Recordings directory
+   - Preserve default motivational messages (seed data)
 
 **Query Examples:**
 

@@ -24,6 +24,18 @@
 
 ## Subdirectories
 
+### bugs/
+Contains resolved bug reports (BUG-001 through BUG-030).
+- **Date Archived:** 2026-01-27
+- **Reason:** All bugs fixed/closed
+- **Current Tracker:** `docs/bugs/README.md`
+
+### debt/
+Contains resolved technical debt items (DEBT-001 through DEBT-005).
+- **Date Archived:** 2026-01-27
+- **Reason:** All debt items fixed
+- **Current Tracker:** `docs/debt/README.md`
+
 ### specs/
 Contains archived phase specifications and historical analysis documents.
 See `specs/README.md` for details on those files.

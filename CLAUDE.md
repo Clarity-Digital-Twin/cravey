@@ -1,7 +1,8 @@
-# Cravey App - Claude Code Development Context
+# Cravey App - AI Agent Development Context
 
-**Last Updated:** 2025-01-24
+**Last Updated:** 2026-01-27
 **Current Status:** See `docs/PROJECT_STATUS.md` for authoritative status
+**Parity:** `AGENTS.md` and `CLAUDE.md` are redundant copies and must be kept in sync.
 
 ## Project Overview
 Cravey is a **cannabis cessation support iOS app** (iOS 18+) built with Clean Architecture + MVVM using modern SwiftUI and SwiftData. The app helps users track cravings, record motivational videos/audio, and access supportive content during vulnerable moments.
@@ -142,7 +143,7 @@ final class CravingLogViewModel {
 
 ### SwiftData Modern Patterns
 
-**1. @Model Macro (Auto-Adds Observable, PersistentModel, Sendable)**
+**1. @Model Macro (SwiftData persistence model)**
 ```swift
 // ✅ Modern (2025)
 @Model
@@ -150,7 +151,7 @@ final class CravingModel {
     @Attribute(.unique) var id: UUID
     var timestamp: Date
     var intensity: Int
-    // Automatically Observable, PersistentModel, Sendable!
+    // SwiftData model (reference type). Keep it out of Domain/Presentation.
 }
 ```
 
@@ -168,13 +169,14 @@ final class UserProfile {
 ```swift
 @Model
 final class CravingModel {
-    @Relationship(deleteRule: .cascade, inverse: \RecordingModel.craving)
-    var recordings: [RecordingModel] = []
+    @Relationship(deleteRule: .nullify, inverse: \RecordingModel.linkedCravings)
+    var recording: RecordingModel?
 }
 
 @Model
 final class RecordingModel {
-    var craving: CravingModel?  // Inverse relationship
+    @Relationship(deleteRule: .nullify)
+    var linkedCravings: [CravingModel] = []
 }
 ```
 
@@ -292,13 +294,14 @@ Cravey/
     │   └── SettingsViewModel.swift
     └── Views/                   # SwiftUI
         ├── Home/HomeView.swift
+        ├── Log/LogView.swift
+        ├── History/HistoryView.swift
         ├── Craving/CravingLogForm.swift, CravingListView.swift
         ├── Usage/UsageLogForm.swift, UsageListView.swift
-        ├── Dashboard/DashboardView.swift
-        ├── Settings/SettingsView.swift
+        ├── Settings/SettingsView.swift, ExportDataSheet.swift
         └── Components/ChipSelector, IntensitySlider, etc.
 
-CraveyTests/                     # Unit Tests (32 passing)
+CraveyTests/                     # Unit Tests
 ├── Domain/UseCases/
 ├── Integration/
 └── Presentation/ViewModels/
@@ -469,7 +472,7 @@ Pre-populated and user-created messages:
 
 **Important:**
 - File paths stored as **relative strings** in SwiftData
-- `FileStorageManager.shared` handles all file I/O
+- `DependencyContainer.fileStorage` provides file I/O (injectable `FileStorageManager`)
 - Delete file AND database entry together
 - Use `nonisolated(unsafe)` for ModelContext in Swift 6 strict concurrency
 
@@ -495,25 +498,23 @@ ModelConfiguration(
 - **Craving Logging** - Full form with intensity, triggers, location, notes, timestamp
 - **Usage Logging** - Full form with ROA picker, amounts, triggers, location, notes
 - **Dashboard** - 5 metric cards, streak tracking, intensity trends
-- **Settings** - Export data (CSV/JSON), delete all data
+- **Settings** - Export (CSV/JSON) + delete-all (logs + recordings + custom messages)
 - **Home Screen** - Lists cravings + usage with swipe actions
 
 ### ✅ Technical Foundation
 - Clean Architecture folder structure
-- Domain layer (4 entities, 4 use cases, 4 protocols)
-- Data layer (4 models, 4 mappers, 2 repositories: Craving, Usage)
+- Domain layer (5 entities, 10 use case files, 4 protocols)
+- Data layer (4 models, 4 mappers, 4 repositories: Craving, Usage, Recording, Message, plus 1 SwiftData-backed DeleteAllUserData use case)
 - DependencyContainer with DI
 - 6 ViewModels (CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings)
 - 10+ SwiftUI Views with reusable components
-- Unit tests (32 tests passing)
+- Unit tests (42 Swift Testing tests passing in `CraveyTests`)
 - XcodeGen configuration
 
 ### 🚧 TODO (Not Implemented)
-- **RecordingRepository** - Protocol exists, no concrete implementation
-- **MessageRepository** - Protocol exists, no concrete implementation
 - **Recording Views** - AVFoundation integration, recording/playback UI
 - **Onboarding** - WelcomeView, TourView not created
-- **UI Tests** - Disabled due to Swift 6 strict concurrency
+- **UI Tests** - Scaffolding exists; not part of the automated convergence gate
 
 ---
 
@@ -697,8 +698,11 @@ settings:
 - **docs/PROJECT_STATUS.md** - **Single source of truth for current status**
 - **docs/ARCHITECTURE.md** - Deep dive into Clean Architecture implementation
 - **docs/GETTING_STARTED.md** - Quick 5-minute setup guide
-- **docs/PROJECT_SETUP.md** - Xcode project creation instructions
-- **CLAUDE.md** - This file (development context)
+- **docs/master/** - Authoritative product/clinical/data-model specs (SSOT)
+- **docs/specs/** - Active engineering specs
+- **docs/bugs/** - Bug tracker
+- **docs/debt/** - Technical debt tracker
+- **AGENTS.md / CLAUDE.md** - Development context (redundant copies; keep in sync)
 - **README.md** - Public-facing project overview
 - **docs/_archive/** - Historical docs (do not reference)
 

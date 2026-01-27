@@ -92,6 +92,7 @@ struct UsageLogForm: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .accessibilityIdentifier("usageFormCancelButton")
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
@@ -101,6 +102,7 @@ struct UsageLogForm: View {
                         }
                     }
                     .disabled(!viewModel.canSubmit || viewModel.isLoading)
+                    .accessibilityIdentifier("usageFormSaveButton")
                 }
             }
 
@@ -136,6 +138,7 @@ struct UsageLogForm: View {
                     dismiss()
                 }
             }
+            .interactiveDismissDisabled(viewModel.isLoading)
             .disabled(viewModel.isLoading)
             // iOS 17+ declarative haptics (replaces legacy UINotificationFeedbackGenerator)
             .sensoryFeedback(.success, trigger: viewModel.didSucceed)

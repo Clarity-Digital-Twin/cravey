@@ -31,14 +31,19 @@ enum StorageError: LocalizedError {
     }
 }
 
-@MainActor
-final class FileStorageManager {
-    static let shared = FileStorageManager()
-
+actor FileStorageManager {
     private static let logger = Logger(subsystem: "com.cravey", category: "FileStorageManager")
 
-    private let fileManager = FileManager.default
-    private let maxTotalRecordingBytes: Int64 = 500_000_000 // 500MB safety cap
+    private let fileManager: FileManager
+    private let maxTotalRecordingBytes: Int64
+
+    init(
+        fileManager: FileManager = .default,
+        maxTotalRecordingBytes: Int64 = 500_000_000
+    ) {
+        self.fileManager = fileManager
+        self.maxTotalRecordingBytes = maxTotalRecordingBytes
+    }
 
     // Storage directories
     private var recordingsDirectory: URL {
@@ -78,12 +83,10 @@ final class FileStorageManager {
         }
     }
 
-    private init() {}
-
     // MARK: - Save Recording
 
     /// Saves a recording file and returns the relative path
-    func saveRecording(from tempURL: URL, recordingType: RecordingType) async throws -> String {
+    func saveRecording(from tempURL: URL, recordingType: RecordingType, id: UUID = UUID()) async throws -> String {
         let tempAttributes = try fileManager.attributesOfItem(atPath: tempURL.path)
         let tempFileSize = (tempAttributes[.size] as? Int64) ?? 0
 
@@ -93,7 +96,7 @@ final class FileStorageManager {
         }
 
         let recordings = try recordingsDirectory
-        let filename = "\(recordingType.rawValue)_\(UUID().uuidString).\(recordingType.fileExtension)"
+        let filename = "\(recordingType.rawValue)_\(id.uuidString).\(recordingType.fileExtension)"
         let destinationURL = recordings.appendingPathComponent(filename)
 
         try fileManager.copyItem(at: tempURL, to: destinationURL)

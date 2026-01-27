@@ -1,5 +1,7 @@
 # Phase 2A: Usage Logging - Data Foundation
 
+> ⚠️ Archived: Historical phase doc. Not current SSOT.
+
 **Version:** 1.0 (Spec-First Approach)
 **Duration:** Day 1 (Domain + Data layers only)
 **Dependencies:** Phase 1 complete (CravingEntity pattern established)

@@ -16,9 +16,24 @@ struct DashboardViewModelTests {
         ]
 
         let usages: [UsageEntity] = [
-            UsageEntity(timestamp: now.addingTimeInterval(-10 * 86400), method: "Bowls", amount: 1.0),
-            UsageEntity(timestamp: now.addingTimeInterval(-6 * 86400), method: "Vape", amount: 2.0),
-            UsageEntity(timestamp: now.addingTimeInterval(-1 * 86400), method: "Edible", amount: 10.0),
+            UsageEntity(
+                timestamp: now.addingTimeInterval(-10 * 86400),
+                method: "Bowls",
+                amount: 1.0,
+                triggers: ["Bored"]
+            ),
+            UsageEntity(
+                timestamp: now.addingTimeInterval(-6 * 86400),
+                method: "Vape",
+                amount: 2.0,
+                triggers: ["Anxious"]
+            ),
+            UsageEntity(
+                timestamp: now.addingTimeInterval(-1 * 86400),
+                method: "Edible",
+                amount: 10.0,
+                triggers: ["Bored"]
+            ),
         ]
 
         let viewModel = DashboardViewModel(
@@ -35,6 +50,39 @@ struct DashboardViewModelTests {
         #expect(viewModel.weeklyUsageCount == 2)
         #expect(viewModel.averageIntensity7Day == 7.0)
         #expect(viewModel.averageIntensity30Day == 6.0)
+
+        #expect(viewModel.topTriggers.count == 3)
+        #expect(viewModel.topTriggers[0].trigger == "Bored")
+        #expect(viewModel.topTriggers[0].count == 3)
+        #expect(viewModel.topTriggers[1].trigger == "Anxious")
+        #expect(viewModel.topTriggers[1].count == 2)
+    }
+
+    @Test("Top triggers do not double-count duplicate triggers in a single entry")
+    func topTriggersDeduplicateWithinEntry() async {
+        let now = Date(timeIntervalSince1970: 1_000_000_000)
+
+        let cravings: [CravingEntity] = [
+            CravingEntity(timestamp: now, intensity: 5, triggers: ["Bored", "Bored", "Anxious"]),
+        ]
+
+        let usages: [UsageEntity] = [
+            UsageEntity(timestamp: now, method: "Bowls", amount: 1.0, triggers: ["Bored", "Bored"]),
+        ]
+
+        let viewModel = DashboardViewModel(
+            fetchCravingsUseCase: MockDashboardFetchCravingsUseCase(result: cravings),
+            fetchUsageUseCase: MockDashboardFetchUsageUseCase(result: usages),
+            nowProvider: { now }
+        )
+
+        await viewModel.loadMetrics()
+
+        #expect(viewModel.topTriggers.count >= 2)
+        #expect(viewModel.topTriggers[0].trigger == "Bored")
+        #expect(viewModel.topTriggers[0].count == 2) // 1 craving + 1 usage, not 4
+        #expect(viewModel.topTriggers[1].trigger == "Anxious")
+        #expect(viewModel.topTriggers[1].count == 1)
     }
 }
 

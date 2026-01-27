@@ -6,6 +6,9 @@ protocol MessageRepositoryProtocol: Sendable {
     /// Save a new message
     func save(_ message: MotivationalMessageEntity) async throws
 
+    /// Fetch all messages (active + inactive)
+    func fetchAll() async throws -> [MotivationalMessageEntity]
+
     /// Fetch all active messages
     func fetchActive() async throws -> [MotivationalMessageEntity]
 

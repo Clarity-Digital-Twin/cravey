@@ -52,6 +52,7 @@ struct RecordingEntity: Identifiable, Codable, Equatable, Hashable, Sendable {
 enum RecordingType: String, Codable, CaseIterable, Sendable {
     case video
     case audio
+    case unknown
 
     var fileExtension: String {
         switch self {
@@ -59,6 +60,8 @@ enum RecordingType: String, Codable, CaseIterable, Sendable {
             "mov"
         case .audio:
             "m4a"
+        case .unknown:
+            "dat"
         }
     }
 }
@@ -68,6 +71,7 @@ enum RecordingPurpose: String, Codable, CaseIterable, Sendable {
     case milestone
     case reflection
     case craving
+    case unknown
 }
 
 // MARK: - Business Logic

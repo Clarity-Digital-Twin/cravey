@@ -50,9 +50,19 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
             throw UsageError.invalidAmount
         }
 
+        // Validate timestamp not in future
+        guard request.timestamp <= Date() else {
+            throw UsageError.futureTimestamp
+        }
+
         // Validate amount range for method
         guard ROAAmountRange.isValid(method: request.method, amount: request.amount) else {
             throw UsageError.amountOutOfRange
+        }
+
+        // Validate notes length (500 char limit per DATA_MODEL_SPEC.md:122)
+        if let notes = request.notes, notes.count > 500 {
+            throw UsageError.notesTooLong
         }
 
         // Create entity
@@ -71,7 +81,7 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
         } catch let cancellationError as CancellationError {
             throw cancellationError
         } catch {
-            throw UsageError.saveFailed
+            throw UsageError.saveFailed(underlying: error.localizedDescription)
         }
 
         return entity
@@ -79,22 +89,37 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
 }
 
 /// Usage-specific errors
-enum UsageError: LocalizedError {
+enum UsageError: LocalizedError, Sendable {
     case invalidMethod
     case invalidAmount
+    case futureTimestamp
     case amountOutOfRange
-    case saveFailed
+    case notesTooLong
+    case saveFailed(underlying: String)
+
+    var failureReason: String? {
+        switch self {
+        case let .saveFailed(underlying):
+            underlying
+        default:
+            nil
+        }
+    }
 
     var errorDescription: String? {
         switch self {
         case .invalidMethod:
-            "Invalid method. Must be one of: Bowls, Joints, Blunts, Vape, Dab, Edible"
+            "Please select a valid method (Bowls, Joints, Blunts, Vape, Dab, or Edible)"
         case .invalidAmount:
-            "Amount must be greater than zero"
+            "Please enter an amount greater than zero"
+        case .futureTimestamp:
+            "The timestamp can't be in the future"
         case .amountOutOfRange:
-            "Amount is outside valid range for this method"
+            "Please choose an amount within the valid range for this method"
+        case .notesTooLong:
+            "Notes are limited to 500 characters"
         case .saveFailed:
-            "Failed to save usage"
+            "We couldn't save your entry. Please try again."
         }
     }
 }

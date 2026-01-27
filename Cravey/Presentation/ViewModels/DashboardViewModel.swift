@@ -22,6 +22,9 @@ final class DashboardViewModel {
     var isLoading = true
     var currentStreak: Int = 0
     var longestStreak: Int = 0
+    var mostRecentUsageDate: Date?
+    var todayCravingCount: Int = 0
+    var todayUsageCount: Int = 0
     var averageIntensity7Day: Double = 0.0
     var averageIntensity30Day: Double = 0.0
     var topTriggers: [(trigger: String, count: Int)] = []
@@ -58,6 +61,7 @@ final class DashboardViewModel {
 
             // Streaks (days since last usage; longest gap between usages)
             (currentStreak, longestStreak) = calculateStreaks(usages: usages, now: now)
+            mostRecentUsageDate = usages.max { $0.timestamp < $1.timestamp }?.timestamp
 
             // Calculate average intensity (7-day and 30-day)
             let calendar = Calendar.current
@@ -75,12 +79,24 @@ final class DashboardViewModel {
             averageIntensity7Day = calculateAverageIntensity(cravings: cravings7Day)
             averageIntensity30Day = calculateAverageIntensity(cravings: cravings30Day)
 
-            // Calculate top triggers
-            topTriggers = calculateTopTriggers(cravings: cravings, limit: 3)
+            // Calculate top triggers (combined cravings + usage)
+            topTriggers = calculateTopTriggers(cravings: cravings, usages: usages, limit: 3)
 
             // Weekly counts
             weeklyCravingCount = cravings.count { $0.timestamp >= sevenDaysAgo }
             weeklyUsageCount = usages.count { $0.timestamp >= sevenDaysAgo }
+
+            // Today's counts (calendar day)
+            let startOfToday = calendar.startOfDay(for: now)
+            guard let startOfTomorrow = calendar.date(byAdding: .day, value: 1, to: startOfToday) else {
+                Self.logger.fault("Calendar date math unexpectedly failed while computing today's counts.")
+                todayCravingCount = 0
+                todayUsageCount = 0
+                return
+            }
+
+            todayCravingCount = cravings.count { $0.timestamp >= startOfToday && $0.timestamp < startOfTomorrow }
+            todayUsageCount = usages.count { $0.timestamp >= startOfToday && $0.timestamp < startOfTomorrow }
         } catch {
             errorMessage = "Unable to load dashboard metrics"
             Self.logger.error("Failed to load dashboard metrics: \(error.localizedDescription)")
@@ -115,17 +131,33 @@ final class DashboardViewModel {
         return Double(total) / Double(cravings.count)
     }
 
-    private func calculateTopTriggers(cravings: [CravingEntity], limit: Int) -> [(trigger: String, count: Int)] {
+    private func calculateTopTriggers(
+        cravings: [CravingEntity],
+        usages: [UsageEntity],
+        limit: Int
+    ) -> [(trigger: String, count: Int)] {
         var triggerCounts: [String: Int] = [:]
 
         for craving in cravings {
-            for trigger in craving.triggers {
+            for trigger in Set(craving.triggers) {
+                triggerCounts[trigger, default: 0] += 1
+            }
+        }
+
+        for usage in usages {
+            for trigger in Set(usage.triggers) {
                 triggerCounts[trigger, default: 0] += 1
             }
         }
 
         return triggerCounts
-            .sorted { $0.value > $1.value }
+            .sorted {
+                // Primary: descending by count. Secondary: ascending by name for deterministic ordering on ties.
+                if $0.value == $1.value {
+                    return $0.key.localizedCaseInsensitiveCompare($1.key) == .orderedAscending
+                }
+                return $0.value > $1.value
+            }
             .prefix(limit)
             .map { (trigger: $0.key, count: $0.value) }
     }

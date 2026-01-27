@@ -87,6 +87,7 @@ struct UsageListView: View {
     private var usageListView: some View {
         ForEach(viewModel.usageList) { usage in
             UsageRowView(usage: usage)
+                .accessibilityIdentifier("usageEntryRow")
                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                     Button(role: .destructive) {
                         deleteHapticTrigger.toggle()

@@ -57,7 +57,7 @@
 #### Entities
 Pure Swift models representing core business concepts.
 ```swift
-// Example: Domain/Entities/Craving.swift
+// Example: Domain/Entities/CravingEntity.swift
 struct CravingEntity {
     let id: UUID
     let timestamp: Date
@@ -97,7 +97,7 @@ Define data access contracts (implementations in Data layer).
 protocol CravingRepositoryProtocol {
     func save(_ craving: CravingEntity) async throws
     func fetchAll() async throws -> [CravingEntity]
-    func delete(_ id: UUID) async throws
+    func delete(id: UUID) async throws
 }
 ```
 
@@ -141,7 +141,7 @@ Concrete implementations of repository protocols.
 ```swift
 // Example: Data/Repositories/CravingRepository.swift
 final class CravingRepository: CravingRepositoryProtocol {
-    private let modelContext: ModelContext
+    private nonisolated(unsafe) let modelContext: ModelContext
 
     func save(_ craving: CravingEntity) async throws {
         // Convert Entity → SwiftData Model
@@ -162,14 +162,16 @@ File system and external storage management.
 ```swift
 // Example: Data/Storage/FileStorageManager.swift
 actor FileStorageManager {
-    func saveRecording(from url: URL) async throws -> String
-    func deleteRecording(at path: String) async throws
+    init(fileManager: FileManager = .default)
+
+    func saveRecording(from tempURL: URL, recordingType: RecordingType) async throws -> String
+    func deleteRecording(at relativePath: String) throws
 }
 ```
 
 **Rules:**
 - ✅ Handles file I/O
-- ✅ Thread-safe (use actor isolation)
+- ✅ Actor-isolated so UI callers can `await` without blocking the main actor
 - ✅ Returns simple types (String, Data, URL)
 - ❌ No business logic
 
@@ -245,15 +247,25 @@ struct CravingLogView: View {
 
 #### App Entry Point
 ```swift
-// Example: App/CraveyApp.swift
+// Example: App/CraveyApp.swift (simplified)
 @main
 struct CraveyApp: App {
-    @State private var dependencyContainer = DependencyContainer()
+    @State private var dependencyContainer: DependencyContainer? = try? DependencyContainer()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if let dependencyContainer {
+                TabView {
+                    HomeView().tabItem { Label("Home", systemImage: "house.fill") }
+                    LogView().tabItem { Label("Log", systemImage: "plus.circle.fill") }
+                    HistoryView().tabItem { Label("History", systemImage: "clock.fill") }
+                    SettingsView().tabItem { Label("Settings", systemImage: "gearshape.fill") }
+                }
                 .environment(dependencyContainer)
+                .modelContainer(dependencyContainer.modelContainer)
+            } else {
+                AppUnavailableView(error: nil, onRetry: {})
+            }
         }
     }
 }
@@ -263,26 +275,23 @@ struct CraveyApp: App {
 ```swift
 // Example: App/DependencyContainer.swift
 @Observable
+@MainActor
 final class DependencyContainer {
-    // Singletons
+    let modelContainer: ModelContainer
     let modelContext: ModelContext
-    let fileStorage: FileStorageManager
 
-    // Repositories
-    lazy var cravingRepository: CravingRepositoryProtocol = {
-        CravingRepository(modelContext: modelContext)
-    }()
+    private(set) var cravingRepository: CravingRepositoryProtocol
+    private(set) var logCravingUseCase: LogCravingUseCase
 
-    // Use Cases
-    lazy var logCravingUseCase: LogCravingUseCase = {
-        DefaultLogCravingUseCase(repository: cravingRepository)
-    }()
+    func makeCravingLogViewModel() -> CravingLogViewModel {
+        CravingLogViewModel(logCravingUseCase: logCravingUseCase)
+    }
 }
 ```
 
 **Rules:**
 - ✅ Wires up all dependencies
-- ✅ Creates and owns singleton services
+- ✅ Creates and owns long-lived services (no `lazy var` with `@Observable`)
 - ✅ Provides factories for scoped instances
 - ❌ No business logic
 
@@ -331,91 +340,25 @@ final class DependencyContainer {
 ## Project Structure
 
 ```
-Cravey/                              # Xcode app target
-├── App/
-│   ├── CraveyApp.swift             # @main entry point
-│   ├── DependencyContainer.swift   # DI container
-│   └── SceneDelegate.swift         # (if needed)
-│
-├── Domain/
-│   ├── Entities/
-│   │   ├── CravingEntity.swift
-│   │   ├── RecordingEntity.swift
-│   │   └── MotivationalMessageEntity.swift
-│   │
-│   ├── UseCases/
-│   │   ├── CravingTracking/
-│   │   │   ├── LogCravingUseCase.swift
-│   │   │   ├── FetchCravingsUseCase.swift
-│   │   │   └── DeleteCravingUseCase.swift
-│   │   ├── Recordings/
-│   │   │   ├── CreateRecordingUseCase.swift
-│   │   │   └── PlayRecordingUseCase.swift
-│   │   └── Motivational/
-│   │       └── FetchRandomMessageUseCase.swift
-│   │
-│   └── Repositories/
-│       ├── CravingRepositoryProtocol.swift
-│       ├── RecordingRepositoryProtocol.swift
-│       └── MessageRepositoryProtocol.swift
-│
-├── Data/
-│   ├── Models/
-│   │   ├── CravingModel.swift         # SwiftData @Model
-│   │   ├── RecordingModel.swift       # SwiftData @Model
-│   │   └── MotivationalMessageModel.swift
-│   │
-│   ├── Repositories/
-│   │   ├── CravingRepository.swift    # Implements protocol
-│   │   ├── RecordingRepository.swift
-│   │   └── MessageRepository.swift
-│   │
-│   ├── Storage/
-│   │   ├── FileStorageManager.swift   # File I/O
-│   │   └── ModelContainer+Setup.swift # SwiftData setup
-│   │
-│   └── Mappers/
-│       ├── CravingMapper.swift        # Entity ↔ Model
-│       ├── RecordingMapper.swift
-│       └── MessageMapper.swift
-│
-├── Presentation/
-│   ├── ViewModels/
-│   │   ├── CravingLog/
-│   │   │   └── CravingLogViewModel.swift
-│   │   ├── Dashboard/
-│   │   │   └── DashboardViewModel.swift
-│   │   ├── Recordings/
-│   │   │   ├── RecordingsListViewModel.swift
-│   │   │   └── RecordingPlayerViewModel.swift
-│   │   └── Motivational/
-│   │       └── MotivationalViewModel.swift
-│   │
-│   ├── Views/
-│   │   ├── CravingLog/
-│   │   │   └── CravingLogView.swift
-│   │   ├── Dashboard/
-│   │   │   ├── DashboardView.swift
-│   │   │   ├── Components/
-│   │   │   │   └── StatCard.swift
-│   │   ├── Recordings/
-│   │   │   ├── RecordingsListView.swift
-│   │   │   └── RecordingPlayerView.swift
-│   │   ├── Motivational/
-│   │   │   └── MotivationalView.swift
-│   │   └── ContentView.swift
-│   │
-│   └── Common/
-│       ├── ViewModifiers/
-│       └── Components/
-│
-├── Resources/
-│   ├── Assets.xcassets
-│   ├── Info.plist
-│   └── Localizable.strings
-│
-└── Supporting Files/
-    └── (Generated files)
+Cravey/
+├── App/                         # Composition root (DI + startup)
+│   ├── CraveyApp.swift
+│   ├── DependencyContainer.swift
+│   └── AppUnavailableView.swift
+├── Domain/                      # Pure Swift (no SwiftUI/SwiftData)
+│   ├── Entities/                # CravingEntity, UsageEntity, RecordingEntity, …
+│   ├── Repositories/            # Protocols only
+│   └── UseCases/                # Protocols + default implementations
+├── Data/                        # SwiftData persistence + storage
+│   ├── Models/                  # SwiftData @Model types
+│   ├── Mappers/                 # Entity ↔ Model conversion
+│   ├── Repositories/            # Concrete repository implementations
+│   ├── Storage/                 # ModelContainer setup + file I/O
+│   └── UseCases/                # Concrete implementations of Domain use case protocols
+└── Presentation/                # SwiftUI UI layer
+    ├── ViewModels/              # @Observable + @MainActor
+    ├── Views/                   # SwiftUI screens + reusable components
+    └── Utilities/               # UI-only utilities (e.g., IntensityColorScale)
 ```
 
 ---
@@ -494,59 +437,18 @@ Cravey/                              # Xcode app target
 
 ### Unit Tests (Fast, Isolated)
 
-#### Domain Layer Tests
-```
-CraveyTests/Domain/
-├── UseCases/
-│   ├── LogCravingUseCaseTests.swift
-│   └── FetchCravingsUseCaseTests.swift
-└── Entities/
-    └── CravingEntityTests.swift
-```
+Cravey uses the **Swift Testing** framework (`import Testing`, `@Test` macro).
 
-**Test:** Pure business logic with mocked repositories
-
-#### Data Layer Tests
+**Current test layout:**
 ```
-CraveyTests/Data/
-├── Repositories/
-│   └── CravingRepositoryTests.swift
-└── Mappers/
-    └── CravingMapperTests.swift
+CraveyTests/
+├── App/                 # DependencyContainer bootstrap tests
+├── Domain/              # Domain use case tests
+├── Presentation/        # ViewModel + component tests
+└── Integration/         # End-to-end (ViewModel → UseCase → Repository → SwiftData)
 ```
 
-**Test:** Data access with in-memory SwiftData
-
-#### Presentation Layer Tests
-```
-CraveyTests/Presentation/
-└── ViewModels/
-    └── CravingLogViewModelTests.swift
-```
-
-**Test:** UI logic with mocked use cases
-
-### Integration Tests (Medium Speed)
-
-```
-CraveyIntegrationTests/
-└── Flows/
-    ├── CravingLoggingFlowTests.swift
-    └── RecordingFlowTests.swift
-```
-
-**Test:** Multiple layers working together
-
-### UI Tests (Slow, End-to-End)
-
-```
-CraveyUITests/
-├── CravingLoggingUITests.swift
-├── RecordingsUITests.swift
-└── DashboardUITests.swift
-```
-
-**Test:** User flows in simulator
+UI test scaffolding lives in `CraveyUITests/` but is not part of the automated convergence gate.
 
 ---
 

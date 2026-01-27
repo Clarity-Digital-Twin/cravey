@@ -1,5 +1,7 @@
 # Code Review Findings - Cravey iOS App
 
+> ⚠️ Archived: Historical review notes. Not current SSOT.
+
 **Review Date:** 2025-12-07
 **Reviewer:** Claude Code (Opus 4)
 **Branch:** `claude/review-swiftui-code-quality-01TywtMysyU2Tq7eN7BFuHut`

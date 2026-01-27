@@ -2,10 +2,15 @@ import Foundation
 
 @Observable
 @MainActor
-final class UsageLogViewModel {
+final class UsageLogViewModel: Identifiable {
+    @ObservationIgnored
+    let id = UUID() // For Identifiable conformance (sheet binding)
+
     // Dependencies
     @ObservationIgnored
     private let logUsageUseCase: LogUsageUseCase
+    @ObservationIgnored
+    private let nowProvider: @Sendable () -> Date
 
     // Form fields (required)
     var timestamp: Date = .init()
@@ -40,8 +45,13 @@ final class UsageLogViewModel {
     @ObservationIgnored
     private var hasAcknowledgedOldTimestamp: Bool = false
 
-    init(logUsageUseCase: LogUsageUseCase) {
+    init(
+        logUsageUseCase: LogUsageUseCase,
+        nowProvider: @escaping @Sendable () -> Date = Date.init
+    ) {
         self.logUsageUseCase = logUsageUseCase
+        self.nowProvider = nowProvider
+        timestamp = nowProvider()
     }
 
     /// Validate form can be submitted
@@ -61,10 +71,7 @@ final class UsageLogViewModel {
 
     /// Check if timestamp is >7 days old (DATA_MODEL_SPEC:117)
     var isTimestampOld: Bool {
-        guard let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) else {
-            return false // Fail-safe: treat as not old if calculation fails
-        }
-        return timestamp < sevenDaysAgo
+        TimestampValidation.isOlderThanWarningThreshold(timestamp: timestamp, now: nowProvider())
     }
 
     /// Log usage via use case
@@ -125,7 +132,7 @@ final class UsageLogViewModel {
 
     /// Reset form to defaults (called when form reopens)
     func resetForm() {
-        timestamp = Date()
+        timestamp = nowProvider()
         selectedMethod = "Bowls"
         amount = 0.5 // First valid option for Bowls
         selectedTriggers = []

@@ -16,6 +16,7 @@ struct SettingsView: View {
 
 private struct SettingsContentView: View {
     @Bindable var viewModel: SettingsViewModel
+    @State private var showExportFlow = false
 
     var body: some View {
         List {
@@ -30,20 +31,19 @@ private struct SettingsContentView: View {
 
             Section("Data") {
                 Button {
-                    Task {
-                        await viewModel.exportData()
-                    }
+                    showExportFlow = true
                 } label: {
                     HStack {
                         Label("Export Data", systemImage: "square.and.arrow.up")
                         Spacer()
-                        if viewModel.isExporting {
-                            ProgressView()
-                        }
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
                     }
                 }
-                .disabled(viewModel.isExporting)
                 .accessibilityIdentifier("exportDataButton")
+                .sheet(isPresented: $showExportFlow) {
+                    ExportDataSheet(viewModel: viewModel)
+                }
 
                 Button(role: .destructive) {
                     viewModel.showDeleteConfirmation = true
@@ -77,13 +77,6 @@ private struct SettingsContentView: View {
             }
         }
         .navigationTitle("Settings")
-        .sheet(isPresented: $viewModel.showExportSheet) {
-            if let url = viewModel.exportURL {
-                ShareSheet(items: [url])
-            }
-        }
-        // iOS 17+ declarative haptics for export success
-        .sensoryFeedback(.success, trigger: viewModel.showExportSheet)
         .confirmationDialog(
             "Delete All Data?",
             isPresented: $viewModel.showDeleteConfirmation,
@@ -99,7 +92,7 @@ private struct SettingsContentView: View {
             Text(
                 """
                 This will permanently delete all your cravings, usage logs, \
-                recordings, and motivational messages. This action cannot be undone.
+                recordings, and any custom motivational messages. This action cannot be undone.
                 """
             )
         }
@@ -108,27 +101,61 @@ private struct SettingsContentView: View {
         } message: {
             Text(viewModel.errorMessage ?? "An unknown error occurred")
         }
-        .alert("Data Deleted", isPresented: $viewModel.deleteSuccess) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("All your data has been permanently deleted.")
+        .overlay(alignment: .top) {
+            VStack {
+                SuccessBanner(
+                    systemImage: "checkmark.circle.fill",
+                    text: "Data exported",
+                    isPresented: $viewModel.exportSuccess
+                )
+
+                SuccessBanner(
+                    systemImage: "trash.circle.fill",
+                    text: "All data deleted",
+                    isPresented: $viewModel.deleteSuccess
+                )
+
+                Spacer()
+            }
         }
         // iOS 17+ declarative haptics for success/error states
         .sensoryFeedback(.success, trigger: viewModel.deleteSuccess)
+        .sensoryFeedback(.success, trigger: viewModel.exportSuccess)
         .sensoryFeedback(.error, trigger: viewModel.showError)
     }
 }
 
-// MARK: - Share Sheet
+private struct SuccessBanner: View {
+    let systemImage: String
+    let text: String
+    @Binding var isPresented: Bool
 
-struct ShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
-
-    func makeUIViewController(context _: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: items, applicationActivities: nil)
+    var body: some View {
+        if isPresented {
+            HStack {
+                Image(systemName: systemImage)
+                    .foregroundStyle(.green)
+                    .symbolEffect(.bounce, value: isPresented)
+                Text(text)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+            .padding()
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+            .padding(.horizontal)
+            .padding(.top, 8)
+            .transition(.move(edge: .top).combined(with: .opacity))
+            .animation(.spring(duration: 0.3), value: isPresented)
+            .task {
+                do {
+                    try await Task.sleep(for: .seconds(2))
+                } catch {
+                    // Task cancelled — safe to ignore
+                }
+                isPresented = false
+            }
+        }
     }
-
-    func updateUIViewController(_: UIActivityViewController, context _: Context) {}
 }
 
 #Preview {

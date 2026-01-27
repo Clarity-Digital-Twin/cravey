@@ -1,43 +1,46 @@
 # Cravey Project Status
 
-**Last Updated:** 2025-01-24
-**Build Status:** Passing (32 tests, 0 failures)
+**Last Updated:** 2026-01-27
+**Build Gate:** `bash scripts/verify.sh` ✅ (48 Swift Testing tests passing)
 **App Version:** Pre-release (development)
 
 ---
 
 ## Executive Summary
 
-Cravey is a cannabis cessation support iOS app (~60% complete). Core logging features work end-to-end. The codebase follows Clean Architecture with modern SwiftUI patterns. Documentation has been consolidated and outdated files archived.
+Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built with Clean Architecture + MVVM using SwiftUI + SwiftData. Core tracking (cravings + usage), dashboard metrics, and data management (export + delete-all) work end-to-end. Recordings and motivational messages are scaffolded (entities/models/protocols exist) but are not yet implemented as end-user features.
 
 ---
 
 ## What's Implemented (Working)
 
 ### Core Features
+
 | Feature | Status | Notes |
 |---------|--------|-------|
 | **Craving Logging** | Working | Full form: intensity, triggers, location, notes, timestamp |
 | **Usage Logging** | Working | Full form: ROA picker, amounts, triggers, location, notes |
 | **Dashboard** | Working | 5 metric cards, streak tracking, intensity trends |
-| **Settings** | Working | Export data (CSV/JSON), delete all data |
-| **Home Screen** | Working | Lists cravings + usage with swipe actions |
+| **Settings** | Working | Export (CSV/JSON) + delete-all (logs + recordings + custom messages) |
+| **Home Screen** | Working | 4-tab structure: Home (dashboard), Log (actions), History (lists), Settings |
 
 ### Technical Foundation
+
 | Layer | Files | Status |
 |-------|-------|--------|
-| **Domain (Entities)** | 4 | CravingEntity, UsageEntity, RecordingEntity, MotivationalMessageEntity |
-| **Domain (Use Cases)** | 4 | LogCraving, FetchCravings, LogUsage, FetchUsage |
+| **Domain (Entities)** | 5 | CravingEntity, UsageEntity, RecordingEntity, MotivationalMessageEntity, TriggerOptions |
+| **Domain (Use Cases)** | 10 | Log/Fetch/Delete (Craving/Usage), Export/DeleteAll, plus ROAAmountRange helper |
 | **Domain (Protocols)** | 4 | CravingRepositoryProtocol, UsageRepositoryProtocol, RecordingRepositoryProtocol, MessageRepositoryProtocol |
 | **Data (Models)** | 4 | CravingModel, UsageModel, RecordingModel, MotivationalMessageModel |
 | **Data (Mappers)** | 4 | All mappers implemented |
-| **Data (Repositories)** | 2 | CravingRepository, UsageRepository (concrete implementations) |
+| **Data (Repositories)** | 4 | CravingRepository, UsageRepository, RecordingRepository, MessageRepository (concrete implementations) |
+| **Data (Use Cases)** | 1 | SwiftDataDeleteAllUserDataUseCase (DeleteAllUserDataUseCase implementation) |
 | **Presentation (ViewModels)** | 6 | CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings |
-| **Presentation (Views)** | 10+ | Home, Craving forms/list, Usage forms/list, Dashboard, Settings, Components |
-| **Tests** | 9 files | 32 unit tests, all passing |
+| **Presentation (Views + Components)** | 16 | Home (dashboard), Log, History, Settings (incl. export flow), Craving/Usage forms+lists, reusable components |
+| **Tests** | 15 files | 48 Swift Testing tests, all passing (`CraveyTests`) |
 
 ### Architecture Compliance
-- Clean Architecture enforced (Domain has no framework imports)
+- Clean Architecture enforced (Domain has no SwiftUI/SwiftData imports)
 - Modern SwiftUI patterns (@Observable, @State, @Environment)
 - SwiftData with local-only storage (no CloudKit)
 - iOS 18+ targeting
@@ -46,12 +49,12 @@ Cravey is a cannabis cessation support iOS app (~60% complete). Core logging fea
 
 ## What's NOT Implemented
 
-### Scaffolded Only (Protocols/Entities Exist, No Implementation)
+### Scaffolded Only (Entities/Models/Protocols Exist, Feature Not Implemented)
 
 | Component | What Exists | What's Missing |
 |-----------|-------------|----------------|
-| **RecordingRepository** | Protocol defined | No concrete implementation |
-| **MessageRepository** | Protocol defined | No concrete implementation |
+| **Recordings Feature** | Models + repository | AVFoundation capture/playback + user-facing UI |
+| **Motivational Messages Feature** | Models + repository | Message selection UI + use cases |
 | **Recording Use Cases** | Entity defined | No SaveRecording/FetchRecordings use cases |
 | **Recording ViewModels** | - | RecordingViewModel, RecordingLibraryViewModel |
 | **Recording Views** | - | RecordingView, RecordingLibraryView, playback UI |
@@ -62,8 +65,8 @@ Cravey is a cannabis cessation support iOS app (~60% complete). Core logging fea
 | Feature | Spec Status | Implementation |
 |---------|-------------|----------------|
 | **Onboarding** | Spec complete (UX_FLOW_SPEC.md) | WelcomeView, TourView not created |
-| **Quick Play (Home)** | Spec complete | Placeholder TODO in HomeView |
-| **UI Tests** | Files exist | Disabled due to Swift 6 concurrency issues |
+| **Quick Play (Home)** | Spec complete | Recordings feature not implemented yet |
+| **UI Tests** | Files exist | Not part of `scripts/verify.sh` gate (headless CI constraints) |
 
 ### Launch Prep (Phase 6)
 - TestFlight setup
@@ -73,49 +76,36 @@ Cravey is a cannabis cessation support iOS app (~60% complete). Core logging fea
 
 ---
 
-## Test Suite
+## Verification
 
+**Primary gate (must be green):**
+```bash
+bash scripts/verify.sh
 ```
-Test Suite 'All tests' passed
-- Craving Log Integration Tests: 3/3
-- CravingLogViewModel Tests: 2/2
-- IntensitySlider Tests: 2/2
-- LogCravingUseCase Tests: 2/2
-- ROAPickerInput Tests: 5/5
-- Usage Data Layer Integration Tests: 6/6
-- UsageListViewModel Tests: 2/2
-- Usage Log Integration Tests: 5/5
-- UsageLogViewModel Tests: 5/5
 
-Total: 32 tests passing
-Build warnings: 16 (SwiftLint style only - trailing commas, TODOs)
-```
+**What it checks (summary):**
+- `xcodegen generate`
+- `swiftformat --lint`
+- `swiftlint lint`
+- Static invariants (privacy + Clean Architecture boundaries)
+- iOS Simulator compile check (uses an installed simulator, prefers `iPhone 17 Pro`)
+- Unit tests (`CraveyTests`) on Mac Catalyst with code signing disabled
 
 ---
 
 ## Documentation Structure
 
-```
+```text
 docs/
-├── PROJECT_STATUS.md      # THIS FILE - Single source of truth
-├── ARCHITECTURE.md        # Quick architecture reference
-├── GETTING_STARTED.md     # 5-minute setup guide
-├── PROJECT_SETUP.md       # Xcode project creation
-├── BUG_SPEC_AUTHORITATIVE.md  # Known bug specifications
-├── MVP_PRODUCT_SPEC.md    # Product vision & features
-├── CLINICAL_CANNABIS_SPEC.md  # Domain requirements
-├── UX_FLOW_SPEC.md        # Screen designs (19 screens)
-├── DATA_MODEL_SPEC.md     # SwiftData schemas
-├── TECHNICAL_IMPLEMENTATION.md  # Architecture & implementation
-├── specs/
-│   ├── PHASE_3.md         # Onboarding spec (not started)
-│   ├── PHASE_4.md         # Recordings spec (not started)
-│   └── PHASE_6.md         # Launch prep spec
+├── PROJECT_STATUS.md      # This file (status)
+├── ARCHITECTURE.md        # Implementation-aligned architecture reference
+├── GETTING_STARTED.md     # Setup + workflow
+├── master/                # Authoritative product/clinical/data-model specs (SSOT)
+├── specs/                 # Active engineering specs
+├── future/                # Deferred feature specs (planning only)
+├── bugs/                  # Bug tracker (individual bug files)
+├── debt/                  # Debt tracker (individual debt files)
 └── _archive/              # Historical docs (DO NOT REFERENCE)
-    ├── CHECKPOINT_STATUS.md
-    ├── PHASE_OVERVIEW.md
-    ├── CONVERGENCE_STRATEGY.md
-    └── specs/...
 ```
 
 ---
@@ -177,6 +167,8 @@ swiftlint
 
 | Date | Change |
 |------|--------|
+| 2026-01-27 | UI redesign complete: 4-tab structure (Home/Log/History/Settings), 48 tests |
+| 2026-01-27 | Refreshed status to match current implementation + verification gate |
 | 2025-01-24 | Created PROJECT_STATUS.md, consolidated status docs, archived outdated files |
 | 2025-01-05 | Dashboard, Settings, UI/UX Polish completed |
 | 2025-01-05 | ChipSelector bug fix, code review findings addressed |

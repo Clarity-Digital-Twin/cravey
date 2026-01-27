@@ -1,5 +1,7 @@
 # Phase 2C: Usage Logging - Form & Integration
 
+> ⚠️ Archived: Historical phase doc. Not current SSOT.
+
 **Version:** 1.0 (Spec-First Approach)
 **Duration:** Day 2-3 (ViewModels + Views + Integration)
 **Dependencies:** Phase 2A + 2B complete (data layer + picker validated)

@@ -16,6 +16,7 @@ require_cmd xcodegen
 require_cmd swiftformat
 require_cmd swiftlint
 require_cmd rg
+require_cmd xcrun
 
 echo "==> Regenerating Xcode project (XcodeGen)"
 xcodegen generate
@@ -39,7 +40,29 @@ if rg -n "import\\s+(SwiftUI|SwiftData)" Cravey/Domain >/dev/null; then
   exit 1
 fi
 
-echo "==> Unit tests (Mac Catalyst, code signing disabled)"
+# Clean Architecture: Presentation must not import SwiftData or reference ModelContext
+if rg -n "import\\s+SwiftData" Cravey/Presentation >/dev/null; then
+  echo "FAIL: Presentation imports SwiftData (Clean Architecture violation)" >&2
+  exit 1
+fi
+
+if rg -n "\\bModelContext\\b" Cravey/Presentation >/dev/null; then
+  echo "FAIL: Presentation references ModelContext (Clean Architecture violation)" >&2
+  exit 1
+fi
+
+# Swift concurrency hygiene: no unsafe isolation escape hatches in Presentation
+if rg -n "nonisolated\\(unsafe\\)" Cravey/Presentation >/dev/null; then
+  echo "FAIL: Presentation uses nonisolated(unsafe) (Concurrency violation)" >&2
+  exit 1
+fi
+
+# Platform: enforce iOS 18.0 minimum deployment target in XcodeGen SSOT
+if ! rg -n "^\\s*iOS:\\s*18\\.0\\s*$" project.yml >/dev/null 2>&1; then
+  echo "FAIL: iOS: 18.0 deployment target not found in project.yml (Platform invariant)" >&2
+  exit 1
+fi
+
 DERIVED_DATA_PATH="$(mktemp -d /tmp/CraveyDerivedData.XXXXXX)"
 RESULT_BUNDLE_PATH="/tmp/CraveyTests.$(date +%s).xcresult"
 
@@ -55,6 +78,52 @@ cleanup() {
 }
 trap cleanup EXIT
 
+echo "==> iOS Simulator build (compile check)"
+IOS_SIMULATOR_NAME="${IOS_SIMULATOR_NAME:-iPhone 17 Pro}"
+
+if ! xcrun simctl list devices available | rg -Fq "${IOS_SIMULATOR_NAME} ("; then
+  echo "WARN: iOS Simulator '${IOS_SIMULATOR_NAME}' not found. Falling back to the first available iPhone simulator." >&2
+  IOS_SIMULATOR_NAME="$(
+    xcrun simctl list devices available | sed -nE '/-- iOS /,/-- /{s/^[[:space:]]*(iPhone[^\\(]+) \\(.*/\1/p;}' \
+      | head -n 1 | xargs
+  )"
+
+  if [[ -z "${IOS_SIMULATOR_NAME}" ]]; then
+    IOS_SIMULATOR_NAME="$(
+      xcrun simctl list devices available | sed -nE '/-- iOS /,/-- /{s/^[[:space:]]*([^\\(]+) \\(.*/\1/p;}' \
+        | head -n 1 | xargs
+    )"
+  fi
+fi
+
+if [[ -z "${IOS_SIMULATOR_NAME}" ]]; then
+  echo "FAIL: No available iOS Simulator devices found." >&2
+  exit 1
+fi
+
+echo "INFO: Using iOS Simulator: ${IOS_SIMULATOR_NAME}"
+
+if command -v xcbeautify >/dev/null 2>&1; then
+  xcodebuild build \
+    -project Cravey.xcodeproj \
+    -scheme Cravey \
+    -destination "platform=iOS Simulator,name=${IOS_SIMULATOR_NAME}" \
+    CODE_SIGNING_ALLOWED=NO \
+    CODE_SIGNING_REQUIRED=NO \
+    CODE_SIGN_IDENTITY="" \
+    -derivedDataPath "$DERIVED_DATA_PATH" 2>&1 | xcbeautify
+else
+  xcodebuild build \
+    -project Cravey.xcodeproj \
+    -scheme Cravey \
+    -destination "platform=iOS Simulator,name=${IOS_SIMULATOR_NAME}" \
+    CODE_SIGNING_ALLOWED=NO \
+    CODE_SIGNING_REQUIRED=NO \
+    CODE_SIGN_IDENTITY="" \
+    -derivedDataPath "$DERIVED_DATA_PATH"
+fi
+
+echo "==> Unit tests (Mac Catalyst, code signing disabled)"
 if command -v xcbeautify >/dev/null 2>&1; then
   xcodebuild test \
     -project Cravey.xcodeproj \

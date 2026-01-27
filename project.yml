@@ -17,6 +17,11 @@ settings:
     SWIFT_VERSION: "6.0"
     SWIFT_STRICT_CONCURRENCY: "complete"
     ENABLE_PREVIEWS: true
+    # User Script Sandboxing can break SwiftLint's
+    # filesystem traversal during iOS Simulator builds (Sandbox deny file-read-data).
+    # Linting is already gated via `scripts/verify.sh`; disabling sandboxing here
+    # keeps local builds/tests working across destinations.
+    ENABLE_USER_SCRIPT_SANDBOXING: "NO"
     DEVELOPMENT_TEAM: ""  # Add your team ID later
 
 targets:

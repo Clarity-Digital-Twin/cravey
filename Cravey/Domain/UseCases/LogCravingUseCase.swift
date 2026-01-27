@@ -37,6 +37,11 @@ final class DefaultLogCravingUseCase: LogCravingUseCase, Sendable {
             throw CravingError.futureTimestamp
         }
 
+        // Validate notes length (500 char limit per DATA_MODEL_SPEC.md:275)
+        if let notes, notes.count > 500 {
+            throw CravingError.notesTooLong
+        }
+
         // Create entity with explicit timestamp
         let craving = CravingEntity(
             timestamp: timestamp,
@@ -47,22 +52,43 @@ final class DefaultLogCravingUseCase: LogCravingUseCase, Sendable {
         )
 
         // Persist via repository
-        try await repository.save(craving)
+        do {
+            try await repository.save(craving)
+        } catch let cancellationError as CancellationError {
+            throw cancellationError
+        } catch {
+            throw CravingError.saveFailed(underlying: error.localizedDescription)
+        }
 
         return craving
     }
 }
 
-enum CravingError: LocalizedError {
+enum CravingError: LocalizedError, Sendable {
     case invalidIntensity
     case futureTimestamp
+    case notesTooLong
+    case saveFailed(underlying: String)
+
+    var failureReason: String? {
+        switch self {
+        case let .saveFailed(underlying):
+            underlying
+        default:
+            nil
+        }
+    }
 
     var errorDescription: String? {
         switch self {
         case .invalidIntensity:
-            "Intensity must be between 1 and 10"
+            "Please choose an intensity between 1 and 10"
         case .futureTimestamp:
-            "Timestamp cannot be in the future"
+            "The timestamp can't be in the future"
+        case .notesTooLong:
+            "Notes are limited to 500 characters"
+        case .saveFailed:
+            "We couldn't save your entry. Please try again."
         }
     }
 }

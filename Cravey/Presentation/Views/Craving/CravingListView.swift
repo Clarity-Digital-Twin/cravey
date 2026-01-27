@@ -20,6 +20,7 @@ struct CravingListView: View {
             } else {
                 ForEach(viewModel.cravings) { craving in
                     CravingRow(craving: craving)
+                        .accessibilityIdentifier("cravingEntryRow")
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
                                 deleteHapticTrigger.toggle()
@@ -88,7 +89,7 @@ struct CravingRow: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(craving.timestamp, style: .relative)
+                Text(craving.timestamp.formatted(date: .abbreviated, time: .shortened))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
@@ -132,7 +133,7 @@ struct EmptyStatePlaceholder: View {
             Text("No Cravings Logged")
                 .font(.headline)
 
-            Text("Tap + to log your first craving")
+            Text("Go to the Log tab to log your first craving")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }

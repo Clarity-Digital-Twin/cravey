@@ -1,5 +1,7 @@
 # Phase 1 Convergence Strategy
 
+> ⚠️ Archived: Historical process doc. Not current SSOT. See `docs/PROJECT_STATUS.md` for current status.
+
 **Date:** 2025-11-02
 **Status:** ✅ Complete - All code aligned to Tier 1 specs, 9/9 tests passing
 

@@ -3,16 +3,26 @@
 **Version:** 3.0 (Chronologically Ordered + Technical Fixes)
 **Duration:** 2 weeks (Weeks 3-4 of 16-week timeline)
 **Dependencies:** Phases 1-2 complete (Craving + Usage logging) - **⚠️ PHASE_2 MUST BE COMPLETE** (requires UsageRepository for export)
-**Status:** 📝 Ready for Implementation
+**Status:** ⏸️ Deferred (planning doc)
 **Last Updated:** 2025-11-01
 
 ---
+
+> ⚠️ **Deferred spec:** This document is planning guidance only. It is not a statement that the feature exists in the current app. Keep `bash scripts/verify.sh` green while implementing any future work.
+
+## Current Implementation Notes (2026-01-27)
+
+- ✅ Data management (Settings + export + delete-all) is implemented in the baseline app.
+  - Export: `Cravey/Domain/UseCases/ExportUserDataUseCase.swift` and `Cravey/Presentation/Views/Settings/ExportDataSheet.swift`
+  - Delete-all: `Cravey/Data/UseCases/SwiftDataDeleteAllUserDataUseCase.swift`
+- ✅ `RecordingRepository` and `MessageRepository` are implemented (SwiftData persistence only; recordings UI/AVFoundation is still pending).
+- 🚧 Onboarding UI (Welcome/Tour) is not implemented yet.
 
 ## 🎯 Phase Goal
 
 **Shippable Deliverable:** Users can **complete onboarding in <60 seconds**, **export all data** (CSV + JSON), and **delete all data** with confirmation.
 
-**Features Implemented:**
+**Planned Features (this phase spec):**
 - Feature 0 (Onboarding): WelcomeView + TourView
 - Feature 5 (Data Management): Export + Delete + Settings UI
 
@@ -35,10 +45,12 @@
 - ✅ `CravingModel.swift` - SwiftData @Model (PHASE_1)
 - ✅ `UsageModel.swift` - SwiftData @Model (PHASE_2)
 - ✅ `RecordingModel.swift` - SwiftData @Model (baseline)
+- ✅ `MotivationalMessageModel.swift` - SwiftData @Model (baseline)
 - ✅ `CravingRepository.swift` - Full implementation with `fetchAll()` (PHASE_1)
 - ✅ `UsageRepository.swift` - Full implementation with `fetchAll()` + `delete(id:)` (PHASE_2)
-- ✅ `RecordingRepository.swift` - Stub implementation (real implementation in PHASE_4)
-- ✅ `CravingMapper.swift`, `UsageMapper.swift`, `RecordingMapper.swift` - Entity ↔ Model conversion
+- ✅ `RecordingRepository.swift` - Full implementation (as of 2026-01-27)
+- ✅ `MessageRepository.swift` - Full implementation (as of 2026-01-27)
+- ✅ `CravingMapper.swift`, `UsageMapper.swift`, `RecordingMapper.swift`, `MessageMapper.swift` - Entity ↔ Model conversion
 
 ### Presentation Layer
 - ✅ `HomeView.swift` - Exists (will be enhanced with tab bar integration)
@@ -627,16 +639,12 @@ actor DefaultDeleteAllDataUseCase: DeleteAllDataUseCase {
         }
 
         // 3. Delete all recording files from disk
-        // Note: FileStorageManager exists in baseline but RecordingRepository is still a stub.
-        // We use FileManager directly for directory deletion to avoid coupling to stub methods.
-        let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let recordingsURL = documentsURL.appendingPathComponent("Recordings")
-
-        // Delete entire Recordings directory (if it exists)
-        if fileManager.fileExists(atPath: recordingsURL.path) {
-            try fileManager.removeItem(at: recordingsURL)
-        }
+        //
+        // NOTE (2026-01-27): Delete-all is implemented in the baseline app.
+        // See: `Cravey/Data/UseCases/SwiftDataDeleteAllUserDataUseCase.swift`
+        //
+        // The current implementation performs staged deletion of `Documents/Recordings/` for safety
+        // and deletes custom messages while preserving default messages.
 
         // Note: Motivational messages are NOT deleted (default content persists)
     }
@@ -649,12 +657,12 @@ actor DefaultDeleteAllDataUseCase: DeleteAllDataUseCase {
 - **Preserves default messages** - Only user data deleted (not app content)
 - **Actor isolation** - Thread-safe async operations
 - **Uses existing repository APIs** - `delete(id:)` from CravingRepositoryProtocol and UsageRepositoryProtocol
-- **Raw FileManager for recordings** - RecordingRepository is still a stub at this phase (full implementation in PHASE_4)
+- **Staged FileManager deletion for recordings** - Avoids partial data loss by deleting `Documents/Recordings/` safely outside SwiftData
 
 **Dependencies Required:**
 - ✅ `CravingRepositoryProtocol.fetchAll()` + `delete(id:)` - Exists (PHASE_1)
 - ⚠️ `UsageRepositoryProtocol.fetchAll()` + `delete(id:)` - Must exist from PHASE_2
-- ⚠️ `RecordingRepositoryProtocol.fetchAll()` + `delete(id:)` - Stub exists (PHASE_4)
+- ✅ `RecordingRepositoryProtocol.fetchAll()` + `delete(id:)` - Exists (baseline)
 
 ---
 
@@ -1097,7 +1105,7 @@ static var preview: DependencyContainer {
 **Dependencies Required:**
 - ✅ `CravingRepository` - Exists (PHASE_1)
 - ⚠️ `UsageRepository` - Must exist from PHASE_2
-- ⚠️ `RecordingRepository` - Stub exists (PHASE_4 replaces stub)
+- ✅ `RecordingRepository` - Exists (baseline)
 
 ---
 
@@ -1278,18 +1286,15 @@ func testExportCSV() async throws {
   - **Implementation note:** PHASE_2 must add this method to UsageRepositoryProtocol (same pattern as CravingRepositoryProtocol)
 - ⚠️ `UsageRepository` implementation must exist with both `fetchAll()` and `delete(id:)` methods
 
-### From Baseline (Recordings - Stub):
-- ⚠️ `RecordingEntity` exists (baseline)
-- ⚠️ `RecordingRepositoryProtocol.fetchAll()` method exists (stub)
-- ⚠️ `RecordingRepositoryProtocol.delete(id:)` method exists (stub)
-- ⚠️ `RecordingRepository` stub exists (PHASE_4 replaces with real implementation)
+### From Baseline (Recordings):
+- ✅ `RecordingEntity` exists (baseline)
+- ✅ `RecordingRepositoryProtocol` exists
+- ✅ `RecordingRepository` concrete implementation exists (SwiftData-backed)
 
 **Action Required:**
 1. ✅ **PHASE_1 must be complete** before starting this phase (CravingRepository needed for export/delete)
 2. ✅ **PHASE_2 must be complete** before starting this phase (UsageRepository needed for export/delete)
-3. ⚠️ **RecordingRepository stub is OK** - Export/delete will work with stub (returns empty array), real implementation comes in PHASE_4
-
-**Note:** Export functionality will work even if PHASE_4 (Recordings) is not complete - it will simply export empty recordings array from stub repository.
+3. ✅ Export functionality will work even if the end-user recordings feature is not complete — it will export an empty recordings array until recordings are created.
 
 ---
 

@@ -1,5 +1,7 @@
 # Phase 2: Usage Logging (Week 2 Only)
 
+> ⚠️ Archived: Historical phase doc. Not current SSOT.
+
 **Version:** 1.0 (Final)
 **Duration:** 1 week (Week 2 of 16-week plan)
 **Dependencies:** Phase 1 (reuses ChipSelector, TimestampPicker, TriggerOptions, LocationOptions)

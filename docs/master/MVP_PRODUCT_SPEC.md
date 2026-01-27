@@ -228,7 +228,7 @@ Hearing your own voice/seeing your own face when you're clear-headed is more pow
    - "Top trigger: Bored"
    - Quick reference without scrolling
 
-2. **Current Clean Days Streak** - Streak card
+2. **Current Abstinence Streak** - Streak card
    - Context-aware: "7 days used in a row" OR "5 days abstinent"
    - Shows current streak based on user's pattern
 

@@ -1,5 +1,7 @@
 # BUG-009: ChipSelector Button Actions Triggered Incorrectly
 
+> ⚠️ Archived: Historical bug fix note.
+
 **Status:** RESOLVED
 **Severity:** P0 (Critical - Core UX broken)
 **Date Reported:** 2025-12-10

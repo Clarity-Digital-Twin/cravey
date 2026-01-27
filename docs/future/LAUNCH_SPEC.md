@@ -3,10 +3,12 @@
 **Version:** 2.0 (Complete Implementation Guide)
 **Duration:** 8 weeks (Weeks 9-16 of 16-week timeline)
 **Dependencies:** Phases 1-5 complete (all MVP features implemented)
-**Status:** 📝 Ready for Implementation
+**Status:** ⏸️ Deferred (planning doc)
 **Last Updated:** 2025-11-01
 
 ---
+
+> ⚠️ **Deferred spec:** This document is planning guidance only. It is not a statement that the feature exists in the current app. Keep `bash scripts/verify.sh` green while implementing any future work.
 
 ## 🎯 Phase Goal
 

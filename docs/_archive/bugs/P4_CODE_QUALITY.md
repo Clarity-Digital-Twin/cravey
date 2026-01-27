@@ -1,7 +1,9 @@
 # P4 - Code Quality Issues
 
+> ⚠️ Archived: Historical bug tracker. The current bug/debt trackers live in `docs/bugs/` and `docs/debt/`.
+
 **Status:** ACTIVE
-**Last Updated:** 2026-01-24
+**Last Updated:** 2026-01-25
 
 Code smells, style issues, minor improvements.
 
@@ -10,8 +12,9 @@ Code smells, style issues, minor improvements.
 ## QUALITY-001: Print Statements in Production Code
 
 **Files:**
-- `ModelContainerSetup.swift:94,130`
-- `DashboardViewModel.swift:73`
+- `Cravey/Data/Storage/ModelContainerSetup.swift`
+- `Cravey/Presentation/ViewModels/DashboardViewModel.swift`
+**Verify:** `! rg -n "\\bprint\\(" Cravey/Data/Storage/ModelContainerSetup.swift Cravey/Presentation/ViewModels/DashboardViewModel.swift` (should return no matches)
 
 ### Problem
 ```swift
@@ -37,7 +40,6 @@ logger.error("Failed to seed messages: \(error.localizedDescription)")
 ## QUALITY-002: SettingsViewModel Mixed Concerns
 
 **File:** `Cravey/Presentation/ViewModels/SettingsViewModel.swift`
-**Lines:** Full file (172 lines)
 
 ### Problem
 Single ViewModel handles:
@@ -105,7 +107,8 @@ Both mappers are implemented and map fields in both directions:
 
 ## QUALITY-005: RecordingModel Missing @Attribute(.unique)
 
-**File:** `Cravey/Data/Models/RecordingModel.swift:8`
+**File:** `Cravey/Data/Models/RecordingModel.swift`
+**Verify:** `rg -n "@Attribute\\(\\.unique\\) var id: UUID" Cravey/Data/Models/RecordingModel.swift`
 
 ### Problem
 ```swift
@@ -130,7 +133,8 @@ Add consistency:
 
 ## QUALITY-009: MotivationalMessageModel Missing @Attribute(.unique)
 
-**File:** `Cravey/Data/Models/MotivationalMessageModel.swift:8`
+**File:** `Cravey/Data/Models/MotivationalMessageModel.swift`
+**Verify:** `rg -n "@Attribute\\(\\.unique\\) var id: UUID" Cravey/Data/Models/MotivationalMessageModel.swift`
 
 ### Problem
 `MotivationalMessageModel.id` is not marked unique, unlike `CravingModel` and `UsageModel`.
@@ -152,7 +156,7 @@ Add:
 ## QUALITY-010: Unused Recording Infrastructure (Dead Code in Current App)
 
 **Files:**
-- `Cravey/App/DependencyContainer.swift:13,73`
+- `Cravey/App/DependencyContainer.swift`
 - `Cravey/Data/Storage/FileStorageManager.swift` (multiple unused public methods)
 
 ### Problem
@@ -179,7 +183,6 @@ by “Delete All Data” (privacy cleanup), but recording capture/playback remai
 ## QUALITY-006: DashboardViewModel Redundant Calculation
 
 **File:** `Cravey/Presentation/ViewModels/DashboardViewModel.swift`
-**Lines:** 47-51, 111
 
 ### Problem
 ```swift
@@ -205,7 +208,6 @@ longestStreak = longest
 ## QUALITY-007: Calendar Fallback May Be Wrong
 
 **File:** `Cravey/Presentation/ViewModels/DashboardViewModel.swift`
-**Lines:** 55-56
 
 ### Problem
 ```swift
@@ -234,7 +236,7 @@ guard let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: no
 
 ## QUALITY-008: Test Mock Incomplete
 
-**File:** `CraveyTests/Domain/UseCases/LogCravingUseCaseTests.swift:71`
+**File:** `CraveyTests/Domain/UseCases/LogCravingUseCaseTests.swift`
 
 ### Problem
 ```swift
@@ -258,6 +260,99 @@ func update(_ entity: CravingEntity) async throws {
 
 ---
 
+## QUALITY-011: Broken Internal Doc Reference (ChipSelector)
+
+**File:** `Cravey/Presentation/Views/Components/ChipSelector.swift`
+**Verify:** `rg -n "BUG_009_CHIP_SELECTOR" Cravey/Presentation/Views/Components/ChipSelector.swift`
+
+### Problem
+The code referenced `BUG_009_CHIP_SELECTOR.md`, but the actual write-up lived under `docs/_archive/…`, making the
+reference effectively dead.
+
+### Status
+✅ **FIXED** (2026-01-25)
+
+### Fix Implemented
+- Updated the comment to reference:
+  - `docs/_archive/specs/BUG_009_CHIP_SELECTOR_FIXED_2025-01-05.md`
+
+---
+
+## QUALITY-012: Logger Subsystem Inconsistency
+
+**Files:**
+- `Cravey/App/DependencyContainer.swift` (`com.cravey`)
+- `Cravey/Data/Storage/ModelContainerSetup.swift` (`com.cravey`)
+- `Cravey/Data/Mappers/RecordingMapper.swift` (`com.cravey.app`)
+- `Cravey/Data/Mappers/MessageMapper.swift` (`com.cravey.app`)
+
+### Problem
+Logger subsystems are inconsistent, which makes filtering logs harder and increases the chance of missed signals during
+debugging.
+
+### Status
+🟡 **DEFERRED** (2026-01-25)
+
+### Recommendation
+- Standardize the subsystem to the app bundle identifier (`com.cravey.app`).
+
+---
+
+## QUALITY-013: RecordingModel Optional Array Type Inconsistency
+
+**File:** `Cravey/Data/Models/RecordingModel.swift`
+**Verify:** `rg -n "linkedCravings: \\[CravingModel\\] = \\[\\]" Cravey/Data/Models/RecordingModel.swift`
+
+### Problem
+```swift
+var linkedCravings: [CravingModel]?  // ← Optional array
+```
+
+Type semantics were unclear (optional array but always initialized as empty).
+
+### Impact
+- SwiftData may not handle optional arrays optimally
+- Type semantics unclear to future maintainers
+
+### Fix
+```swift
+var linkedCravings: [CravingModel] = []  // Non-optional with default
+```
+
+### Status
+✅ **FIXED** (2026-01-25)
+
+---
+
+## QUALITY-014: LogCravingUseCase Missing Save Error Handling
+
+**Files:**
+- `Cravey/Domain/UseCases/LogCravingUseCase.swift`
+- `Cravey/Domain/UseCases/LogUsageUseCase.swift`
+**Verify:**
+- `rg -n "saveFailed\\(underlying:" Cravey/Domain/UseCases/LogCravingUseCase.swift Cravey/Domain/UseCases/LogUsageUseCase.swift`
+- `bash scripts/verify.sh`
+
+### Problem
+LogCravingUseCase and LogUsageUseCase handle repository errors inconsistently:
+- LogCravingUseCase: Propagated repository errors directly
+- LogUsageUseCase: Converted save failures into `UsageError.saveFailed`, losing context
+
+### Impact
+- Inconsistent error semantics between craving and usage logging
+- Harder to reason about error handling and to debug save failures reliably
+
+### Fix Implemented
+- Both use cases now:
+  - Re-throw `CancellationError` unchanged
+  - Map repository save failures into a domain-level `.saveFailed(underlying: ...)` error, preserving underlying error
+    details via `failureReason` while keeping a stable user-facing `errorDescription`.
+
+### Status
+✅ **FIXED** (2026-01-25)
+
+---
+
 ## Summary
 
 | Quality ID | Description | Status |
@@ -272,3 +367,7 @@ func update(_ entity: CravingEntity) async throws {
 | QUALITY-006 | Redundant calculation | ✅ FIXED |
 | QUALITY-007 | Calendar fallback | ✅ FIXED |
 | QUALITY-008 | Test mock incomplete | ✅ FIXED |
+| QUALITY-011 | Broken ChipSelector doc reference | ✅ FIXED |
+| QUALITY-012 | Logger subsystem inconsistency | 🟡 DEFERRED |
+| QUALITY-013 | RecordingModel optional array | ✅ FIXED |
+| QUALITY-014 | LogCravingUseCase error handling | ✅ FIXED |

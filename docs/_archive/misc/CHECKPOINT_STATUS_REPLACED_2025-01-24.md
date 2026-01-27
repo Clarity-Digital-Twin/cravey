@@ -1,5 +1,7 @@
 # Cravey Documentation Checkpoint & Status
 
+> ⚠️ Archived: Superseded by `docs/PROJECT_STATUS.md`.
+
 **Last Updated:** 2025-10-25
 **Current Phase:** Planning & Validation (Pre-Implementation)
 

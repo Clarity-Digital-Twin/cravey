@@ -27,8 +27,8 @@ enum MessageMapper {
         if let parsed = MessageCategory(rawValue: model.category) {
             category = parsed
         } else {
-            logger.warning("Invalid category '\(model.category)' for id \(model.id), defaulting to .urge")
-            category = .urge
+            logger.warning("Invalid category '\(model.category)' for id \(model.id), mapping to .unknown")
+            category = .unknown
         }
 
         return MotivationalMessageEntity(
