@@ -35,12 +35,12 @@ final class SwiftDataDeleteAllUserDataUseCase: DeleteAllUserDataUseCase, Sendabl
 
     init(
         modelContext: ModelContext,
-        stageRecordingFilesDeletion: @escaping @Sendable () throws -> StagedRecordingsDeletion? = Self
-            .stageRecordingsDirectoryForDeletion,
-        commitRecordingFilesDeletion: @escaping @Sendable (StagedRecordingsDeletion?) throws -> Void = Self
-            .commitStagedRecordingsDeletion,
-        rollbackRecordingFilesDeletion: @escaping @Sendable (StagedRecordingsDeletion?) throws -> Void = Self
-            .rollbackStagedRecordingsDeletion
+        stageRecordingFilesDeletion: @escaping @Sendable () throws -> StagedRecordingsDeletion? =
+            SwiftDataDeleteAllUserDataUseCase.stageRecordingsDirectoryForDeletion,
+        commitRecordingFilesDeletion: @escaping @Sendable (StagedRecordingsDeletion?) throws -> Void =
+            SwiftDataDeleteAllUserDataUseCase.commitStagedRecordingsDeletion,
+        rollbackRecordingFilesDeletion: @escaping @Sendable (StagedRecordingsDeletion?) throws -> Void =
+            SwiftDataDeleteAllUserDataUseCase.rollbackStagedRecordingsDeletion
     ) {
         self.modelContext = modelContext
         self.stageRecordingFilesDeletion = stageRecordingFilesDeletion
@@ -53,8 +53,9 @@ final class SwiftDataDeleteAllUserDataUseCase: DeleteAllUserDataUseCase, Sendabl
         // This avoids leaving the app in a confusing partial state if database deletion fails.
         let stagedDeletion: StagedRecordingsDeletion?
         do {
+            let stage = stageRecordingFilesDeletion
             stagedDeletion = try await Task.detached(priority: .utility) {
-                try stageRecordingFilesDeletion()
+                try stage()
             }.value
         } catch {
             throw DeleteAllUserDataError.prepareFileDeletionFailed(underlying: error)
@@ -78,8 +79,9 @@ final class SwiftDataDeleteAllUserDataUseCase: DeleteAllUserDataUseCase, Sendabl
             }
         } catch {
             do {
+                let rollback = rollbackRecordingFilesDeletion
                 try await Task.detached(priority: .utility) {
-                    try rollbackRecordingFilesDeletion(stagedDeletion)
+                    try rollback(stagedDeletion)
                 }.value
             } catch {
                 throw DeleteAllUserDataError.rollbackFileDeletionFailed(underlying: error)
@@ -89,8 +91,9 @@ final class SwiftDataDeleteAllUserDataUseCase: DeleteAllUserDataUseCase, Sendabl
         }
 
         do {
+            let commit = commitRecordingFilesDeletion
             try await Task.detached(priority: .utility) {
-                try commitRecordingFilesDeletion(stagedDeletion)
+                try commit(stagedDeletion)
             }.value
         } catch {
             throw DeleteAllUserDataError.fileDeletionFailed(underlying: error)

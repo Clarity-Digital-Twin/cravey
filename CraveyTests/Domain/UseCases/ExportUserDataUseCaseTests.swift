@@ -67,104 +67,104 @@ struct ExportUserDataUseCaseTests {
         }
         #expect(export.messages.map(\.id) == expectedMessageOrder.map(\.id))
     }
-}
 
-// MARK: - Mocks
+    // MARK: - Mocks
 
-actor MockCravingRepository: CravingRepositoryProtocol {
-    let result: [CravingEntity]
+    actor MockCravingRepository: CravingRepositoryProtocol {
+        let result: [CravingEntity]
 
-    init(result: [CravingEntity]) {
-        self.result = result
+        init(result: [CravingEntity]) {
+            self.result = result
+        }
+
+        func save(_: CravingEntity) async throws {}
+
+        func fetchAll() async throws -> [CravingEntity] {
+            result
+        }
+
+        func fetch(from startDate: Date, to endDate: Date) async throws -> [CravingEntity] {
+            result.filter { $0.timestamp >= startDate && $0.timestamp <= endDate }
+        }
+
+        func delete(id _: UUID) async throws {}
+
+        func update(_: CravingEntity) async throws {}
+
+        func count() async throws -> Int {
+            result.count
+        }
     }
 
-    func save(_: CravingEntity) async throws {}
+    actor MockUsageRepository: UsageRepositoryProtocol {
+        let result: [UsageEntity]
 
-    func fetchAll() async throws -> [CravingEntity] {
-        result
+        init(result: [UsageEntity]) {
+            self.result = result
+        }
+
+        func save(_: UsageEntity) async throws {}
+
+        func fetchAll() async throws -> [UsageEntity] {
+            result
+        }
+
+        func fetch(since date: Date) async throws -> [UsageEntity] {
+            result.filter { $0.timestamp >= date }
+        }
+
+        func delete(id _: UUID) async throws {}
+
+        func deleteAll() async throws {}
     }
 
-    func fetch(from startDate: Date, to endDate: Date) async throws -> [CravingEntity] {
-        result.filter { $0.timestamp >= startDate && $0.timestamp <= endDate }
+    actor MockRecordingRepository: RecordingRepositoryProtocol {
+        let result: [RecordingEntity]
+
+        init(result: [RecordingEntity]) {
+            self.result = result
+        }
+
+        func save(_: RecordingEntity) async throws {}
+
+        func fetchAll() async throws -> [RecordingEntity] {
+            result
+        }
+
+        func fetch(byPurpose purpose: RecordingPurpose) async throws -> [RecordingEntity] {
+            result.filter { $0.purpose == purpose }
+        }
+
+        func delete(id _: UUID) async throws {}
+
+        func update(_: RecordingEntity) async throws {}
     }
 
-    func delete(id _: UUID) async throws {}
+    actor MockMessageRepository: MessageRepositoryProtocol {
+        let result: [MotivationalMessageEntity]
 
-    func update(_: CravingEntity) async throws {}
+        init(result: [MotivationalMessageEntity]) {
+            self.result = result
+        }
 
-    func count() async throws -> Int {
-        result.count
+        func save(_: MotivationalMessageEntity) async throws {}
+
+        func fetchAll() async throws -> [MotivationalMessageEntity] {
+            result
+        }
+
+        func fetchActive() async throws -> [MotivationalMessageEntity] {
+            result.filter(\.isActive)
+        }
+
+        func fetch(byCategory category: MessageCategory) async throws -> [MotivationalMessageEntity] {
+            result.filter { $0.isActive && $0.category == category }
+        }
+
+        func delete(id _: UUID) async throws {}
+
+        func update(_: MotivationalMessageEntity) async throws {}
+
+        func seedDefaultMessagesIfNeeded() async throws {}
     }
-}
-
-actor MockUsageRepository: UsageRepositoryProtocol {
-    let result: [UsageEntity]
-
-    init(result: [UsageEntity]) {
-        self.result = result
-    }
-
-    func save(_: UsageEntity) async throws {}
-
-    func fetchAll() async throws -> [UsageEntity] {
-        result
-    }
-
-    func fetch(since date: Date) async throws -> [UsageEntity] {
-        result.filter { $0.timestamp >= date }
-    }
-
-    func delete(id _: UUID) async throws {}
-
-    func deleteAll() async throws {}
-}
-
-actor MockRecordingRepository: RecordingRepositoryProtocol {
-    let result: [RecordingEntity]
-
-    init(result: [RecordingEntity]) {
-        self.result = result
-    }
-
-    func save(_: RecordingEntity) async throws {}
-
-    func fetchAll() async throws -> [RecordingEntity] {
-        result
-    }
-
-    func fetch(byPurpose purpose: RecordingPurpose) async throws -> [RecordingEntity] {
-        result.filter { $0.purpose == purpose }
-    }
-
-    func delete(id _: UUID) async throws {}
-
-    func update(_: RecordingEntity) async throws {}
-}
-
-actor MockMessageRepository: MessageRepositoryProtocol {
-    let result: [MotivationalMessageEntity]
-
-    init(result: [MotivationalMessageEntity]) {
-        self.result = result
-    }
-
-    func save(_: MotivationalMessageEntity) async throws {}
-
-    func fetchAll() async throws -> [MotivationalMessageEntity] {
-        result
-    }
-
-    func fetchActive() async throws -> [MotivationalMessageEntity] {
-        result.filter(\.isActive)
-    }
-
-    func fetch(byCategory category: MessageCategory) async throws -> [MotivationalMessageEntity] {
-        result.filter { $0.isActive && $0.category == category }
-    }
-
-    func delete(id _: UUID) async throws {}
-
-    func update(_: MotivationalMessageEntity) async throws {}
-
-    func seedDefaultMessagesIfNeeded() async throws {}
 }
