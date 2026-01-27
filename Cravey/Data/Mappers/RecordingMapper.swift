@@ -31,8 +31,8 @@ enum RecordingMapper {
         if let parsed = RecordingType(rawValue: model.type) {
             recordingType = parsed
         } else {
-            logger.warning("Invalid recording type '\(model.type)' for id \(model.id), defaulting to .audio")
-            recordingType = .audio
+            logger.warning("Invalid recording type '\(model.type)' for id \(model.id), mapping to .unknown")
+            recordingType = .unknown
         }
 
         // Parse purpose with fallback logging
@@ -40,8 +40,8 @@ enum RecordingMapper {
         if let parsed = RecordingPurpose(rawValue: model.purpose) {
             purpose = parsed
         } else {
-            logger.warning("Invalid purpose '\(model.purpose)' for id \(model.id), defaulting to .motivational")
-            purpose = .motivational
+            logger.warning("Invalid purpose '\(model.purpose)' for id \(model.id), mapping to .unknown")
+            purpose = .unknown
         }
 
         return RecordingEntity(

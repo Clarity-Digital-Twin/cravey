@@ -1,448 +1,309 @@
-# Home Screen Redesign Brainstorming
+# Home Screen Redesign - DECISION
 
 **Created:** 2026-01-26
-**Status:** DRAFT - Options for Discussion
+**Status:** DECIDED - Ready to Implement
 
-## Current State Analysis
+---
 
-### What We Have Now
+## The Decision: 4-Tab Structure
+
+```
+┌─────────┬─────────┬─────────┬─────────┐
+│ 🏠      │ 📝      │ 📊      │ ⚙️      │
+│ Home    │ Log     │ History │ Settings│
+└─────────┴─────────┴─────────┴─────────┘
+```
+
+| Tab | Purpose |
+|-----|---------|
+| **Home** | Dashboard with hero metric, motivation, today's stats. NO lists. |
+| **Log** | Two big buttons: "Log Craving" and "Log Usage". Opens form sheets. |
+| **History** | Segmented control [Cravings \| Usage] + list of entries. |
+| **Settings** | Export data, delete all data, app info. |
+
+**Future-proofed:** When Recordings feature ships, add 5th tab: 🎬 Recordings
+
+---
+
+## Why This Structure
+
+1. **Cravings and Usage are separated** - toggle in History tab
+2. **Home is clean** - no cluttered lists, just status + encouragement
+3. **One-tap logging** - Log tab is always visible
+4. **Matches industry standard** - I Am Sober, Calm, Headspace use this pattern
+5. **Room to grow** - 4 tabs now, 5 with Recordings later
+
+---
+
+## Current State (What We're Fixing)
+
 ```
 ┌─────────────────────────────────┐
 │           Home                  │ ← Generic title
-│  ┌─────────────────────────┐    │
-│  │ + (menu: Log Craving/   │    │ ← Hidden behind menu
-│  │    Log Usage)           │    │
-│  └─────────────────────────┘    │
+│  + (hidden menu)                │ ← 2 taps to log = bad
 │                                 │
 │  Recent Cravings                │
-│  ┌─────────────────────────┐    │
-│  │ 5  2 hr, 1 min          │    │ ← Intensity badge + time
-│  │    Sad                  │    │ ← One trigger shown
-│  └─────────────────────────┘    │
+│  [craving cards mixed in]       │ ← Cluttered
 │                                 │
 │  Recent Usage                   │
-│  ┌─────────────────────────┐    │
-│  │ Bowls        0.5 bowls  │    │
-│  │ Jan 26, 2026 at 6:30 PM │    │ ← Different date format!
-│  │ ⚡ Sad                   │    │
-│  │ 📍 Home                 │    │
-│  └─────────────────────────┘    │
+│  [usage cards mixed in]         │ ← Confusing
 │                                 │
-│ ═══════════════════════════════ │
-│ 🏠 Home  📊 Progress  ⚙️ Settings│
+│ 🏠 Home  📊 Progress  ⚙️ Settings│ ← 3 tabs
 └─────────────────────────────────┘
 ```
 
-### Problems Identified
-
-1. **Cluttered mixed content** - Cravings and usage in one list is confusing
-2. **No clear primary action** - "+" is hidden in a menu (2 taps to log)
-3. **Inconsistent card design** - Craving cards ≠ Usage cards
-4. **No hero metric** - What's the user's current status at a glance?
-5. **Generic title** - "Home" says nothing; "Cannabis Logs" is clinical
-6. **No emotional support** - Pure data, no encouragement
-7. **Missing context** - How long since last craving? Last usage?
+**Problems:**
+- Cravings + Usage mixed on same screen
+- No hero metric (days abstinent)
+- "+" hidden behind menu
+- No emotional support/motivation
 
 ---
 
-## Research: What Successful Apps Do
+## Screen 1: HOME TAB (Dashboard Only)
 
-### I Am Sober (4.8★, 1M+ downloads)
-- **Hero metric**: Giant sobriety counter (days/hours/minutes) front and center
-- **Daily ritual**: Morning pledge, evening review
-- **Craving log**: Separate "Log Urge" button with guided mindfulness
-- **Tab bar**: Today | Milestones | Community | Progress | Settings
-- **Emotional tone**: Compassionate, celebrates progress, no shame
-
-### Grounded (Cannabis-specific)
-- **Hero metric**: Days abstinent counter with withdrawal timeline
-- **Journal**: Separate from stats
-- **Progress**: Visual timeline of what to expect during detox
-
-### Key Pattern: Separate Concerns
-**All successful apps separate:**
-1. Dashboard/Status (hero metric, current state)
-2. Logging (quick action, one-tap access)
-3. History/Review (list view, patterns)
-4. Progress/Stats (charts, milestones)
-
----
-
-## Option A: Tab-Based Separation (Recommended)
-
-### Concept
-Split craving and usage into their own dedicated tabs. Home becomes a dashboard with hero metric.
-
-### Wireframe
 ```
 ┌─────────────────────────────────┐
-│         My Recovery             │
+│       My Recovery               │
 │                                 │
 │   ┌───────────────────────┐     │
 │   │                       │     │
-│   │     12 DAYS           │     │ ← Hero metric
-│   │     abstinent         │     │
+│   │       12              │     │ ← BIG number
+│   │      DAYS             │     │
+│   │    abstinent          │     │
 │   │                       │     │
-│   │   23h since craving   │     │ ← Secondary context
+│   │   Since Jan 14, 2026  │     │
 │   └───────────────────────┘     │
 │                                 │
 │   Today                         │
-│   ┌────────┐    ┌───────┐       │
-│   │ 2      │    │ 0     │       │
-│   │cravings│    │ uses  │       │ ← Quick stats
-│   └────────┘    └───────┘       │
+│   ┌───────────┬───────────┐     │
+│   │     2     │     0     │     │
+│   │ cravings  │   uses    │     │ ← Tappable → go to History
+│   └───────────┴───────────┘     │
 │                                 │
 │   ┌─────────────────────────┐   │
-│   │ 💪 "Every urge resisted │   │ ← Motivational message
-│   │    is a victory"        │   │
+│   │  💪 "Every urge you     │   │
+│   │     resist makes you    │   │ ← Motivational message
+│   │     stronger"           │   │
 │   └─────────────────────────┘   │
 │                                 │
 │ ═══════════════════════════════ │
-│ 🏠    📝    📈    📊    ⚙️      │
-│ Home  Log  Cravings Usage Settings│
+│ 🏠      📝       📊       ⚙️    │
+│ Home    Log    History Settings │
 └─────────────────────────────────┘
 ```
 
-### Tab Structure
-| Tab | Purpose | Screens |
-|-----|---------|---------|
-| **Home** | Dashboard, hero metric, today's summary | DashboardView (redesigned) |
-| **Log** | Quick logging (sheet picker) | CravingLogForm, UsageLogForm |
-| **Cravings** | Craving history list | CravingListView |
-| **Usage** | Usage history list | UsageListView |
-| **Settings** | Export, delete, preferences | SettingsView |
+**What's on this screen:**
+- Hero metric (days abstinent)
+- Start date
+- Today's craving + usage counts
+- Motivational message (rotates daily)
 
-### Pros
-- Clear separation of concerns
-- One-tap access to log anything
-- Dedicated space for each data type
-- Room for hero metric
-- Matches user mental model
-
-### Cons
-- 5 tabs (borderline crowded)
-- More navigation structure changes
-- Progress tab merged into Home
+**What's NOT on this screen:**
+- ❌ No craving list
+- ❌ No usage list
+- ❌ No forms
 
 ---
 
-## Option B: Floating Action Button (FAB)
+## Screen 2: LOG TAB (Action Buttons)
 
-### Concept
-Keep current structure but add prominent FAB for logging. Separate lists into sub-tabs.
-
-### Wireframe
 ```
 ┌─────────────────────────────────┐
-│         My Recovery             │
+│         Log Entry               │
 │                                 │
-│   ┌───────────────────────┐     │
-│   │     12 DAYS           │     │ ← Hero metric
-│   │     abstinent         │     │
-│   └───────────────────────┘     │
 │                                 │
-│   ┌─────────┬─────────┐         │
-│   │ Cravings│  Usage  │         │ ← Segmented control
-│   └─────────┴─────────┘         │
+│   What would you like to log?   │
 │                                 │
-│   [Selected tab's list here]    │
 │   ┌─────────────────────────┐   │
-│   │ 5  2 hr ago             │   │
-│   │    Sad                  │   │
-│   └─────────────────────────┘   │
-│   ┌─────────────────────────┐   │
-│   │ 3  Yesterday            │   │
-│   │    Bored, Stressed      │   │
+│   │                         │   │
+│   │    🧠 Log Craving       │   │ ← Tappable button
+│   │                         │   │
+│   │    Track an urge you    │   │
+│   │    experienced          │   │
+│   │                         │   │
 │   └─────────────────────────┘   │
 │                                 │
-│                        ┌───┐    │
-│                        │ + │    │ ← FAB (always visible)
-│                        └───┘    │
-│ ═══════════════════════════════ │
-│ 🏠 Home  📊 Progress  ⚙️ Settings│
-└─────────────────────────────────┘
-```
-
-### Pros
-- Minimal structural change
-- FAB is discoverable (one tap to log)
-- Segmented control separates lists
-- Keeps 3-tab simplicity
-
-### Cons
-- Still mixing concerns on one screen
-- Segmented control adds cognitive load
-- FAB can overlap content
-
----
-
-## Option C: Dashboard + Quick Actions (Hybrid)
-
-### Concept
-Home is pure dashboard. Cravings/Usage accessible via quick action cards or swipe.
-
-### Wireframe
-```
-┌─────────────────────────────────┐
-│         My Recovery             │
-│                                 │
-│   ┌───────────────────────┐     │
-│   │     12 DAYS           │     │
-│   │     abstinent         │     │
-│   │   ──────────────────  │     │ ← Progress bar to goal
-│   └───────────────────────┘     │
-│                                 │
-│   ┌─────────────┬─────────────┐ │
-│   │ + Log       │ + Log       │ │ ← Quick action cards
-│   │   Craving   │   Usage     │ │
-│   └─────────────┴─────────────┘ │
-│                                 │
-│   Recent Activity               │
 │   ┌─────────────────────────┐   │
-│   │ 🟡 Craving (5) - 2h ago │   │ ← Unified activity feed
-│   │ 🟢 Usage - Yesterday    │   │
-│   │ 🟡 Craving (3) - 2 days │   │
-│   └─────────────────────────┘   │
-│                                 │
-│   View All Cravings →           │
-│   View All Usage →              │
-│                                 │
-│ ═══════════════════════════════ │
-│ 🏠 Home  📊 Progress  ⚙️ Settings│
-└─────────────────────────────────┘
-```
-
-### Pros
-- Dashboard-first approach
-- Quick actions prominent
-- Unified activity feed tells story
-- Keeps 3-tab simplicity
-- Links to full lists
-
-### Cons
-- Activity feed mixes types (could confuse)
-- Requires designing unified activity card
-- "View All" is extra navigation
-
----
-
-## Option D: Radical Simplicity (Crisis-Focused)
-
-### Concept
-For users in crisis, show ONLY what matters: big button to log craving, immediate support.
-
-### Wireframe
-```
-┌─────────────────────────────────┐
-│                                 │
-│                                 │
-│   ┌───────────────────────┐     │
-│   │                       │     │
-│   │  Having a craving?    │     │
-│   │                       │     │
-│   │  ┌─────────────────┐  │     │
-│   │  │   LOG CRAVING   │  │     │ ← Giant primary CTA
-│   │  └─────────────────┘  │     │
-│   │                       │     │
-│   │  or                   │     │
-│   │                       │     │
-│   │  ┌─────────────────┐  │     │
-│   │  │   Log Usage     │  │     │ ← Secondary CTA
-│   │  └─────────────────┘  │     │
-│   │                       │     │
-│   └───────────────────────┘     │
-│                                 │
-│   ┌─────────────────────────┐   │
-│   │ 💪 12 days abstinent    │   │ ← Small status bar
-│   │    2 cravings today     │   │
+│   │                         │   │
+│   │    🌿 Log Usage         │   │ ← Tappable button
+│   │                         │   │
+│   │    Record cannabis      │   │
+│   │    consumption          │   │
+│   │                         │   │
 │   └─────────────────────────┘   │
 │                                 │
 │ ═══════════════════════════════ │
-│ 🏠 Home  📊 Progress  ⚙️ Settings│
+│ 🏠      📝       📊       ⚙️    │
+│ Home    Log    History Settings │
 └─────────────────────────────────┘
 ```
 
-### Pros
-- Crisis-optimized (large tap targets)
-- Zero cognitive load
-- Immediate action
-- Stats de-emphasized (less triggering)
-
-### Cons
-- No history visible on home
-- Requires tapping to see past entries
-- May feel empty/sparse
+**Tap "Log Craving"** → CravingLogForm opens as sheet
+**Tap "Log Usage"** → UsageLogForm opens as sheet
 
 ---
 
-## The Core Question: Where Does Each Thing Live?
+## Screen 3: HISTORY TAB (Segmented Lists)
 
-### Current (Confused)
-```
-HOME SCREEN = Everything mixed together
-├── Recent Cravings list
-├── Recent Usage list
-└── + button (hidden menu)
-```
-
-### Option A: 5 Tabs (Full Separation)
-```
-TAB BAR
-├── 🏠 Home      → Dashboard only (hero metric, motivation, today's stats)
-├── 📝 Log       → Picker sheet: "Log Craving" or "Log Usage" buttons
-├── 🧠 Cravings  → Full craving history list (scroll, filter, search)
-├── 🌿 Usage     → Full usage history list (scroll, filter, search)
-└── ⚙️ Settings  → Export, delete, preferences
-```
-
-**Flow Example:**
-```
-User opens app
-    → Sees dashboard: "12 days abstinent, 2 cravings today"
-    → Taps 📝 Log tab
-    → Sees two big buttons: [Log Craving] [Log Usage]
-    → Taps "Log Craving"
-    → Form sheet opens
-    → Submits
-    → Back to Log tab (or auto-navigate to Cravings tab)
-```
-
-### Option A-Alt: 4 Tabs (Cleaner)
-```
-TAB BAR
-├── 🏠 Home      → Dashboard (hero metric, motivation)
-├── 📝 Log       → Picker: [Log Craving] [Log Usage]
-├── 📊 History   → Segmented control: [Cravings | Usage] + list below
-└── ⚙️ Settings  → Export, delete, preferences
-```
-
-**Why 4 might be better:**
-- Less crowded tab bar
-- Cravings and Usage are related (both are "history")
-- Segmented control is a common iOS pattern
-
-### Option B: 3 Tabs + FAB (Minimal Change)
-```
-TAB BAR
-├── 🏠 Home      → Hero metric + segmented [Cravings|Usage] list
-├── 📊 Progress  → Charts, streaks, patterns
-└── ⚙️ Settings  → Export, delete
-
-FLOATING ACTION BUTTON (always visible)
-└── + → Picker sheet: [Log Craving] [Log Usage]
-```
-
-**Home screen contains:**
+### Cravings Selected:
 ```
 ┌─────────────────────────────────┐
-│ Hero Metric: 12 days abstinent  │
-├─────────────────────────────────┤
-│ [Cravings] [Usage]  ← segmented │
-├─────────────────────────────────┤
-│ List of selected type           │
-│ - Item 1                        │
-│ - Item 2                        │
-│ - Item 3                        │
+│           History               │
+│                                 │
+│   ┌───────────┬───────────┐     │
+│   │ Cravings  │   Usage   │     │ ← Segmented control
+│   │  (sel)    │           │     │
+│   └───────────┴───────────┘     │
+│                                 │
+│   ┌─────────────────────────┐   │
+│   │ 🟡 5    2 hours ago     │   │ ← Intensity + time
+│   │    Sad, Bored           │   │ ← Triggers
+│   │    📍 Home              │   │ ← Location
+│   └─────────────────────────┘   │
+│   ┌─────────────────────────┐   │
+│   │ 🟠 7    Yesterday       │   │
+│   │    Stressed, Hungry     │   │
+│   └─────────────────────────┘   │
+│   ┌─────────────────────────┐   │
+│   │ 🟢 3    2 days ago      │   │
+│   │    Bored                │   │
+│   └─────────────────────────┘   │
+│                                 │
+│ ═══════════════════════════════ │
+│ 🏠      📝       📊       ⚙️    │
+│ Home    Log    History Settings │
 └─────────────────────────────────┘
-         [+] ← FAB bottom-right
+```
+
+### Usage Selected:
+```
+┌─────────────────────────────────┐
+│           History               │
+│                                 │
+│   ┌───────────┬───────────┐     │
+│   │ Cravings  │   Usage   │     │
+│   │           │   (sel)   │     │ ← Usage selected
+│   └───────────┴───────────┘     │
+│                                 │
+│   ┌─────────────────────────┐   │
+│   │ 🌿 Bowls    0.5 bowls   │   │ ← Method + amount
+│   │    Yesterday 6:30 PM    │   │
+│   │    Sad · 📍 Home        │   │
+│   └─────────────────────────┘   │
+│   ┌─────────────────────────┐   │
+│   │ 🌿 Vape     3 hits      │   │
+│   │    Jan 24, 2026         │   │
+│   │    Bored, Anxious       │   │
+│   └─────────────────────────┘   │
+│                                 │
+│ ═══════════════════════════════ │
+│ 🏠      📝       📊       ⚙️    │
+│ Home    Log    History Settings │
+└─────────────────────────────────┘
+```
+
+**Swipe left** → Delete
+**Tap row** → Edit (future)
+
+---
+
+## Screen 4: SETTINGS TAB (Unchanged)
+
+```
+┌─────────────────────────────────┐
+│           Settings              │
+│                                 │
+│   Data                          │
+│   ┌─────────────────────────┐   │
+│   │ 📤 Export Data          │   │
+│   └─────────────────────────┘   │
+│   ┌─────────────────────────┐   │
+│   │ 🗑️ Delete All Data      │   │
+│   └─────────────────────────┘   │
+│                                 │
+│   About                         │
+│   ┌─────────────────────────┐   │
+│   │ ℹ️ Version 1.0.0        │   │
+│   └─────────────────────────┘   │
+│                                 │
+│ ═══════════════════════════════ │
+│ 🏠      📝       📊       ⚙️    │
+│ Home    Log    History Settings │
+└─────────────────────────────────┘
 ```
 
 ---
 
-## Decision Matrix
+## Navigation Flow
 
-| Question | Option A (5 tabs) | Option A-Alt (4 tabs) | Option B (3 tabs + FAB) |
-|----------|-------------------|----------------------|-------------------------|
-| **Are cravings/usage on same screen?** | ❌ No, separate tabs | ❌ No, but same tab with toggle | ✅ Yes, with toggle |
-| **How many taps to log?** | 2 (tab → button) | 2 (tab → button) | 1 (FAB → button) |
-| **How many taps to view cravings?** | 1 (tap tab) | 2 (tab → toggle) | 2 (already home → toggle) |
-| **Room for future Recordings tab?** | ✅ Yes, add 6th tab | ✅ Yes, add 5th tab | ⚠️ Tight, would need 4th |
-| **Complexity to implement** | Medium | Medium | Low |
-| **Matches I Am Sober pattern?** | ✅ Yes | ✅ Yes | ❌ No |
+```
+                    APP LAUNCH
+                        │
+                        ▼
+                   HOME TAB
+              (Dashboard view)
+                        │
+    ┌───────────────────┼───────────────────┐
+    │                   │                   │
+    ▼                   ▼                   ▼
+ LOG TAB           HISTORY TAB        SETTINGS TAB
+    │                   │
+    │           ┌───────┴───────┐
+    │           ▼               ▼
+    │      [Cravings]       [Usage]
+    │       segment          segment
+    │           │               │
+    │           ▼               ▼
+    │      Craving List    Usage List
+    │
+    ├─── "Log Craving" button
+    │           │
+    │           ▼
+    │    CravingLogForm (sheet)
+    │           │
+    │           ▼
+    │    Submit → Toast → Stay on Log
+    │
+    └─── "Log Usage" button
+                │
+                ▼
+         UsageLogForm (sheet)
+                │
+                ▼
+         Submit → Toast → Stay on Log
+```
 
 ---
 
-## My Recommendation
+## Summary Table
 
-**Go with Option A-Alt (4 tabs):**
-
-```
-┌─────────┬─────────┬─────────┬─────────┐
-│ 🏠      │ 📝      │ 📊      │ ⚙️      │
-│ Home    │ Log     │ History │ Settings│
-└─────────┴─────────┴─────────┴─────────┘
-```
-
-**Why:**
-1. Clean 4-tab structure (room to add Recordings later = 5 tabs)
-2. Home is JUST dashboard (no lists cluttering it)
-3. Log tab = one tap to see logging options
-4. History keeps cravings/usage together but separated via toggle
-5. Matches iOS conventions
-
-**Screen contents:**
-
-| Tab | What User Sees |
-|-----|----------------|
-| **Home** | Hero metric (days abstinent), today's craving/usage count, motivational message, maybe "Watch a Recording" button (future) |
-| **Log** | Two big buttons: "Log Craving" and "Log Usage". Tapping either opens the form sheet. |
-| **History** | Segmented control [Cravings \| Usage] at top, list of entries below. Swipe to delete. Tap to edit. |
-| **Settings** | Export data, delete all data, app info |
+| Action | Where | How |
+|--------|-------|-----|
+| See my status | Home tab | Automatic on launch |
+| Log a craving | Log tab → "Log Craving" | 2 taps total |
+| Log usage | Log tab → "Log Usage" | 2 taps total |
+| View craving history | History tab → "Cravings" segment | 2 taps total |
+| View usage history | History tab → "Usage" segment | 2 taps total |
+| Export data | Settings tab → Export | 2 taps total |
 
 ---
 
-## Recommendation: Option A (Tab-Based)
+## Files to Change
 
-### Why Tab-Based Wins
-
-1. **Clear mental model**: "I want to see my cravings" → tap Cravings tab
-2. **Scales with features**: Future recordings get their own tab
-3. **Industry standard**: I Am Sober, Calm, Headspace all use this pattern
-4. **One-tap logging**: Dedicated Log tab = fastest path
-5. **Room for dashboard**: Home becomes motivational hub
-
-### Proposed Tab Structure
-
-```
-┌───────┬───────┬───────┬───────┬───────┐
-│ 🏠    │ 📝    │ 🧠    │ 🌿    │ ⚙️    │
-│ Home  │ Log   │Cravings│ Usage │Settings│
-└───────┴───────┴───────┴───────┴───────┘
-```
-
-**Alternative 4-tab version (cleaner):**
-```
-┌─────────┬─────────┬─────────┬─────────┐
-│ 🏠      │ 📝      │ 📊      │ ⚙️      │
-│ Home    │ Log     │ History │ Settings│
-└─────────┴─────────┴─────────┴─────────┘
-```
-Where History has a segmented control: [Cravings | Usage]
-
----
-
-## Implementation Complexity
-
-| Option | Files Changed | Complexity | Risk |
-|--------|---------------|------------|------|
-| **A (Tabs)** | 5-8 | Medium | Low |
-| **B (FAB)** | 2-3 | Low | Low |
-| **C (Hybrid)** | 4-6 | Medium | Medium |
-| **D (Crisis)** | 3-4 | Low | Medium (UX untested) |
-
----
-
-## Next Steps
-
-1. **User decision**: Which option resonates?
-2. **Prototype**: Low-fi Figma or SwiftUI preview
-3. **Implement**: Start with tab structure, then refine
+| File | Change |
+|------|--------|
+| `CraveyApp.swift` | Replace 3-tab with 4-tab TabView |
+| `HomeView.swift` | Remove lists, make pure dashboard |
+| `LogView.swift` | **NEW** - Two big buttons |
+| `HistoryView.swift` | **NEW** - Segmented control + list |
+| `DashboardView.swift` | Merge into HomeView or keep as child |
+| `CravingListView.swift` | Embed in HistoryView |
+| `UsageListView.swift` | Embed in HistoryView |
 
 ---
 
 ## References
 
-- [I Am Sober App Showcase](https://screensdesign.com/showcase/i-am-sober) - Screen design patterns
+- [I Am Sober App](https://screensdesign.com/showcase/i-am-sober) - ~$200K/month, similar tab structure
 - [Mobbin Home Screen Patterns](https://mobbin.com/explore/mobile/screens/home) - 2026 UI trends
-- [Addiction Recovery App Development](https://topflightapps.com/ideas/addiction-recovery-app-development/) - Feature best practices
-- [Mobile App UX Design Trends 2026](https://www.designstudiouiux.com/blog/mobile-app-ui-ux-design-trends/) - Current design patterns

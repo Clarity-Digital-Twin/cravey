@@ -88,7 +88,7 @@ struct CravingRow: View {
             }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(craving.timestamp, style: .relative)
+                Text(craving.timestamp.formatted(date: .abbreviated, time: .shortened))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 

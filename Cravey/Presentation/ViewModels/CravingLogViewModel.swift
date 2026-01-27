@@ -24,9 +24,16 @@ final class CravingLogViewModel {
     // Dependencies (injected)
     @ObservationIgnored
     private let logCravingUseCase: LogCravingUseCase
+    @ObservationIgnored
+    private let nowProvider: @Sendable () -> Date
 
-    init(logCravingUseCase: LogCravingUseCase) {
+    init(
+        logCravingUseCase: LogCravingUseCase,
+        nowProvider: @escaping @Sendable () -> Date = Date.init
+    ) {
         self.logCravingUseCase = logCravingUseCase
+        self.nowProvider = nowProvider
+        timestamp = nowProvider()
     }
 
     // MARK: - Actions
@@ -83,7 +90,7 @@ final class CravingLogViewModel {
 
     func resetForm() {
         intensity = 5
-        timestamp = Date()
+        timestamp = nowProvider()
         selectedTriggers = []
         notes = ""
         selectedLocation = nil // BUG-004 FIX: Reset to nil
@@ -95,10 +102,7 @@ final class CravingLogViewModel {
 
     /// Check if timestamp is >7 days old (DATA_MODEL_SPEC:117)
     var isTimestampOld: Bool {
-        guard let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date()) else {
-            return false // Fail-safe: treat as not old if calculation fails
-        }
-        return timestamp < sevenDaysAgo
+        TimestampValidation.isOlderThanWarningThreshold(timestamp: timestamp, now: nowProvider())
     }
 
     var intensityDescription: String {
