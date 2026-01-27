@@ -257,8 +257,8 @@ struct CraveyApp: App {
             if let dependencyContainer {
                 TabView {
                     HomeView().tabItem { Label("Home", systemImage: "house.fill") }
-                    DashboardView().tabItem { Label("Progress", systemImage: "chart.bar.fill") }
-                    RecordingsView().tabItem { Label("Recordings", systemImage: "play.rectangle.fill") }
+                    LogView().tabItem { Label("Log", systemImage: "plus.circle.fill") }
+                    HistoryView().tabItem { Label("History", systemImage: "clock.fill") }
                     SettingsView().tabItem { Label("Settings", systemImage: "gearshape.fill") }
                 }
                 .environment(dependencyContainer)

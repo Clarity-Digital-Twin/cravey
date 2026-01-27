@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Unified intensity color scale for consistent UX across the app
-/// Used by: IntensitySlider, CravingListView, DashboardView
+/// Used by: IntensitySlider, CravingListView
 ///
 /// Scale:
 /// - 1-3: Green (Low intensity)
@@ -17,23 +17,6 @@ enum IntensityColorScale {
         case 7 ... 9: .orange
         case 10: .red
         default: .gray
-        }
-    }
-
-    /// Returns the appropriate color for a given intensity average (Double)
-    /// Used for dashboard metrics where averages may be fractional
-    static func color(for intensity: Double) -> Color {
-        guard intensity >= 1, intensity <= 10 else { return .gray }
-
-        switch intensity {
-        case ..<4:
-            return .green
-        case 4 ..< 7:
-            return .yellow
-        case 7 ..< 10:
-            return .orange
-        default:
-            return .red
         }
     }
 }

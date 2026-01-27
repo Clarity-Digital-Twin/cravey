@@ -294,13 +294,14 @@ Cravey/
     │   └── SettingsViewModel.swift
     └── Views/                   # SwiftUI
         ├── Home/HomeView.swift
+        ├── Log/LogView.swift
+        ├── History/HistoryView.swift
         ├── Craving/CravingLogForm.swift, CravingListView.swift
         ├── Usage/UsageLogForm.swift, UsageListView.swift
-        ├── Dashboard/DashboardView.swift
-        ├── Settings/SettingsView.swift
+        ├── Settings/SettingsView.swift, ExportDataSheet.swift
         └── Components/ChipSelector, IntensitySlider, etc.
 
-CraveyTests/                     # Unit Tests (32 passing)
+CraveyTests/                     # Unit Tests
 ├── Domain/UseCases/
 ├── Integration/
 └── Presentation/ViewModels/
