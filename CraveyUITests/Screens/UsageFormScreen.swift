@@ -2,7 +2,6 @@ import XCTest
 
 /// Page Object for Usage Log Form (sheet).
 /// Tests usage logging flow.
-@MainActor
 final class UsageFormScreen: BaseScreen {
     // MARK: - Elements
 
@@ -96,7 +95,7 @@ final class UsageFormScreen: BaseScreen {
         guard waitForElement(navigationTitle) else { return false }
         // Secondary: look for Save button OR the "Method" text (always on form)
         return saveButton.waitForExistence(timeout: 3) ||
-               app.staticTexts["Method"].waitForExistence(timeout: 3)
+            app.staticTexts["Method"].waitForExistence(timeout: 3)
     }
 
     func verifySaveEnabled() -> Bool {

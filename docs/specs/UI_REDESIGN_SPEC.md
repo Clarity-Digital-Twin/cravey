@@ -10,7 +10,7 @@
 
 Transform the current 3-tab cluttered UI into a clean 4-tab structure:
 
-```
+```text
 BEFORE (current): 🏠 Home  📊 Progress  🎬 Recordings  ⚙️ Settings
 AFTER (4 tabs):   🏠 Home  📝 Log  📊 History  ⚙️ Settings
 ```
@@ -61,13 +61,11 @@ A simple view with two big buttons: "Log Craving" and "Log Usage".
    - Tap → present `UsageLogForm` as sheet
 
 4. **State Management**
-   - `@State private var showCravingSheet = false`
-   - `@State private var showUsageSheet = false`
    - `@State private var cravingLogViewModel: CravingLogViewModel?`
    - `@State private var usageLogViewModel: UsageLogViewModel?`
 
 5. **Dependency Injection**
-   - Use `@Environment(DependencyContainer.self)` to create fresh log ViewModels per sheet presentation.
+   - Inject factories via environment values (`makeCravingLogViewModel`, `makeUsageLogViewModel`) so LogView consumes dependencies instead of creating them directly.
    - Use `@Environment(CravingListViewModel.self)` and `@Environment(UsageListViewModel.self)` to refresh History data after a successful save.
 
 6. **Success Toast**
@@ -76,7 +74,7 @@ A simple view with two big buttons: "Log Craving" and "Log Usage".
    - Implementation detail: read `viewModel.didSucceed` in the sheet `onDismiss` before resetting the stored ViewModel, then trigger the toast.
 
 ### Wireframe
-```
+```text
 ┌─────────────────────────────────┐
 │         Log Entry               │
 │                                 │

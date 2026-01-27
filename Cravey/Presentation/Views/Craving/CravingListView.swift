@@ -20,6 +20,7 @@ struct CravingListView: View {
             } else {
                 ForEach(viewModel.cravings) { craving in
                     CravingRow(craving: craving)
+                        .accessibilityIdentifier("cravingEntryRow")
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
                                 deleteHapticTrigger.toggle()

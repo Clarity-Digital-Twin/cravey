@@ -2,7 +2,6 @@ import XCTest
 
 /// Page Object for Settings tab.
 /// Tests export and delete flows.
-@MainActor
 final class SettingsScreen: BaseScreen {
     // MARK: - Elements
 

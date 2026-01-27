@@ -15,6 +15,7 @@ Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built 
 ## What's Implemented (Working)
 
 ### Core Features
+
 | Feature | Status | Notes |
 |---------|--------|-------|
 | **Craving Logging** | Working | Full form: intensity, triggers, location, notes, timestamp |
@@ -24,6 +25,7 @@ Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built 
 | **Home Screen** | Working | 4-tab structure: Home (dashboard), Log (actions), History (lists), Settings |
 
 ### Technical Foundation
+
 | Layer | Files | Status |
 |-------|-------|--------|
 | **Domain (Entities)** | 5 | CravingEntity, UsageEntity, RecordingEntity, MotivationalMessageEntity, TriggerOptions |
@@ -93,7 +95,7 @@ bash scripts/verify.sh
 
 ## Documentation Structure
 
-```
+```text
 docs/
 ├── PROJECT_STATUS.md      # This file (status)
 ├── ARCHITECTURE.md        # Implementation-aligned architecture reference

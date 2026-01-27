@@ -78,6 +78,8 @@ struct CraveyApp: App {
                         }
                 }
                 .environment(dependencyContainer)
+                .environment(\.makeCravingLogViewModel, dependencyContainer.makeCravingLogViewModel)
+                .environment(\.makeUsageLogViewModel, dependencyContainer.makeUsageLogViewModel)
                 .environment(cravingListViewModel)
                 .environment(usageListViewModel)
                 .environment(dashboardViewModel)

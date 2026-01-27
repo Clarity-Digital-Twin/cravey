@@ -2,18 +2,23 @@ import XCTest
 
 /// Tests for Settings tab flows.
 /// Verifies export and delete functionality.
-@MainActor
 final class SettingsTests: XCTestCase {
     private var app: XCUIApplication!
     private var settingsScreen: SettingsScreen!
 
     override func setUpWithError() throws {
+        try super.setUpWithError()
         continueAfterFailure = false
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting"]
-        app.launch()
+        app = launchCraveyApp()
 
         settingsScreen = SettingsScreen(app: app)
+    }
+
+    override func tearDownWithError() throws {
+        app?.terminate()
+        app = nil
+        settingsScreen = nil
+        try super.tearDownWithError()
     }
 
     // MARK: - Settings Screen Tests

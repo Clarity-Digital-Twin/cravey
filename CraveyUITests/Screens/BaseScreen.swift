@@ -2,7 +2,6 @@ import XCTest
 
 /// Base screen providing common functionality for all page objects.
 /// Page Object Pattern - encapsulates UI element queries for maintainability.
-@MainActor
 class BaseScreen {
     let app: XCUIApplication
 

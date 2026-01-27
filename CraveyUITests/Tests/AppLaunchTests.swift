@@ -2,7 +2,6 @@ import XCTest
 
 /// Tests for basic app launch and navigation.
 /// Verifies the 4-tab structure loads correctly.
-@MainActor
 final class AppLaunchTests: XCTestCase {
     private var app: XCUIApplication!
     private var homeScreen: HomeScreen!
@@ -11,16 +10,25 @@ final class AppLaunchTests: XCTestCase {
     private var settingsScreen: SettingsScreen!
 
     override func setUpWithError() throws {
+        try super.setUpWithError()
         continueAfterFailure = false
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting"]
-        app.launch()
+        app = launchCraveyApp()
 
         // Initialize page objects
         homeScreen = HomeScreen(app: app)
         logScreen = LogScreen(app: app)
         historyScreen = HistoryScreen(app: app)
         settingsScreen = SettingsScreen(app: app)
+    }
+
+    override func tearDownWithError() throws {
+        app?.terminate()
+        app = nil
+        homeScreen = nil
+        logScreen = nil
+        historyScreen = nil
+        settingsScreen = nil
+        try super.tearDownWithError()
     }
 
     // MARK: - Launch Tests
@@ -59,9 +67,9 @@ final class AppLaunchTests: XCTestCase {
     func testTabBarPersistsAcrossNavigation() throws {
         // Given: App is launched
         // Then: All tab bar buttons should be visible
-        XCTAssertTrue(homeScreen.homeTab.exists, "Home tab should exist")
-        XCTAssertTrue(homeScreen.logTab.exists, "Log tab should exist")
-        XCTAssertTrue(homeScreen.historyTab.exists, "History tab should exist")
-        XCTAssertTrue(homeScreen.settingsTab.exists, "Settings tab should exist")
+        XCTAssertTrue(homeScreen.homeTab.waitForExistence(timeout: 5), "Home tab should exist")
+        XCTAssertTrue(homeScreen.logTab.waitForExistence(timeout: 5), "Log tab should exist")
+        XCTAssertTrue(homeScreen.historyTab.waitForExistence(timeout: 5), "History tab should exist")
+        XCTAssertTrue(homeScreen.settingsTab.waitForExistence(timeout: 5), "Settings tab should exist")
     }
 }

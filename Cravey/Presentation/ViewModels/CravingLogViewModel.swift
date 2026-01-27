@@ -6,6 +6,7 @@ import Foundation
 @Observable
 @MainActor
 final class CravingLogViewModel: Identifiable {
+    @ObservationIgnored
     let id = UUID() // For Identifiable conformance (sheet binding)
 
     // UI State (matches spec fields exactly)

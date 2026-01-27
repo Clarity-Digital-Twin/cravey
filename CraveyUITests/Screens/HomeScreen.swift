@@ -2,7 +2,6 @@ import XCTest
 
 /// Page Object for Home tab (Dashboard).
 /// Tests dashboard cards and navigation.
-@MainActor
 final class HomeScreen: BaseScreen {
     // MARK: - Elements
 

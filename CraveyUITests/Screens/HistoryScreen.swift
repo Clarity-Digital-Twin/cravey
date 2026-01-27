@@ -2,7 +2,6 @@ import XCTest
 
 /// Page Object for History tab.
 /// Tests craving and usage history lists.
-@MainActor
 final class HistoryScreen: BaseScreen {
     // MARK: - Elements
 
@@ -62,12 +61,27 @@ final class HistoryScreen: BaseScreen {
         waitForElement(emptyStateUsage, timeout: 3)
     }
 
+    private var cravingEntryRow: XCUIElement {
+        app.descendants(matching: .any).matching(identifier: "cravingEntryRow").firstMatch
+    }
+
+    private var usageEntryRow: XCUIElement {
+        app.descendants(matching: .any).matching(identifier: "usageEntryRow").firstMatch
+    }
+
+    func waitForCravingEntry(timeout: TimeInterval = 3) -> Bool {
+        cravingEntryRow.waitForExistence(timeout: timeout)
+    }
+
+    func waitForUsageEntry(timeout: TimeInterval = 3) -> Bool {
+        usageEntryRow.waitForExistence(timeout: timeout)
+    }
+
     func hasCravingEntries() -> Bool {
-        // Check if list has cells (entries)
-        app.cells.count > 0
+        app.descendants(matching: .any).matching(identifier: "cravingEntryRow").count > 0
     }
 
     func hasUsageEntries() -> Bool {
-        app.cells.count > 0
+        app.descendants(matching: .any).matching(identifier: "usageEntryRow").count > 0
     }
 }

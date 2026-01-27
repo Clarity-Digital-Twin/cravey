@@ -5,7 +5,6 @@ import XCTest
 
 extension XCTestCase {
     /// Launch app configured for UI testing
-    @MainActor
     func launchCraveyApp() -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["--uitesting"]

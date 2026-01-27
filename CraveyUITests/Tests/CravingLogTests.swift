@@ -2,7 +2,6 @@ import XCTest
 
 /// Tests for craving logging flow.
 /// Verifies the complete craving log user journey.
-@MainActor
 final class CravingLogTests: XCTestCase {
     private var app: XCUIApplication!
     private var logScreen: LogScreen!
@@ -10,14 +9,22 @@ final class CravingLogTests: XCTestCase {
     private var historyScreen: HistoryScreen!
 
     override func setUpWithError() throws {
+        try super.setUpWithError()
         continueAfterFailure = false
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting"]
-        app.launch()
+        app = launchCraveyApp()
 
         logScreen = LogScreen(app: app)
         cravingForm = CravingFormScreen(app: app)
         historyScreen = HistoryScreen(app: app)
+    }
+
+    override func tearDownWithError() throws {
+        app?.terminate()
+        app = nil
+        logScreen = nil
+        cravingForm = nil
+        historyScreen = nil
+        try super.tearDownWithError()
     }
 
     // MARK: - Form Presentation Tests
@@ -91,6 +98,7 @@ final class CravingLogTests: XCTestCase {
         // Given: User logs a craving
         logScreen.navigateToLog()
         logScreen.tapLogCraving()
+        XCTAssertTrue(cravingForm.verifyFormLoaded(), "Craving form should open")
         cravingForm.save()
 
         // When: Toast appears
@@ -115,8 +123,11 @@ final class CravingLogTests: XCTestCase {
         XCTAssertTrue(historyScreen.verifyHistoryScreenLoaded())
 
         // Then: Cravings segment should be selected by default
-        // And: There should be entries (not empty state)
-        // Note: This may fail on clean install - that's expected
+        XCTAssertTrue(historyScreen.verifyCravingsSegmentSelected(), "Cravings segment should be selected")
         historyScreen.selectCravingsSegment()
+        XCTAssertTrue(
+            historyScreen.waitForCravingEntry(timeout: 3),
+            "Expected at least one craving entry after save"
+        )
     }
 }

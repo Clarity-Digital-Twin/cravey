@@ -2,7 +2,6 @@ import XCTest
 
 /// Page Object for Craving Log Form (sheet).
 /// Tests craving logging flow.
-@MainActor
 final class CravingFormScreen: BaseScreen {
     // MARK: - Elements
 
@@ -88,7 +87,7 @@ final class CravingFormScreen: BaseScreen {
         guard waitForElement(navigationTitle) else { return false }
         // Secondary: look for Save button OR the "Intensity" text (always on form)
         return saveButton.waitForExistence(timeout: 3) ||
-               app.staticTexts["Intensity"].waitForExistence(timeout: 3)
+            app.staticTexts["Intensity"].waitForExistence(timeout: 3)
     }
 
     func verifySaveEnabled() -> Bool {

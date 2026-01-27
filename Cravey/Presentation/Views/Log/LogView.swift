@@ -3,7 +3,8 @@ import SwiftUI
 /// Log tab - quick actions for logging cravings and usage.
 /// Presentation layer - Clean Architecture
 struct LogView: View {
-    @Environment(DependencyContainer.self) private var container
+    @Environment(\.makeCravingLogViewModel) private var makeCravingLogViewModel
+    @Environment(\.makeUsageLogViewModel) private var makeUsageLogViewModel
     @Environment(CravingListViewModel.self) private var cravingListViewModel
     @Environment(UsageListViewModel.self) private var usageListViewModel
 
@@ -32,7 +33,7 @@ struct LogView: View {
                         tint: .purple,
                         accessibilityIdentifier: "logCravingButton"
                     ) {
-                        cravingLogViewModel = container.makeCravingLogViewModel()
+                        cravingLogViewModel = makeCravingLogViewModel()
                     }
 
                     LogActionCard(
@@ -42,7 +43,7 @@ struct LogView: View {
                         tint: .green,
                         accessibilityIdentifier: "logUsageButton"
                     ) {
-                        usageLogViewModel = container.makeUsageLogViewModel()
+                        usageLogViewModel = makeUsageLogViewModel()
                     }
                 }
                 .padding(.horizontal)
@@ -60,9 +61,9 @@ struct LogView: View {
                         if viewModel.didSucceed {
                             successMessage = "Craving logged"
                             showSuccessToast = true
-                        }
-                        Task {
-                            await cravingListViewModel.fetchCravings()
+                            Task {
+                                await cravingListViewModel.fetchCravings()
+                            }
                         }
                     }
             }
@@ -75,9 +76,9 @@ struct LogView: View {
                         if viewModel.didSucceed {
                             successMessage = "Usage logged"
                             showSuccessToast = true
-                        }
-                        Task {
-                            await usageListViewModel.fetchUsage()
+                            Task {
+                                await usageListViewModel.fetchUsage()
+                            }
                         }
                     }
             }
@@ -167,6 +168,8 @@ private struct LogActionCard: View {
 
     LogView()
         .environment(container)
+        .environment(\.makeCravingLogViewModel, container.makeCravingLogViewModel)
+        .environment(\.makeUsageLogViewModel, container.makeUsageLogViewModel)
         .environment(container.makeCravingListViewModel())
         .environment(container.makeUsageListViewModel())
 }

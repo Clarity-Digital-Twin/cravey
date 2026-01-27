@@ -3,6 +3,7 @@ import Foundation
 @Observable
 @MainActor
 final class UsageLogViewModel: Identifiable {
+    @ObservationIgnored
     let id = UUID() // For Identifiable conformance (sheet binding)
 
     // Dependencies

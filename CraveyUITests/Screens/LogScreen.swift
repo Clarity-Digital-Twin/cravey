@@ -2,7 +2,6 @@ import XCTest
 
 /// Page Object for Log tab.
 /// Tests logging craving and usage entry points.
-@MainActor
 final class LogScreen: BaseScreen {
     // MARK: - Elements
 
@@ -92,7 +91,7 @@ final class LogScreen: BaseScreen {
         guard waitForElement(navigationTitle) else { return false }
         // Check for either button or text label
         return logCravingButton.waitForExistence(timeout: 3) ||
-               logCravingText.waitForExistence(timeout: 3)
+            logCravingText.waitForExistence(timeout: 3)
     }
 
     func verifySuccessToastAppears(timeout: TimeInterval = 3) -> Bool {

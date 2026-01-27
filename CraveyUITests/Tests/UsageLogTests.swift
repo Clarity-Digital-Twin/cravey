@@ -2,7 +2,6 @@ import XCTest
 
 /// Tests for usage logging flow.
 /// Verifies the complete usage log user journey.
-@MainActor
 final class UsageLogTests: XCTestCase {
     private var app: XCUIApplication!
     private var logScreen: LogScreen!
@@ -10,14 +9,22 @@ final class UsageLogTests: XCTestCase {
     private var historyScreen: HistoryScreen!
 
     override func setUpWithError() throws {
+        try super.setUpWithError()
         continueAfterFailure = false
-        app = XCUIApplication()
-        app.launchArguments = ["--uitesting"]
-        app.launch()
+        app = launchCraveyApp()
 
         logScreen = LogScreen(app: app)
         usageForm = UsageFormScreen(app: app)
         historyScreen = HistoryScreen(app: app)
+    }
+
+    override func tearDownWithError() throws {
+        app?.terminate()
+        app = nil
+        logScreen = nil
+        usageForm = nil
+        historyScreen = nil
+        try super.tearDownWithError()
     }
 
     // MARK: - Form Presentation Tests
