@@ -1,5 +1,7 @@
 # P3 - Tech Debt
 
+> ⚠️ Archived: Historical bug tracker. The current debt tracker lives in `docs/debt/`.
+
 **Status:** ACTIVE
 **Last Updated:** 2026-01-25
 

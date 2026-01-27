@@ -3,9 +3,11 @@
 **Version:** 2.0 (Chronologically Ordered)
 **Duration:** 2 weeks (Weeks 5-6 of 16-week timeline)
 **Dependencies:** Phases 1-3 complete (Craving/Usage logging, Onboarding, Data Management)
-**Status:** 📝 Ready for Implementation
+**Status:** ⏸️ Deferred (planning doc)
 
 ---
+
+> ⚠️ **Deferred spec:** This document is planning guidance only. It is not a statement that the feature exists in the current app. Keep `bash scripts/verify.sh` green while implementing any future work.
 
 ## 🎯 Phase Goal
 

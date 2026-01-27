@@ -1,5 +1,7 @@
 # Cravey Technical Implementation Specification
 
+> ⚠️ Archived: Historical planning doc. Not current SSOT. See `docs/PROJECT_STATUS.md` and `docs/master/` for current status/specs.
+
 **Version:** 1.2
 **Last Updated:** 2025-10-31
 **Status:** 🔥 READY FOR IMPLEMENTATION (FULLY CORRECTED)

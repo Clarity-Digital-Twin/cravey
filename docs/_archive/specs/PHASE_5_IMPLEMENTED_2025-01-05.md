@@ -1,5 +1,7 @@
 # Phase 5: Dashboard & Analytics (Weeks 7-8)
 
+> ⚠️ Archived: Historical phase doc. Not current SSOT.
+
 **Version:** 3.0 (Chronologically Ordered + Audit Validated)
 **Duration:** 2 weeks
 **Dependencies:** Phases 1-2 (craving + usage logging) - **⚠️ PHASE_2 MUST BE COMPLETE** (requires UsageEntity + UsageRepository)

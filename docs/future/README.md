@@ -1,8 +1,8 @@
 # Future Features
 
-These specs are **deferred** until the current codebase is stabilized.
+These specs are **deferred** (planning docs). The stabilization gate is currently green, but these features are not in scope unless explicitly prioritized.
 
-**Do NOT implement** anything from these docs until stabilization is complete.
+**Do NOT implement** anything from these docs unless it is the active, agreed-upon workstream.
 
 ## Contents
 
@@ -14,9 +14,6 @@ These specs are **deferred** until the current codebase is stabilized.
 
 ## Why Deferred
 
-The current codebase has:
-- Swift 6 concurrency violations
-- Potential bugs in existing features
-- Technical debt that needs addressing
-
-Adding new features on a shaky foundation = more bugs.
+Even with a green build/test gate, adding new features should be deliberate:
+- Keep `bash scripts/verify.sh` green at every step.
+- Track any non-blocking improvements in `docs/bugs/` or `docs/debt/` instead of sneaking scope.

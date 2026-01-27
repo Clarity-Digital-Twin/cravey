@@ -1,5 +1,7 @@
 # Phase 1: Systematic Breakdown & TDD Implementation Plan
 
+> ⚠️ Archived: Historical planning doc. Not current SSOT.
+
 **Date:** 2025-11-02
 **Approach:** Chunk-wise validation → TDD → Forward progress (no patching)
 **Status:** 🎯 Ready for systematic implementation

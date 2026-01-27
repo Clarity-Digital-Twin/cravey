@@ -17,7 +17,7 @@ This prompt intentionally avoids anything that requires human judgment (UX “fe
 
 ## In Scope (this loop)
 - Make **every claim of completion** provable by commands with non-zero exits on failure.
-- Keep verification stable in headless/CI environments (no reliance on iOS Simulator runtimes).
+- Keep verification stable in headless/CI environments (prefer Mac Catalyst for tests; use an iOS Simulator compile check when available).
 - Update only what is required to make the gate pass; log any follow-ups as bugs in `docs/bugs/`.
 
 ---
@@ -40,6 +40,7 @@ bash scripts/verify.sh
 - `xcodegen generate`
 - `swiftformat --lint --swiftversion 6.0 .`
 - `swiftlint lint --quiet`
+- `xcodebuild build` for iOS Simulator (compile check; prefers `IOS_SIMULATOR_NAME=iPhone 17 Pro` with fallback)
 - `xcodebuild test` for `CraveyTests` on **Mac Catalyst** with code signing disabled
 - Static invariants:
   - `cloudKitDatabase: .none` present

@@ -1,5 +1,7 @@
 # Phase 2B: Usage Logging - ROA Picker Component
 
+> ⚠️ Archived: Historical phase doc. Not current SSOT.
+
 **Version:** 1.0 (Spec-First Approach)
 **Duration:** Half day (Component only)
 **Dependencies:** Phase 2A complete (ROAAmountRange helper available)

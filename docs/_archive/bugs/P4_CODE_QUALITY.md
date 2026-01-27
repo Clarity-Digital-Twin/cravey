@@ -1,5 +1,7 @@
 # P4 - Code Quality Issues
 
+> ⚠️ Archived: Historical bug tracker. The current bug/debt trackers live in `docs/bugs/` and `docs/debt/`.
+
 **Status:** ACTIVE
 **Last Updated:** 2026-01-25
 

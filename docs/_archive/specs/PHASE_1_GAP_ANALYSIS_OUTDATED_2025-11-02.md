@@ -1,5 +1,7 @@
 # Phase 1 Gap Analysis - What We Built vs What We Should Build
 
+> ⚠️ Archived: Historical analysis doc. Not current SSOT.
+
 **Date:** 2025-11-02
 **Status:** 🚨 CRITICAL REVIEW NEEDED
 **Purpose:** Systematic comparison of Phase 1 implementation against all specs

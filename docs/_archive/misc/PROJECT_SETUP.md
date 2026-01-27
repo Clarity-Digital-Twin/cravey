@@ -1,5 +1,7 @@
 # Project Setup Guide
 
+> ⚠️ Archived: Historical setup notes. Current workflow: `bash scripts/verify.sh` and `docs/GETTING_STARTED.md`.
+
 ## Step 0: Install CLI Tools (Recommended)
 
 Run the setup script to install all terminal tools:

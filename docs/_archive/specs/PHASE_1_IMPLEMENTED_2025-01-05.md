@@ -1,5 +1,7 @@
 # Phase 1: Foundation + Craving Logging (Week 1 Only)
 
+> ⚠️ Archived: Historical phase doc. Not current SSOT.
+
 **Version:** 2.1 (Timestamp + Notes Limit Added)
 **Last Updated:** 2025-11-02
 **Duration:** 1 week (Week 1 of 16-week plan)

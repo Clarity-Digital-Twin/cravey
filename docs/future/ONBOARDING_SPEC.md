@@ -3,10 +3,12 @@
 **Version:** 3.0 (Chronologically Ordered + Technical Fixes)
 **Duration:** 2 weeks (Weeks 3-4 of 16-week timeline)
 **Dependencies:** Phases 1-2 complete (Craving + Usage logging) - **⚠️ PHASE_2 MUST BE COMPLETE** (requires UsageRepository for export)
-**Status:** 📝 Ready for Implementation
+**Status:** ⏸️ Deferred (planning doc)
 **Last Updated:** 2025-11-01
 
 ---
+
+> ⚠️ **Deferred spec:** This document is planning guidance only. It is not a statement that the feature exists in the current app. Keep `bash scripts/verify.sh` green while implementing any future work.
 
 ## 🎯 Phase Goal
 

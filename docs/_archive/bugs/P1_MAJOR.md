@@ -1,5 +1,7 @@
 # P1 - Major Bugs
 
+> ⚠️ Archived: Historical bug tracker. The current bug tracker lives in `docs/bugs/`.
+
 **Status:** ACTIVE
 **Last Updated:** 2026-01-25
 

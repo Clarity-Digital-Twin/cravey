@@ -22,13 +22,21 @@ xcodegen generate
 
 This creates `Cravey.xcodeproj` from `project.yml`
 
-### 3. Build & Run
+### 3. Verify the Repo (Recommended)
+
+```bash
+bash scripts/verify.sh
+```
+
+This runs the same objective gate used for convergence: project generation, formatting, linting, invariants, an iOS Simulator compile check, and unit tests (Mac Catalyst).
+
+### 4. Build & Run
 
 **Option A: Terminal Build**
 ```bash
 xcodebuild -scheme Cravey \
-  -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
-  | xcbeautify
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+  build | xcbeautify
 ```
 
 **Option B: Open in Xcode**
@@ -104,7 +112,7 @@ swiftlint
 **Run tests:**
 ```bash
 xcodebuild test -scheme Cravey \
-  -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
   | xcbeautify
 ```
 
@@ -136,7 +144,7 @@ Follow this order (see ARCHITECTURE.md for checklist):
 **Unit Tests (Fast):**
 ```bash
 xcodebuild test -scheme Cravey \
-  -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
   -only-testing:CraveyTests \
   | xcbeautify
 ```
@@ -144,7 +152,7 @@ xcodebuild test -scheme Cravey \
 **UI Tests (Slow):**
 ```bash
 xcodebuild test -scheme Cravey \
-  -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
   -only-testing:CraveyUITests \
   | xcbeautify
 ```
@@ -158,20 +166,18 @@ xcodebuild test -scheme Cravey \
 - Domain layer (Entities, Use Cases, Protocols)
 - Data layer (Models, Repositories, Mappers, Storage)
 - Dependency Injection container
-- Example ViewModel (CravingLogViewModel)
-- Unit test examples
+- SwiftUI Views + ViewModels for core logging + dashboard + settings
+- Unit tests + integration-style tests (Swift Testing)
 - UI test scaffolding
 - XcodeGen configuration
 - CLI tooling setup
 
 ### 🚧 TODO (Next Steps)
 - Implement remaining repositories (Recording, Message)
-- Create remaining Use Cases
-- Build out all ViewModels
-- Complete SwiftUI Views
-- AVFoundation recording implementation
-- MI Coach chatbot integration
-- Analytics dashboard
+- Implement recordings feature (AVFoundation capture + playback UI)
+- Implement onboarding flow (Welcome + Tour)
+- Expand motivational content feature (messages)
+- (Optional) Re-enable / expand UI tests in the verification gate
 
 ---
 
@@ -209,7 +215,6 @@ xcodebuild test -scheme Cravey \
 ## 📚 Documentation
 
 - **ARCHITECTURE.md** - Full architecture guide
-- **PROJECT_SETUP.md** - Xcode setup instructions
 - **CLAUDE.md** - AI assistant context
 - **README.md** - Project overview
 

@@ -1,52 +1,43 @@
-# Cravey - Cannabis Cessation Support App
+# Cravey - Cannabis Tracking & Cessation Support (iOS)
 
-A modern, privacy-focused **iOS application** built with SwiftUI and SwiftData to help users track cannabis cravings, log their journey, and access motivational support during difficult moments.
+A modern, privacy-first **iOS 18+** app built with SwiftUI + SwiftData to help users log cravings and cannabis use, understand patterns, and stay compassionate during hard moments.
 
-> **Note**: Currently focused on iOS 18+. macOS support planned for future release.
+## Status
 
-## Features
+Pre-release. The objective quality gate is `bash scripts/verify.sh` (project generation, formatting, linting, invariants, simulator compile check, unit tests).
 
-### Core Functionality
-- **Craving Tracking**: Log cravings with intensity levels (1-10), triggers, location, and notes
-- **Personal Recordings**: Create video and audio recordings for self-support during cravings
-- **Motivational Messages**: Access categorized supportive messages and create personalized ones
-- **Progress Dashboard**: View statistics and track your journey over time
-- **Quick SOS**: Emergency support button for immediate access to coping strategies
+## Features (Implemented)
 
-### Privacy & Security
-- ✅ 100% local-only storage (no cloud sync)
-- ✅ All data stays on your device
-- ✅ No analytics or tracking
-- ✅ No internet connection required
+- **Craving logging**: Intensity (1–10), HAALT triggers, location presets, notes, timestamp
+- **Usage logging**: ROA method + clinically-validated amount ranges, triggers, location, notes, timestamp
+- **Progress dashboard**: Streaks, averages, top triggers, weekly summary
+- **Settings**: Export data (CSV/JSON), delete all local data
+- **Privacy**: Local-only storage (SwiftData CloudKit disabled), no analytics/tracking
 
-## Tech Stack
+## Planned / Scaffolded (Not Implemented Yet)
 
-### 2025 Modern iOS Development
-- **Swift 6.2** with strict concurrency
-- **SwiftUI** for declarative UI (iOS 18+)
-- **SwiftData** for persistent storage (@Model macro)
-- **AVFoundation** for audio/video recording
-- **XcodeGen 2.44.1** for project generation
+- **Motivational recordings** (audio/video via AVFoundation): models/entities exist; capture/playback UI + repository/use cases pending
+- **Motivational messages**: model exists; selection UI/use cases pending
+- **Onboarding**: welcome/tour flow pending
 
-### Architecture
-- **Clean Architecture + MVVM** (Robert C. Martin principles)
-- Pure Domain layer (framework-independent business logic)
-- Repository pattern with protocol-based DI
-- @Observable ViewModels (Swift 6)
-- Proper separation of concerns
+## Development
 
-### Development Tools
-- **Xcode 26.0.1** (Build 17A400)
-- **xcbeautify 2.30.1** - Pretty terminal output
-- **swiftlint 0.61.0** - Code linting
-- **swiftformat 0.58.3** - Auto-formatting
-- **gh 2.81.0** - GitHub CLI
+```bash
+./setup-tools.sh
+xcodegen generate
+bash scripts/verify.sh
+```
+
+## Architecture
+
+Clean Architecture + MVVM:
+- `Cravey/Domain/` stays framework-free (no SwiftUI/SwiftData imports)
+- `Cravey/Data/` implements persistence via SwiftData
+- `Cravey/Presentation/` is SwiftUI + @Observable ViewModels
+
+See `docs/GETTING_STARTED.md` and `docs/ARCHITECTURE.md` for details.
 
 ## App Configuration Templates
 
 - iOS Info.plist template: `Config/iOS.Info.plist.template`
 - macOS Info.plist template: `Config/macOS.Info.plist.template`
-- Remote chat config example: `Config/ChatConfig.example.json`
-
-## Project Structure
-

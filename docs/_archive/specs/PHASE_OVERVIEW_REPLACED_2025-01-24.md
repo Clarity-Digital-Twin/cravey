@@ -1,5 +1,7 @@
 # Cravey Implementation Phases - Overview
 
+> ⚠️ Archived: Superseded planning doc. Not current SSOT.
+
 **Version:** 2.0
 **Last Updated:** 2025-01-05
 **Status:** 🎯 PHASE 3/4 NEXT (Onboarding + Recordings)

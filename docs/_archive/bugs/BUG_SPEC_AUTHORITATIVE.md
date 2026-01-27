@@ -1,5 +1,7 @@
 # Authoritative Bug Specification - Cravey iOS App
 
+> ⚠️ Archived: Historical bug tracker. The current bug tracker lives in `docs/bugs/`.
+
 **Date:** 2025-12-10
 **Status:** ✅ ALL BUGS FIXED (2025-12-10)
 **Sources:** Manual QA + Code Analysis + External Audit (Gemini CLI)
