@@ -43,4 +43,3 @@ struct DeleteAllUserDataUseCaseTests {
         #expect(messages.first?.isCustom == false)
     }
 }
-

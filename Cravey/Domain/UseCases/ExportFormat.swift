@@ -3,4 +3,3 @@ enum ExportFormat: String, CaseIterable, Codable, Sendable {
     case csv
     case json
 }
-

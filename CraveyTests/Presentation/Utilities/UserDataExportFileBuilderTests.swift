@@ -71,4 +71,3 @@ struct UserDataExportFileBuilderTests {
         #expect(decoded.usages.count == export.usages.count)
     }
 }
-

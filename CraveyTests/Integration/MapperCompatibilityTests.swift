@@ -30,4 +30,3 @@ struct MapperCompatibilityTests {
         #expect(entity.category == .unknown)
     }
 }
-

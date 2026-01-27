@@ -11,4 +11,3 @@ enum TimestampValidation {
         return timestamp < thresholdDate
     }
 }
-

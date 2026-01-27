@@ -168,4 +168,3 @@ actor MockMessageRepository: MessageRepositoryProtocol {
 
     func seedDefaultMessagesIfNeeded() async throws {}
 }
-

@@ -15,9 +15,9 @@ enum UserDataExportFileBuilder {
     static func makeFileData(export: UserDataExport, format: ExportFormat) throws -> Data {
         switch format {
         case .json:
-            return try makeJSONData(export: export)
+            try makeJSONData(export: export)
         case .csv:
-            return try makeCSVData(export: export)
+            try makeCSVData(export: export)
         }
     }
 
@@ -230,4 +230,3 @@ enum UserDataExportFileBuilder {
         return "\"\(escaped)\""
     }
 }
-

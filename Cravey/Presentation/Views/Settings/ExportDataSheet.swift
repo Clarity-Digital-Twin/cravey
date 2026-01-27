@@ -76,4 +76,3 @@ struct ExportDataSheet: View {
     let container = DependencyContainer.preview
     ExportDataSheet(viewModel: container.makeSettingsViewModel())
 }
-
