@@ -2,7 +2,7 @@
 
 These are the **authoritative** specification documents that define what Cravey IS.
 
-**Do NOT modify** these without explicit product/clinical approval.
+**Do NOT change** product/clinical requirements in these docs without explicit approval. Technical corrections and dated “implementation notes” are allowed to keep the docs aligned with the codebase.
 
 ## Contents
 

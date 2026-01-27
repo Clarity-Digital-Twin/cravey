@@ -57,7 +57,7 @@
 #### Entities
 Pure Swift models representing core business concepts.
 ```swift
-// Example: Domain/Entities/Craving.swift
+// Example: Domain/Entities/CravingEntity.swift
 struct CravingEntity {
     let id: UUID
     let timestamp: Date
@@ -97,7 +97,7 @@ Define data access contracts (implementations in Data layer).
 protocol CravingRepositoryProtocol {
     func save(_ craving: CravingEntity) async throws
     func fetchAll() async throws -> [CravingEntity]
-    func delete(_ id: UUID) async throws
+    func delete(id: UUID) async throws
 }
 ```
 
@@ -161,9 +161,8 @@ final class CravingRepository: CravingRepositoryProtocol {
 File system and external storage management.
 ```swift
 // Example: Data/Storage/FileStorageManager.swift
-@MainActor
-final class FileStorageManager {
-    static let shared = FileStorageManager()
+actor FileStorageManager {
+    init(fileManager: FileManager = .default)
 
     func saveRecording(from tempURL: URL, recordingType: RecordingType) async throws -> String
     func deleteRecording(at relativePath: String) throws
@@ -172,7 +171,7 @@ final class FileStorageManager {
 
 **Rules:**
 - ✅ Handles file I/O
-- ✅ Called off the main actor for long-running work (see `SwiftDataDeleteAllUserDataUseCase`)
+- ✅ Actor-isolated so UI callers can `await` without blocking the main actor
 - ✅ Returns simple types (String, Data, URL)
 - ❌ No business logic
 
@@ -248,15 +247,25 @@ struct CravingLogView: View {
 
 #### App Entry Point
 ```swift
-// Example: App/CraveyApp.swift
+// Example: App/CraveyApp.swift (simplified)
 @main
 struct CraveyApp: App {
-    @State private var dependencyContainer = DependencyContainer()
+    @State private var dependencyContainer: DependencyContainer? = try? DependencyContainer()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            if let dependencyContainer {
+                TabView {
+                    HomeView().tabItem { Label("Home", systemImage: "house.fill") }
+                    DashboardView().tabItem { Label("Progress", systemImage: "chart.bar.fill") }
+                    RecordingsView().tabItem { Label("Recordings", systemImage: "play.rectangle.fill") }
+                    SettingsView().tabItem { Label("Settings", systemImage: "gearshape.fill") }
+                }
                 .environment(dependencyContainer)
+                .modelContainer(dependencyContainer.modelContainer)
+            } else {
+                AppUnavailableView(error: nil, onRetry: {})
+            }
         }
     }
 }
@@ -266,26 +275,23 @@ struct CraveyApp: App {
 ```swift
 // Example: App/DependencyContainer.swift
 @Observable
+@MainActor
 final class DependencyContainer {
-    // Singletons
+    let modelContainer: ModelContainer
     let modelContext: ModelContext
-    let fileStorage: FileStorageManager
 
-    // Repositories
-    lazy var cravingRepository: CravingRepositoryProtocol = {
-        CravingRepository(modelContext: modelContext)
-    }()
+    private(set) var cravingRepository: CravingRepositoryProtocol
+    private(set) var logCravingUseCase: LogCravingUseCase
 
-    // Use Cases
-    lazy var logCravingUseCase: LogCravingUseCase = {
-        DefaultLogCravingUseCase(repository: cravingRepository)
-    }()
+    func makeCravingLogViewModel() -> CravingLogViewModel {
+        CravingLogViewModel(logCravingUseCase: logCravingUseCase)
+    }
 }
 ```
 
 **Rules:**
 - ✅ Wires up all dependencies
-- ✅ Creates and owns singleton services
+- ✅ Creates and owns long-lived services (no `lazy var` with `@Observable`)
 - ✅ Provides factories for scoped instances
 - ❌ No business logic
 

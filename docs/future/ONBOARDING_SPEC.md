@@ -10,11 +10,19 @@
 
 > ⚠️ **Deferred spec:** This document is planning guidance only. It is not a statement that the feature exists in the current app. Keep `bash scripts/verify.sh` green while implementing any future work.
 
+## Current Implementation Notes (2026-01-27)
+
+- ✅ Data management (Settings + export + delete-all) is implemented in the baseline app.
+  - Export: `Cravey/Domain/UseCases/ExportUserDataUseCase.swift` and `Cravey/Presentation/Views/Settings/ExportDataSheet.swift`
+  - Delete-all: `Cravey/Data/UseCases/SwiftDataDeleteAllUserDataUseCase.swift`
+- ✅ `RecordingRepository` and `MessageRepository` are implemented (SwiftData persistence only; recordings UI/AVFoundation is still pending).
+- 🚧 Onboarding UI (Welcome/Tour) is not implemented yet.
+
 ## 🎯 Phase Goal
 
 **Shippable Deliverable:** Users can **complete onboarding in <60 seconds**, **export all data** (CSV + JSON), and **delete all data** with confirmation.
 
-**Features Implemented:**
+**Planned Features (this phase spec):**
 - Feature 0 (Onboarding): WelcomeView + TourView
 - Feature 5 (Data Management): Export + Delete + Settings UI
 
@@ -37,10 +45,12 @@
 - ✅ `CravingModel.swift` - SwiftData @Model (PHASE_1)
 - ✅ `UsageModel.swift` - SwiftData @Model (PHASE_2)
 - ✅ `RecordingModel.swift` - SwiftData @Model (baseline)
+- ✅ `MotivationalMessageModel.swift` - SwiftData @Model (baseline)
 - ✅ `CravingRepository.swift` - Full implementation with `fetchAll()` (PHASE_1)
 - ✅ `UsageRepository.swift` - Full implementation with `fetchAll()` + `delete(id:)` (PHASE_2)
-- ✅ `RecordingRepository.swift` - Stub implementation (real implementation in PHASE_4)
-- ✅ `CravingMapper.swift`, `UsageMapper.swift`, `RecordingMapper.swift` - Entity ↔ Model conversion
+- ✅ `RecordingRepository.swift` - Full implementation (as of 2026-01-27)
+- ✅ `MessageRepository.swift` - Full implementation (as of 2026-01-27)
+- ✅ `CravingMapper.swift`, `UsageMapper.swift`, `RecordingMapper.swift`, `MessageMapper.swift` - Entity ↔ Model conversion
 
 ### Presentation Layer
 - ✅ `HomeView.swift` - Exists (will be enhanced with tab bar integration)
@@ -629,16 +639,12 @@ actor DefaultDeleteAllDataUseCase: DeleteAllDataUseCase {
         }
 
         // 3. Delete all recording files from disk
-        // Note: FileStorageManager exists in baseline but RecordingRepository is still a stub.
-        // We use FileManager directly for directory deletion to avoid coupling to stub methods.
-        let fileManager = FileManager.default
-        let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let recordingsURL = documentsURL.appendingPathComponent("Recordings")
-
-        // Delete entire Recordings directory (if it exists)
-        if fileManager.fileExists(atPath: recordingsURL.path) {
-            try fileManager.removeItem(at: recordingsURL)
-        }
+        //
+        // NOTE (2026-01-27): Delete-all is implemented in the baseline app.
+        // See: `Cravey/Data/UseCases/SwiftDataDeleteAllUserDataUseCase.swift`
+        //
+        // The current implementation performs staged deletion of `Documents/Recordings/` for safety
+        // and deletes custom messages while preserving default messages.
 
         // Note: Motivational messages are NOT deleted (default content persists)
     }
@@ -651,12 +657,12 @@ actor DefaultDeleteAllDataUseCase: DeleteAllDataUseCase {
 - **Preserves default messages** - Only user data deleted (not app content)
 - **Actor isolation** - Thread-safe async operations
 - **Uses existing repository APIs** - `delete(id:)` from CravingRepositoryProtocol and UsageRepositoryProtocol
-- **Raw FileManager for recordings** - RecordingRepository is still a stub at this phase (full implementation in PHASE_4)
+- **Staged FileManager deletion for recordings** - Avoids partial data loss by deleting `Documents/Recordings/` safely outside SwiftData
 
 **Dependencies Required:**
 - ✅ `CravingRepositoryProtocol.fetchAll()` + `delete(id:)` - Exists (PHASE_1)
 - ⚠️ `UsageRepositoryProtocol.fetchAll()` + `delete(id:)` - Must exist from PHASE_2
-- ⚠️ `RecordingRepositoryProtocol.fetchAll()` + `delete(id:)` - Stub exists (PHASE_4)
+- ✅ `RecordingRepositoryProtocol.fetchAll()` + `delete(id:)` - Exists (baseline)
 
 ---
 
@@ -1099,7 +1105,7 @@ static var preview: DependencyContainer {
 **Dependencies Required:**
 - ✅ `CravingRepository` - Exists (PHASE_1)
 - ⚠️ `UsageRepository` - Must exist from PHASE_2
-- ⚠️ `RecordingRepository` - Stub exists (PHASE_4 replaces stub)
+- ✅ `RecordingRepository` - Exists (baseline)
 
 ---
 

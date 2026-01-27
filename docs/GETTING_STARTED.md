@@ -12,7 +12,7 @@
 ./setup-tools.sh
 ```
 
-This installs: xcodebuild, xcbeautify, fastlane, xcodegen, swiftlint, swiftformat
+This installs: xcbeautify, xcpretty, fastlane, xcodegen, swiftlint, swiftformat (and ensures Xcode Command Line Tools are installed for `xcodebuild`).
 
 ### 2. Generate Xcode Project
 
@@ -173,10 +173,9 @@ xcodebuild test -scheme Cravey \
 - CLI tooling setup
 
 ### 🚧 TODO (Next Steps)
-- Implement remaining repositories (Recording, Message)
 - Implement recordings feature (AVFoundation capture + playback UI)
 - Implement onboarding flow (Welcome + Tour)
-- Expand motivational content feature (messages)
+- Expand motivational content feature (messages UI + use cases)
 - (Optional) Re-enable / expand UI tests in the verification gate
 
 ---
