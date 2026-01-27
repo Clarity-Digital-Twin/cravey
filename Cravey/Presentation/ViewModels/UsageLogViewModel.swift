@@ -2,7 +2,9 @@ import Foundation
 
 @Observable
 @MainActor
-final class UsageLogViewModel {
+final class UsageLogViewModel: Identifiable {
+    let id = UUID() // For Identifiable conformance (sheet binding)
+
     // Dependencies
     @ObservationIgnored
     private let logUsageUseCase: LogUsageUseCase

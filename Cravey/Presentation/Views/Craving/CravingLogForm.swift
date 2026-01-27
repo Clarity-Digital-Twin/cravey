@@ -57,6 +57,7 @@ struct CravingLogForm: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .accessibilityIdentifier("cravingFormCancelButton")
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
@@ -66,6 +67,7 @@ struct CravingLogForm: View {
                         }
                     }
                     .disabled(!viewModel.canSubmit || viewModel.isLoading)
+                    .accessibilityIdentifier("cravingFormSaveButton")
                 }
             }
             .alert("Old Timestamp", isPresented: $viewModel.showTimestampWarning) {

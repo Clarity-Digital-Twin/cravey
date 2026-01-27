@@ -7,10 +7,7 @@ struct LogView: View {
     @Environment(CravingListViewModel.self) private var cravingListViewModel
     @Environment(UsageListViewModel.self) private var usageListViewModel
 
-    @State private var showCravingSheet = false
-    @State private var showUsageSheet = false
-
-    // Fresh form VMs per presentation
+    // Fresh form VMs per presentation (nil = sheet closed, non-nil = sheet open)
     @State private var cravingLogViewModel: CravingLogViewModel?
     @State private var usageLogViewModel: UsageLogViewModel?
 
@@ -36,7 +33,6 @@ struct LogView: View {
                         accessibilityIdentifier: "logCravingButton"
                     ) {
                         cravingLogViewModel = container.makeCravingLogViewModel()
-                        showCravingSheet = true
                     }
 
                     LogActionCard(
@@ -47,7 +43,6 @@ struct LogView: View {
                         accessibilityIdentifier: "logUsageButton"
                     ) {
                         usageLogViewModel = container.makeUsageLogViewModel()
-                        showUsageSheet = true
                     }
                 }
                 .padding(.horizontal)
@@ -59,44 +54,32 @@ struct LogView: View {
 
             // MARK: - Craving Log Sheet
 
-            .sheet(isPresented: $showCravingSheet) {
-                let didSucceed = cravingLogViewModel?.didSucceed ?? false
-
-                cravingLogViewModel = nil
-
-                Task {
-                    await cravingListViewModel.fetchCravings()
-                }
-
-                if didSucceed {
-                    successMessage = "Craving logged"
-                    showSuccessToast = true
-                }
-            } content: {
-                if let viewModel = cravingLogViewModel {
-                    CravingLogForm(viewModel: viewModel)
-                }
+            .sheet(item: $cravingLogViewModel) { viewModel in
+                CravingLogForm(viewModel: viewModel)
+                    .onDisappear {
+                        if viewModel.didSucceed {
+                            successMessage = "Craving logged"
+                            showSuccessToast = true
+                        }
+                        Task {
+                            await cravingListViewModel.fetchCravings()
+                        }
+                    }
             }
 
             // MARK: - Usage Log Sheet
 
-            .sheet(isPresented: $showUsageSheet) {
-                let didSucceed = usageLogViewModel?.didSucceed ?? false
-
-                usageLogViewModel = nil
-
-                Task {
-                    await usageListViewModel.fetchUsage()
-                }
-
-                if didSucceed {
-                    successMessage = "Usage logged"
-                    showSuccessToast = true
-                }
-            } content: {
-                if let viewModel = usageLogViewModel {
-                    UsageLogForm(viewModel: viewModel)
-                }
+            .sheet(item: $usageLogViewModel) { viewModel in
+                UsageLogForm(viewModel: viewModel)
+                    .onDisappear {
+                        if viewModel.didSucceed {
+                            successMessage = "Usage logged"
+                            showSuccessToast = true
+                        }
+                        Task {
+                            await usageListViewModel.fetchUsage()
+                        }
+                    }
             }
 
             // MARK: - Success Toast
@@ -143,12 +126,10 @@ private struct LogActionCard: View {
     let systemImage: String
     let tint: Color
     let accessibilityIdentifier: String
-    let action: @MainActor () -> Void
+    let action: () -> Void
 
     var body: some View {
-        Button {
-            action()
-        } label: {
+        Button(action: action) {
             HStack(spacing: 16) {
                 Image(systemName: systemImage)
                     .font(.system(size: 28))
@@ -175,7 +156,6 @@ private struct LogActionCard: View {
             }
             .padding()
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
-            .contentShape(RoundedRectangle(cornerRadius: 16))
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier(accessibilityIdentifier)

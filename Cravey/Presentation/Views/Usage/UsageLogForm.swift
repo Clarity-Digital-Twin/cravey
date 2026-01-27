@@ -92,6 +92,7 @@ struct UsageLogForm: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .accessibilityIdentifier("usageFormCancelButton")
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
@@ -101,6 +102,7 @@ struct UsageLogForm: View {
                         }
                     }
                     .disabled(!viewModel.canSubmit || viewModel.isLoading)
+                    .accessibilityIdentifier("usageFormSaveButton")
                 }
             }
 

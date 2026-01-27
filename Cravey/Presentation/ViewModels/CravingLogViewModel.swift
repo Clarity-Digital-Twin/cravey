@@ -5,7 +5,9 @@ import Foundation
 /// Source: CLINICAL_CANNABIS_SPEC.md lines 185-211, MVP_PRODUCT_SPEC.md lines 119-139
 @Observable
 @MainActor
-final class CravingLogViewModel {
+final class CravingLogViewModel: Identifiable {
+    let id = UUID() // For Identifiable conformance (sheet binding)
+
     // UI State (matches spec fields exactly)
     var intensity: Double = 5
     var timestamp: Date = .init() // REQUIRED: Auto "now", editable (CLINICAL_CANNABIS_SPEC.md:193)

@@ -26,6 +26,7 @@ struct HistoryView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .accessibilityIdentifier("historySegmentPicker")
                 }
 
                 Section {
