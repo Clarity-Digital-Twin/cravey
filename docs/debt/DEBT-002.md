@@ -8,7 +8,7 @@
 
 ## Problem
 
-`FileStorageManager.shared` is a singleton with `@MainActor`, making it hard to mock for testing and potentially causing thread safety issues.
+`FileStorageManager.shared` was a singleton with `@MainActor`, making it hard to mock for testing and potentially causing thread safety issues.
 
 ## Current Code
 
