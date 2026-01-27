@@ -1,13 +1,14 @@
-# DEBT-007: UI Tests Not in Convergence Gate + Coverage Gaps
+# DEBT-007: UI Tests Not in Convergence Gate
 
 **Priority:** P2 (Important - Tests Are Safety Net)
-**Status:** OPEN
+**Status:** OPEN (ViewModel coverage closed; UI gate remains)
 **Created:** 2026-01-27
 **Last Audited:** 2026-01-27
 
 ## Current State
 
 - `bash scripts/verify.sh` passes (format, lint, iOS Simulator compile check, and unit/integration tests).
+- **ViewModel coverage gaps closed** (2026-01-27): `CravingListViewModelTests` (5 tests) and `SettingsViewModelTests` (8 tests) added.
 - UI tests exist and match the current 4-tab UI (Page Object Pattern in `CraveyUITests/`), but:
   - They are **not executed** by `scripts/verify.sh` (so UI regressions can ship undetected).
   - Building/running UI tests on iOS Simulator surfaces Swift 6 actor-isolation diagnostics because `XCUIApplication` / `XCUIElement` APIs are `@MainActor`.
@@ -47,8 +48,8 @@ xcodebuild test -scheme Cravey \
 
 ## Acceptance Criteria
 
-- [ ] `bash scripts/verify.sh` passes
+- [x] `bash scripts/verify.sh` passes
 - [ ] `xcodebuild test ... -only-testing:CraveyUITests` exits `0` (UI tests run successfully)
-- [ ] `CravingListViewModelTests` exist and pass
-- [ ] `SettingsViewModelTests` exist and pass
+- [x] `CravingListViewModelTests` exist and pass (5 tests added 2026-01-27)
+- [x] `SettingsViewModelTests` exist and pass (8 tests added 2026-01-27)
 
