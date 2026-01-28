@@ -1,8 +1,9 @@
 # DEBT-008: Notes Character Limit Enforcement Inconsistency
 
 **Priority:** P4 (Code Quality)
-**Status:** OPEN
+**Status:** FIXED
 **Created:** 2026-01-27
+**Fixed:** 2026-01-27
 
 ## Problem
 
@@ -73,6 +74,6 @@ Remove the validation check in `logCraving()` (Domain layer already validates).
 
 ## Acceptance Criteria
 
-- [ ] Both forms handle notes limit identically
-- [ ] Character counter appears at 400+ chars in both forms
-- [ ] Unit tests cover limit enforcement
+- [x] Both forms handle notes limit identically (auto-truncate at 500)
+- [x] Character counter appears at 400+ chars in both forms
+- [x] Unit tests cover limit enforcement

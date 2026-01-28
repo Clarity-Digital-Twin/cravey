@@ -3,41 +3,38 @@ import SwiftUI
 /// Home tab - dashboard-only overview (no lists, no logging).
 /// Presentation layer - Clean Architecture
 struct HomeView: View {
-    @Environment(DashboardViewModel.self) private var viewModel
-
-    private static let motivationMessages: [String] = [
-        "Every moment of resistance is progress.",
-        "Setbacks are part of the journey — be kind to yourself.",
-        "You don’t need to do this perfectly. Just keep going.",
-        "Breathe. Notice the urge. Let it pass.",
-        "Small wins add up. You’re building momentum.",
-    ]
+    @Environment(DashboardViewModel.self) private var dashboardViewModel
+    @Environment(HomeMotivationViewModel.self) private var motivationViewModel
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                if viewModel.isLoading {
+                if dashboardViewModel.isLoading {
                     ProgressView("Loading…")
                         .frame(maxWidth: .infinity, minHeight: 200)
                         .padding()
                 } else {
                     LazyVStack(spacing: 16) {
                         HeroStreakCard(
-                            daysAbstinent: viewModel.currentStreak,
-                            sinceDate: viewModel.mostRecentUsageDate
+                            daysAbstinent: dashboardViewModel.currentStreak,
+                            sinceDate: dashboardViewModel.mostRecentUsageDate
                         )
                         .accessibilityIdentifier("heroStreakCard")
 
                         TodayStatsCard(
-                            cravingCount: viewModel.todayCravingCount,
-                            usageCount: viewModel.todayUsageCount
+                            cravingCount: dashboardViewModel.todayCravingCount,
+                            usageCount: dashboardViewModel.todayUsageCount
                         )
                         .accessibilityIdentifier("todayStatsCard")
 
-                        MotivationCard(message: motivationMessage)
+                        MotivationCard(message: motivationViewModel.currentMessage)
                             .accessibilityIdentifier("motivationCard")
+                            .task {
+                                // Mark as shown once when card appears
+                                await motivationViewModel.markMessageShown()
+                            }
 
-                        if let errorMessage = viewModel.errorMessage {
+                        if let errorMessage = dashboardViewModel.errorMessage {
                             Text(
                                 errorMessage.isEmpty
                                     ? "We couldn't load your dashboard. Please try again."
@@ -54,19 +51,15 @@ struct HomeView: View {
             }
             .navigationTitle("My Recovery")
             .task {
-                await viewModel.loadMetrics()
+                // Load dashboard metrics and motivation message concurrently
+                async let dashboardTask: () = dashboardViewModel.loadMetrics()
+                async let motivationTask: () = motivationViewModel.loadMessage()
+                _ = await (dashboardTask, motivationTask)
             }
             .refreshable {
-                await viewModel.loadMetrics()
+                await dashboardViewModel.loadMetrics()
             }
         }
-    }
-
-    private var motivationMessage: String {
-        let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
-        let messages = Self.motivationMessages
-        guard !messages.isEmpty else { return "" }
-        return messages[dayOfYear % messages.count]
     }
 }
 
@@ -75,6 +68,7 @@ struct HomeView: View {
 
     HomeView()
         .environment(container.makeDashboardViewModel())
+        .environment(container.makeHomeMotivationViewModel())
         .environment(container)
 }
 

@@ -3,9 +3,12 @@ import Foundation
 /// Static location presets for craving logging
 /// Source: CLINICAL_CANNABIS_SPEC.md lines 200-201, DATA_MODEL_SPEC.md lines 199-205
 enum LocationOptions {
-    /// Location presets (note: "Current Location" is placeholder for Phase 2 GPS integration)
+    /// Special key for "Current Location" GPS option
+    static let currentLocationKey = "📍 Current"
+
+    /// All location presets (Current Location first for convenience)
     static let presets: [String] = [
-        "Current Location", // PHASE_2: Wire CoreLocation GPS detection
+        currentLocationKey,
         "Home",
         "Work",
         "Social",
@@ -13,7 +16,12 @@ enum LocationOptions {
         "Car",
     ]
 
-    /// Format GPS coordinates as string (lat,long)
+    /// Check if selection is the "Current Location" chip
+    static func isCurrentLocationChip(_ value: String) -> Bool {
+        value == currentLocationKey
+    }
+
+    /// Format GPS coordinates as comma-separated string
     static func formatGPS(latitude: Double, longitude: Double) -> String {
         "\(latitude),\(longitude)"
     }

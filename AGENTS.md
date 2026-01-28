@@ -693,6 +693,21 @@ settings:
 
 ---
 
+## App Versioning (Semver)
+
+- `CFBundleShortVersionString` uses Semver and stays `0.x.y` until the first public release.
+- `CFBundleVersion` is the build number and must increase monotonically.
+- Source of truth: `Config/iOS.Info.plist.template` (generated into the built app).
+
+Suggested milestones:
+- **0.1.0** - Craving + Usage logging (current)
+- **0.2.0** - Recordings feature complete
+- **0.3.0** - Onboarding flow complete
+- **0.9.0** - Feature complete, ready for beta testing
+- **1.0.0** - Public App Store release
+
+---
+
 ## Documentation Files
 
 - **docs/PROJECT_STATUS.md** - **Single source of truth for current status**

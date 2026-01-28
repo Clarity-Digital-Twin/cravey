@@ -4,20 +4,19 @@
 
 ## Open Bugs
 
-| ID | Priority | Description | File |
-|----|----------|-------------|------|
-| BUG-031 | P4 | Timestamp picker not centered | `TimestampPicker.swift` |
-| BUG-032 | P4 | Trigger chips layout could be better organized | `ChipSelector.swift` |
+_None._
 
 ## Fixed (Recent)
 
 - BUG-001 through BUG-024 - See `docs/_archive/bugs/`
-- BUG-025 - Closed (no longer reproducible; see `docs/bugs/BUG-025.md`)
+- BUG-025 - Closed (no longer reproducible; see `docs/_archive/bugs/BUG-025.md`)
 - BUG-026 - Fixed (craving timestamp formatting)
 - BUG-027 - Fixed (delete-all safety + spec alignment)
 - BUG-028 - Fixed (recording enum forward-compatibility)
 - BUG-029 - Fixed (CSV/JSON export + complete payload)
 - BUG-030 - Fixed (message enum forward-compatibility)
+- BUG-031 - Fixed (timestamp picker centered)
+- BUG-032 - Fixed (grouped trigger chips)
 
 ## Priority Definitions
 

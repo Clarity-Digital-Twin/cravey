@@ -23,14 +23,16 @@ final class CravingListViewModel {
     func fetchCravings() async {
         isLoading = true
         errorMessage = nil
+        defer { isLoading = false }
 
         do {
             cravings = try await fetchCravingsUseCase.execute()
+        } catch is CancellationError {
+            // Cancellation is flow control, not an error to surface
+            return
         } catch {
             errorMessage = error.localizedDescription
         }
-
-        isLoading = false
     }
 
     func deleteCraving(id: UUID) async {

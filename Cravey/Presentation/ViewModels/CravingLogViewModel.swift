@@ -13,12 +13,25 @@ final class CravingLogViewModel: Identifiable {
     var intensity: Double = 5
     var timestamp: Date = .init() // REQUIRED: Auto "now", editable (CLINICAL_CANNABIS_SPEC.md:193)
     var selectedTriggers: Set<String> = []
-    var notes: String = ""
+    var notes: String = "" {
+        didSet {
+            // Enforce 500 char limit (DATA_MODEL_SPEC:275, UX_FLOW:391)
+            if notes.count > 500 {
+                notes = String(notes.prefix(500))
+            }
+        }
+    }
+
     var selectedLocation: String? // BUG-004 FIX: Optional to avoid Set allocation in binding
     var isLoading: Bool = false
     var didSucceed: Bool = false // Signal success to parent (UX_FLOW:396-405) - toast, not alert
     var errorMessage: String?
     var showTimestampWarning: Bool = false
+
+    // Location state (DEBT-009: GPS Current Location)
+    var isLoadingLocation: Bool = false
+    var showLocationPermissionAlert: Bool = false
+    var locationError: String?
 
     // Private state for timestamp confirmation flow
     @ObservationIgnored
@@ -29,12 +42,16 @@ final class CravingLogViewModel: Identifiable {
     private let logCravingUseCase: LogCravingUseCase
     @ObservationIgnored
     private let nowProvider: @Sendable () -> Date
+    @ObservationIgnored
+    private let locationService: LocationServiceProtocol?
 
     init(
         logCravingUseCase: LogCravingUseCase,
+        locationService: LocationServiceProtocol? = nil,
         nowProvider: @escaping @Sendable () -> Date = Date.init
     ) {
         self.logCravingUseCase = logCravingUseCase
+        self.locationService = locationService
         self.nowProvider = nowProvider
         timestamp = nowProvider()
     }
@@ -46,12 +63,6 @@ final class CravingLogViewModel: Identifiable {
         if isTimestampOld, !hasAcknowledgedOldTimestamp {
             showTimestampWarning = true
             return // Wait for user to confirm
-        }
-
-        // Validate notes length (500 char limit per DATA_MODEL_SPEC.md:275)
-        if notes.count > 500 {
-            errorMessage = "Notes cannot exceed 500 characters"
-            return
         }
 
         guard canSubmit else { return }
@@ -99,6 +110,68 @@ final class CravingLogViewModel: Identifiable {
         selectedLocation = nil // BUG-004 FIX: Reset to nil
         hasAcknowledgedOldTimestamp = false
         didSucceed = false
+        isLoadingLocation = false
+        showLocationPermissionAlert = false
+        locationError = nil
+    }
+
+    // MARK: - Location Handling (DEBT-009)
+
+    /// Handle location chip selection
+    /// For "Current Location", requests GPS; for presets, stores directly
+    func handleLocationSelection(_ selection: String?) async {
+        // Clear any previous location error
+        locationError = nil
+
+        guard let selection else {
+            selectedLocation = nil
+            return
+        }
+
+        // Check if this is the "Current Location" chip
+        guard LocationOptions.isCurrentLocationChip(selection) else {
+            // Normal preset - store directly
+            selectedLocation = selection
+            return
+        }
+
+        // Current Location tapped - request GPS
+        guard let locationService else {
+            // No location service available (e.g., in tests without mock)
+            locationError = "Location service unavailable"
+            selectedLocation = nil
+            return
+        }
+
+        isLoadingLocation = true
+        defer { isLoadingLocation = false }
+
+        let result = await locationService.requestCurrentLocation()
+
+        switch result {
+        case let .success(latitude, longitude):
+            selectedLocation = LocationOptions.formatGPS(latitude: latitude, longitude: longitude)
+
+        case .permissionDenied:
+            showLocationPermissionAlert = true
+            selectedLocation = nil
+
+        case .permissionRestricted:
+            locationError = "Location restricted by parental controls"
+            selectedLocation = nil
+
+        case .servicesDisabled:
+            locationError = "Location Services disabled. Enable in Settings > Privacy."
+            selectedLocation = nil
+
+        case .timeout:
+            locationError = "Couldn't get location. Try again."
+            selectedLocation = nil
+
+        case let .error(message):
+            locationError = message
+            selectedLocation = nil
+        }
     }
 
     // MARK: - Computed Properties for UI
@@ -121,12 +194,8 @@ final class CravingLogViewModel: Identifiable {
         !isLoading
     }
 
-    var notesCharacterCount: String {
-        "\(notes.count)/500"
-    }
-
-    var notesExceedsLimit: Bool {
-        notes.count > 500
+    var notesCharacterCount: Int {
+        notes.count
     }
 
     /// BUG-006 FIX: Only show counter at 400+ chars (matches UsageLogViewModel)

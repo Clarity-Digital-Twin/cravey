@@ -35,8 +35,8 @@ final class LogScreen: BaseScreen {
     }
 
     var successToast: XCUIElement {
-        // Toast contains either "Craving logged" or "Usage logged"
-        app.staticTexts.matching(NSPredicate(format: "label CONTAINS 'logged'")).firstMatch
+        // Toast is a SwiftUI container with an explicit accessibility identifier for deterministic matching.
+        app.descendants(matching: .any).matching(identifier: "successToast").firstMatch
     }
 
     // MARK: - Actions

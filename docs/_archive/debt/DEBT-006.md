@@ -1,9 +1,10 @@
 # DEBT-006: Version Should Use Proper Semver (0.x.x Pre-Release)
 
 **Priority:** P4 (Polish)
-**Status:** OPEN
+**Status:** FIXED
 **File:** `Config/iOS.Info.plist.template`
 **Created:** 2026-01-27
+**Fixed:** 2026-01-27
 
 ## Problem
 
@@ -44,6 +45,6 @@ Per [Semver 2.0.0](https://semver.org/), versions `0.x.x` indicate "initial deve
 
 ## Acceptance Criteria
 
-- [ ] `CFBundleShortVersionString` set to `0.1.0`
-- [ ] Settings screen shows `0.1.0 (1)`
-- [ ] Document version strategy in CLAUDE.md
+- [x] `CFBundleShortVersionString` set to `0.1.0`
+- [x] Settings screen shows `0.1.0 (1)` (reads from bundle info)
+- [x] Document version strategy in `AGENTS.md` / `CLAUDE.md`

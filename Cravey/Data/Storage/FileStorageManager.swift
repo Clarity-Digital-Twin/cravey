@@ -31,7 +31,13 @@ enum StorageError: LocalizedError {
     }
 }
 
-actor FileStorageManager {
+/// Protocol for file deletion operations (enables testing with mocks)
+protocol RecordingFileDeleting: Sendable {
+    func deleteRecording(at relativePath: String) async throws
+    func deleteThumbnail(at relativePath: String?) async throws
+}
+
+actor FileStorageManager: RecordingFileDeleting {
     private static let logger = Logger(subsystem: "com.cravey", category: "FileStorageManager")
 
     private let fileManager: FileManager
@@ -171,7 +177,8 @@ actor FileStorageManager {
     // MARK: - File Deletion
 
     /// Deletes a recording file
-    func deleteRecording(at relativePath: String) throws {
+    /// Marked async to match RecordingFileDeleting protocol requirement
+    func deleteRecording(at relativePath: String) async throws {
         guard let url = absoluteURL(for: relativePath) else {
             throw StorageError.invalidURL
         }
@@ -184,7 +191,8 @@ actor FileStorageManager {
     }
 
     /// Deletes a thumbnail
-    func deleteThumbnail(at relativePath: String?) throws {
+    /// Marked async to match RecordingFileDeleting protocol requirement
+    func deleteThumbnail(at relativePath: String?) async throws {
         guard let relativePath,
               let url = absoluteURL(for: relativePath)
         else {

@@ -6,19 +6,28 @@
 
 | ID | Priority | Description | File |
 |----|----------|-------------|------|
-| DEBT-006 | P4 | Version should use semver 0.x.x (pre-release) | `iOS.Info.plist.template` |
-| DEBT-007 | **P2** | **UI tests outdated + test coverage gaps** | CraveyUITests, ViewModels |
-| DEBT-008 | P4 | Notes character limit enforcement inconsistency | ViewModels |
- 
-## Fixed (Recent)
+| (none) | - | All technical debt resolved! 🎉 | - |
 
-- DEBT-001 - Fixed (shared timestamp validation utility)
-- DEBT-002 - Fixed (FileStorageManager injectable actor; removed singleton)
-- DEBT-003 - Fixed (shared export file date formatter)
-- DEBT-004 - Fixed (consistent nowProvider injection)
-- DEBT-005 - Fixed (removed unused app entrypoint UI code)
+## Fixed (Archived)
+
+All resolved DEBT items have been moved to `docs/_archive/debt/`.
+
+| ID | Summary | Archived |
+|----|---------|----------|
+| DEBT-001 | Shared timestamp validation utility | 2026-01-27 |
+| DEBT-002 | FileStorageManager injectable (no singleton) | 2026-01-27 |
+| DEBT-003 | Shared export file date formatter | 2026-01-27 |
+| DEBT-004 | Consistent nowProvider injection | 2026-01-27 |
+| DEBT-005 | Removed unused app entrypoint UI code | 2026-01-27 |
+| DEBT-006 | Semver versioning in Info.plist template | 2026-01-27 |
+| DEBT-007 | UI tests passing; `--ui` flag added | 2026-01-27 |
+| DEBT-008 | Consistent notes limit enforcement | 2026-01-27 |
+| DEBT-009 | GPS "Current Location" with CoreLocation | 2026-01-27 |
+| DEBT-010 | Home motivation repository-backed | 2026-01-27 |
+| DEBT-011 | RecordingRepository.delete removes files | 2026-01-27 |
 
 ## Priority Definitions
 
+- **P2** - Important. Tests are the safety net; privacy/data hygiene.
 - **P3** - Architecture concerns. Pay down incrementally.
 - **P4** - Code quality. Fix opportunistically.

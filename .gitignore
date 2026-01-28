@@ -54,3 +54,6 @@ Recordings/
 build-report.xml/
 mcp_agent_mail/
 com.apple.DeveloperTools/
+
+# AI tooling artifacts
+repomix-output.xml

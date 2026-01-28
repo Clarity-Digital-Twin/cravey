@@ -1,6 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Usage: ./scripts/verify.sh [--ui]
+#   --ui  Also run UI tests (slow, ~5 min). Without this flag, only fast unit tests run.
+
+RUN_UI_TESTS=false
+for arg in "$@"; do
+  case $arg in
+    --ui) RUN_UI_TESTS=true ;;
+    *) echo "Unknown argument: $arg" >&2; exit 1 ;;
+  esac
+done
+
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 
@@ -146,6 +157,36 @@ else
     CODE_SIGN_IDENTITY="" \
     -derivedDataPath "$DERIVED_DATA_PATH" \
     -resultBundlePath "$RESULT_BUNDLE_PATH"
+fi
+
+# Optional: UI tests (slow, ~5 min)
+if [[ "$RUN_UI_TESTS" == "true" ]]; then
+  echo "==> UI tests (iOS Simulator, slow)"
+  UI_RESULT_BUNDLE_PATH="/tmp/CraveyUITests.$(date +%s).xcresult"
+  if command -v xcbeautify >/dev/null 2>&1; then
+    xcodebuild test \
+      -project Cravey.xcodeproj \
+      -scheme Cravey \
+      -destination "platform=iOS Simulator,name=${IOS_SIMULATOR_NAME}" \
+      -only-testing:CraveyUITests \
+      CODE_SIGNING_ALLOWED=NO \
+      CODE_SIGNING_REQUIRED=NO \
+      CODE_SIGN_IDENTITY="" \
+      -derivedDataPath "$DERIVED_DATA_PATH" \
+      -resultBundlePath "$UI_RESULT_BUNDLE_PATH" 2>&1 | xcbeautify
+  else
+    xcodebuild test \
+      -project Cravey.xcodeproj \
+      -scheme Cravey \
+      -destination "platform=iOS Simulator,name=${IOS_SIMULATOR_NAME}" \
+      -only-testing:CraveyUITests \
+      CODE_SIGNING_ALLOWED=NO \
+      CODE_SIGNING_REQUIRED=NO \
+      CODE_SIGN_IDENTITY="" \
+      -derivedDataPath "$DERIVED_DATA_PATH" \
+      -resultBundlePath "$UI_RESULT_BUNDLE_PATH"
+  fi
+  rm -rf "$UI_RESULT_BUNDLE_PATH"
 fi
 
 echo "PASS: Verification succeeded"
