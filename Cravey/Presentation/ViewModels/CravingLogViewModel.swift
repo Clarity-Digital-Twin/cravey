@@ -28,6 +28,11 @@ final class CravingLogViewModel: Identifiable {
     var errorMessage: String?
     var showTimestampWarning: Bool = false
 
+    // Location state (DEBT-009: GPS Current Location)
+    var isLoadingLocation: Bool = false
+    var showLocationPermissionAlert: Bool = false
+    var locationError: String?
+
     // Private state for timestamp confirmation flow
     @ObservationIgnored
     private var hasAcknowledgedOldTimestamp: Bool = false
@@ -37,12 +42,16 @@ final class CravingLogViewModel: Identifiable {
     private let logCravingUseCase: LogCravingUseCase
     @ObservationIgnored
     private let nowProvider: @Sendable () -> Date
+    @ObservationIgnored
+    private let locationService: LocationServiceProtocol?
 
     init(
         logCravingUseCase: LogCravingUseCase,
+        locationService: LocationServiceProtocol? = nil,
         nowProvider: @escaping @Sendable () -> Date = Date.init
     ) {
         self.logCravingUseCase = logCravingUseCase
+        self.locationService = locationService
         self.nowProvider = nowProvider
         timestamp = nowProvider()
     }
@@ -101,6 +110,68 @@ final class CravingLogViewModel: Identifiable {
         selectedLocation = nil // BUG-004 FIX: Reset to nil
         hasAcknowledgedOldTimestamp = false
         didSucceed = false
+        isLoadingLocation = false
+        showLocationPermissionAlert = false
+        locationError = nil
+    }
+
+    // MARK: - Location Handling (DEBT-009)
+
+    /// Handle location chip selection
+    /// For "Current Location", requests GPS; for presets, stores directly
+    func handleLocationSelection(_ selection: String?) async {
+        // Clear any previous location error
+        locationError = nil
+
+        guard let selection else {
+            selectedLocation = nil
+            return
+        }
+
+        // Check if this is the "Current Location" chip
+        guard LocationOptions.isCurrentLocationChip(selection) else {
+            // Normal preset - store directly
+            selectedLocation = selection
+            return
+        }
+
+        // Current Location tapped - request GPS
+        guard let locationService else {
+            // No location service available (e.g., in tests without mock)
+            locationError = "Location service unavailable"
+            selectedLocation = nil
+            return
+        }
+
+        isLoadingLocation = true
+        defer { isLoadingLocation = false }
+
+        let result = await locationService.requestCurrentLocation()
+
+        switch result {
+        case let .success(latitude, longitude):
+            selectedLocation = LocationOptions.formatGPS(latitude: latitude, longitude: longitude)
+
+        case .permissionDenied:
+            showLocationPermissionAlert = true
+            selectedLocation = nil
+
+        case .permissionRestricted:
+            locationError = "Location restricted by parental controls"
+            selectedLocation = nil
+
+        case .servicesDisabled:
+            locationError = "Location Services disabled. Enable in Settings > Privacy."
+            selectedLocation = nil
+
+        case .timeout:
+            locationError = "Couldn't get location. Try again."
+            selectedLocation = nil
+
+        case let .error(message):
+            locationError = message
+            selectedLocation = nil
+        }
     }
 
     // MARK: - Computed Properties for UI

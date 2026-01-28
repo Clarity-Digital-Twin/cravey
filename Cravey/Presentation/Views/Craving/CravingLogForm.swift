@@ -31,11 +31,39 @@ struct CravingLogForm: View {
                     )
 
                     // BUG-004 FIX: Use OptionalSingleSelectChipSelector to avoid Set allocation per render
+                    // DEBT-009: Custom binding to handle "Current Location" GPS request
                     OptionalSingleSelectChipSelector(
                         title: "Where are you?",
                         options: LocationOptions.presets,
-                        selectedValue: $viewModel.selectedLocation
+                        selectedValue: Binding(
+                            get: {
+                                // Show "📍 Current" chip as selected if we have GPS coords
+                                if let loc = viewModel.selectedLocation, LocationOptions.isGPS(loc) {
+                                    return LocationOptions.currentLocationKey
+                                }
+                                return viewModel.selectedLocation
+                            },
+                            set: { newValue in
+                                Task {
+                                    await viewModel.handleLocationSelection(newValue)
+                                }
+                            }
+                        )
                     )
+                    .overlay {
+                        if viewModel.isLoadingLocation {
+                            ProgressView()
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .padding(.trailing, 8)
+                        }
+                    }
+
+                    // Show location error inline if present
+                    if let locationError = viewModel.locationError {
+                        Text(locationError)
+                            .font(.caption)
+                            .foregroundStyle(.red)
+                    }
 
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Notes", text: $viewModel.notes, axis: .vertical)
@@ -96,6 +124,17 @@ struct CravingLogForm: View {
                 if let error = viewModel.errorMessage {
                     Text(error)
                 }
+            }
+            // DEBT-009: Location permission denied alert
+            .alert("Location Permission Required", isPresented: $viewModel.showLocationPermissionAlert) {
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Enable location access in Settings to use Current Location.")
             }
             .onChange(of: viewModel.didSucceed) { _, didSucceed in
                 // Dismiss immediately on success (UX_FLOW:400 - sheet dismisses in 0.3s)

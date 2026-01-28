@@ -50,6 +50,7 @@ final class DependencyContainer {
         let modelContainer: ModelContainer
         let modelContext: ModelContext
         let fileStorage: FileStorageManager
+        let locationService: LocationServiceProtocol
         let cravingRepository: CravingRepositoryProtocol
         let usageRepository: UsageRepositoryProtocol
         let recordingRepository: RecordingRepositoryProtocol
@@ -82,6 +83,10 @@ final class DependencyContainer {
     private(set) var recordingRepository: RecordingRepositoryProtocol
     private(set) var messageRepository: MessageRepositoryProtocol
 
+    // MARK: - Services
+
+    private(set) var locationService: LocationServiceProtocol
+
     // MARK: - Use Cases (Domain Layer)
 
     private(set) var logCravingUseCase: LogCravingUseCase
@@ -98,11 +103,17 @@ final class DependencyContainer {
     // MARK: - View Models (Presentation Layer)
 
     func makeCravingLogViewModel() -> CravingLogViewModel {
-        CravingLogViewModel(logCravingUseCase: logCravingUseCase)
+        CravingLogViewModel(
+            logCravingUseCase: logCravingUseCase,
+            locationService: locationService
+        )
     }
 
     func makeUsageLogViewModel() -> UsageLogViewModel {
-        UsageLogViewModel(logUsageUseCase: logUsageUseCase)
+        UsageLogViewModel(
+            logUsageUseCase: logUsageUseCase,
+            locationService: locationService
+        )
     }
 
     func makeUsageListViewModel() -> UsageListViewModel {
@@ -145,6 +156,7 @@ final class DependencyContainer {
     private static func makeWiring(modelContainer: ModelContainer) -> Wiring {
         let modelContext = ModelContext(modelContainer)
         let fileStorage = FileStorageManager()
+        let locationService = LocationService()
 
         let cravingRepo = CravingRepository(modelContext: modelContext)
         let usageRepo = UsageRepository(modelContext: modelContext)
@@ -155,6 +167,7 @@ final class DependencyContainer {
             modelContainer: modelContainer,
             modelContext: modelContext,
             fileStorage: fileStorage,
+            locationService: locationService,
             cravingRepository: cravingRepo,
             usageRepository: usageRepo,
             recordingRepository: recordingRepo,
@@ -187,6 +200,7 @@ final class DependencyContainer {
         modelContainer = wiring.modelContainer
         modelContext = wiring.modelContext
         fileStorage = wiring.fileStorage
+        locationService = wiring.locationService
 
         cravingRepository = wiring.cravingRepository
         usageRepository = wiring.usageRepository

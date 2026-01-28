@@ -74,6 +74,10 @@
 		</dict>
 	</dict>
 
+	<!-- Privacy - Location (for Current Location chip in logging forms) -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Cravey uses your location to help you track where cravings occur. Location data is stored locally and never leaves your device.</string>
+
 	<!-- Privacy - Health Data (if integrating with HealthKit later) -->
 	<!-- Commented out for now
 	<key>NSHealthShareUsageDescription</key>

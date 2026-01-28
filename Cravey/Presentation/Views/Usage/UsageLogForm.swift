@@ -135,6 +135,17 @@ struct UsageLogForm: View {
                     Text(error)
                 }
             }
+            // DEBT-009: Location permission denied alert
+            .alert("Location Permission Required", isPresented: $viewModel.showLocationPermissionAlert) {
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Enable location access in Settings to use Current Location.")
+            }
             .onChange(of: viewModel.didSucceed) { _, didSucceed in
                 // Dismiss immediately on success (UX_FLOW:400 - sheet dismisses in 0.3s)
                 if didSucceed {
@@ -153,11 +164,41 @@ struct UsageLogForm: View {
     @ViewBuilder
     private var locationSelector: some View {
         // BUG-003 FIX: Use OptionalSingleSelectChipSelector to avoid Set allocation per render
-        OptionalSingleSelectChipSelector(
-            title: "Where are you?",
-            options: LocationOptions.presets,
-            selectedValue: $viewModel.selectedLocation
-        )
+        // DEBT-009: Custom binding to handle "Current Location" GPS request
+        VStack(alignment: .leading, spacing: 8) {
+            OptionalSingleSelectChipSelector(
+                title: "Where are you?",
+                options: LocationOptions.presets,
+                selectedValue: Binding(
+                    get: {
+                        // Show "📍 Current" chip as selected if we have GPS coords
+                        if let loc = viewModel.selectedLocation, LocationOptions.isGPS(loc) {
+                            return LocationOptions.currentLocationKey
+                        }
+                        return viewModel.selectedLocation
+                    },
+                    set: { newValue in
+                        Task {
+                            await viewModel.handleLocationSelection(newValue)
+                        }
+                    }
+                )
+            )
+            .overlay {
+                if viewModel.isLoadingLocation {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .padding(.trailing, 8)
+                }
+            }
+
+            // Show location error inline if present
+            if let locationError = viewModel.locationError {
+                Text(locationError)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+            }
+        }
     }
 }
 

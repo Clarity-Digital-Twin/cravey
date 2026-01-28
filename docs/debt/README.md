@@ -6,10 +6,11 @@
 
 | ID | Priority | Description | File |
 |----|----------|-------------|------|
-| DEBT-009 | P3 | GPS "Current Location" spec not implemented | `LocationOptions.swift` |
+| (none) | - | All technical debt resolved! 🎉 | - |
 
 ## Fixed (Recent)
 
+- DEBT-009 - Fixed (GPS "Current Location" feature with CoreLocation integration)
 - DEBT-001 - Fixed (shared timestamp validation utility)
 - DEBT-002 - Fixed (FileStorageManager injectable actor; removed singleton)
 - DEBT-003 - Fixed (shared export file date formatter)

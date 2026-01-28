@@ -1,9 +1,10 @@
 # DEBT-009: GPS "Current Location" Spec Not Implemented
 
 **Priority:** P3 (Spec Drift / Feature Gap)
-**Status:** OPEN - Ready for Implementation
+**Status:** ✅ CLOSED - Implemented
 **Created:** 2026-01-27
 **Last Audited:** 2026-01-27
+**Closed:** 2026-01-27
 
 ## Problem
 
@@ -349,15 +350,15 @@ actor MockLocationService: LocationServiceProtocol {
 
 ## Acceptance Criteria
 
-- [ ] "📍 Current" chip appears first in location options
-- [ ] Tapping "Current" requests location permission (first time)
-- [ ] If denied: Alert appears with "Open Settings" button
-- [ ] If granted: Chip shows loading state, then location is stored as "lat,long"
-- [ ] Stored location displays as "Current Location" in history views
-- [ ] Info.plist contains privacy description
-- [ ] Location data is local-only (no network calls, no reverse geocoding)
-- [ ] Unit tests cover success/denied/timeout scenarios via mock
-- [ ] `bash scripts/verify.sh` passes
+- [x] "📍 Current" chip appears first in location options
+- [x] Tapping "Current" requests location permission (first time)
+- [x] If denied: Alert appears with "Open Settings" button
+- [x] If granted: Chip shows loading state, then location is stored as "lat,long"
+- [x] Stored location displays as "Current Location" in history views
+- [x] Info.plist contains privacy description
+- [x] Location data is local-only (no network calls, no reverse geocoding)
+- [x] Unit tests cover success/denied/timeout scenarios via mock
+- [x] `bash scripts/verify.sh` passes
 
 ## Privacy Considerations
 
