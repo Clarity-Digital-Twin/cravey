@@ -11,9 +11,8 @@ enum LocationOptions {
         currentLocationKey,
         "Home",
         "Work",
-        "Social",
-        "Outside",
-        "Car",
+        "Out",
+        "Other",
     ]
 
     /// Check if selection is the "Current Location" chip

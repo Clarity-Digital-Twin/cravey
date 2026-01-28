@@ -49,7 +49,8 @@ struct HomeView: View {
                     .padding()
                 }
             }
-            .navigationTitle("My Recovery")
+            .navigationTitle("Overview")
+            .navigationBarTitleDisplayMode(.inline)
             .task {
                 // Load dashboard metrics and motivation message concurrently
                 async let dashboardTask: () = dashboardViewModel.loadMetrics()
@@ -86,7 +87,7 @@ private struct HeroStreakCard: View {
                 .foregroundStyle(.secondary)
                 .tracking(1)
 
-            Text("abstinent")
+            Text("since last use")
                 .font(.title3.weight(.semibold))
 
             Text(sinceText)

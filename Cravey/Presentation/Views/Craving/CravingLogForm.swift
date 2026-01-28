@@ -21,9 +21,9 @@ struct CravingLogForm: View {
                 // OPTIONAL SECTION
                 Section("Details (Optional)") {
                     ChipSelector(
-                        title: "What triggered this?",
+                        title: "Triggers",
                         groups: [
-                            .init(title: "Primary (HAALT)", options: TriggerOptions.primary),
+                            .init(title: "Primary", options: TriggerOptions.primary),
                             .init(title: "Secondary", options: TriggerOptions.secondary),
                         ],
                         selectedValues: $viewModel.selectedTriggers,
@@ -33,7 +33,7 @@ struct CravingLogForm: View {
                     // BUG-004 FIX: Use OptionalSingleSelectChipSelector to avoid Set allocation per render
                     // DEBT-009: Custom binding to handle "Current Location" GPS request
                     OptionalSingleSelectChipSelector(
-                        title: "Where are you?",
+                        title: "Location",
                         options: LocationOptions.presets,
                         selectedValue: Binding(
                             get: {
@@ -73,15 +73,18 @@ struct CravingLogForm: View {
                         if viewModel.shouldShowNotesCounter {
                             HStack {
                                 Spacer()
-                                Text("\(viewModel.notesCharacterCount)/500")
+                                Text("\(viewModel.notesCharacterCount)/\(ValidationLimits.notesMaxLength)")
                                     .font(.caption)
-                                    .foregroundStyle(viewModel.notesCharacterCount == 500 ? .red : .secondary)
+                                    .foregroundStyle(
+                                        viewModel.notesCharacterCount == ValidationLimits.notesMaxLength
+                                            ? .red : .secondary
+                                    )
                             }
                         }
                     }
                 }
             }
-            .navigationTitle("Log Craving")
+            .navigationTitle("Craving")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

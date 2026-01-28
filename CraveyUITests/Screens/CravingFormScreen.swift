@@ -6,7 +6,7 @@ final class CravingFormScreen: BaseScreen {
     // MARK: - Elements
 
     var navigationTitle: XCUIElement {
-        app.navigationBars["Log Craving"]
+        app.navigationBars["Craving"]
     }
 
     var cancelButton: XCUIElement {

@@ -43,9 +43,9 @@ struct UsageLogForm: View {
 
                 Section {
                     ChipSelector(
-                        title: "What triggered this?",
+                        title: "Triggers",
                         groups: [
-                            .init(title: "Primary (HAALT)", options: TriggerOptions.primary),
+                            .init(title: "Primary", options: TriggerOptions.primary),
                             .init(title: "Secondary", options: TriggerOptions.secondary),
                         ],
                         selectedValues: $viewModel.selectedTriggers,
@@ -76,9 +76,12 @@ struct UsageLogForm: View {
                     if viewModel.shouldShowNotesCounter {
                         HStack {
                             Spacer()
-                            Text("\(viewModel.notesCharacterCount)/500")
+                            Text("\(viewModel.notesCharacterCount)/\(ValidationLimits.notesMaxLength)")
                                 .font(.caption)
-                                .foregroundStyle(viewModel.notesCharacterCount == 500 ? .red : .secondary)
+                                .foregroundStyle(
+                                viewModel.notesCharacterCount == ValidationLimits.notesMaxLength
+                                    ? .red : .secondary
+                            )
                         }
                     }
                 } header: {
@@ -167,7 +170,7 @@ struct UsageLogForm: View {
         // DEBT-009: Custom binding to handle "Current Location" GPS request
         VStack(alignment: .leading, spacing: 8) {
             OptionalSingleSelectChipSelector(
-                title: "Where are you?",
+                title: "Location",
                 options: LocationOptions.presets,
                 selectedValue: Binding(
                     get: {

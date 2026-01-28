@@ -30,9 +30,9 @@ final class UsageLogViewModel: Identifiable {
     var selectedLocation: String?
     var notes: String = "" {
         didSet {
-            // Enforce 500 char limit (DATA_MODEL_SPEC:122, UX_FLOW:391)
-            if notes.count > 500 {
-                notes = String(notes.prefix(500))
+            // Enforce char limit (DATA_MODEL_SPEC:122, UX_FLOW:391)
+            if notes.count > ValidationLimits.notesMaxLength {
+                notes = String(notes.prefix(ValidationLimits.notesMaxLength))
             }
         }
     }
@@ -73,9 +73,9 @@ final class UsageLogViewModel: Identifiable {
         notes.count
     }
 
-    /// Show notes character counter (at 400+ chars per UX_FLOW:391)
+    /// Show notes character counter (at threshold per UX_FLOW:391)
     var shouldShowNotesCounter: Bool {
-        notes.count >= 400
+        notes.count >= ValidationLimits.notesCounterThreshold
     }
 
     /// Check if timestamp is >7 days old (DATA_MODEL_SPEC:117)

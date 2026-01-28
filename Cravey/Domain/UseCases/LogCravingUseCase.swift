@@ -37,8 +37,8 @@ final class DefaultLogCravingUseCase: LogCravingUseCase, Sendable {
             throw CravingError.futureTimestamp
         }
 
-        // Validate notes length (500 char limit per DATA_MODEL_SPEC.md:275)
-        if let notes, notes.count > 500 {
+        // Validate notes length (per DATA_MODEL_SPEC.md:275)
+        if let notes, notes.count > ValidationLimits.notesMaxLength {
             throw CravingError.notesTooLong
         }
 

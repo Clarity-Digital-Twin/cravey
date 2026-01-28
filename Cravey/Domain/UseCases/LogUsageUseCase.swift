@@ -60,8 +60,8 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
             throw UsageError.amountOutOfRange
         }
 
-        // Validate notes length (500 char limit per DATA_MODEL_SPEC.md:122)
-        if let notes = request.notes, notes.count > 500 {
+        // Validate notes length (per DATA_MODEL_SPEC.md:122)
+        if let notes = request.notes, notes.count > ValidationLimits.notesMaxLength {
             throw UsageError.notesTooLong
         }
 

@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import SwiftData
 
 /// SwiftData-backed implementation of DeleteAllUserDataUseCase.
@@ -8,6 +9,7 @@ import SwiftData
 /// - All custom motivational messages (defaults are kept)
 /// - Any on-disk recording files/thumbnails (Documents/Recordings/)
 final class SwiftDataDeleteAllUserDataUseCase: DeleteAllUserDataUseCase, Sendable {
+    private static let logger = Logger(subsystem: "com.cravey", category: "DeleteAllData")
     enum DeleteAllUserDataError: LocalizedError, Sendable {
         case prepareFileDeletionFailed(underlying: Error)
         case databaseDeletionFailed(underlying: Error)
@@ -116,9 +118,20 @@ final class SwiftDataDeleteAllUserDataUseCase: DeleteAllUserDataUseCase, Sendabl
 
         // Best-effort cleanup of any previously-staged deletions (e.g. if a prior attempt failed mid-way).
         let stagedPrefix = "Recordings.__delete_pending__"
-        let existingItems = (try? fileManager.contentsOfDirectory(at: documents, includingPropertiesForKeys: nil)) ?? []
+        let existingItems: [URL]
+        do {
+            existingItems = try fileManager.contentsOfDirectory(at: documents, includingPropertiesForKeys: nil)
+        } catch {
+            Self.logger.warning("Failed to list documents directory for cleanup: \(error.localizedDescription)")
+            existingItems = []
+        }
         for url in existingItems where url.lastPathComponent.hasPrefix(stagedPrefix) {
-            try? fileManager.removeItem(at: url)
+            do {
+                try fileManager.removeItem(at: url)
+            } catch {
+                Self.logger.warning("Failed to remove staged file \(url.lastPathComponent): \(error.localizedDescription)")
+                // Continue - best effort cleanup
+            }
         }
 
         let recordingsDir = documents.appendingPathComponent("Recordings", isDirectory: true)

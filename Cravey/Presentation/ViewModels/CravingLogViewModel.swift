@@ -15,9 +15,9 @@ final class CravingLogViewModel: Identifiable {
     var selectedTriggers: Set<String> = []
     var notes: String = "" {
         didSet {
-            // Enforce 500 char limit (DATA_MODEL_SPEC:275, UX_FLOW:391)
-            if notes.count > 500 {
-                notes = String(notes.prefix(500))
+            // Enforce char limit (DATA_MODEL_SPEC:275, UX_FLOW:391)
+            if notes.count > ValidationLimits.notesMaxLength {
+                notes = String(notes.prefix(ValidationLimits.notesMaxLength))
             }
         }
     }
@@ -198,8 +198,8 @@ final class CravingLogViewModel: Identifiable {
         notes.count
     }
 
-    /// BUG-006 FIX: Only show counter at 400+ chars (matches UsageLogViewModel)
+    /// BUG-006 FIX: Only show counter at threshold (matches UsageLogViewModel)
     var shouldShowNotesCounter: Bool {
-        notes.count >= 400
+        notes.count >= ValidationLimits.notesCounterThreshold
     }
 }

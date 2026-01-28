@@ -51,7 +51,7 @@ struct LogView: View {
                 Spacer()
             }
             .frame(maxWidth: .infinity)
-            .navigationTitle("Log Entry")
+            .navigationBarTitleDisplayMode(.inline)
 
             // MARK: - Craving Log Sheet
 
@@ -109,7 +109,7 @@ struct LogView: View {
                     .animation(.spring(duration: 0.3), value: showSuccessToast)
                     .task {
                         do {
-                            try await Task.sleep(for: .seconds(2))
+                            try await Task.sleep(for: UIConstants.toastDisplayDuration)
                         } catch {
                             // Task cancelled — safe to ignore
                         }

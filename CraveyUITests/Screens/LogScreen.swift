@@ -20,8 +20,10 @@ final class LogScreen: BaseScreen {
         return app.descendants(matching: .any).matching(identifier: "logUsageButton").firstMatch
     }
 
-    var navigationTitle: XCUIElement {
-        app.navigationBars["Log Entry"]
+    /// The Log tab no longer has a navigation title (removed for cleaner UX)
+    /// This element checks for the "What would you like to log?" prompt instead
+    var logPromptText: XCUIElement {
+        app.staticTexts["What would you like to log?"]
     }
 
     /// "Log Craving" text as fallback for button detection
@@ -88,9 +90,9 @@ final class LogScreen: BaseScreen {
     // MARK: - Verifications
 
     func verifyLogScreenLoaded() -> Bool {
-        guard waitForElement(navigationTitle) else { return false }
-        // Check for either button or text label
-        return logCravingButton.waitForExistence(timeout: 3) ||
+        // Check for the prompt text or button (no nav title anymore)
+        return waitForElement(logPromptText) ||
+            logCravingButton.waitForExistence(timeout: 3) ||
             logCravingText.waitForExistence(timeout: 3)
     }
 

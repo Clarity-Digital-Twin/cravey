@@ -148,7 +148,7 @@ private struct SuccessBanner: View {
             .animation(.spring(duration: 0.3), value: isPresented)
             .task {
                 do {
-                    try await Task.sleep(for: .seconds(2))
+                    try await Task.sleep(for: UIConstants.toastDisplayDuration)
                 } catch {
                     // Task cancelled — safe to ignore
                 }
