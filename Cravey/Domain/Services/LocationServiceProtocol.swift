@@ -28,5 +28,6 @@ protocol LocationServiceProtocol: Sendable {
     func requestCurrentLocation() async -> LocationResult
 
     /// Check current authorization without triggering prompt
-    func authorizationStatus() -> LocationAuthorizationStatus
+    /// Async to allow @MainActor implementations
+    func authorizationStatus() async -> LocationAuthorizationStatus
 }

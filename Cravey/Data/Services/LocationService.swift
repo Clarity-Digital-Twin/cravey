@@ -4,16 +4,24 @@ import Foundation
 /// CoreLocation implementation of LocationServiceProtocol
 /// Uses iOS 17+ async/await APIs for modern, clean location handling
 /// Data layer - implements Domain protocol with framework-specific code
-final class LocationService: LocationServiceProtocol, @unchecked Sendable {
+/// @MainActor ensures CLLocationManager is accessed from the main thread
+@MainActor
+final class LocationService: LocationServiceProtocol {
     private let locationManager: CLLocationManager
     private let timeout: TimeInterval
+    private let maxAuthRetries: Int
 
-    init(timeout: TimeInterval = 10.0) {
+    init(timeout: TimeInterval = 10.0, maxAuthRetries: Int = 10) {
         locationManager = CLLocationManager()
         self.timeout = timeout
+        self.maxAuthRetries = maxAuthRetries
     }
 
     func requestCurrentLocation() async -> LocationResult {
+        await requestCurrentLocationWithRetry(retriesRemaining: maxAuthRetries)
+    }
+
+    private func requestCurrentLocationWithRetry(retriesRemaining: Int) async -> LocationResult {
         // Check system-wide location services
         guard CLLocationManager.locationServicesEnabled() else {
             return .servicesDisabled
@@ -23,11 +31,15 @@ final class LocationService: LocationServiceProtocol, @unchecked Sendable {
         let status = locationManager.authorizationStatus
         switch status {
         case .notDetermined:
+            // Guard against infinite retries
+            guard retriesRemaining > 0 else {
+                return .error("Location permission not determined after retries")
+            }
             // Request permission - this will show system prompt
             locationManager.requestWhenInUseAuthorization()
             // Wait briefly for user response, then check again
             try? await Task.sleep(for: .milliseconds(500))
-            return await requestCurrentLocation() // Recursive call after permission prompt
+            return await requestCurrentLocationWithRetry(retriesRemaining: retriesRemaining - 1)
 
         case .denied:
             return .permissionDenied
@@ -80,8 +92,11 @@ final class LocationService: LocationServiceProtocol, @unchecked Sendable {
         }
     }
 
-    func authorizationStatus() -> LocationAuthorizationStatus {
-        switch locationManager.authorizationStatus {
+    /// Returns current authorization status
+    /// Async to allow cross-actor access from non-MainActor contexts
+    func authorizationStatus() async -> LocationAuthorizationStatus {
+        let status = locationManager.authorizationStatus
+        switch status {
         case .notDetermined:
             return .notDetermined
         case .authorizedWhenInUse, .authorizedAlways:

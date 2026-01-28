@@ -5,12 +5,15 @@ import Testing
 // MARK: - Mock Location Service for Testing
 
 /// Mock LocationService for unit tests
-/// Thread-safety not needed since tests run on @MainActor
+/// Thread-safety handled via nonisolated(unsafe) for test simplicity
 @MainActor
 final class MockLocationService: LocationServiceProtocol {
-    var mockResult: LocationResult = .success(latitude: 37.7749, longitude: -122.4194)
-    var mockAuthStatus: LocationAuthorizationStatus = .authorized
-    private(set) var requestLocationCallCount = 0
+    // Using nonisolated(unsafe) for test mock properties to allow
+    // synchronous access from protocol methods. Safe in test context
+    // where all access is single-threaded and @MainActor-isolated.
+    nonisolated(unsafe) var mockResult: LocationResult = .success(latitude: 37.7749, longitude: -122.4194)
+    nonisolated(unsafe) var mockAuthStatus: LocationAuthorizationStatus = .authorized
+    private(set) nonisolated(unsafe) var requestLocationCallCount = 0
 
     func setMockResult(_ result: LocationResult) {
         mockResult = result
@@ -21,16 +24,12 @@ final class MockLocationService: LocationServiceProtocol {
     }
 
     nonisolated func requestCurrentLocation() async -> LocationResult {
-        await MainActor.run {
-            requestLocationCallCount += 1
-            return mockResult
-        }
+        requestLocationCallCount += 1
+        return mockResult
     }
 
-    nonisolated func authorizationStatus() -> LocationAuthorizationStatus {
-        // For sync access in tests, return a default
-        // Tests should use setMockAuthStatus before calling
-        .authorized
+    nonisolated func authorizationStatus() async -> LocationAuthorizationStatus {
+        mockAuthStatus
     }
 }
 

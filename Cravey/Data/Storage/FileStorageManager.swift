@@ -177,7 +177,8 @@ actor FileStorageManager: RecordingFileDeleting {
     // MARK: - File Deletion
 
     /// Deletes a recording file
-    func deleteRecording(at relativePath: String) throws {
+    /// Marked async to match RecordingFileDeleting protocol requirement
+    func deleteRecording(at relativePath: String) async throws {
         guard let url = absoluteURL(for: relativePath) else {
             throw StorageError.invalidURL
         }
@@ -190,7 +191,8 @@ actor FileStorageManager: RecordingFileDeleting {
     }
 
     /// Deletes a thumbnail
-    func deleteThumbnail(at relativePath: String?) throws {
+    /// Marked async to match RecordingFileDeleting protocol requirement
+    func deleteThumbnail(at relativePath: String?) async throws {
         guard let relativePath,
               let url = absoluteURL(for: relativePath)
         else {
