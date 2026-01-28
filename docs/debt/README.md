@@ -8,19 +8,23 @@
 |----|----------|-------------|------|
 | (none) | - | All technical debt resolved! 🎉 | - |
 
-## Fixed (Recent)
+## Fixed (Archived)
 
-- DEBT-009 - Fixed (GPS "Current Location" feature with CoreLocation integration)
-- DEBT-001 - Fixed (shared timestamp validation utility)
-- DEBT-002 - Fixed (FileStorageManager injectable actor; removed singleton)
-- DEBT-003 - Fixed (shared export file date formatter)
-- DEBT-004 - Fixed (consistent nowProvider injection)
-- DEBT-005 - Fixed (removed unused app entrypoint UI code)
-- DEBT-006 - Fixed (semver versioning in Info.plist template)
-- DEBT-007 - Fixed (UI tests passing; `--ui` flag added to verify.sh)
-- DEBT-008 - Fixed (consistent notes limit enforcement)
-- DEBT-010 - Fixed (Home motivation now repository-backed with timesShown tracking)
-- DEBT-011 - Fixed (RecordingRepository.delete now deletes files + model)
+All resolved DEBT items have been moved to `docs/_archive/debt/`.
+
+| ID | Summary | Archived |
+|----|---------|----------|
+| DEBT-001 | Shared timestamp validation utility | 2026-01-27 |
+| DEBT-002 | FileStorageManager injectable (no singleton) | 2026-01-27 |
+| DEBT-003 | Shared export file date formatter | 2026-01-27 |
+| DEBT-004 | Consistent nowProvider injection | 2026-01-27 |
+| DEBT-005 | Removed unused app entrypoint UI code | 2026-01-27 |
+| DEBT-006 | Semver versioning in Info.plist template | 2026-01-27 |
+| DEBT-007 | UI tests passing; `--ui` flag added | 2026-01-27 |
+| DEBT-008 | Consistent notes limit enforcement | 2026-01-27 |
+| DEBT-009 | GPS "Current Location" with CoreLocation | 2026-01-27 |
+| DEBT-010 | Home motivation repository-backed | 2026-01-27 |
+| DEBT-011 | RecordingRepository.delete removes files | 2026-01-27 |
 
 ## Priority Definitions
 

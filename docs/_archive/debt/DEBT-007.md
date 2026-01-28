@@ -57,8 +57,10 @@ xcodebuild test -scheme Cravey \
 - `CraveyUITests/Tests/UsageLogTests.swift` - Fixed toast race condition
 - `scripts/verify.sh` - Added `--ui` flag for optional UI test execution
 
-## Test Summary
+## Test Summary (as of closure)
 
 - **Unit tests:** 69 tests passing (CraveyTests)
 - **UI tests:** 22 tests passing (CraveyUITests)
-- **Total:** 91 tests
+- **Total at closure:** 91 tests
+
+_Note: Test count has grown since closure. See current verify.sh output for latest._

@@ -44,6 +44,8 @@ HomeView now fetches motivational messages from `MessageRepository` instead of u
 - `CraveyTests/Domain/UseCases/MarkMessageShownUseCaseTests.swift` - 3 tests
 - `CraveyTests/Presentation/ViewModels/HomeMotivationViewModelTests.swift` - 7 tests
 
-## Test Count
+## Test Count (as of closure)
 
 69 tests total (+14 new tests for this debt item)
+
+_Note: Test count has grown since closure. See current verify.sh output for latest._
