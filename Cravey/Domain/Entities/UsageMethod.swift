@@ -1,5 +1,3 @@
-import Foundation
-
 /// Single source of truth for ROA (Route of Administration) methods
 /// DEBT-041: Replaces stringly-typed method in UsageEntity
 /// Maintains backward compatibility by storing rawValue as String in SwiftData

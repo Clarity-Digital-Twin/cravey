@@ -47,7 +47,7 @@ Choose one:
 
 ## Acceptance Criteria
 
-- [ ] Single source of truth for startup wiring and failure handling.
-- [ ] No duplicated “nil out all view models” blocks.
-- [ ] No unused startup handler code remains in the app target.
-- [ ] All tests pass.
+- [x] Single source of truth for startup wiring and failure handling.
+- [x] No duplicated "nil out all view models" blocks.
+- [x] No unused startup handler code remains in the app target.
+- [x] All tests pass.

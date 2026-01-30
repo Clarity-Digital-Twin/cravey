@@ -66,10 +66,14 @@ struct CravingLogViewModelTests {
             await viewModel.handleLocationSelection(LocationOptions.currentLocationKey)
         }
 
-        // Wait until loading starts (avoid race with immediate selection change).
-        while viewModel.isLoadingLocation == false {
+        // Wait until loading starts with bounded timeout (max ~1 second)
+        var attempts = 0
+        let maxAttempts = 1000
+        while viewModel.isLoadingLocation == false, attempts < maxAttempts {
             await Task.yield()
+            attempts += 1
         }
+        #expect(viewModel.isLoadingLocation == true, "Loading should have started within timeout")
 
         await viewModel.handleLocationSelection("Home")
 

@@ -110,11 +110,11 @@ actor FileStorageManager: RecordingFileDeleting {
         do {
             try fileManager.moveItem(at: tempURL, to: destinationURL)
         } catch CocoaError.fileWriteFileExists {
-            // Destination exists - try copy + delete instead
-            try fileManager.copyItem(at: tempURL, to: destinationURL)
-            try? fileManager.removeItem(at: tempURL) // Best-effort cleanup
+            // Destination exists - overwrite by removing first, then move
+            try fileManager.removeItem(at: destinationURL)
+            try fileManager.moveItem(at: tempURL, to: destinationURL)
         } catch {
-            // Move failed for other reason - fall back to copy
+            // Move failed for other reason - fall back to copy + cleanup
             try fileManager.copyItem(at: tempURL, to: destinationURL)
             try? fileManager.removeItem(at: tempURL) // Best-effort cleanup
         }

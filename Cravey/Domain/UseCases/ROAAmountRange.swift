@@ -1,5 +1,3 @@
-import Foundation
-
 /// ROA (Route of Administration) amount range validation
 /// Source: DATA_MODEL_SPEC.md lines 140-153
 /// DEBT-041: Delegates to UsageMethod enum for validation logic
