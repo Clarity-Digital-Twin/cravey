@@ -83,7 +83,7 @@ extension RecordingEntity {
         return String(format: "%d:%02d", minutes, seconds)
     }
 
-    func incrementPlayCount(now: Date = Date()) -> RecordingEntity {
+    func incrementPlayCount(now: Date) -> RecordingEntity {
         RecordingEntity(
             id: id,
             timestamp: timestamp,

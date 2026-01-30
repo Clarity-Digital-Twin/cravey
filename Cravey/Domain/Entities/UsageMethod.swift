@@ -14,13 +14,13 @@ enum UsageMethod: String, CaseIterable, Codable, Sendable {
     var amountRange: [Double] {
         switch self {
         case .bowls, .joints, .blunts:
-            stride(from: 0.5, through: 5.0, by: 0.5).map(\.self)
+            Array(stride(from: 0.5, through: 5.0, by: 0.5))
         case .vape:
             Array(1 ... 10).map { Double($0) }
         case .dab:
             Array(1 ... 5).map { Double($0) }
         case .edible:
-            stride(from: 5.0, through: 100.0, by: 5.0).map(\.self)
+            Array(stride(from: 5.0, through: 100.0, by: 5.0))
         }
     }
 

@@ -4,11 +4,24 @@ import Testing
 
 @Suite("MarkMessageShownUseCase Tests")
 struct MarkMessageShownUseCaseTests {
+    private struct FixedClock: Clock, Sendable {
+        let fixedNow: Date
+        let calendar: Calendar
+
+        init(fixedNow: Date, calendar: Calendar = Calendar(identifier: .gregorian)) {
+            self.fixedNow = fixedNow
+            self.calendar = calendar
+        }
+
+        func now() -> Date { fixedNow }
+    }
+
     // MARK: - Test 1: Increments timesShown
 
     @Test("execute should increment timesShown")
     func incrementsTimesShown() async throws {
         let mockRepo = MarkMessageMockRepository()
+        let now = Date(timeIntervalSince1970: 1_000_000_000)
         let message = MotivationalMessageEntity(
             content: "Test message",
             category: .urge,
@@ -16,11 +29,12 @@ struct MarkMessageShownUseCaseTests {
         )
         await mockRepo.addMessage(message)
 
-        let useCase = DefaultMarkMessageShownUseCase(repository: mockRepo)
+        let useCase = DefaultMarkMessageShownUseCase(repository: mockRepo, clock: FixedClock(fixedNow: now))
         try await useCase.execute(message)
 
         let updated = await mockRepo.getUpdatedMessage(id: message.id)
         #expect(updated?.timesShown == 6)
+        #expect(updated?.lastShownAt == now)
     }
 
     // MARK: - Test 2: Sets lastShownAt
@@ -28,6 +42,7 @@ struct MarkMessageShownUseCaseTests {
     @Test("execute should set lastShownAt to current time")
     func setsLastShownAt() async throws {
         let mockRepo = MarkMessageMockRepository()
+        let now = Date(timeIntervalSince1970: 1_000_000_000)
         let message = MotivationalMessageEntity(
             content: "Test message",
             category: .anxiety,
@@ -36,15 +51,11 @@ struct MarkMessageShownUseCaseTests {
         )
         await mockRepo.addMessage(message)
 
-        let beforeExecution = Date()
-        let useCase = DefaultMarkMessageShownUseCase(repository: mockRepo)
+        let useCase = DefaultMarkMessageShownUseCase(repository: mockRepo, clock: FixedClock(fixedNow: now))
         try await useCase.execute(message)
-        let afterExecution = Date()
 
         let updated = await mockRepo.getUpdatedMessage(id: message.id)
-        #expect(updated?.lastShownAt != nil)
-        #expect(updated!.lastShownAt! >= beforeExecution)
-        #expect(updated!.lastShownAt! <= afterExecution)
+        #expect(updated?.lastShownAt == now)
     }
 
     // MARK: - Test 3: Calls repository update
@@ -52,13 +63,14 @@ struct MarkMessageShownUseCaseTests {
     @Test("execute should call repository update")
     func callsRepositoryUpdate() async throws {
         let mockRepo = MarkMessageMockRepository()
+        let now = Date(timeIntervalSince1970: 1_000_000_000)
         let message = MotivationalMessageEntity(
             content: "Test message",
             category: .boredom
         )
         await mockRepo.addMessage(message)
 
-        let useCase = DefaultMarkMessageShownUseCase(repository: mockRepo)
+        let useCase = DefaultMarkMessageShownUseCase(repository: mockRepo, clock: FixedClock(fixedNow: now))
         try await useCase.execute(message)
 
         let updateCalled = await mockRepo.updateCalled
