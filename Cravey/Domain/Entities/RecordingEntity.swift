@@ -1,7 +1,7 @@
 import Foundation
 
 /// Domain entity representing an audio/video recording
-/// Pure Swift - no framework dependencies
+/// Domain layer - no UI framework dependencies
 struct RecordingEntity: Identifiable, Codable, Equatable, Hashable, Sendable {
     let id: UUID
     let timestamp: Date

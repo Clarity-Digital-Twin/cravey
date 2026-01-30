@@ -1,7 +1,7 @@
 import Foundation
 
 /// Domain entity representing a motivational message
-/// Pure Swift - no framework dependencies
+/// Domain layer - no UI framework dependencies
 struct MotivationalMessageEntity: Identifiable, Codable, Equatable, Hashable, Sendable {
     let id: UUID
     let content: String

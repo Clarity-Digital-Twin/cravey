@@ -333,7 +333,7 @@ CraveyTests/                     # Unit Tests
 ├── Integration/
 └── Presentation/ViewModels/
 
-CraveyUITests/                   # UI Tests (disabled - Swift 6 concurrency)
+CraveyUITests/                   # UI Tests (XCTest; uses --uitesting in-memory mode)
 ```
 
 ### Dependency Flow (Clean Architecture Rules)

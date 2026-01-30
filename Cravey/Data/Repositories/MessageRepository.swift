@@ -84,7 +84,7 @@ final class MessageRepository: MessageRepositoryProtocol {
             model.isActive = message.isActive
             model.timesShown = message.timesShown
             model.lastShownAt = message.lastShownAt
-            model.modifiedAt = Date()
+            model.modifiedAt = message.modifiedAt ?? Date()
 
             try modelContext.save()
         }
