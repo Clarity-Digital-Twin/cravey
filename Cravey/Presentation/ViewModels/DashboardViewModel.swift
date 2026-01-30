@@ -106,19 +106,19 @@ final class DashboardViewModel {
     // MARK: - Private Calculations
 
     private func calculateStreaks(usages: [UsageEntity], now: Date = Date()) -> (current: Int, longest: Int) {
-        guard !usages.isEmpty else { return (0, 0) }
+        guard let lastUsage = usages.max(by: { $0.timestamp < $1.timestamp }) else {
+            return (0, 0)
+        }
 
         let sortedUsages = usages.sorted { $0.timestamp < $1.timestamp }
         let calendar = Calendar.current
-        let lastUsage = sortedUsages[sortedUsages.count - 1]
         let currentDays = max(0, calendar.dateComponents([.day], from: lastUsage.timestamp, to: now).day ?? 0)
 
         var longestDays = currentDays
 
-        for idx in 0 ..< sortedUsages.count - 1 {
-            let current = sortedUsages[idx].timestamp
-            let next = sortedUsages[idx + 1].timestamp
-            let gap = calendar.dateComponents([.day], from: current, to: next).day ?? 0
+        // Use zip for safe consecutive element iteration
+        for (current, next) in zip(sortedUsages, sortedUsages.dropFirst()) {
+            let gap = calendar.dateComponents([.day], from: current.timestamp, to: next.timestamp).day ?? 0
             longestDays = max(longestDays, gap)
         }
 

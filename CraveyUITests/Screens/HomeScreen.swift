@@ -5,9 +5,9 @@ import XCTest
 final class HomeScreen: BaseScreen {
     // MARK: - Elements
 
-    /// Navigation bar with "My Recovery" title
+    /// Navigation bar with "Overview" title
     var navigationTitle: XCUIElement {
-        app.navigationBars["My Recovery"]
+        app.navigationBars["Overview"]
     }
 
     /// Hero streak card - use descendants query for SwiftUI views

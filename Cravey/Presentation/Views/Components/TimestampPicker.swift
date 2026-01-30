@@ -6,7 +6,7 @@ struct TimestampPicker: View {
     @Binding var date: Date
     let title: String?
 
-    init(title: String? = "When did this happen?", date: Binding<Date>) {
+    init(title: String? = nil, date: Binding<Date>) {
         self.title = title
         _date = date
     }

@@ -79,6 +79,8 @@ enum ModelContainerSetup {
     }
 
     /// Seed default motivational messages
+    /// DEBT-036: Failure is non-fatal - app can function without default messages
+    /// Errors are logged at warning level since this is recoverable
     @MainActor
     static func seedDefaultMessages(context: ModelContext) {
         do {
@@ -93,8 +95,10 @@ enum ModelContainerSetup {
             }
 
             try context.save()
+            logger.info("Successfully seeded \(MotivationalMessageEntity.defaultMessages.count) default messages")
         } catch {
-            logger.error("Failed to seed default messages: \(error.localizedDescription)")
+            // Warning level because this is recoverable - app works without default messages
+            logger.warning("Failed to seed default messages (non-fatal): \(error.localizedDescription)")
         }
     }
 

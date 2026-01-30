@@ -203,7 +203,17 @@ struct FlowLayout: Layout {
         var yPosition = bounds.minY
 
         for (rowIndex, row) in rows.enumerated() {
-            var xPosition = bounds.minX
+            // Calculate row width for centering
+            var rowWidth: CGFloat = 0
+            for index in row.indices {
+                let size = subviews[index].sizeThatFits(.unspecified)
+                rowWidth += size.width
+            }
+            rowWidth += CGFloat(max(0, row.indices.count - 1)) * spacing
+
+            // Center the row
+            var xPosition = bounds.minX + (bounds.width - rowWidth) / 2
+
             for index in row.indices {
                 let size = subviews[index].sizeThatFits(.unspecified)
                 subviews[index].place(at: CGPoint(x: xPosition, y: yPosition), proposal: .unspecified)
@@ -225,13 +235,16 @@ struct FlowLayout: Layout {
             let size = subview.sizeThatFits(.unspecified)
 
             // Start new row if current row would overflow
-            if currentRowWidth + size.width > maxWidth, !rows[rows.count - 1].indices.isEmpty {
+            if let lastRow = rows.last, currentRowWidth + size.width > maxWidth, !lastRow.indices.isEmpty {
                 rows.append(Row())
                 currentRowWidth = 0
             }
 
-            rows[rows.count - 1].indices.append(index)
-            rows[rows.count - 1].maxHeight = max(rows[rows.count - 1].maxHeight, size.height)
+            // Safely update last row
+            if let lastIndex = rows.indices.last {
+                rows[lastIndex].indices.append(index)
+                rows[lastIndex].maxHeight = max(rows[lastIndex].maxHeight, size.height)
+            }
             currentRowWidth += size.width + spacing
         }
 
@@ -249,7 +262,7 @@ struct FlowLayout: Layout {
 
     VStack {
         ChipSelector(
-            title: "What triggered this?",
+            title: "Triggers",
             options: TriggerOptions.all,
             selectedValues: $selectedTriggers,
             multiSelect: true
@@ -267,8 +280,8 @@ struct FlowLayout: Layout {
 
     VStack {
         ChipSelector(
-            title: "Where are you?",
-            options: ["Home", "Work", "Social Gathering", "Outdoors", "Vehicle", "Other"],
+            title: "Location",
+            options: LocationOptions.presets,
             selectedValues: $selectedLocation,
             multiSelect: false
         )

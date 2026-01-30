@@ -6,7 +6,6 @@ options:
   bundleIdPrefix: com.cravey
   deploymentTarget:
     iOS: 18.0
-    macOS: 15.0
   createIntermediateGroups: true
   usesTabs: false
   indentWidth: 4
@@ -39,7 +38,7 @@ targets:
         INFOPLIST_FILE: Config/iOS.Info.plist.template
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1,2"  # iPhone and iPad
-        SUPPORTS_MACCATALYST: true
+        SUPPORTS_MACCATALYST: false
     preBuildScripts:
       - script: |
           # SwiftLint

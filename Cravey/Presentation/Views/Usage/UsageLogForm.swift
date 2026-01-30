@@ -43,9 +43,9 @@ struct UsageLogForm: View {
 
                 Section {
                     ChipSelector(
-                        title: "What triggered this?",
+                        title: "Triggers",
                         groups: [
-                            .init(title: "Primary (HAALT)", options: TriggerOptions.primary),
+                            .init(title: "Primary", options: TriggerOptions.primary),
                             .init(title: "Secondary", options: TriggerOptions.secondary),
                         ],
                         selectedValues: $viewModel.selectedTriggers,
@@ -61,7 +61,8 @@ struct UsageLogForm: View {
                 // MARK: - Location Section (Optional)
 
                 Section {
-                    locationSelector
+                    // DEBT-026: Extracted to reusable LocationSelector component
+                    LocationSelector(viewModel: viewModel)
                 } header: {
                     Text("Location (Optional)")
                 }
@@ -76,9 +77,12 @@ struct UsageLogForm: View {
                     if viewModel.shouldShowNotesCounter {
                         HStack {
                             Spacer()
-                            Text("\(viewModel.notesCharacterCount)/500")
+                            Text("\(viewModel.notesCharacterCount)/\(ValidationLimits.notesMaxLength)")
                                 .font(.caption)
-                                .foregroundStyle(viewModel.notesCharacterCount == 500 ? .red : .secondary)
+                                .foregroundStyle(
+                                    viewModel.notesCharacterCount == ValidationLimits.notesMaxLength
+                                        ? .red : .secondary
+                                )
                         }
                     }
                 } header: {
@@ -90,62 +94,22 @@ struct UsageLogForm: View {
             }
             .navigationTitle("Log Usage")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                    .accessibilityIdentifier("usageFormCancelButton")
-                }
-
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        Task {
-                            await viewModel.logUsage()
-                        }
-                    }
-                    .disabled(!viewModel.canSubmit || viewModel.isLoading)
-                    .accessibilityIdentifier("usageFormSaveButton")
-                }
+            .formToolbar(
+                canSubmit: viewModel.canSubmit,
+                isLoading: viewModel.isLoading,
+                cancelAccessibilityId: "usageFormCancelButton",
+                saveAccessibilityId: "usageFormSaveButton"
+            ) {
+                await viewModel.logUsage()
             }
-
-            // MARK: - Alerts & Toasts
-
-            .alert("Old Timestamp", isPresented: $viewModel.showTimestampWarning) {
-                Button("Cancel", role: .cancel) {
-                    viewModel.showTimestampWarning = false
-                }
-                Button("Save Anyway") {
-                    Task {
-                        await viewModel.confirmOldTimestamp()
-                    }
-                }
-            } message: {
-                Text("This timestamp is more than 7 days old. Are you sure you want to continue?")
+            .formAlerts(
+                viewModel: viewModel,
+                entityName: "usage entry",
+                confirmButtonTitle: "Save Anyway"
+            ) {
+                await viewModel.confirmOldTimestamp()
             }
-            .alert("Error", isPresented: Binding(
-                get: { viewModel.errorMessage != nil },
-                set: { if !$0 { viewModel.errorMessage = nil } }
-            )) {
-                Button("OK") {
-                    viewModel.errorMessage = nil
-                }
-            } message: {
-                if let error = viewModel.errorMessage {
-                    Text(error)
-                }
-            }
-            // DEBT-009: Location permission denied alert
-            .alert("Location Permission Required", isPresented: $viewModel.showLocationPermissionAlert) {
-                Button("Open Settings") {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(url)
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("Enable location access in Settings to use Current Location.")
-            }
+            .locationPermissionAlert(isPresented: $viewModel.showLocationPermissionAlert)
             .onChange(of: viewModel.didSucceed) { _, didSucceed in
                 // Dismiss immediately on success (UX_FLOW:400 - sheet dismisses in 0.3s)
                 if didSucceed {
@@ -159,47 +123,6 @@ struct UsageLogForm: View {
         }
     }
 
-    // MARK: - Location Selector (Single-Select)
-
-    @ViewBuilder
-    private var locationSelector: some View {
-        // BUG-003 FIX: Use OptionalSingleSelectChipSelector to avoid Set allocation per render
-        // DEBT-009: Custom binding to handle "Current Location" GPS request
-        VStack(alignment: .leading, spacing: 8) {
-            OptionalSingleSelectChipSelector(
-                title: "Where are you?",
-                options: LocationOptions.presets,
-                selectedValue: Binding(
-                    get: {
-                        // Show "📍 Current" chip as selected if we have GPS coords
-                        if let loc = viewModel.selectedLocation, LocationOptions.isGPS(loc) {
-                            return LocationOptions.currentLocationKey
-                        }
-                        return viewModel.selectedLocation
-                    },
-                    set: { newValue in
-                        Task {
-                            await viewModel.handleLocationSelection(newValue)
-                        }
-                    }
-                )
-            )
-            .overlay {
-                if viewModel.isLoadingLocation {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.trailing, 8)
-                }
-            }
-
-            // Show location error inline if present
-            if let locationError = viewModel.locationError {
-                Text(locationError)
-                    .font(.caption)
-                    .foregroundStyle(.red)
-            }
-        }
-    }
 }
 
 // MARK: - Previews
