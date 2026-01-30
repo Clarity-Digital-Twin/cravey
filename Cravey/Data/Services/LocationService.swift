@@ -35,23 +35,15 @@ final class LocationService: LocationServiceProtocol {
         case .notDetermined:
             // Request permission and await response (DEBT-039)
             // Uses polling with reasonable intervals since CLLocationManager
-            // doesn't have native async auth streams prior to iOS 18
+            // doesn't have a native async auth stream we can await here.
             locationManager.requestWhenInUseAuthorization()
 
-            // Poll for authorization change with timeout (BUG-033 fix)
+            // Poll for authorization change until user responds (BUG-033 fix)
             let pollInterval: Duration = .milliseconds(100)
-            let maxPolls = Int(timeout * 10) // 10 polls per second
-
-            for _ in 0 ..< maxPolls {
+            while locationManager.authorizationStatus == .notDetermined {
                 // Check if cancelled
                 if Task.isCancelled {
                     return .cancelled
-                }
-
-                // Check current status
-                let currentStatus = locationManager.authorizationStatus
-                if currentStatus != .notDetermined {
-                    return await handleAuthorizedStatus(currentStatus)
                 }
 
                 // Wait before polling again
@@ -62,8 +54,7 @@ final class LocationService: LocationServiceProtocol {
                 }
             }
 
-            // Timeout reached - user didn't respond to permission prompt
-            return .cancelled
+            return await handleAuthorizedStatus(locationManager.authorizationStatus)
 
         case .denied:
             return .permissionDenied

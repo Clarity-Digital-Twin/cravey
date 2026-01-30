@@ -15,7 +15,7 @@ struct LogUsageRequest: Sendable, Equatable {
     let notes: String?
 
     init(
-        timestamp: Date = Date(),
+        timestamp: Date,
         method: String,
         amount: Double,
         triggers: [String] = [],
@@ -42,8 +42,8 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
     }
 
     func execute(_ request: LogUsageRequest) async throws -> UsageEntity {
-        // Validate method (must be one of 6 ROAs)
-        guard ROAAmountRange.validMethods.contains(request.method) else {
+        // Validate method (single source of truth: UsageMethod)
+        guard let usageMethod = UsageMethod(rawValue: request.method) else {
             throw UsageError.invalidMethod
         }
 
@@ -58,7 +58,7 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
         }
 
         // Validate amount range for method
-        guard ROAAmountRange.isValid(method: request.method, amount: request.amount) else {
+        guard usageMethod.isValidAmount(request.amount) else {
             throw UsageError.amountOutOfRange
         }
 
@@ -74,7 +74,8 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
             amount: request.amount,
             triggers: request.triggers,
             location: request.location,
-            notes: request.notes
+            notes: request.notes,
+            createdAt: clock.now()
         )
 
         // Save to repository

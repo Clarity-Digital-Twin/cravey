@@ -4,11 +4,12 @@
 
 ## Open Bugs
 
-- BUG-033 - “Current Location” can error/timeout before user responds to permission prompt (see `docs/bugs/BUG-033.md`)
-- BUG-034 - In-flight GPS request can overwrite a later manual selection (see `docs/bugs/BUG-034.md`)
+_None._
 
 ## Fixed (Recent)
 
+- BUG-033 - Fixed (permission prompt no longer results in spurious timeout; no second tap needed) (see `docs/_archive/bugs/BUG-033.md`)
+- BUG-034 - Fixed (cancel in-flight GPS request; prevents overwrite race) (see `docs/_archive/bugs/BUG-034.md`)
 - BUG-001 through BUG-024 - See `docs/_archive/bugs/`
 - BUG-025 - Closed (no longer reproducible; see `docs/_archive/bugs/BUG-025.md`)
 - BUG-026 - Fixed (craving timestamp formatting)

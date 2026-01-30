@@ -18,9 +18,7 @@ extension LocationHandling {
     /// For "Current Location", requests GPS; for presets, stores directly
     /// BUG-034: Cancels any in-flight GPS request before starting new one
     func handleLocationSelection(_ selection: String?) async {
-        // Cancel any in-flight location request (BUG-034: prevents race condition)
-        locationTask?.cancel()
-        locationTask = nil
+        cancelInFlightLocationRequest()
 
         // Clear any previous location error
         locationError = nil
@@ -37,6 +35,17 @@ extension LocationHandling {
             return
         }
 
+        await requestCurrentLocation()
+    }
+
+    private func cancelInFlightLocationRequest() {
+        // Cancel any in-flight location request (BUG-034: prevents race condition)
+        locationTask?.cancel()
+        locationTask = nil
+        isLoadingLocation = false
+    }
+
+    private func requestCurrentLocation() async {
         // Current Location tapped - request GPS
         guard let locationService else {
             // No location service available (e.g., in tests without mock)
@@ -60,36 +69,40 @@ extension LocationHandling {
             // Check if cancelled before applying result (BUG-034)
             guard !Task.isCancelled else { return }
 
-            switch result {
-            case let .success(latitude, longitude):
-                selectedLocation = LocationOptions.formatGPS(latitude: latitude, longitude: longitude)
-
-            case .permissionDenied:
-                showLocationPermissionAlert = true
-                selectedLocation = nil
-
-            case .permissionRestricted:
-                locationError = "Location restricted by parental controls"
-                selectedLocation = nil
-
-            case .servicesDisabled:
-                locationError = "Location Services disabled. Enable in Settings > Privacy."
-                selectedLocation = nil
-
-            case .timeout:
-                locationError = "Couldn't get location. Try again."
-                selectedLocation = nil
-
-            case .cancelled:
-                // User or system cancelled - silently ignore (BUG-033/034)
-                break
-
-            case let .error(message):
-                locationError = message
-                selectedLocation = nil
-            }
+            applyLocationResult(result)
         }
         locationTask = task
         await task.value
+    }
+
+    private func applyLocationResult(_ result: LocationResult) {
+        switch result {
+        case let .success(latitude, longitude):
+            selectedLocation = LocationOptions.formatGPS(latitude: latitude, longitude: longitude)
+
+        case .permissionDenied:
+            showLocationPermissionAlert = true
+            selectedLocation = nil
+
+        case .permissionRestricted:
+            locationError = "Location restricted by parental controls"
+            selectedLocation = nil
+
+        case .servicesDisabled:
+            locationError = "Location Services disabled. Enable in Settings > Privacy."
+            selectedLocation = nil
+
+        case .timeout:
+            locationError = "Couldn't get location. Try again."
+            selectedLocation = nil
+
+        case .cancelled:
+            // User or system cancelled - silently ignore (BUG-033/034)
+            break
+
+        case let .error(message):
+            locationError = message
+            selectedLocation = nil
+        }
     }
 }

@@ -50,7 +50,8 @@ final class DefaultLogCravingUseCase: LogCravingUseCase, Sendable {
             intensity: intensity,
             triggers: triggers,
             location: location,
-            notes: notes
+            notes: notes,
+            createdAt: clock.now()
         )
 
         // Persist via repository

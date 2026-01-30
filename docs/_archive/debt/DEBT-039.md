@@ -1,8 +1,15 @@
 # DEBT-039: LocationService mixes flow-control with errors; polling + cancellation mapping + complexity warnings
 
 **Priority:** P2 (Reliability + Clean Code)
-**Status:** OPEN
+**Status:** ✅ RESOLVED
 **Created:** 2026-01-30
+**Resolved:** 2026-01-30
+
+## Resolution
+
+- Refactored `LocationService` to avoid recursion and silent cancellation swallowing.
+- Added `LocationResult.cancelled` and ensured cancellation is not mislabeled as timeout.
+- Resolved SwiftLint complexity warnings without suppressions.
 
 ## Problem
 
@@ -42,8 +49,7 @@ Even if behavior is “mostly fine”, this implementation is brittle and hard t
 
 ## Acceptance Criteria
 
-- [ ] No `try?` for cancellation-prone operations; catch `CancellationError` explicitly.
-- [ ] Cancellation is not mislabeled as timeout.
-- [ ] SwiftLint warnings for `LocationService` are resolved without suppressions.
-- [ ] Unit tests cover “denied”, “restricted”, “services disabled”, and “granted after prompt” flows (mocking via protocol).
-
+- [x] No `try?` for cancellation-prone operations; catch `CancellationError` explicitly.
+- [x] Cancellation is not mislabeled as timeout.
+- [x] SwiftLint warnings for `LocationService` are resolved without suppressions.
+- [x] Unit tests cover “denied”, “restricted”, “services disabled”, and “granted after prompt” flows (mocking via protocol).

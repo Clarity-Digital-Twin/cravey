@@ -1,8 +1,15 @@
 # DEBT-043: FileStorageManager has unused APIs and non-ideal save semantics (copy + temp cleanup)
 
 **Priority:** P3 (Storage correctness / maintainability)
-**Status:** OPEN
+**Status:** ✅ RESOLVED
 **Created:** 2026-01-30
+**Resolved:** 2026-01-30
+
+## Resolution
+
+- Removed unused `deleteAllRecordings()` API.
+- Updated save semantics to prefer `moveItem` and clean up temp files.
+- Made `deleteRecording` idempotent to match `deleteThumbnail`.
 
 ## Problem
 
@@ -29,7 +36,6 @@ While not necessarily broken today, these are classic “halfway” signals and 
 
 ## Acceptance Criteria
 
-- [ ] No unused public APIs in `FileStorageManager` (either wired or removed).
-- [ ] Recording save does not leave behind temp artifacts.
-- [ ] Delete operations are idempotent and do not spam logs for expected missing files.
-
+- [x] No unused public APIs in `FileStorageManager` (either wired or removed).
+- [x] Recording save does not leave behind temp artifacts.
+- [x] Delete operations are idempotent and do not spam logs for expected missing files.

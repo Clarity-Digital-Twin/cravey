@@ -1,6 +1,6 @@
 import Foundation
 
-/// Handles app startup initialization (DEBT-033)
+/// Handles app startup initialization (DEBT-037)
 /// Single source of truth for DependencyContainer initialization logic
 @MainActor
 enum AppStartupHandler {

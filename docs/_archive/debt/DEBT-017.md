@@ -34,7 +34,7 @@ return await requestCurrentLocationWithRetry(retriesRemaining: retriesRemaining 
 This pattern:
 - Wastes time sleeping even if user responds immediately
 - May not wait long enough if user is slow
-- Causes up to 10 retries × 500ms = 5 seconds of potential delay
+- Causes up to 10 retries x 500ms = 5 seconds of potential delay
 - Is fundamentally a polling hack instead of event-driven
 
 ---

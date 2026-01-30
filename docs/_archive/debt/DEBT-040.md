@@ -1,8 +1,14 @@
 # DEBT-040: AppConstants lives in Presentation but includes non-UI infrastructure configuration
 
 **Priority:** P3 (Architecture clarity)
-**Status:** OPEN
+**Status:** ✅ RESOLVED
 **Created:** 2026-01-30
+**Resolved:** 2026-01-30
+
+## Resolution
+
+- Moved infra configuration constants into `Cravey/App/Constants/InfrastructureConstants.swift`.
+- Reduced `Cravey/Presentation/Constants/AppConstants.swift` to UI-only defaults.
 
 ## Problem
 
@@ -34,7 +40,6 @@ Option B: Keep file but rename/split enums to reflect ownership and intent (less
 
 ## Acceptance Criteria
 
-- [ ] Presentation contains UI-only constants.
-- [ ] App/infrastructure constants live in App layer (composition root).
-- [ ] No Data layer types import Presentation constants.
-
+- [x] Presentation contains UI-only constants.
+- [x] App/infrastructure constants live in App layer (composition root).
+- [x] No Data layer types import Presentation constants.

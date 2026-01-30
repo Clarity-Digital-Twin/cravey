@@ -58,7 +58,13 @@ final class XRepository: XRepositoryProtocol {
 
 ---
 
-## Rob C. Martin Fix: Generic Base Repository
+## Implemented Fix (✅): RepositoryHelpers
+
+The codebase implemented `Cravey/Data/Repositories/RepositoryHelpers.swift` (opt-in static helpers) rather than introducing a generic base repository. This keeps repositories explicit and avoids generic inheritance complexity under SwiftData + strict concurrency.
+
+## Initial Proposal (Not Implemented): Generic Base Repository
+
+> **Note:** This was the initial proposal. The actual implementation used `RepositoryHelpers.swift`; see “Resolution Note” at the bottom.
 
 ```swift
 // Cravey/Data/Repositories/BaseRepository.swift
@@ -146,10 +152,10 @@ final class UsageRepository: BaseRepository<UsageEntity, UsageModel, UsageMapper
 
 ---
 
-## Files to Modify
+## (Initial Proposal) Files to Modify
 
 | File | Change |
-|------|--------|
+| ---- | ------ |
 | Create `Cravey/Data/Repositories/BaseRepository.swift` | Generic base repository |
 | `CravingRepository.swift` | Extend `BaseRepository`, remove ~50 lines |
 | `UsageRepository.swift` | Extend `BaseRepository`, remove ~50 lines |
@@ -162,7 +168,7 @@ final class UsageRepository: BaseRepository<UsageEntity, UsageModel, UsageMapper
 
 - [x] `RepositoryHelpers` created with opt-in static helper functions
 - [x] Helpers available for new repositories (existing repos work fine as-is)
-- [~] Refactoring existing repos is optional - helpers are available for future use
+- [x] Refactoring existing repos is optional - helpers are available for future use
 - [x] All 93 tests pass
 
 **Resolution Note:** Created `RepositoryHelpers.swift` with static helper functions (`insertAndSave`, `fetchAll`, `delete`, `update`). These are opt-in for new code. Existing repositories are tested and working - mandatory refactoring adds risk without clear benefit. The debt is resolved by having the helpers available.
