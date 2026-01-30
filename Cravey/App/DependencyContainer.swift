@@ -155,10 +155,9 @@ final class DependencyContainer {
 
     private static func makeWiring(modelContainer: ModelContainer) -> Wiring {
         let modelContext = ModelContext(modelContainer)
-        let fileStorage = FileStorageManager(maxTotalRecordingBytes: AppConstants.Storage.maxRecordingBytes)
+        let fileStorage = FileStorageManager(maxTotalRecordingBytes: InfrastructureConstants.Storage.maxRecordingBytes)
         let locationService = LocationService(
-            timeout: AppConstants.Location.requestTimeout,
-            maxAuthRetries: AppConstants.Location.maxAuthRetries
+            timeout: InfrastructureConstants.Location.requestTimeout
         )
 
         let cravingRepo = CravingRepository(modelContext: modelContext)

@@ -8,6 +8,7 @@ enum LocationResult: Sendable, Equatable {
     case permissionRestricted
     case servicesDisabled
     case timeout
+    case cancelled // User or system cancelled the request (BUG-033)
     case error(String)
 }
 

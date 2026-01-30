@@ -9,23 +9,18 @@ import Foundation
 final class LocationService: LocationServiceProtocol {
     private let locationManager: CLLocationManager
     private let timeout: TimeInterval
-    private let maxAuthRetries: Int
 
-    init(
-        timeout: TimeInterval,
-        maxAuthRetries: Int
-    ) {
+    init(timeout: TimeInterval) {
         locationManager = CLLocationManager()
         self.timeout = timeout
-        self.maxAuthRetries = maxAuthRetries
     }
 
     func requestCurrentLocation() async -> LocationResult {
-        await requestCurrentLocationWithRetry(retriesRemaining: maxAuthRetries)
+        await requestCurrentLocationWithRetry()
     }
 
-    private func requestCurrentLocationWithRetry(retriesRemaining: Int) async -> LocationResult {
-        // Check system-wide location services (DEBT-017: moved to background to avoid blocking main thread)
+    private func requestCurrentLocationWithRetry() async -> LocationResult {
+        // Check system-wide location services (moved to background to avoid blocking main thread)
         let servicesEnabled = await Task.detached {
             CLLocationManager.locationServicesEnabled()
         }.value
@@ -38,15 +33,37 @@ final class LocationService: LocationServiceProtocol {
         let status = locationManager.authorizationStatus
         switch status {
         case .notDetermined:
-            // Guard against infinite retries
-            guard retriesRemaining > 0 else {
-                return .error("Location permission not determined after retries")
-            }
-            // Request permission - this will show system prompt
+            // Request permission and await response (DEBT-039)
+            // Uses polling with reasonable intervals since CLLocationManager
+            // doesn't have native async auth streams prior to iOS 18
             locationManager.requestWhenInUseAuthorization()
-            // Wait briefly for user response, then check again
-            try? await Task.sleep(for: .milliseconds(500))
-            return await requestCurrentLocationWithRetry(retriesRemaining: retriesRemaining - 1)
+
+            // Poll for authorization change with timeout (BUG-033 fix)
+            let pollInterval: Duration = .milliseconds(100)
+            let maxPolls = Int(timeout * 10) // 10 polls per second
+
+            for _ in 0 ..< maxPolls {
+                // Check if cancelled
+                if Task.isCancelled {
+                    return .cancelled
+                }
+
+                // Check current status
+                let currentStatus = locationManager.authorizationStatus
+                if currentStatus != .notDetermined {
+                    return await handleAuthorizedStatus(currentStatus)
+                }
+
+                // Wait before polling again
+                do {
+                    try await Task.sleep(for: pollInterval)
+                } catch {
+                    return .cancelled
+                }
+            }
+
+            // Timeout reached - user didn't respond to permission prompt
+            return .cancelled
 
         case .denied:
             return .permissionDenied
@@ -55,19 +72,33 @@ final class LocationService: LocationServiceProtocol {
             return .permissionRestricted
 
         case .authorizedWhenInUse, .authorizedAlways:
-            break // Authorized, proceed to get location
+            return await fetchLocation()
 
         @unknown default:
             return .error("Unknown authorization status")
         }
+    }
 
-        // Use iOS 17+ async location updates
+    /// Handle result after authorization change
+    private func handleAuthorizedStatus(_ status: CLAuthorizationStatus) async -> LocationResult {
+        switch status {
+        case .denied:
+            return .permissionDenied
+        case .restricted:
+            return .permissionRestricted
+        case .authorizedWhenInUse, .authorizedAlways:
+            return await fetchLocation()
+        default:
+            return .error("Authorization not granted")
+        }
+    }
+
+    /// Fetch actual location after authorization confirmed
+    private func fetchLocation() async -> LocationResult {
         do {
-            // Create a task that times out
             return try await withThrowingTaskGroup(of: LocationResult.self) { group in
-                // Location fetch task
+                // Location fetch task using iOS 17+ liveUpdates
                 group.addTask {
-                    // iOS 17+ liveUpdates() returns an AsyncSequence
                     for try await update in CLLocationUpdate.liveUpdates() {
                         if let location = update.location {
                             return .success(
@@ -86,14 +117,14 @@ final class LocationService: LocationServiceProtocol {
                 }
 
                 // Return whichever finishes first
-                if let result = try await group.next() {
-                    group.cancelAll()
-                    return result
+                guard let result = try await group.next() else {
+                    return .timeout
                 }
-                return .timeout
+                group.cancelAll()
+                return result
             }
         } catch is CancellationError {
-            return .timeout
+            return .cancelled
         } catch {
             return .error(error.localizedDescription)
         }
