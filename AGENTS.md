@@ -460,7 +460,7 @@ Stores video/audio recordings:
 - `type: String` - "video" or "audio"
 - `purpose: String` - "motivational", "craving", "reflection", "milestone"
 - `duration: TimeInterval`
-- `filePath: String` - Relative path to file (NOT stored in database)
+- `filePath: String` - Relative path to file (stored as string in SwiftData)
 - `thumbnailPath: String?` - For videos
 - `title: String?`
 - `notes: String?`
