@@ -12,8 +12,8 @@ The location selector UI with GPS binding is **98% identical** across two forms 
 
 ## Duplicated Code
 
-### CravingLogForm.swift (lines 33-66)
-### UsageLogForm.swift (lines 167-205)
+### CravingLogForm.swift (lines 35-66)
+### UsageLogForm.swift (lines 171-204, in `locationSelector` computed property)
 
 ```swift
 OptionalSingleSelectChipSelector(

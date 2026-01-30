@@ -58,8 +58,8 @@ Three alert patterns are **100% identical** across multiple views - ~70+ lines o
 ### 3. Location Permission Alert (100% identical in 2 views)
 
 **Files:**
-- `CravingLogForm.swift` (lines 131-141)
-- `UsageLogForm.swift` (lines 141-151)
+- `CravingLogForm.swift` (lines 132-141)
+- `UsageLogForm.swift` (lines 142-151)
 
 ```swift
 .alert("Location Permission Required", isPresented: $viewModel.showLocationPermissionAlert) {

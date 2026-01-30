@@ -1,8 +1,9 @@
 # DEBT-021: Hardcoded Magic Numbers Scattered Across Codebase
 
 **Priority:** P3 (Architecture)
-**Status:** OPEN
+**Status:** ✅ FIXED
 **Created:** 2026-01-28
+**Archived:** 2026-01-28
 
 ## Problem
 
@@ -79,7 +80,15 @@ enum UIConstants {
 
 ## Acceptance Criteria
 
-- [ ] All magic numbers replaced with named constants
-- [ ] Constants defined in appropriate layer (Domain for validation, Presentation for UI)
-- [ ] Single source of truth for each value
-- [ ] All tests pass
+- [x] All magic numbers replaced with named constants
+- [x] Constants defined in appropriate layer (Domain for validation, Presentation for UI)
+- [x] Single source of truth for each value
+- [x] All tests pass
+
+## Fix Details
+
+Created:
+- `Cravey/Domain/Entities/ValidationLimits.swift` - `notesMaxLength`, `notesCounterThreshold`
+- `Cravey/Presentation/Constants/UIConstants.swift` - `toastDisplayDuration`
+
+Updated all references to use these constants.
