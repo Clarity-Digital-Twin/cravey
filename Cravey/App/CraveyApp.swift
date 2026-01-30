@@ -15,41 +15,15 @@ struct CraveyApp: App {
     @State private var showStorageAlert: Bool
 
     init() {
-        do {
-            let container = try DependencyContainer()
-
-            _dependencyContainer = State(initialValue: container)
-            _cravingListViewModel = State(initialValue: container.makeCravingListViewModel())
-            _usageListViewModel = State(initialValue: container.makeUsageListViewModel())
-            _dashboardViewModel = State(initialValue: container.makeDashboardViewModel())
-            _settingsViewModel = State(initialValue: container.makeSettingsViewModel())
-            _homeMotivationViewModel = State(initialValue: container.makeHomeMotivationViewModel())
-            _startupFailure = State(initialValue: nil)
-            _showStorageAlert = State(initialValue: container.initializationError != nil)
-        } catch let error as DependencyContainer.StartupFailure {
-            _dependencyContainer = State(initialValue: nil)
-            _cravingListViewModel = State(initialValue: nil)
-            _usageListViewModel = State(initialValue: nil)
-            _dashboardViewModel = State(initialValue: nil)
-            _settingsViewModel = State(initialValue: nil)
-            _homeMotivationViewModel = State(initialValue: nil)
-            _startupFailure = State(initialValue: error)
-            _showStorageAlert = State(initialValue: false)
-        } catch {
-            _dependencyContainer = State(initialValue: nil)
-            _cravingListViewModel = State(initialValue: nil)
-            _usageListViewModel = State(initialValue: nil)
-            _dashboardViewModel = State(initialValue: nil)
-            _settingsViewModel = State(initialValue: nil)
-            _homeMotivationViewModel = State(initialValue: nil)
-            _startupFailure = State(
-                initialValue: DependencyContainer.StartupFailure(
-                    persistentErrorDescription: error.localizedDescription,
-                    inMemoryErrorDescription: error.localizedDescription
-                )
-            )
-            _showStorageAlert = State(initialValue: false)
-        }
+        let result = AppStartupHandler.initialize()
+        _dependencyContainer = State(initialValue: result.container)
+        _cravingListViewModel = State(initialValue: result.cravingListViewModel)
+        _usageListViewModel = State(initialValue: result.usageListViewModel)
+        _dashboardViewModel = State(initialValue: result.dashboardViewModel)
+        _settingsViewModel = State(initialValue: result.settingsViewModel)
+        _homeMotivationViewModel = State(initialValue: result.homeMotivationViewModel)
+        _startupFailure = State(initialValue: result.failure)
+        _showStorageAlert = State(initialValue: result.showStorageAlert)
     }
 
     var body: some Scene {
@@ -111,37 +85,14 @@ struct CraveyApp: App {
 
     @MainActor
     private func retryStartup() {
-        do {
-            let container = try DependencyContainer()
-            dependencyContainer = container
-            cravingListViewModel = container.makeCravingListViewModel()
-            usageListViewModel = container.makeUsageListViewModel()
-            dashboardViewModel = container.makeDashboardViewModel()
-            settingsViewModel = container.makeSettingsViewModel()
-            homeMotivationViewModel = container.makeHomeMotivationViewModel()
-            startupFailure = nil
-            showStorageAlert = container.initializationError != nil
-        } catch let error as DependencyContainer.StartupFailure {
-            dependencyContainer = nil
-            cravingListViewModel = nil
-            usageListViewModel = nil
-            dashboardViewModel = nil
-            settingsViewModel = nil
-            homeMotivationViewModel = nil
-            startupFailure = error
-            showStorageAlert = false
-        } catch {
-            dependencyContainer = nil
-            cravingListViewModel = nil
-            usageListViewModel = nil
-            dashboardViewModel = nil
-            settingsViewModel = nil
-            homeMotivationViewModel = nil
-            startupFailure = DependencyContainer.StartupFailure(
-                persistentErrorDescription: error.localizedDescription,
-                inMemoryErrorDescription: error.localizedDescription
-            )
-            showStorageAlert = false
-        }
+        let result = AppStartupHandler.initialize()
+        dependencyContainer = result.container
+        cravingListViewModel = result.cravingListViewModel
+        usageListViewModel = result.usageListViewModel
+        dashboardViewModel = result.dashboardViewModel
+        settingsViewModel = result.settingsViewModel
+        homeMotivationViewModel = result.homeMotivationViewModel
+        startupFailure = result.failure
+        showStorageAlert = result.showStorageAlert
     }
 }
