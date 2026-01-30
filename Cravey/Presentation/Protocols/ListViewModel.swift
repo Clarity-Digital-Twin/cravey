@@ -43,6 +43,9 @@ extension ListViewModel {
         do {
             try await operation(id)
             items.removeAll { $0.id == id }
+        } catch is CancellationError {
+            // Cancellation is flow control, not an error to surface
+            return
         } catch {
             errorMessage = error.localizedDescription
         }

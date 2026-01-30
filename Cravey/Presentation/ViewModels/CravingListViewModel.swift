@@ -4,9 +4,11 @@ import Foundation
 /// Presentation layer - Clean Architecture
 @Observable
 @MainActor
-final class CravingListViewModel {
+final class CravingListViewModel: ListViewModel {
+    typealias Entity = CravingEntity
+
     var cravings: [CravingEntity] = []
-    var isLoading = true
+    var isLoading: Bool = true
     var errorMessage: String?
 
     @ObservationIgnored
@@ -20,29 +22,20 @@ final class CravingListViewModel {
         self.deleteCravingUseCase = deleteCravingUseCase
     }
 
-    func fetchCravings() async {
-        isLoading = true
-        errorMessage = nil
-        defer { isLoading = false }
+    var items: [CravingEntity] {
+        get { cravings }
+        set { cravings = newValue }
+    }
 
-        do {
-            cravings = try await fetchCravingsUseCase.execute()
-        } catch is CancellationError {
-            // Cancellation is flow control, not an error to surface
-            return
-        } catch {
-            errorMessage = error.localizedDescription
+    func fetchCravings() async {
+        await performFetch {
+            try await fetchCravingsUseCase.execute()
         }
     }
 
     func deleteCraving(id: UUID) async {
-        errorMessage = nil
-
-        do {
+        await performDelete(id: id) { id in
             try await deleteCravingUseCase.execute(id: id)
-            cravings.removeAll { $0.id == id }
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 }

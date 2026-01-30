@@ -15,7 +15,10 @@ struct CravingListView: View {
                     .frame(maxWidth: .infinity, minHeight: 100)
                     .listRowBackground(Color.clear)
             } else if viewModel.cravings.isEmpty {
-                EmptyStatePlaceholder()
+                EmptyStateView(
+                    title: "No Cravings Logged",
+                    message: "Go to the Log tab to log your first craving"
+                )
                     .listRowBackground(Color.clear)
             } else {
                 ForEach(viewModel.cravings) { craving in
@@ -37,26 +40,10 @@ struct CravingListView: View {
         }
         .animation(.default, value: viewModel.cravings)
         .sensoryFeedback(.warning, trigger: deleteHapticTrigger)
-        .confirmationDialog(
-            "Delete Craving?",
-            isPresented: Binding(
-                get: { cravingToDelete != nil },
-                set: { if !$0 { cravingToDelete = nil } }
-            ),
-            titleVisibility: .visible
-        ) {
-            Button("Delete", role: .destructive) {
-                guard let cravingToDelete else { return }
-                self.cravingToDelete = nil
-                Task {
-                    await viewModel.deleteCraving(id: cravingToDelete.id)
-                }
+        .deleteConfirmation(itemToDelete: $cravingToDelete, title: "Delete Craving?") { craving in
+            Task {
+                await viewModel.deleteCraving(id: craving.id)
             }
-            Button("Cancel", role: .cancel) {
-                cravingToDelete = nil
-            }
-        } message: {
-            Text("This cannot be undone.")
         }
         .alert("Error", isPresented: Binding(
             get: { viewModel.errorMessage != nil },
@@ -117,33 +104,6 @@ struct CravingRow: View {
     }
 }
 
-/// Empty state placeholder with animated symbol
-struct EmptyStatePlaceholder: View {
-    // Trigger symbol animation on appear
-    @State private var animateSymbol = false
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "leaf.circle")
-                .font(.system(size: 60))
-                .foregroundStyle(.secondary)
-                // iOS 17+ symbol effect - gentle pulse to draw attention
-                .symbolEffect(.pulse, options: .repeating.speed(0.5), value: animateSymbol)
-
-            Text("No Cravings Logged")
-                .font(.headline)
-
-            Text("Go to the Log tab to log your first craving")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-        .padding()
-        .onAppear {
-            animateSymbol = true
-        }
-    }
-}
-
 #Preview("With Cravings") {
     @Previewable @State var viewModel: CravingListViewModel = {
         let container = DependencyContainer.preview
@@ -155,8 +115,4 @@ struct EmptyStatePlaceholder: View {
     }()
 
     CravingListView(viewModel: viewModel)
-}
-
-#Preview("Empty State") {
-    EmptyStatePlaceholder()
 }

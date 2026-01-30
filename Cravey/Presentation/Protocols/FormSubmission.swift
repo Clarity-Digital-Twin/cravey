@@ -19,6 +19,9 @@ extension FormSubmission {
 
         do {
             return try await operation()
+        } catch is CancellationError {
+            // Cancellation is flow control, not an error to surface
+            throw error
         } catch {
             errorMessage = error.localizedDescription
             throw error

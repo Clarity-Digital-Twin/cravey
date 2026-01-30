@@ -36,26 +36,10 @@ struct UsageListView: View {
             }
         }
         .sensoryFeedback(.warning, trigger: deleteHapticTrigger)
-        .confirmationDialog(
-            "Delete Usage Log?",
-            isPresented: Binding(
-                get: { usageToDelete != nil },
-                set: { if !$0 { usageToDelete = nil } }
-            ),
-            titleVisibility: .visible
-        ) {
-            Button("Delete", role: .destructive) {
-                guard let usageToDelete else { return }
-                self.usageToDelete = nil
-                Task {
-                    await viewModel.deleteUsage(id: usageToDelete.id)
-                }
+        .deleteConfirmation(itemToDelete: $usageToDelete, title: "Delete Usage Log?") { usage in
+            Task {
+                await viewModel.deleteUsage(id: usage.id)
             }
-            Button("Cancel", role: .cancel) {
-                usageToDelete = nil
-            }
-        } message: {
-            Text("This cannot be undone.")
         }
     }
 
@@ -77,7 +61,10 @@ struct UsageListView: View {
 
     @ViewBuilder
     private var emptyStateView: some View {
-        UsageEmptyStateView()
+        EmptyStateView(
+            title: "No Usage Logged",
+            message: "Your usage history will appear here once you start logging."
+        )
             .listRowBackground(Color.clear)
     }
 
@@ -96,33 +83,6 @@ struct UsageListView: View {
                         Label("Delete", systemImage: "trash")
                     }
                 }
-        }
-    }
-}
-
-/// Empty state for usage list with animated symbol
-private struct UsageEmptyStateView: View {
-    @State private var animateSymbol = false
-
-    var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "leaf.circle")
-                .font(.system(size: 60))
-                .foregroundStyle(.secondary)
-                // iOS 17+ symbol effect - gentle pulse to draw attention
-                .symbolEffect(.pulse, options: .repeating.speed(0.5), value: animateSymbol)
-
-            Text("No Usage Logged")
-                .font(.headline)
-
-            Text("Your usage history will appear here once you start logging.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding()
-        .onAppear {
-            animateSymbol = true
         }
     }
 }

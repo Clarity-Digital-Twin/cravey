@@ -1,5 +1,3 @@
-import Foundation
-
 /// Validation constants used across Domain and Presentation layers.
 /// Single source of truth for validation limits.
 enum ValidationLimits {

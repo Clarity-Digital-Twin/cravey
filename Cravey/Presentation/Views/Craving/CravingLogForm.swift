@@ -86,59 +86,18 @@ struct CravingLogForm: View {
             }
             .navigationTitle("Craving")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                    .accessibilityIdentifier("cravingFormCancelButton")
-                }
-
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        Task {
-                            await viewModel.logCraving()
-                        }
-                    }
-                    .disabled(!viewModel.canSubmit || viewModel.isLoading)
-                    .accessibilityIdentifier("cravingFormSaveButton")
-                }
+            .formToolbar(
+                canSubmit: viewModel.canSubmit,
+                isLoading: viewModel.isLoading,
+                cancelAccessibilityId: "cravingFormCancelButton",
+                saveAccessibilityId: "cravingFormSaveButton"
+            ) {
+                await viewModel.logCraving()
             }
-            .alert("Old Timestamp", isPresented: $viewModel.showTimestampWarning) {
-                Button("Cancel", role: .cancel) {
-                    viewModel.showTimestampWarning = false
-                }
-                Button("Continue Anyway") {
-                    Task {
-                        await viewModel.confirmOldTimestamp()
-                    }
-                }
-            } message: {
-                Text("This craving is more than 7 days old. Are you sure you want to log it?")
+            .formAlerts(viewModel: viewModel, entityName: "craving") {
+                await viewModel.confirmOldTimestamp()
             }
-            .alert("Error", isPresented: Binding(
-                get: { viewModel.errorMessage != nil },
-                set: { if !$0 { viewModel.errorMessage = nil } }
-            )) {
-                Button("OK") {
-                    viewModel.errorMessage = nil
-                }
-            } message: {
-                if let error = viewModel.errorMessage {
-                    Text(error)
-                }
-            }
-            // DEBT-009: Location permission denied alert
-            .alert("Location Permission Required", isPresented: $viewModel.showLocationPermissionAlert) {
-                Button("Open Settings") {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(url)
-                    }
-                }
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text("Enable location access in Settings to use Current Location.")
-            }
+            .locationPermissionAlert(isPresented: $viewModel.showLocationPermissionAlert)
             .onChange(of: viewModel.didSucceed) { _, didSucceed in
                 // Dismiss immediately on success (UX_FLOW:400 - sheet dismisses in 0.3s)
                 // Toast will be shown by parent (HomeView)

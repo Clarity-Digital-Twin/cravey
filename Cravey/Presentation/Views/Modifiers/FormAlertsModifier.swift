@@ -6,6 +6,7 @@ import SwiftUI
 struct FormAlertsModifier<ViewModel: AnyObject & FormSubmission & TimestampWarning & Observable>: ViewModifier {
     @Bindable var viewModel: ViewModel
     let entityName: String
+    let confirmButtonTitle: String
     let onTimestampConfirm: () async -> Void
 
     func body(content: Content) -> some View {
@@ -14,7 +15,7 @@ struct FormAlertsModifier<ViewModel: AnyObject & FormSubmission & TimestampWarni
                 Button("Cancel", role: .cancel) {
                     viewModel.showTimestampWarning = false
                 }
-                Button("Continue Anyway") {
+                Button(confirmButtonTitle) {
                     Task {
                         await onTimestampConfirm()
                     }
@@ -42,11 +43,13 @@ extension View {
     func formAlerts<ViewModel: AnyObject & FormSubmission & TimestampWarning & Observable>(
         viewModel: ViewModel,
         entityName: String,
+        confirmButtonTitle: String = "Continue Anyway",
         onTimestampConfirm: @escaping () async -> Void
     ) -> some View {
         modifier(FormAlertsModifier(
             viewModel: viewModel,
             entityName: entityName,
+            confirmButtonTitle: confirmButtonTitle,
             onTimestampConfirm: onTimestampConfirm
         ))
     }

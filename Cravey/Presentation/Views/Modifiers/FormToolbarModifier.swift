@@ -9,7 +9,7 @@ struct FormToolbarModifier: ViewModifier {
     let isLoading: Bool
     let cancelAccessibilityId: String
     let saveAccessibilityId: String
-    let onSave: () async -> Void
+    let onSave: @MainActor () async -> Void
 
     func body(content: Content) -> some View {
         content
@@ -41,7 +41,7 @@ extension View {
         isLoading: Bool,
         cancelAccessibilityId: String = "formCancelButton",
         saveAccessibilityId: String = "formSaveButton",
-        onSave: @escaping () async -> Void
+        onSave: @escaping @MainActor () async -> Void
     ) -> some View {
         modifier(FormToolbarModifier(
             canSubmit: canSubmit,

@@ -2,7 +2,9 @@ import Foundation
 
 @Observable
 @MainActor
-final class UsageListViewModel {
+final class UsageListViewModel: ListViewModel {
+    typealias Entity = UsageEntity
+
     // Dependencies
     @ObservationIgnored
     private let fetchUsageUseCase: FetchUsageUseCase
@@ -20,30 +22,21 @@ final class UsageListViewModel {
         self.deleteUsageUseCase = deleteUsageUseCase
     }
 
+    var items: [UsageEntity] {
+        get { usageList }
+        set { usageList = newValue }
+    }
+
     /// Fetch all usage entries
     func fetchUsage() async {
-        isLoading = true
-        errorMessage = nil
-        defer { isLoading = false }
-
-        do {
-            usageList = try await fetchUsageUseCase.execute()
-        } catch is CancellationError {
-            // Cancellation is flow control, not an error to surface
-            return
-        } catch {
-            errorMessage = error.localizedDescription
+        await performFetch {
+            try await fetchUsageUseCase.execute()
         }
     }
 
     func deleteUsage(id: UUID) async {
-        errorMessage = nil
-
-        do {
+        await performDelete(id: id) { id in
             try await deleteUsageUseCase.execute(id: id)
-            usageList.removeAll { $0.id == id }
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 }

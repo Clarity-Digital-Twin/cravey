@@ -45,7 +45,7 @@ actor FileStorageManager: RecordingFileDeleting {
 
     init(
         fileManager: FileManager = .default,
-        maxTotalRecordingBytes: Int64 = AppConstants.Storage.maxRecordingBytes
+        maxTotalRecordingBytes: Int64
     ) {
         self.fileManager = fileManager
         self.maxTotalRecordingBytes = maxTotalRecordingBytes
