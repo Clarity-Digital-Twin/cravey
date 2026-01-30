@@ -97,7 +97,7 @@ The duplication is ~30 lines per ViewModel. If requirements diverge (different v
 
 | File | Lines | Notes |
 |------|-------|-------|
-| `CravingLogViewModel.swift` | 61-87 | logCraving() |
+| `CravingLogViewModel.swift` | 61-88 | logCraving() |
 | `UsageLogViewModel.swift` | 87-116 | logUsage() |
 
 ---

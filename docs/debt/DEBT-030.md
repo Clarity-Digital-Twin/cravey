@@ -12,8 +12,8 @@
 
 ## Duplicated Code
 
-### CravingListView.swift (lines 121-145)
-### UsageListView.swift (lines 104-128)
+### CravingListView.swift (lines 121-145, struct `EmptyStatePlaceholder`)
+### UsageListView.swift (lines 104-128, struct `UsageEmptyStateView`)
 
 ```swift
 private struct EmptyStatePlaceholder: View {

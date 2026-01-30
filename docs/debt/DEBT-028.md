@@ -15,6 +15,8 @@ Delete confirmation dialog is **100% identical** across two list views - 21 line
 ### CravingListView.swift (lines 40-60)
 ### UsageListView.swift (lines 39-59)
 
+*(Verified: Both patterns are identical except for entity names)*
+
 ```swift
 .confirmationDialog(
     "Delete Craving?",

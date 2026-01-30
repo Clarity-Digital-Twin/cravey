@@ -17,7 +17,8 @@ Three alert patterns are **100% identical** across multiple views - ~70+ lines o
 **Files:**
 - `CravingLogForm.swift` (lines 119-130)
 - `UsageLogForm.swift` (lines 129-140)
-- Other views with error handling
+- `CravingListView.swift` (lines 61-70)
+- `UsageListView.swift` (lines 26-37)
 
 ```swift
 .alert("Error", isPresented: Binding(
@@ -40,6 +41,8 @@ Three alert patterns are **100% identical** across multiple views - ~70+ lines o
 - `CravingLogForm.swift` (lines 107-118)
 - `UsageLogForm.swift` (lines 117-128)
 
+*(Button text differs: "Continue Anyway" vs "Save Anyway")*
+
 ```swift
 .alert("Old Timestamp", isPresented: $viewModel.showTimestampWarning) {
     Button("Cancel", role: .cancel) {
@@ -60,6 +63,8 @@ Three alert patterns are **100% identical** across multiple views - ~70+ lines o
 **Files:**
 - `CravingLogForm.swift` (lines 132-141)
 - `UsageLogForm.swift` (lines 142-151)
+
+*(100% identical)*
 
 ```swift
 .alert("Location Permission Required", isPresented: $viewModel.showLocationPermissionAlert) {

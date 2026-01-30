@@ -12,8 +12,8 @@ The old timestamp warning and confirmation flow is **90% identical** across two 
 
 ## Duplicated Pattern
 
-### CravingLogViewModel.swift (lines 61-94)
-### UsageLogViewModel.swift (lines 87-123)
+### CravingLogViewModel.swift (lines 61-103)
+### UsageLogViewModel.swift (lines 87-131)
 
 ```swift
 // Both VMs have identical:

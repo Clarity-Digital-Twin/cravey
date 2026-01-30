@@ -15,6 +15,8 @@ Cancel/Save toolbar buttons are **98% identical** across two forms - 18 lines ea
 ### CravingLogForm.swift (lines 89-106)
 ### UsageLogForm.swift (lines 96-113)
 
+*(Verified: Both have Cancel/Save ToolbarItems with nearly identical structure)*
+
 ```swift
 .toolbar {
     ToolbarItem(placement: .cancellationAction) {
