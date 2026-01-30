@@ -22,17 +22,20 @@ final class DefaultExportUserDataUseCase: ExportUserDataUseCase, Sendable {
     private let usageRepository: UsageRepositoryProtocol
     private let recordingRepository: RecordingRepositoryProtocol
     private let messageRepository: MessageRepositoryProtocol
+    private let clock: any Clock
 
     init(
         cravingRepository: CravingRepositoryProtocol,
         usageRepository: UsageRepositoryProtocol,
         recordingRepository: RecordingRepositoryProtocol,
-        messageRepository: MessageRepositoryProtocol
+        messageRepository: MessageRepositoryProtocol,
+        clock: any Clock = SystemClock()
     ) {
         self.cravingRepository = cravingRepository
         self.usageRepository = usageRepository
         self.recordingRepository = recordingRepository
         self.messageRepository = messageRepository
+        self.clock = clock
     }
 
     func execute() async throws -> UserDataExport {
@@ -50,7 +53,7 @@ final class DefaultExportUserDataUseCase: ExportUserDataUseCase, Sendable {
 
         return UserDataExport(
             schemaVersion: UserDataExport.currentSchemaVersion,
-            exportDate: Date(),
+            exportDate: clock.now(),
             cravings: cravings.sorted { $0.timestamp > $1.timestamp },
             usages: usages.sorted { $0.timestamp > $1.timestamp },
             recordings: recordings.sorted { $0.timestamp > $1.timestamp },

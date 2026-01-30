@@ -52,6 +52,36 @@ struct CravingLogViewModelTests {
         #expect(viewModel.notes.count == 500)
         #expect(viewModel.notesCharacterCount == 500)
     }
+
+    @Test("Cancelling a GPS request clears loading state and preserves new selection")
+    func cancellingGPSRequestClearsLoadingState() async {
+        let mockUseCase = MockLogCravingUseCase()
+        let locationService = HangingLocationService()
+        let viewModel = CravingLogViewModel(
+            logCravingUseCase: mockUseCase,
+            locationService: locationService
+        )
+
+        let gpsTask = Task {
+            await viewModel.handleLocationSelection(LocationOptions.currentLocationKey)
+        }
+
+        // Wait until loading starts with bounded timeout (max ~1 second)
+        var attempts = 0
+        let maxAttempts = 1000
+        while viewModel.isLoadingLocation == false, attempts < maxAttempts {
+            await Task.yield()
+            attempts += 1
+        }
+        #expect(viewModel.isLoadingLocation == true, "Loading should have started within timeout")
+
+        await viewModel.handleLocationSelection("Home")
+
+        #expect(viewModel.selectedLocation == "Home")
+        #expect(viewModel.isLoadingLocation == false)
+
+        await gpsTask.value
+    }
 }
 
 // MARK: - Mock Use Case
@@ -78,5 +108,22 @@ actor MockLogCravingUseCase: LogCravingUseCase {
 
     func getExecutionCount() async -> Int {
         executionCount
+    }
+}
+
+// MARK: - Mock Location Service
+
+actor HangingLocationService: LocationServiceProtocol {
+    func requestCurrentLocation() async -> LocationResult {
+        do {
+            try await Task.sleep(for: .seconds(60))
+            return .success(latitude: 1.0, longitude: 2.0)
+        } catch {
+            return .cancelled
+        }
+    }
+
+    func authorizationStatus() async -> LocationAuthorizationStatus {
+        .authorized
     }
 }

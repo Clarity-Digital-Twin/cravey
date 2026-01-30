@@ -101,15 +101,16 @@ private struct SettingsContentView: View {
         } message: {
             Text(viewModel.errorMessage ?? "An unknown error occurred")
         }
+        // DEBT-042: Uses reusable ToastBanner component
         .overlay(alignment: .top) {
             VStack {
-                SuccessBanner(
+                ToastBanner(
                     systemImage: "checkmark.circle.fill",
                     text: "Data exported",
                     isPresented: $viewModel.exportSuccess
                 )
 
-                SuccessBanner(
+                ToastBanner(
                     systemImage: "trash.circle.fill",
                     text: "All data deleted",
                     isPresented: $viewModel.deleteSuccess
@@ -122,39 +123,6 @@ private struct SettingsContentView: View {
         .sensoryFeedback(.success, trigger: viewModel.deleteSuccess)
         .sensoryFeedback(.success, trigger: viewModel.exportSuccess)
         .sensoryFeedback(.error, trigger: viewModel.showError)
-    }
-}
-
-private struct SuccessBanner: View {
-    let systemImage: String
-    let text: String
-    @Binding var isPresented: Bool
-
-    var body: some View {
-        if isPresented {
-            HStack {
-                Image(systemName: systemImage)
-                    .foregroundStyle(.green)
-                    .symbolEffect(.bounce, value: isPresented)
-                Text(text)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-            }
-            .padding()
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-            .padding(.horizontal)
-            .padding(.top, 8)
-            .transition(.move(edge: .top).combined(with: .opacity))
-            .animation(.spring(duration: 0.3), value: isPresented)
-            .task {
-                do {
-                    try await Task.sleep(for: UIConstants.toastDisplayDuration)
-                } catch {
-                    // Task cancelled — safe to ignore
-                }
-                isPresented = false
-            }
-        }
     }
 }
 

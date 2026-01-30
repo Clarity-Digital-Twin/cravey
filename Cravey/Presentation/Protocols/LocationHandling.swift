@@ -9,12 +9,17 @@ protocol LocationHandling: AnyObject {
     var showLocationPermissionAlert: Bool { get set }
     var locationError: String? { get set }
     var locationService: LocationServiceProtocol? { get }
+    /// Task handle for in-flight location requests (BUG-034: enables cancellation)
+    var locationTask: Task<Void, Never>? { get set }
 }
 
 extension LocationHandling {
     /// Handle location chip selection
     /// For "Current Location", requests GPS; for presets, stores directly
+    /// BUG-034: Cancels any in-flight GPS request before starting new one
     func handleLocationSelection(_ selection: String?) async {
+        cancelInFlightLocationRequest()
+
         // Clear any previous location error
         locationError = nil
 
@@ -30,6 +35,17 @@ extension LocationHandling {
             return
         }
 
+        await requestCurrentLocation()
+    }
+
+    private func cancelInFlightLocationRequest() {
+        // Cancel any in-flight location request (BUG-034: prevents race condition)
+        locationTask?.cancel()
+        locationTask = nil
+        isLoadingLocation = false
+    }
+
+    private func requestCurrentLocation() async {
         // Current Location tapped - request GPS
         guard let locationService else {
             // No location service available (e.g., in tests without mock)
@@ -39,10 +55,27 @@ extension LocationHandling {
         }
 
         isLoadingLocation = true
-        defer { isLoadingLocation = false }
 
-        let result = await locationService.requestCurrentLocation()
+        // Store task reference for potential cancellation (BUG-034)
+        let task = Task {
+            defer {
+                if !Task.isCancelled {
+                    isLoadingLocation = false
+                }
+            }
 
+            let result = await locationService.requestCurrentLocation()
+
+            // Check if cancelled before applying result (BUG-034)
+            guard !Task.isCancelled else { return }
+
+            applyLocationResult(result)
+        }
+        locationTask = task
+        await task.value
+    }
+
+    private func applyLocationResult(_ result: LocationResult) {
         switch result {
         case let .success(latitude, longitude):
             selectedLocation = LocationOptions.formatGPS(latitude: latitude, longitude: longitude)
@@ -62,6 +95,10 @@ extension LocationHandling {
         case .timeout:
             locationError = "Couldn't get location. Try again."
             selectedLocation = nil
+
+        case .cancelled:
+            // User or system cancelled - silently ignore (BUG-033/034)
+            break
 
         case let .error(message):
             locationError = message

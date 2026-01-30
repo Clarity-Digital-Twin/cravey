@@ -15,7 +15,7 @@ struct LogUsageRequest: Sendable, Equatable {
     let notes: String?
 
     init(
-        timestamp: Date = Date(),
+        timestamp: Date,
         method: String,
         amount: Double,
         triggers: [String] = [],
@@ -34,14 +34,16 @@ struct LogUsageRequest: Sendable, Equatable {
 /// Default implementation with validation
 final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
     private let repository: UsageRepositoryProtocol
+    private let clock: any Clock
 
-    init(repository: UsageRepositoryProtocol) {
+    init(repository: UsageRepositoryProtocol, clock: any Clock = SystemClock()) {
         self.repository = repository
+        self.clock = clock
     }
 
     func execute(_ request: LogUsageRequest) async throws -> UsageEntity {
-        // Validate method (must be one of 6 ROAs)
-        guard ROAAmountRange.validMethods.contains(request.method) else {
+        // Validate method (single source of truth: UsageMethod)
+        guard let usageMethod = UsageMethod(rawValue: request.method) else {
             throw UsageError.invalidMethod
         }
 
@@ -50,13 +52,13 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
             throw UsageError.invalidAmount
         }
 
-        // Validate timestamp not in future
-        guard request.timestamp <= Date() else {
+        // Validate timestamp not in future (DEBT-038: uses injected clock)
+        guard request.timestamp <= clock.now() else {
             throw UsageError.futureTimestamp
         }
 
         // Validate amount range for method
-        guard ROAAmountRange.isValid(method: request.method, amount: request.amount) else {
+        guard usageMethod.isValidAmount(request.amount) else {
             throw UsageError.amountOutOfRange
         }
 
@@ -72,7 +74,8 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
             amount: request.amount,
             triggers: request.triggers,
             location: request.location,
-            notes: request.notes
+            notes: request.notes,
+            createdAt: clock.now()
         )
 
         // Save to repository

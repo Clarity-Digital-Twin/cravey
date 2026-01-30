@@ -83,38 +83,17 @@ struct LogView: View {
                     }
             }
 
-            // MARK: - Success Toast
+            // MARK: - Success Toast (DEBT-042: uses reusable ToastBanner)
 
             .overlay(alignment: .top) {
-                if showSuccessToast {
-                    VStack {
-                        HStack {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundStyle(.green)
-                                .symbolEffect(.bounce, value: showSuccessToast)
-
-                            Text(successMessage ?? "Logged")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                        }
-                        .accessibilityIdentifier("successToast")
-                        .padding()
-                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-
-                        Spacer()
-                    }
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                    .animation(.spring(duration: 0.3), value: showSuccessToast)
-                    .task {
-                        do {
-                            try await Task.sleep(for: UIConstants.toastDisplayDuration)
-                        } catch {
-                            // Task cancelled — safe to ignore
-                        }
-                        showSuccessToast = false
-                    }
+                VStack {
+                    ToastBanner(
+                        systemImage: "checkmark.circle.fill",
+                        text: successMessage ?? "Logged",
+                        isPresented: $showSuccessToast,
+                        accessibilityId: "successToast"
+                    )
+                    Spacer()
                 }
             }
             .sensoryFeedback(.success, trigger: showSuccessToast)

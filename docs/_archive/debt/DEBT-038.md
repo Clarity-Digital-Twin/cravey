@@ -1,8 +1,15 @@
 # DEBT-038: Domain logic uses Date()/Calendar.current directly (hidden, untestable dependencies)
 
 **Priority:** P3 (Architecture / testability)
-**Status:** OPEN
+**Status:** ✅ RESOLVED
 **Created:** 2026-01-30
+**Resolved:** 2026-01-30
+
+## Resolution
+
+- Introduced `Clock` protocol + `SystemClock` in Domain.
+- Injected `Clock` into time-sensitive use cases and removed direct `Date()`/`Calendar.current` usage in business rules.
+- Removed implicit `Date()` defaults from time-dependent helpers (`LogUsageRequest.timestamp`, `CravingEntity.isWithinLast`).
 
 ## Problem
 
@@ -43,7 +50,6 @@ Several Domain entities and use cases depend on real time via `Date()` and `Cale
 
 ## Acceptance Criteria
 
-- [ ] Domain time-based rules can be unit-tested with a fixed clock.
-- [ ] No “business rule” depends on `Date()` directly outside of a `Clock.system`.
-- [ ] Calendar usage is explicit and testable.
-
+- [x] Domain time-based rules can be unit-tested with a fixed clock.
+- [x] No “business rule” depends on `Date()` directly outside of a `Clock.system`.
+- [x] Calendar usage is explicit and testable.

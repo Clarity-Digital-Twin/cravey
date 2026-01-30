@@ -1,8 +1,14 @@
 # DEBT-041: Usage “method” is stringly-typed and duplicated across layers
 
 **Priority:** P3 (Maintainability / type safety)
-**Status:** OPEN
+**Status:** ✅ RESOLVED
 **Created:** 2026-01-30
+**Resolved:** 2026-01-30
+
+## Resolution
+
+- Introduced `UsageMethod` enum as the single source of truth for ROA methods.
+- Updated UI options and validation to derive from `UsageMethod` (while persisting `rawValue` strings for compatibility).
 
 ## Problem
 
@@ -41,8 +47,7 @@ Persist as `rawValue` in SwiftData and exports.
 
 ## Acceptance Criteria
 
-- [ ] Single source of truth for valid methods.
-- [ ] UI options derive from Domain, not duplicated literals.
-- [ ] Validation uses enum values, not string containment.
-- [ ] Export remains schema-compatible and stable.
-
+- [x] Single source of truth for valid methods.
+- [x] UI options derive from Domain, not duplicated literals.
+- [x] Validation uses enum values, not string containment.
+- [x] Export remains schema-compatible and stable.

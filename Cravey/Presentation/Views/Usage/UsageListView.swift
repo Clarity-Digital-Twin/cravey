@@ -65,7 +65,7 @@ struct UsageListView: View {
             title: "No Usage Logged",
             message: "Your usage history will appear here once you start logging."
         )
-            .listRowBackground(Color.clear)
+        .listRowBackground(Color.clear)
     }
 
     // MARK: - Usage List View

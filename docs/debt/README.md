@@ -4,26 +4,18 @@
 
 ## Open Debt
 
-| ID | Summary | Priority |
-|----|---------|----------|
-| DEBT-044 | RecordingModel `filePath` docs inconsistent (AGENTS/CLAUDE vs code) | P4 |
-| DEBT-043 | FileStorageManager unused APIs + temp cleanup semantics | P3 |
-| DEBT-042 | Success toast/banner duplication + broad catch | P4 |
-| DEBT-041 | Usage method is stringly-typed + duplicated across layers | P3 |
-| DEBT-040 | AppConstants contains non-Presentation infra config | P3 |
-| DEBT-039 | LocationService polling + cancellation mapping + complexity | P2 |
-| DEBT-038 | Domain uses `Date()` / `Calendar.current` directly | P3 |
-| DEBT-037 | AppStartupHandler unused; CraveyApp startup logic duplicated | P2 |
+_None._
 
 ---
 
 ## Summary
 
-**Total Open Debt Items:** 8
+**Total Open Debt Items:** 0
 
-**Audit (2026-01-30):** Added new items DEBT-037 through DEBT-044.
+**Audit (2026-01-30):** Added items DEBT-037 through DEBT-044 and resolved them.
 
-**Recent Resolutions (2026-01-30):** Resolved 2 remaining items:
+**Recent Resolutions (2026-01-30):** Resolved 10 items:
+- **DEBT-037–044:** See `docs/_archive/debt/`
 - **DEBT-026:** `LocationSelector` component adopted in both forms (~60 lines removed)
 - **DEBT-029:** `RepositoryHelpers` available for future use (opt-in helpers, no mandatory refactoring)
 
@@ -41,7 +33,15 @@
 All resolved DEBT items are in `docs/_archive/debt/`.
 
 | ID | Summary | Resolved |
-|----|---------|----------|
+| ---- | --------- | ---------- |
+| DEBT-044 | RecordingModel `filePath` docs inconsistent (AGENTS/CLAUDE vs code) | 2026-01-30 |
+| DEBT-043 | FileStorageManager unused APIs + temp cleanup semantics | 2026-01-30 |
+| DEBT-042 | Success toast/banner duplication + broad catch | 2026-01-30 |
+| DEBT-041 | Usage method is stringly-typed + duplicated across layers | 2026-01-30 |
+| DEBT-040 | AppConstants contains non-Presentation infra config | 2026-01-30 |
+| DEBT-039 | LocationService polling + cancellation mapping + complexity | 2026-01-30 |
+| DEBT-038 | Domain uses `Date()` / `Calendar.current` directly | 2026-01-30 |
+| DEBT-037 | AppStartupHandler unused; CraveyApp startup logic duplicated | 2026-01-30 |
 | DEBT-029 | RepositoryHelpers for DRY repository code | 2026-01-30 |
 | DEBT-026 | LocationSelector component adopted in forms | 2026-01-30 |
 | DEBT-036 | seedDefaultMessages logs warning on failure | 2026-01-29 |

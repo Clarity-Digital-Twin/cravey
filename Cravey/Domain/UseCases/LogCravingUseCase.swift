@@ -15,9 +15,11 @@ protocol LogCravingUseCase: Sendable {
 
 final class DefaultLogCravingUseCase: LogCravingUseCase, Sendable {
     private let repository: CravingRepositoryProtocol
+    private let clock: any Clock
 
-    init(repository: CravingRepositoryProtocol) {
+    init(repository: CravingRepositoryProtocol, clock: any Clock = SystemClock()) {
         self.repository = repository
+        self.clock = clock
     }
 
     func execute(
@@ -32,8 +34,8 @@ final class DefaultLogCravingUseCase: LogCravingUseCase, Sendable {
             throw CravingError.invalidIntensity
         }
 
-        // Validate timestamp not in future
-        guard timestamp <= Date() else {
+        // Validate timestamp not in future (DEBT-038: uses injected clock)
+        guard timestamp <= clock.now() else {
             throw CravingError.futureTimestamp
         }
 
@@ -48,7 +50,8 @@ final class DefaultLogCravingUseCase: LogCravingUseCase, Sendable {
             intensity: intensity,
             triggers: triggers,
             location: location,
-            notes: notes
+            notes: notes,
+            createdAt: clock.now()
         )
 
         // Persist via repository

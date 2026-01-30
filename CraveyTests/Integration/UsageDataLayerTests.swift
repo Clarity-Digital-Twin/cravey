@@ -86,10 +86,13 @@ struct UsageDataLayerTests {
         let useCase = DefaultLogUsageUseCase(repository: repository)
 
         let methods = ["Bowls", "Joints", "Blunts", "Vape", "Dab", "Edible"]
+        let now = Date(timeIntervalSince1970: 1_000_000_000)
 
         for method in methods {
             let validAmount = ROAAmountRange.range(for: method).first ?? 1.0
-            let result = try await useCase.execute(LogUsageRequest(method: method, amount: validAmount))
+            let result = try await useCase.execute(
+                LogUsageRequest(timestamp: now, method: method, amount: validAmount)
+            )
             #expect(result.method == method)
         }
 
@@ -108,9 +111,12 @@ struct UsageDataLayerTests {
 
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultLogUsageUseCase(repository: repository)
+        let now = Date(timeIntervalSince1970: 1_000_000_000)
 
         do {
-            _ = try await useCase.execute(LogUsageRequest(method: "InvalidMethod", amount: 2.0))
+            _ = try await useCase.execute(
+                LogUsageRequest(timestamp: now, method: "InvalidMethod", amount: 2.0)
+            )
             Issue.record("Should have thrown invalidMethod error")
         } catch UsageError.invalidMethod {
             // ✅ Expected error
@@ -128,9 +134,10 @@ struct UsageDataLayerTests {
 
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultLogUsageUseCase(repository: repository)
+        let now = Date(timeIntervalSince1970: 1_000_000_000)
 
         do {
-            _ = try await useCase.execute(LogUsageRequest(method: "Bowls", amount: 0))
+            _ = try await useCase.execute(LogUsageRequest(timestamp: now, method: "Bowls", amount: 0))
             Issue.record("Should have thrown invalidAmount error")
         } catch UsageError.invalidAmount {
             // ✅ Expected error
@@ -170,11 +177,14 @@ struct UsageDataLayerTests {
 
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultLogUsageUseCase(repository: repository)
+        let now = Date(timeIntervalSince1970: 1_000_000_000)
 
         let longNotes = String(repeating: "a", count: 501)
 
         do {
-            _ = try await useCase.execute(LogUsageRequest(method: "Bowls", amount: 1.0, notes: longNotes))
+            _ = try await useCase.execute(
+                LogUsageRequest(timestamp: now, method: "Bowls", amount: 1.0, notes: longNotes)
+            )
             Issue.record("Should have thrown notesTooLong error")
         } catch UsageError.notesTooLong {
             // ✅ Expected error
@@ -192,9 +202,12 @@ struct UsageDataLayerTests {
 
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultLogUsageUseCase(repository: repository)
+        let now = Date(timeIntervalSince1970: 1_000_000_000)
 
         let maxNotes = String(repeating: "a", count: 500)
-        let result = try await useCase.execute(LogUsageRequest(method: "Bowls", amount: 1.0, notes: maxNotes))
+        let result = try await useCase.execute(
+            LogUsageRequest(timestamp: now, method: "Bowls", amount: 1.0, notes: maxNotes)
+        )
 
         #expect(result.notes == maxNotes)
         #expect(result.notes?.count == 500)
@@ -209,10 +222,13 @@ struct UsageDataLayerTests {
 
         let repository = UsageRepository(modelContext: context)
         let useCase = DefaultLogUsageUseCase(repository: repository)
+        let now = Date(timeIntervalSince1970: 1_000_000_000)
 
         // Test with all 10 HAALT triggers
         let allTriggers = TriggerOptions.all
-        let result = try await useCase.execute(LogUsageRequest(method: "Edible", amount: 25.0, triggers: allTriggers))
+        let result = try await useCase.execute(
+            LogUsageRequest(timestamp: now, method: "Edible", amount: 25.0, triggers: allTriggers)
+        )
 
         #expect(result.triggers.count == 10)
         #expect(result.triggers.contains("Hungry"))

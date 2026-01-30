@@ -1,8 +1,14 @@
 # DEBT-042: Success toast/banner logic is duplicated; broad catch hides intent
 
 **Priority:** P4 (Code quality / duplication)
-**Status:** OPEN
+**Status:** ✅ RESOLVED
 **Created:** 2026-01-30
+**Resolved:** 2026-01-30
+
+## Resolution
+
+- Extracted a reusable `ToastBanner` component.
+- Removed duplicated toast/banner logic from `LogView` and `SettingsView`.
 
 ## Problem
 
@@ -33,7 +39,6 @@ This is duplicated in at least:
 
 ## Acceptance Criteria
 
-- [ ] One reusable toast/banner implementation.
-- [ ] Call sites only configure content, not timing/task logic.
-- [ ] Cancellation is caught explicitly (no broad `catch`).
-
+- [x] One reusable toast/banner implementation.
+- [x] Call sites only configure content, not timing/task logic.
+- [x] Cancellation is caught explicitly (no broad `catch`).

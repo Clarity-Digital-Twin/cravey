@@ -1,8 +1,13 @@
 # DEBT-044: RecordingModel filePath persistence is documented inconsistently (AGENTS/CLAUDE vs code)
 
 **Priority:** P4 (Docs correctness / team velocity)
-**Status:** OPEN
+**Status:** ✅ RESOLVED
 **Created:** 2026-01-30
+**Resolved:** 2026-01-30
+
+## Resolution
+
+- Updated `AGENTS.md` and `CLAUDE.md` to reflect reality: `RecordingModel.filePath` is persisted in SwiftData.
 
 ## Problem
 
@@ -35,6 +40,5 @@ Other documentation sections also say file paths are stored as relative strings 
 
 ## Acceptance Criteria
 
-- [ ] Docs match implementation (or implementation updated to match docs).
-- [ ] `AGENTS.md` and `CLAUDE.md` remain in sync.
-
+- [x] Docs match implementation (or implementation updated to match docs).
+- [x] `AGENTS.md` and `CLAUDE.md` remain in sync.

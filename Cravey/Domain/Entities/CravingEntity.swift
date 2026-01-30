@@ -52,8 +52,10 @@ extension CravingEntity {
         case unknown = "Unknown"
     }
 
-    func isWithinLast(_ hours: Int) -> Bool {
-        let cutoff = Date().addingTimeInterval(-Double(hours) * 3600)
+    /// Check if craving occurred within the last N hours
+    /// DEBT-038: Requires explicit `now` parameter for testability
+    func isWithinLast(_ hours: Int, now: Date) -> Bool {
+        let cutoff = now.addingTimeInterval(-Double(hours) * 3600)
         return timestamp >= cutoff
     }
 }

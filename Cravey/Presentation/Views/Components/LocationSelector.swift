@@ -41,6 +41,12 @@ struct LocationSelector<ViewModel: AnyObject & LocationHandling & Observable>: V
                     .foregroundStyle(.red)
             }
         }
+        .onDisappear {
+            // Ensure we don't keep a location request alive after the form closes.
+            viewModel.locationTask?.cancel()
+            viewModel.locationTask = nil
+            viewModel.isLoadingLocation = false
+        }
     }
 }
 

@@ -43,6 +43,10 @@ final class UsageLogViewModel: Identifiable, LocationHandling, TimestampWarning,
     @ObservationIgnored
     private(set) var locationService: LocationServiceProtocol?
 
+    /// Task handle for in-flight location requests (BUG-034)
+    @ObservationIgnored
+    var locationTask: Task<Void, Never>?
+
     // MARK: - FormSubmission Protocol
 
     var isLoading: Bool = false
@@ -141,6 +145,10 @@ final class UsageLogViewModel: Identifiable, LocationHandling, TimestampWarning,
 
     /// Reset form to defaults (called when form reopens)
     func resetForm() {
+        // Cancel any in-flight location request (BUG-034)
+        locationTask?.cancel()
+        locationTask = nil
+
         timestamp = nowProvider()
         selectedMethod = "Bowls"
         amount = AppConstants.FormDefaults.usageAmount // First valid option for Bowls

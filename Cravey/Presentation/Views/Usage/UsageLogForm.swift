@@ -7,9 +7,9 @@ struct UsageLogForm: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: UsageLogViewModel
 
-    // MARK: - ROA Methods
+    // MARK: - ROA Methods (DEBT-041: uses UsageMethod enum)
 
-    private let methods = ["Bowls", "Joints", "Blunts", "Vape", "Dab", "Edible"]
+    private let methods = UsageMethod.allCases.map(\.rawValue)
 
     var body: some View {
         NavigationStack {
@@ -122,7 +122,6 @@ struct UsageLogForm: View {
             .sensoryFeedback(.success, trigger: viewModel.didSucceed)
         }
     }
-
 }
 
 // MARK: - Previews

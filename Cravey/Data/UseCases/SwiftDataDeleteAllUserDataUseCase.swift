@@ -129,7 +129,9 @@ final class SwiftDataDeleteAllUserDataUseCase: DeleteAllUserDataUseCase, Sendabl
             do {
                 try fileManager.removeItem(at: url)
             } catch {
-                Self.logger.warning("Failed to remove staged file \(url.lastPathComponent): \(error.localizedDescription)")
+                Self.logger.warning(
+                    "Failed to remove staged file \(url.lastPathComponent): \(error.localizedDescription)"
+                )
                 // Continue - best effort cleanup
             }
         }

@@ -1,8 +1,14 @@
 # DEBT-037: AppStartupHandler is unused; CraveyApp startup/reset logic is duplicated
 
 **Priority:** P2 (Important - DRY / maintainability)
-**Status:** OPEN
+**Status:** ✅ RESOLVED
 **Created:** 2026-01-30
+**Resolved:** 2026-01-30
+
+## Resolution
+
+- Adopted `AppStartupHandler.initialize()` in `Cravey/App/CraveyApp.swift` for both initial startup and retry.
+- Eliminated duplicated startup wiring and “nil out state” blocks.
 
 ## Problem
 
@@ -41,8 +47,7 @@ Choose one:
 
 ## Acceptance Criteria
 
-- [ ] Single source of truth for startup wiring and failure handling.
-- [ ] No duplicated “nil out all view models” blocks.
-- [ ] No unused startup handler code remains in the app target.
-- [ ] All tests pass.
-
+- [x] Single source of truth for startup wiring and failure handling.
+- [x] No duplicated "nil out all view models" blocks.
+- [x] No unused startup handler code remains in the app target.
+- [x] All tests pass.

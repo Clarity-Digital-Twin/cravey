@@ -19,7 +19,7 @@ struct CravingListView: View {
                     title: "No Cravings Logged",
                     message: "Go to the Log tab to log your first craving"
                 )
-                    .listRowBackground(Color.clear)
+                .listRowBackground(Color.clear)
             } else {
                 ForEach(viewModel.cravings) { craving in
                     CravingRow(craving: craving)
