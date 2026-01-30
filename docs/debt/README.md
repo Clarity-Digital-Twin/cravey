@@ -4,15 +4,18 @@
 
 ## Open Debt
 
-_None._
+- **DEBT-045 (P3):** Default motivational message seeding leaks into Domain and is duplicated
+- **DEBT-046 (P4):** SwiftLint pre-build script runs on every build, slowing tests
+- **DEBT-047 (P3):** Missing targeted integration tests for MessageRepository and FileStorageManager edge cases
 
 ---
 
 ## Summary
 
-**Total Open Debt Items:** 0
+**Total Open Debt Items:** 3
 
 **Audit (2026-01-30):** Added items DEBT-037 through DEBT-044 and resolved them.
+**Audit (2026-01-30):** Added items DEBT-045 through DEBT-047 (open).
 
 **Recent Resolutions (2026-01-30):** Resolved 10 items:
 - **DEBT-037–044:** See `docs/_archive/debt/`
