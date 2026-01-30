@@ -11,7 +11,10 @@ final class LocationService: LocationServiceProtocol {
     private let timeout: TimeInterval
     private let maxAuthRetries: Int
 
-    init(timeout: TimeInterval = 10.0, maxAuthRetries: Int = 10) {
+    init(
+        timeout: TimeInterval = AppConstants.Location.requestTimeout,
+        maxAuthRetries: Int = AppConstants.Location.maxAuthRetries
+    ) {
         locationManager = CLLocationManager()
         self.timeout = timeout
         self.maxAuthRetries = maxAuthRetries
@@ -22,8 +25,12 @@ final class LocationService: LocationServiceProtocol {
     }
 
     private func requestCurrentLocationWithRetry(retriesRemaining: Int) async -> LocationResult {
-        // Check system-wide location services
-        guard CLLocationManager.locationServicesEnabled() else {
+        // Check system-wide location services (DEBT-017: moved to background to avoid blocking main thread)
+        let servicesEnabled = await Task.detached {
+            CLLocationManager.locationServicesEnabled()
+        }.value
+
+        guard servicesEnabled else {
             return .servicesDisabled
         }
 

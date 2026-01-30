@@ -256,7 +256,7 @@ actor PreviewMockFetchUsageUseCase: FetchUsageUseCase {
 
     func execute() async throws -> [UsageEntity] {
         if simulateLoading {
-            try await Task.sleep(for: .seconds(100)) // Simulate long load for preview
+            try await Task.sleep(for: .seconds(2)) // Simulate loading for preview
         }
 
         if returnEmpty { return [] }

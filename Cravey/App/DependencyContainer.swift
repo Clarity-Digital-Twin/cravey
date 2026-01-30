@@ -303,6 +303,9 @@ extension DependencyContainer {
                     initializationError: nil
                 )
             } catch {
+                // DEBT-035: preconditionFailure is acceptable here as this is preview-only code.
+                // If both persistent AND in-memory containers fail in a preview,
+                // there's a fundamental issue that should crash at development time.
                 preconditionFailure("Failed to create preview DependencyContainer: \(error.localizedDescription)")
             }
         }

@@ -79,9 +79,9 @@ struct UsageLogForm: View {
                             Text("\(viewModel.notesCharacterCount)/\(ValidationLimits.notesMaxLength)")
                                 .font(.caption)
                                 .foregroundStyle(
-                                viewModel.notesCharacterCount == ValidationLimits.notesMaxLength
-                                    ? .red : .secondary
-                            )
+                                    viewModel.notesCharacterCount == ValidationLimits.notesMaxLength
+                                        ? .red : .secondary
+                                )
                         }
                     }
                 } header: {

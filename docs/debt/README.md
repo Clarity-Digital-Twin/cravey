@@ -1,6 +1,6 @@
 # Technical Debt Tracker
 
-**Last Updated:** 2026-01-28
+**Last Updated:** 2026-01-29
 
 ## Open Debt
 
@@ -8,36 +8,22 @@
 
 | ID | Description | Files Affected | Lines Duplicated |
 |----|-------------|----------------|------------------|
-| DEBT-023 | Location handling logic duplicated in ViewModels | `CravingLogViewModel`, `UsageLogViewModel` | 54 lines |
-| DEBT-024 | Timestamp warning flow duplicated in ViewModels | `CravingLogViewModel`, `UsageLogViewModel` | 40 lines |
-| DEBT-025 | Alert patterns duplicated across views (error, timestamp, location) | `CravingLogForm`, `UsageLogForm` | 70+ lines |
 | DEBT-026 | Location selector UI duplicated in forms | `CravingLogForm`, `UsageLogForm` | 50 lines |
-| DEBT-027 | List ViewModel pattern duplicated | `CravingListViewModel`, `UsageListViewModel` | 60 lines |
-
-### P3 - Architecture (DRY Violations - Medium Impact)
-
-| ID | Description | Files Affected | Lines Duplicated |
-|----|-------------|----------------|------------------|
-| DEBT-017 | LocationService main thread blocking warning | `LocationService.swift` | N/A |
-| DEBT-022 | ViewModel error handling pattern duplicated | `CravingLogViewModel`, `UsageLogViewModel` | 30 lines |
-| DEBT-028 | Delete confirmation dialog duplicated | `CravingListView`, `UsageListView` | 42 lines |
 | DEBT-029 | Repository boilerplate duplicated | `CravingRepository`, `UsageRepository` | 100+ lines |
-| DEBT-030 | Empty state component duplicated | `CravingListView`, `UsageListView` | 48 lines |
-| DEBT-031 | Form toolbar pattern duplicated | `CravingLogForm`, `UsageLogForm` | 36 lines |
+
+*Note: DEBT-026 and DEBT-029 have reusable components/helpers created but not yet adopted by existing code.*
+
+### P3 - Architecture (Code Quality)
+
+_No open P3 items_
 
 ---
 
 ## Summary
 
-**Total Duplicated Code:** ~530+ lines (15-20% of presentation/domain layers)
+**Total Open Debt Items:** 2 (0 P1, 2 P2, 0 P3)
 
-**Root Cause:** Parallel Craving/Usage features were implemented by copy-paste instead of extracting reusable protocols, base classes, and components.
-
-**Rob C. Martin Approach:**
-1. Extract common ViewModel behavior to protocols with default implementations
-2. Extract UI patterns to reusable ViewModifiers
-3. Create generic base classes for repositories
-4. Parameterize UI components instead of duplicating
+**Recent Batch Resolution (2026-01-29):** Resolved 16 debt items including DRY violations in ViewModels, forms, error handling, and magic numbers. Created reusable protocols (`LocationHandling`, `TimestampWarning`, `FormSubmission`, `ListViewModel`), ViewModifiers (`FormAlertsModifier`, `LocationPermissionAlertModifier`, `DeleteConfirmationModifier`, `FormToolbarModifier`), and components (`EmptyStateView`, `LocationSelector`, `RepositoryHelpers`, `AppConstants`).
 
 ---
 
@@ -47,6 +33,20 @@ All resolved DEBT items have been moved to `docs/_archive/debt/`.
 
 | ID | Summary | Archived |
 |----|---------|----------|
+| DEBT-036 | seedDefaultMessages logs warning on failure | 2026-01-29 |
+| DEBT-035 | preconditionFailure documented as preview-only | 2026-01-29 |
+| DEBT-034 | Magic numbers extracted to AppConstants | 2026-01-29 |
+| DEBT-033 | AppStartupHandler created for error handling | 2026-01-29 |
+| DEBT-032 | Preview sleep reduced to 2 seconds | 2026-01-29 |
+| DEBT-031 | FormToolbarModifier created | 2026-01-29 |
+| DEBT-030 | EmptyStateView component created | 2026-01-29 |
+| DEBT-028 | DeleteConfirmationModifier created | 2026-01-29 |
+| DEBT-027 | ListViewModel protocol created | 2026-01-29 |
+| DEBT-025 | FormAlertsModifier + LocationPermissionAlertModifier created | 2026-01-29 |
+| DEBT-024 | TimestampWarning protocol created | 2026-01-29 |
+| DEBT-023 | LocationHandling protocol created | 2026-01-29 |
+| DEBT-022 | FormSubmission protocol created | 2026-01-29 |
+| DEBT-017 | LocationService main thread blocking fixed | 2026-01-29 |
 | DEBT-021 | Magic numbers extracted to ValidationLimits + UIConstants | 2026-01-28 |
 | DEBT-020 | DeleteAllData now logs cleanup errors | 2026-01-28 |
 | DEBT-019 | ChipSelector safe array indexing with .last | 2026-01-28 |
@@ -72,6 +72,7 @@ All resolved DEBT items have been moved to `docs/_archive/debt/`.
 
 ## Priority Definitions
 
+- **P1** - Critical. Bugs, crashes, or development blockers. Fix immediately.
 - **P2** - Important. DRY violations with high impact, tests are the safety net
 - **P3** - Architecture concerns. Pay down incrementally
 - **P4** - Code quality. Fix opportunistically
