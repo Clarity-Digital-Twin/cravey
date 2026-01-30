@@ -642,8 +642,9 @@ func testLogValidCraving() async throws {
 ### UI Tests (Slow)
 **Run:** `xcodebuild test -scheme Cravey -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:CraveyUITests | xcbeautify`
 
-- Currently disabled due to Swift 6 strict concurrency
-- Will test end-to-end user flows when re-enabled
+- 22 tests covering craving/usage flows, navigation, and empty states
+- Uses `--uitesting` launch argument for in-memory SwiftData
+- Not part of automated CI gate (manual verification)
 
 ---
 
