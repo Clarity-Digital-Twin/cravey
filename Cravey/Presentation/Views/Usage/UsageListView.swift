@@ -235,7 +235,7 @@ actor PreviewMockFetchUsageUseCase: FetchUsageUseCase {
                 method: "Bowls",
                 amount: 2.5,
                 triggers: ["Bored"],
-                location: "Outside",
+                location: "Out",
                 notes: nil
             ),
             UsageEntity(
@@ -243,7 +243,7 @@ actor PreviewMockFetchUsageUseCase: FetchUsageUseCase {
                 method: "Edible",
                 amount: 25.0,
                 triggers: ["Social"],
-                location: "Social",
+                location: "Other",
                 notes: "At friend's party. Everyone was partaking."
             ),
             UsageEntity(

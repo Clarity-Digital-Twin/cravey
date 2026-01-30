@@ -119,7 +119,7 @@ final class UsageLogViewModel: Identifiable, LocationHandling, TimestampWarning,
             // Trigger haptic + toast + reset form (UX_FLOW:396-405)
             markSuccess()
         } catch {
-            // Error already handled by withLoadingState
+            // Error already set to errorMessage by withLoadingState; no additional handling needed
         }
     }
 

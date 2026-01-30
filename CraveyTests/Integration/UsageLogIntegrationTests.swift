@@ -72,7 +72,7 @@ struct UsageLogIntegrationTests {
             method: "Bowls",
             amount: 2.5,
             triggers: ["Bored"],
-            location: "Outside",
+            location: "Out",
             notes: "Test entry 1"
         )
         let usage2 = UsageModel(
@@ -80,7 +80,7 @@ struct UsageLogIntegrationTests {
             method: "Edible",
             amount: 10.0,
             triggers: ["Social"],
-            location: "Social",
+            location: "Other",
             notes: "Test entry 2"
         )
         context.insert(usage1)
@@ -106,7 +106,7 @@ struct UsageLogIntegrationTests {
         #expect(first.method == "Bowls", "Newest entry should be first")
         #expect(first.amount == 2.5)
         #expect(first.triggers == ["Bored"])
-        #expect(first.location == "Outside")
+        #expect(first.location == "Out")
         #expect(first.notes == "Test entry 1")
 
         let second = viewModel.usageList[1]

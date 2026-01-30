@@ -11,27 +11,11 @@ enum AppStartupHandler {
         let failure: DependencyContainer.StartupFailure?
         let showStorageAlert: Bool
 
-        // MARK: - View Model Computed Properties
-
-        var cravingListViewModel: CravingListViewModel? {
-            container?.makeCravingListViewModel()
-        }
-
-        var usageListViewModel: UsageListViewModel? {
-            container?.makeUsageListViewModel()
-        }
-
-        var dashboardViewModel: DashboardViewModel? {
-            container?.makeDashboardViewModel()
-        }
-
-        var settingsViewModel: SettingsViewModel? {
-            container?.makeSettingsViewModel()
-        }
-
-        var homeMotivationViewModel: HomeMotivationViewModel? {
-            container?.makeHomeMotivationViewModel()
-        }
+        let cravingListViewModel: CravingListViewModel?
+        let usageListViewModel: UsageListViewModel?
+        let dashboardViewModel: DashboardViewModel?
+        let settingsViewModel: SettingsViewModel?
+        let homeMotivationViewModel: HomeMotivationViewModel?
 
         /// Whether the app is ready to display main content
         var isReady: Bool {
@@ -47,13 +31,23 @@ enum AppStartupHandler {
             return Result(
                 container: container,
                 failure: nil,
-                showStorageAlert: container.initializationError != nil
+                showStorageAlert: container.initializationError != nil,
+                cravingListViewModel: container.makeCravingListViewModel(),
+                usageListViewModel: container.makeUsageListViewModel(),
+                dashboardViewModel: container.makeDashboardViewModel(),
+                settingsViewModel: container.makeSettingsViewModel(),
+                homeMotivationViewModel: container.makeHomeMotivationViewModel()
             )
         } catch let error as DependencyContainer.StartupFailure {
             return Result(
                 container: nil,
                 failure: error,
-                showStorageAlert: false
+                showStorageAlert: false,
+                cravingListViewModel: nil,
+                usageListViewModel: nil,
+                dashboardViewModel: nil,
+                settingsViewModel: nil,
+                homeMotivationViewModel: nil
             )
         } catch {
             return Result(
@@ -62,7 +56,12 @@ enum AppStartupHandler {
                     persistentErrorDescription: error.localizedDescription,
                     inMemoryErrorDescription: error.localizedDescription
                 ),
-                showStorageAlert: false
+                showStorageAlert: false,
+                cravingListViewModel: nil,
+                usageListViewModel: nil,
+                dashboardViewModel: nil,
+                settingsViewModel: nil,
+                homeMotivationViewModel: nil
             )
         }
     }

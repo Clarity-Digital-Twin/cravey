@@ -12,8 +12,8 @@ final class LocationService: LocationServiceProtocol {
     private let maxAuthRetries: Int
 
     init(
-        timeout: TimeInterval = AppConstants.Location.requestTimeout,
-        maxAuthRetries: Int = AppConstants.Location.maxAuthRetries
+        timeout: TimeInterval,
+        maxAuthRetries: Int
     ) {
         locationManager = CLLocationManager()
         self.timeout = timeout

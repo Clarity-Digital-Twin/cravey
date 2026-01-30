@@ -86,7 +86,7 @@ enum CravingError: LocalizedError, Sendable {
         case .futureTimestamp:
             "The timestamp can't be in the future"
         case .notesTooLong:
-            "Notes are limited to 500 characters"
+            "Notes are limited to \(ValidationLimits.notesMaxLength) characters"
         case .saveFailed:
             "We couldn't save your entry. Please try again."
         }

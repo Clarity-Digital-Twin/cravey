@@ -90,7 +90,7 @@ final class CravingLogViewModel: Identifiable, LocationHandling, TimestampWarnin
             // Trigger haptic + signal success (UX_FLOW:396-405)
             markSuccess()
         } catch {
-            // Error already handled by withLoadingState
+            // Error already set to errorMessage by withLoadingState; no additional handling needed
         }
     }
 
