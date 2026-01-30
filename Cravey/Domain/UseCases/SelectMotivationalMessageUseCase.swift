@@ -8,9 +8,11 @@ protocol SelectMotivationalMessageUseCase: Sendable {
 
 final class DefaultSelectMotivationalMessageUseCase: SelectMotivationalMessageUseCase, Sendable {
     private let repository: MessageRepositoryProtocol
+    private let clock: any Clock
 
-    init(repository: MessageRepositoryProtocol) {
+    init(repository: MessageRepositoryProtocol, clock: any Clock = SystemClock()) {
         self.repository = repository
+        self.clock = clock
     }
 
     func execute() async throws -> MotivationalMessageEntity? {
@@ -29,7 +31,8 @@ final class DefaultSelectMotivationalMessageUseCase: SelectMotivationalMessageUs
         let leastShownMessages = messages.filter { $0.timesShown == minShown }
 
         // Pick one deterministically based on day of year (consistent within a day)
-        let dayOfYear = Calendar.current.ordinality(of: .day, in: .year, for: Date()) ?? 0
+        // DEBT-038: uses injected clock for testability
+        let dayOfYear = clock.calendar.ordinality(of: .day, in: .year, for: clock.now()) ?? 0
         let index = dayOfYear % leastShownMessages.count
 
         return leastShownMessages[index]

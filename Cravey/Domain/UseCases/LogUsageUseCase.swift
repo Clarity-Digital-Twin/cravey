@@ -34,9 +34,11 @@ struct LogUsageRequest: Sendable, Equatable {
 /// Default implementation with validation
 final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
     private let repository: UsageRepositoryProtocol
+    private let clock: any Clock
 
-    init(repository: UsageRepositoryProtocol) {
+    init(repository: UsageRepositoryProtocol, clock: any Clock = SystemClock()) {
         self.repository = repository
+        self.clock = clock
     }
 
     func execute(_ request: LogUsageRequest) async throws -> UsageEntity {
@@ -50,8 +52,8 @@ final class DefaultLogUsageUseCase: LogUsageUseCase, Sendable {
             throw UsageError.invalidAmount
         }
 
-        // Validate timestamp not in future
-        guard request.timestamp <= Date() else {
+        // Validate timestamp not in future (DEBT-038: uses injected clock)
+        guard request.timestamp <= clock.now() else {
             throw UsageError.futureTimestamp
         }
 
