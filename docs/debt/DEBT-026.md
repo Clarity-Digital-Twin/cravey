@@ -1,8 +1,9 @@
 # DEBT-026: Location Selector UI Duplicated in Forms
 
 **Priority:** P2 (Important - DRY Violation)
-**Status:** OPEN
+**Status:** ✅ RESOLVED
 **Created:** 2026-01-28
+**Resolved:** 2026-01-30
 
 ## Problem
 
@@ -130,7 +131,7 @@ LocationSelector(viewModel: viewModel)
 ## Acceptance Criteria
 
 - [x] `LocationSelector` component created
-- [ ] Both forms use `LocationSelector` instead of duplicated code
-- [ ] ~50 lines of duplicated code removed
+- [x] Both forms use `LocationSelector` instead of duplicated code
+- [x] ~60 lines of duplicated code removed
 - [x] ViewModels conform to `LocationHandling`
-- [ ] All tests pass
+- [x] All 93 tests pass

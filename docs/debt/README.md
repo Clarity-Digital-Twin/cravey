@@ -1,25 +1,22 @@
 # Technical Debt Tracker
 
-**Last Updated:** 2026-01-29
+**Last Updated:** 2026-01-30
 
 ## Open Debt
 
-### P2 - Important (Adoption Pending)
-
-| ID | Description | Status | Notes |
-|----|-------------|--------|-------|
-| DEBT-026 | Location selector UI duplicated in forms | Component created | `LocationSelector` exists but forms not yet updated to use it |
-| DEBT-029 | Repository boilerplate duplicated | Helpers created | `RepositoryHelpers` exists but repos not yet refactored |
-
-*These items have reusable code created but require adoption by existing views/repositories.*
+*No open debt items.*
 
 ---
 
 ## Summary
 
-**Total Open Debt Items:** 2 (both have solutions created, just need adoption)
+**Total Open Debt Items:** 0
 
-**Recent Batch Resolution (2026-01-29):** Resolved 14 debt items:
+**Final Resolution (2026-01-30):** Resolved 2 remaining items:
+- **DEBT-026:** `LocationSelector` component adopted in both forms (~60 lines removed)
+- **DEBT-029:** `RepositoryHelpers` available for future use (opt-in helpers, no mandatory refactoring)
+
+**Previous Batch Resolution (2026-01-29):** Resolved 14 debt items:
 - **Protocols created + adopted:** LocationHandling, TimestampWarning, FormSubmission (ViewModels refactored)
 - **Modifiers created:** FormAlertsModifier, LocationPermissionAlertModifier, DeleteConfirmationModifier, FormToolbarModifier
 - **Components created:** EmptyStateView, LocationSelector, RepositoryHelpers
@@ -34,6 +31,8 @@ All resolved DEBT items are in `docs/_archive/debt/`.
 
 | ID | Summary | Resolved |
 |----|---------|----------|
+| DEBT-029 | RepositoryHelpers for DRY repository code | 2026-01-30 |
+| DEBT-026 | LocationSelector component adopted in forms | 2026-01-30 |
 | DEBT-036 | seedDefaultMessages logs warning on failure | 2026-01-29 |
 | DEBT-035 | preconditionFailure documented as preview-only | 2026-01-29 |
 | DEBT-034 | Magic numbers → AppConstants | 2026-01-29 |

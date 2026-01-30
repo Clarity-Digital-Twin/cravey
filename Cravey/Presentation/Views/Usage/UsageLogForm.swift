@@ -61,7 +61,8 @@ struct UsageLogForm: View {
                 // MARK: - Location Section (Optional)
 
                 Section {
-                    locationSelector
+                    // DEBT-026: Extracted to reusable LocationSelector component
+                    LocationSelector(viewModel: viewModel)
                 } header: {
                     Text("Location (Optional)")
                 }
@@ -122,47 +123,6 @@ struct UsageLogForm: View {
         }
     }
 
-    // MARK: - Location Selector (Single-Select)
-
-    @ViewBuilder
-    private var locationSelector: some View {
-        // BUG-003 FIX: Use OptionalSingleSelectChipSelector to avoid Set allocation per render
-        // DEBT-009: Custom binding to handle "Current Location" GPS request
-        VStack(alignment: .leading, spacing: 8) {
-            OptionalSingleSelectChipSelector(
-                title: "Location",
-                options: LocationOptions.presets,
-                selectedValue: Binding(
-                    get: {
-                        // Show "📍 Current" chip as selected if we have GPS coords
-                        if let loc = viewModel.selectedLocation, LocationOptions.isGPS(loc) {
-                            return LocationOptions.currentLocationKey
-                        }
-                        return viewModel.selectedLocation
-                    },
-                    set: { newValue in
-                        Task {
-                            await viewModel.handleLocationSelection(newValue)
-                        }
-                    }
-                )
-            )
-            .overlay {
-                if viewModel.isLoadingLocation {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.trailing, 8)
-                }
-            }
-
-            // Show location error inline if present
-            if let locationError = viewModel.locationError {
-                Text(locationError)
-                    .font(.caption)
-                    .foregroundStyle(.red)
-            }
-        }
-    }
 }
 
 // MARK: - Previews

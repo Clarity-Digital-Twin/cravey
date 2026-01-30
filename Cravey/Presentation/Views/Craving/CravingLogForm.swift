@@ -30,40 +30,8 @@ struct CravingLogForm: View {
                         multiSelect: true
                     )
 
-                    // BUG-004 FIX: Use OptionalSingleSelectChipSelector to avoid Set allocation per render
-                    // DEBT-009: Custom binding to handle "Current Location" GPS request
-                    OptionalSingleSelectChipSelector(
-                        title: "Location",
-                        options: LocationOptions.presets,
-                        selectedValue: Binding(
-                            get: {
-                                // Show "📍 Current" chip as selected if we have GPS coords
-                                if let loc = viewModel.selectedLocation, LocationOptions.isGPS(loc) {
-                                    return LocationOptions.currentLocationKey
-                                }
-                                return viewModel.selectedLocation
-                            },
-                            set: { newValue in
-                                Task {
-                                    await viewModel.handleLocationSelection(newValue)
-                                }
-                            }
-                        )
-                    )
-                    .overlay {
-                        if viewModel.isLoadingLocation {
-                            ProgressView()
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                                .padding(.trailing, 8)
-                        }
-                    }
-
-                    // Show location error inline if present
-                    if let locationError = viewModel.locationError {
-                        Text(locationError)
-                            .font(.caption)
-                            .foregroundStyle(.red)
-                    }
+                    // DEBT-026: Extracted to reusable LocationSelector component
+                    LocationSelector(viewModel: viewModel)
 
                     VStack(alignment: .leading, spacing: 4) {
                         TextField("Notes", text: $viewModel.notes, axis: .vertical)
