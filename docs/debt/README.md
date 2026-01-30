@@ -4,15 +4,26 @@
 
 ## Open Debt
 
-*No open debt items.*
+| ID | Summary | Priority |
+|----|---------|----------|
+| DEBT-044 | RecordingModel `filePath` docs inconsistent (AGENTS/CLAUDE vs code) | P4 |
+| DEBT-043 | FileStorageManager unused APIs + temp cleanup semantics | P3 |
+| DEBT-042 | Success toast/banner duplication + broad catch | P4 |
+| DEBT-041 | Usage method is stringly-typed + duplicated across layers | P3 |
+| DEBT-040 | AppConstants contains non-Presentation infra config | P3 |
+| DEBT-039 | LocationService polling + cancellation mapping + complexity | P2 |
+| DEBT-038 | Domain uses `Date()` / `Calendar.current` directly | P3 |
+| DEBT-037 | AppStartupHandler unused; CraveyApp startup logic duplicated | P2 |
 
 ---
 
 ## Summary
 
-**Total Open Debt Items:** 0
+**Total Open Debt Items:** 8
 
-**Final Resolution (2026-01-30):** Resolved 2 remaining items:
+**Audit (2026-01-30):** Added new items DEBT-037 through DEBT-044.
+
+**Recent Resolutions (2026-01-30):** Resolved 2 remaining items:
 - **DEBT-026:** `LocationSelector` component adopted in both forms (~60 lines removed)
 - **DEBT-029:** `RepositoryHelpers` available for future use (opt-in helpers, no mandatory refactoring)
 

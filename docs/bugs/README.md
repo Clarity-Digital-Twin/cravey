@@ -1,10 +1,11 @@
 # Bug Tracker
 
-**Last Updated:** 2026-01-27
+**Last Updated:** 2026-01-30
 
 ## Open Bugs
 
-_None._
+- BUG-033 - “Current Location” can error/timeout before user responds to permission prompt (see `docs/bugs/BUG-033.md`)
+- BUG-034 - In-flight GPS request can overwrite a later manual selection (see `docs/bugs/BUG-034.md`)
 
 ## Fixed (Recent)
 
