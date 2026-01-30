@@ -198,8 +198,8 @@ However, **our current implementation works** - the warning is about potential U
 
 ## Acceptance Criteria
 
-- [ ] No Xcode warnings about main thread blocking
-- [ ] Authorization handled via delegate callback, not polling
-- [ ] `CLLocationManager.locationServicesEnabled()` removed or moved off main thread
-- [ ] All existing location tests pass
-- [ ] Manual test: Location permission prompt works correctly
+- [x] No Xcode warnings about main thread blocking
+- [ ] Authorization handled via delegate callback, not polling (deferred)
+- [x] `CLLocationManager.locationServicesEnabled()` removed or moved off main thread
+- [x] All existing location tests pass
+- [x] Manual test: Location permission prompt works correctly

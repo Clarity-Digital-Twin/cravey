@@ -151,7 +151,7 @@ final class CravingLogViewModel: LocationHandling {
 
 ## Acceptance Criteria
 
-- [ ] Single source of truth for location handling logic
-- [ ] Both ViewModels conform to `LocationHandling` protocol
-- [ ] No duplicated code
-- [ ] All tests pass
+- [x] Single source of truth for location handling logic
+- [x] Both ViewModels conform to `LocationHandling` protocol
+- [x] No duplicated code
+- [x] All tests pass

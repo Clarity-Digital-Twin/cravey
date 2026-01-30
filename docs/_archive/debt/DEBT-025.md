@@ -3,7 +3,7 @@
 **Priority:** P2 (Important - DRY Violation)
 **Status:** RESOLVED
 **Resolved:** 2026-01-29
-**Resolution:** Created FormAlertsModifier and LocationPermissionAlertModifier. Available for adoption.
+**Resolution:** Created FormAlertsModifier and LocationPermissionAlertModifier and adopted them in forms.
 **Created:** 2026-01-28
 
 ## Problem
@@ -190,17 +190,19 @@ extension View {
 ## Files to Modify
 
 | File | Change |
-|------|--------|
-| Create `Cravey/Presentation/Views/Modifiers/AlertModifiers.swift` | New file with protocols + extensions |
-| `CravingLogForm.swift` | Replace 3 alerts with modifier calls (~33 lines removed) |
-| `UsageLogForm.swift` | Replace 3 alerts with modifier calls (~33 lines removed) |
+| --- | --- |
+| `Cravey/Presentation/Views/Modifiers/FormAlertsModifier.swift` | Reusable timestamp + error alerts |
+| `Cravey/Presentation/Views/Modifiers/LocationPermissionAlertModifier.swift` | Reusable location permission alert |
+| `Cravey/Presentation/Views/Craving/CravingLogForm.swift` | Replace alerts with `.formAlerts(...)` and `.locationPermissionAlert(...)` |
+| `Cravey/Presentation/Views/Usage/UsageLogForm.swift` | Replace alerts with `.formAlerts(...)` and `.locationPermissionAlert(...)` |
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] `AlertModifiers.swift` created with 3 reusable alert modifiers
-- [ ] `CravingLogForm` uses `.errorAlert()`, `.timestampWarningAlert()`, `.locationPermissionAlert()`
-- [ ] `UsageLogForm` uses same modifiers
-- [ ] ~66 lines of duplicated code removed
-- [ ] All tests pass
+- [x] `FormAlertsModifier.swift` created with reusable alerts
+- [x] `LocationPermissionAlertModifier.swift` created for Settings prompt
+- [x] `CravingLogForm` uses `.formAlerts(...)` and `.locationPermissionAlert(...)`
+- [x] `UsageLogForm` uses `.formAlerts(...)` and `.locationPermissionAlert(...)`
+- [x] ~66 lines of duplicated code removed
+- [x] All tests pass

@@ -6,7 +6,7 @@
 
 ## Problem
 
-`CravingRepository` and `UsageRepository` have **80% identical** boilerplate - 150+ lines of near-identical code.
+`CravingRepository` and `UsageRepository` have **80% identical** boilerplate - ~146 total lines of near-identical code.
 
 ---
 

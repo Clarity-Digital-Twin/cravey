@@ -1,8 +1,10 @@
 # DEBT-018: DashboardViewModel Array Index Without Bounds Checking
 
 **Priority:** P2 (Important - Potential Crash)
-**Status:** OPEN
+**Status:** RESOLVED
 **Created:** 2026-01-28
+**Resolved:** 2026-01-28
+**Resolution:** Fixed in `DashboardViewModel.calculateStreaks()` by replacing unsafe indexing with a max-by-timestamp lookup and `zip` iteration over consecutive elements.
 
 ## Problem
 
@@ -28,7 +30,7 @@ let next = sortedUsages[idx + 1].timestamp
 ## Files to Modify
 
 | File | Line | Current | Fix |
-|------|------|---------|-----|
+| --- | --- | --- | --- |
 | `DashboardViewModel.swift` | 113 | `sortedUsages[sortedUsages.count - 1]` | `sortedUsages.last!` or guard with `.last` |
 | `DashboardViewModel.swift` | 119-120 | Direct indexing in loop | Use `zip(sortedUsages, sortedUsages.dropFirst())` pattern |
 
@@ -53,7 +55,7 @@ for (current, next) in zip(sortedUsages, sortedUsages.dropFirst()) {
 
 ## Acceptance Criteria
 
-- [ ] No direct array indexing with computed indices
-- [ ] Use `.last` property instead of `[count - 1]`
-- [ ] Use `zip` pattern for consecutive element iteration
-- [ ] All dashboard tests pass
+- [x] No direct array indexing with computed indices
+- [x] Use a safe last-usage lookup (`.last`/`.max`) instead of `[count - 1]`
+- [x] Use `zip` pattern for consecutive element iteration
+- [x] All dashboard tests pass

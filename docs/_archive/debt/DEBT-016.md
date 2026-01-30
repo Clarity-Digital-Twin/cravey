@@ -1,8 +1,9 @@
 # DEBT-016: Craving/Usage Form Details Section Declutter
 
 **Priority:** P4 (Code Quality)
-**Status:** OPEN
+**Status:** RESOLVED
 **Created:** 2026-01-28
+**Resolved:** 2026-01-28
 
 ## Problem
 
@@ -84,11 +85,11 @@ The Details section has verbose labels, confusing groupings, and left-aligned ch
 
 ## Acceptance Criteria
 
-- [ ] `TriggerOptions.swift` - Primary has 7 items (Hungry, Angry, Lonely, Tired, Anxious, Bored, Sad)
-- [ ] `TriggerOptions.swift` - Secondary has 3 items (Social, Habit, Paraphernalia)
-- [ ] `LocationOptions.swift` - Presets are (📍 Current, Home, Work, Out, Other)
-- [ ] `CravingLogForm.swift` - Labels updated (Triggers, Primary, Location)
-- [ ] `UsageLogForm.swift` - Labels updated (Triggers, Primary, Location)
-- [ ] `ChipSelector.swift` - Preview code updated
-- [ ] `ChipSelector.swift` - Chips are centered
-- [ ] All tests pass
+- [x] `TriggerOptions.swift` - Primary has 7 items (Hungry, Angry, Lonely, Tired, Anxious, Bored, Sad)
+- [x] `TriggerOptions.swift` - Secondary has 3 items (Social, Habit, Paraphernalia)
+- [x] `LocationOptions.swift` - Presets are (📍 Current, Home, Work, Out, Other)
+- [x] `CravingLogForm.swift` - Labels updated (Triggers, Primary, Location)
+- [x] `UsageLogForm.swift` - Labels updated (Triggers, Primary, Location)
+- [x] `ChipSelector.swift` - Preview code updated
+- [x] `ChipSelector.swift` - Chips are centered
+- [x] All tests pass

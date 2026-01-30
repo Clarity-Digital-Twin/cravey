@@ -122,7 +122,7 @@ func performLog() async {
 
 ## Acceptance Criteria
 
-- [ ] Single source of truth for timestamp validation logic
-- [ ] Both ViewModels use shared `validateAndLog()` and `confirmOldTimestamp()`
-- [ ] `isTimestampOld` computed property defined once
-- [ ] All tests pass
+- [x] Single source of truth for timestamp validation logic
+- [x] Both ViewModels use shared `validateAndLog()` and `confirmOldTimestamp()`
+- [x] `isTimestampOld` computed property defined once
+- [x] All tests pass

@@ -1,8 +1,10 @@
 # DEBT-020: Silent Error Suppression in Delete All Data Flow
 
 **Priority:** P2 (Important - Data Hygiene)
-**Status:** OPEN
+**Status:** RESOLVED
 **Created:** 2026-01-28
+**Resolved:** 2026-01-28
+**Resolution:** Implemented OSLog warning logs for best-effort cleanup failures in `SwiftDataDeleteAllUserDataUseCase`.
 
 ## Problem
 
@@ -28,7 +30,7 @@ for url in existingItems where url.lastPathComponent.hasPrefix(stagedPrefix) {
 ## Files to Modify
 
 | File | Lines | Fix |
-|------|-------|-----|
+| --- | --- | --- |
 | `SwiftDataDeleteAllUserDataUseCase.swift` | 119-121 | Log errors even if best-effort cleanup |
 
 ---
@@ -56,7 +58,7 @@ do {
 
 ## Acceptance Criteria
 
-- [ ] Cleanup errors are logged (not silently swallowed)
-- [ ] Best-effort cleanup continues even on individual failures
-- [ ] Logger added if not present
-- [ ] Delete all still works end-to-end
+- [x] Cleanup errors are logged (not silently swallowed)
+- [x] Best-effort cleanup continues even on individual failures
+- [x] Logger added if not present
+- [x] Delete all still works end-to-end

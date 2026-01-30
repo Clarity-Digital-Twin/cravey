@@ -1,8 +1,10 @@
 # DEBT-015: Craving Form "When did this happen?" Label Redundant
 
 **Priority:** P4 (Code Quality)
-**Status:** OPEN
+**Status:** RESOLVED
 **Created:** 2026-01-28
+**Resolved:** 2026-01-28
+**Resolution:** Implemented by changing `TimestampPicker` initializer default to `init(title: String? = nil, ...)`.
 
 ## Problem
 
@@ -15,7 +17,7 @@ The timestamp section has a label "When did this happen?" above the date/time pi
 ### Source Code
 
 | File | Line | Current | New |
-|------|------|---------|-----|
+| --- | --- | --- | --- |
 | `Cravey/Presentation/Views/Components/TimestampPicker.swift` | 9 | `init(title: String? = "When did this happen?", ...)` | `init(title: String? = nil, ...)` |
 
 ### Note
@@ -31,8 +33,8 @@ Changing the default to `nil` only affects CravingLogForm.
 
 ## Acceptance Criteria
 
-- [ ] `TimestampPicker.swift:9` - Default title changed to `nil`
-- [ ] Verify CravingLogForm doesn't override title
-- [ ] Verify UsageLogForm doesn't override title
-- [ ] Date and time pickers remain functional
-- [ ] All tests pass
+- [x] `TimestampPicker.swift:9` - Default title changed to `nil`
+- [x] Verify CravingLogForm doesn't override title
+- [x] Verify UsageLogForm doesn't override title
+- [x] Date and time pickers remain functional
+- [x] All tests pass

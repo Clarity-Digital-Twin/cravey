@@ -57,17 +57,10 @@ if let locationError = viewModel.locationError {
 
 import SwiftUI
 
-/// Protocol for ViewModels that support location selection
-@MainActor
-protocol LocationSelectable: AnyObject, Observable {
-    var selectedLocation: String? { get set }
-    var isLoadingLocation: Bool { get }
-    var locationError: String? { get }
-    func handleLocationSelection(_ selection: String?) async
-}
+/// Uses the shared `LocationHandling` protocol (see `Cravey/Presentation/Protocols/LocationHandling.swift`).
 
 /// Reusable location selector component with GPS support
-struct LocationSelector<VM: LocationSelectable>: View {
+struct LocationSelector<VM: LocationHandling & Observable>: View {
     @Bindable var viewModel: VM
 
     var body: some View {
@@ -129,15 +122,15 @@ LocationSelector(viewModel: viewModel)
 | Create `Cravey/Presentation/Views/Components/LocationSelector.swift` | New component |
 | `CravingLogForm.swift` | Replace ~25 lines with `LocationSelector(viewModel: viewModel)` |
 | `UsageLogForm.swift` | Replace ~25 lines with `LocationSelector(viewModel: viewModel)` |
-| `CravingLogViewModel.swift` | Conform to `LocationSelectable` |
-| `UsageLogViewModel.swift` | Conform to `LocationSelectable` |
+| `CravingLogViewModel.swift` | Conform to `LocationHandling` (already done) |
+| `UsageLogViewModel.swift` | Conform to `LocationHandling` (already done) |
 
 ---
 
 ## Acceptance Criteria
 
-- [ ] `LocationSelector` component created
+- [x] `LocationSelector` component created
 - [ ] Both forms use `LocationSelector` instead of duplicated code
 - [ ] ~50 lines of duplicated code removed
-- [ ] ViewModels conform to `LocationSelectable`
+- [x] ViewModels conform to `LocationHandling`
 - [ ] All tests pass

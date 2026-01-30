@@ -1,8 +1,9 @@
 # DEBT-014: Craving Form Title "Log Craving" → "Craving"
 
 **Priority:** P4 (Code Quality)
-**Status:** OPEN
+**Status:** RESOLVED
 **Created:** 2026-01-28
+**Resolved:** 2026-01-28
 
 ## Problem
 
@@ -17,13 +18,13 @@ The Craving form navigation title says "Log Craving" which is redundant:
 ### Source Code
 
 | File | Line | Current | New |
-|------|------|---------|-----|
+| --- | --- | --- | --- |
 | `Cravey/Presentation/Views/Craving/CravingLogForm.swift` | 84 | `.navigationTitle("Log Craving")` | `.navigationTitle("Craving")` |
 
 ### UI Tests
 
 | File | Line | Current | New |
-|------|------|---------|-----|
+| --- | --- | --- | --- |
 | `CraveyUITests/Screens/CravingFormScreen.swift` | 9 | `app.navigationBars["Log Craving"]` | `app.navigationBars["Craving"]` |
 
 ### Note: Keep These Unchanged
@@ -35,6 +36,6 @@ These reference the **button text** on LogView, not the form title:
 
 ## Acceptance Criteria
 
-- [ ] `CravingLogForm.swift:84` - Title changed to "Craving"
-- [ ] `CravingFormScreen.swift:9` - UI test updated
-- [ ] All tests pass
+- [x] `CravingLogForm.swift:84` - Title changed to "Craving"
+- [x] `CravingFormScreen.swift:9` - UI test updated
+- [x] All tests pass

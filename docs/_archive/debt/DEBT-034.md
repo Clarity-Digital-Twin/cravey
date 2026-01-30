@@ -92,7 +92,7 @@ init(
 ## Files to Modify
 
 | File | Change |
-|------|--------|
+| --- | --- |
 | Create `Cravey/Domain/Entities/LocationConstants.swift` | New file with timeout/retry constants |
 | Extend `ValidationLimits.swift` or create `StorageLimits.swift` | Add `maxRecordingBytes` |
 | `LocationService.swift` | Use `LocationConstants.*` |
@@ -103,7 +103,7 @@ init(
 
 ## Acceptance Criteria
 
-- [ ] All magic numbers replaced with named constants
-- [ ] Constants have documentation explaining the value
-- [ ] Single source of truth for each configuration value
-- [ ] All tests pass
+- [x] All magic numbers replaced with named constants
+- [x] Constants have documentation explaining the value
+- [x] Single source of truth for each configuration value
+- [x] All tests pass

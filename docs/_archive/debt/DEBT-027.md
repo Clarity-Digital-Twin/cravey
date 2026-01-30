@@ -196,7 +196,7 @@ extension ListViewModelProtocol {
 
 ## Acceptance Criteria
 
-- [ ] Shared fetch/delete logic extracted to base class or protocol
-- [ ] `CravingListViewModel` and `UsageListViewModel` use shared implementation
-- [ ] ~60 lines of duplicated code removed
-- [ ] All tests pass
+- [x] Shared fetch/delete logic extracted to base class or protocol
+- [x] `CravingListViewModel` and `UsageListViewModel` use shared implementation
+- [x] ~60 lines of duplicated code removed
+- [x] All tests pass

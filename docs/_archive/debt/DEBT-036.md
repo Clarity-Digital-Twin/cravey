@@ -122,7 +122,7 @@ if case .failed = result {
 
 ## Acceptance Criteria
 
-- [ ] Seeding errors are not silently swallowed
-- [ ] Cancellation is distinguished from real errors
-- [ ] Caller can decide how to handle failure (log, warn user, retry)
-- [ ] All tests pass
+- [x] Seeding errors are not silently swallowed
+- [x] Cancellation is distinguished from real errors
+- [x] Caller can decide how to handle failure (log, warn user, retry)
+- [x] All tests pass

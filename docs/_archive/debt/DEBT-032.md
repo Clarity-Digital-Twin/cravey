@@ -69,6 +69,6 @@ if simulateLoading {
 
 ## Acceptance Criteria
 
-- [ ] Preview "Loading State" renders within 2-3 seconds
-- [ ] Loading animation is visible during the sleep
-- [ ] All tests pass
+- [x] Preview "Loading State" renders within 2-3 seconds
+- [x] Loading animation is visible during the sleep
+- [x] All tests pass

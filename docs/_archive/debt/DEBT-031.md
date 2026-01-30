@@ -3,7 +3,7 @@
 **Priority:** P3 (Architecture - DRY Violation)
 **Status:** RESOLVED
 **Resolved:** 2026-01-29
-**Resolution:** Created FormToolbarModifier for Cancel/Save buttons. Available for adoption.
+**Resolution:** Created FormToolbarModifier for Cancel/Save buttons and adopted it in forms.
 **Created:** 2026-01-28
 
 ## Problem
@@ -144,7 +144,7 @@ struct FormToolbarModifier<VM: Saveable & Observable>: ViewModifier {
 
 ## Acceptance Criteria
 
-- [ ] `FormToolbarModifier` created
-- [ ] Both forms use shared toolbar modifier
-- [ ] ~36 lines of duplicated code removed
-- [ ] All tests pass
+- [x] `FormToolbarModifier` created
+- [x] Both forms use shared toolbar modifier
+- [x] ~36 lines of duplicated code removed
+- [x] All tests pass

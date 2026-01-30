@@ -89,16 +89,16 @@ The duplication is ~30 lines per ViewModel. If requirements diverge (different v
 
 ## Recommendation
 
-**Option B (Accept)** - The duplication is manageable and the ViewModels may diverge. The error types are already different (`CravingError` vs `UsageError`), and extracting would add complexity for minimal gain.
+**Option A (Extract)** - Extraction completed via `FormSubmission` protocol and `withLoadingState` helper. Both `CravingLogViewModel` and `UsageLogViewModel` now share the loading/error/success pattern while keeping their domain-specific validation and error types.
 
-**Status:** Document as known duplication, monitor for drift.
+**Status:** Resolved — extraction implemented; monitor for regressions.
 
 ---
 
 ## Files Affected
 
 | File | Lines | Notes |
-|------|-------|-------|
+| --- | --- | --- |
 | `CravingLogViewModel.swift` | 61-88 | logCraving() |
 | `UsageLogViewModel.swift` | 87-116 | logUsage() |
 
@@ -106,6 +106,6 @@ The duplication is ~30 lines per ViewModel. If requirements diverge (different v
 
 ## Acceptance Criteria
 
-- [ ] Decision made: Extract or Accept
-- [ ] If Extract: Protocol created, ViewModels updated
-- [ ] If Accept: Document as intentional, add comment referencing this debt item
+- [x] Decision made: Extract
+- [x] Protocol created, ViewModels updated
+- [x] All tests pass
