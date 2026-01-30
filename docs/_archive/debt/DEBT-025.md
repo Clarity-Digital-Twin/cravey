@@ -1,7 +1,9 @@
 # DEBT-025: Alert Patterns Duplicated Across Views
 
 **Priority:** P2 (Important - DRY Violation)
-**Status:** OPEN
+**Status:** RESOLVED
+**Resolved:** 2026-01-29
+**Resolution:** Created FormAlertsModifier and LocationPermissionAlertModifier. Available for adoption.
 **Created:** 2026-01-28
 
 ## Problem

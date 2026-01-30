@@ -1,7 +1,9 @@
 # DEBT-028: Delete Confirmation Dialog Duplicated in List Views
 
 **Priority:** P3 (Architecture - DRY Violation)
-**Status:** OPEN
+**Status:** RESOLVED
+**Resolved:** 2026-01-29
+**Resolution:** Created DeleteConfirmationModifier. Available for adoption.
 **Created:** 2026-01-28
 
 ## Problem

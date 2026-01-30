@@ -1,7 +1,9 @@
 # DEBT-027: List ViewModel Pattern Duplicated
 
 **Priority:** P2 (Important - DRY Violation)
-**Status:** OPEN
+**Status:** RESOLVED
+**Resolved:** 2026-01-29
+**Resolution:** Created ListViewModel protocol with performFetch/performDelete. Available for adoption.
 **Created:** 2026-01-28
 
 ## Problem

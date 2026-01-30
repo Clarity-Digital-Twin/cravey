@@ -1,7 +1,9 @@
 # DEBT-017: LocationService Main Thread Blocking Warning
 
 **Priority:** P3 (Architecture)
-**Status:** OPEN
+**Status:** RESOLVED
+**Resolved:** 2026-01-29
+**Resolution:** Moved CLLocationManager.locationServicesEnabled() to Task.detached background thread. Full delegate-based refactor deferred.
 **Created:** 2026-01-28
 **Xcode Warning:** "This method can cause UI unresponsiveness if invoked on the main thread. Instead, consider waiting for the `-locationManagerDidChangeAuthorization:` callback and checking `authorizationStatus` first."
 

@@ -1,7 +1,9 @@
 # DEBT-036: Silent Failure in seedDefaultMessages Swallows All Errors
 
 **Priority:** P3 (Architecture - Silent Exception)
-**Status:** OPEN
+**Status:** RESOLVED
+**Resolved:** 2026-01-29
+**Resolution:** Changed seedDefaultMessages to log at warning level for non-fatal failures, added success logging.
 **Created:** 2026-01-29
 
 ## Problem

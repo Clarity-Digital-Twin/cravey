@@ -1,7 +1,9 @@
 # DEBT-034: Magic Numbers in LocationService, UsageLogViewModel, FileStorageManager
 
 **Priority:** P2 (Important - Maintainability)
-**Status:** OPEN
+**Status:** RESOLVED
+**Resolved:** 2026-01-29
+**Resolution:** Created AppConstants with Location.requestTimeout, Location.maxAuthRetries, FormDefaults.usageAmount, Storage.maxRecordingBytes.
 **Created:** 2026-01-29
 
 ## Problem

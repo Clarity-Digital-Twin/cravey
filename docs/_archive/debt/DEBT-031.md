@@ -1,7 +1,9 @@
 # DEBT-031: Form Toolbar Pattern Duplicated
 
 **Priority:** P3 (Architecture - DRY Violation)
-**Status:** OPEN
+**Status:** RESOLVED
+**Resolved:** 2026-01-29
+**Resolution:** Created FormToolbarModifier for Cancel/Save buttons. Available for adoption.
 **Created:** 2026-01-28
 
 ## Problem

@@ -1,7 +1,9 @@
 # DEBT-024: Timestamp Warning Flow Duplicated Across ViewModels
 
 **Priority:** P2 (Important - DRY Violation)
-**Status:** OPEN
+**Status:** RESOLVED
+**Resolved:** 2026-01-29
+**Resolution:** Created TimestampWarning protocol with shouldShowTimestampWarning/acknowledgeOldTimestamp. Both ViewModels now conform.
 **Created:** 2026-01-28
 
 ## Problem

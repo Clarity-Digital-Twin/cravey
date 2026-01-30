@@ -1,7 +1,9 @@
 # DEBT-022: Code Duplication in ViewModel Error Handling
 
 **Priority:** P3 (Architecture)
-**Status:** OPEN
+**Status:** RESOLVED
+**Resolved:** 2026-01-29
+**Resolution:** Created FormSubmission protocol with withLoadingState/markSuccess/handleError. Both ViewModels now conform.
 **Created:** 2026-01-28
 
 ## Problem

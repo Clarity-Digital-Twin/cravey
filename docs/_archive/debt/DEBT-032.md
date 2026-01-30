@@ -1,7 +1,9 @@
 # DEBT-032: 100-Second Sleep in Preview Mock Blocks Development
 
 **Priority:** P1 (Critical - Development Blocker)
-**Status:** OPEN
+**Status:** RESOLVED
+**Resolved:** 2026-01-29
+**Resolution:** Reduced Task.sleep from 100 seconds to 2 seconds in UsageListView preview mock.
 **Created:** 2026-01-29
 
 ## Problem

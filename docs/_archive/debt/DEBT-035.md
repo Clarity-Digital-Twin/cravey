@@ -1,7 +1,9 @@
 # DEBT-035: preconditionFailure Crashes Instead of Graceful Error Handling
 
 **Priority:** P3 (Architecture - Bad Fallback Pattern)
-**Status:** OPEN
+**Status:** RESOLVED
+**Resolved:** 2026-01-29
+**Resolution:** Documented preconditionFailure as acceptable for preview-only code path in DependencyContainer.preview.
 **Created:** 2026-01-29
 
 ## Problem
