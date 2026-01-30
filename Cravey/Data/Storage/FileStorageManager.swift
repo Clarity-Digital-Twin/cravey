@@ -92,6 +92,7 @@ actor FileStorageManager: RecordingFileDeleting {
     // MARK: - Save Recording
 
     /// Saves a recording file and returns the relative path
+    /// DEBT-043: Now cleans up temp file after successful save
     func saveRecording(from tempURL: URL, recordingType: RecordingType, id: UUID = UUID()) async throws -> String {
         let tempAttributes = try fileManager.attributesOfItem(atPath: tempURL.path)
         let tempFileSize = (tempAttributes[.size] as? Int64) ?? 0
@@ -105,7 +106,18 @@ actor FileStorageManager: RecordingFileDeleting {
         let filename = "\(recordingType.rawValue)_\(id.uuidString).\(recordingType.fileExtension)"
         let destinationURL = recordings.appendingPathComponent(filename)
 
-        try fileManager.copyItem(at: tempURL, to: destinationURL)
+        // Prefer move (atomic, faster) over copy
+        do {
+            try fileManager.moveItem(at: tempURL, to: destinationURL)
+        } catch CocoaError.fileWriteFileExists {
+            // Destination exists - try copy + delete instead
+            try fileManager.copyItem(at: tempURL, to: destinationURL)
+            try? fileManager.removeItem(at: tempURL) // Best-effort cleanup
+        } catch {
+            // Move failed for other reason - fall back to copy
+            try fileManager.copyItem(at: tempURL, to: destinationURL)
+            try? fileManager.removeItem(at: tempURL) // Best-effort cleanup
+        }
 
         return "Recordings/\(filename)"
     }
@@ -178,13 +190,14 @@ actor FileStorageManager: RecordingFileDeleting {
 
     /// Deletes a recording file
     /// Marked async to match RecordingFileDeleting protocol requirement
+    /// DEBT-043: Made idempotent (matches deleteThumbnail behavior)
     func deleteRecording(at relativePath: String) async throws {
         guard let url = absoluteURL(for: relativePath) else {
-            throw StorageError.invalidURL
+            return // Invalid path = no-op (idempotent)
         }
 
         guard fileManager.fileExists(atPath: url.path) else {
-            throw StorageError.fileNotFound
+            return // Already deleted = no-op (idempotent)
         }
 
         try fileManager.removeItem(at: url)
@@ -202,25 +215,6 @@ actor FileStorageManager: RecordingFileDeleting {
         if fileManager.fileExists(atPath: url.path) {
             try fileManager.removeItem(at: url)
         }
-    }
-
-    /// Deletes all recording files and thumbnails from on-disk storage.
-    /// Safe to call even if the directory does not exist.
-    func deleteAllRecordings() throws {
-        try Self.deleteAllRecordings(fileManager: fileManager)
-    }
-
-    nonisolated static func deleteAllRecordings(fileManager: FileManager = .default) throws {
-        let documents = try fileManager.url(
-            for: .documentDirectory,
-            in: .userDomainMask,
-            appropriateFor: nil,
-            create: false
-        )
-
-        let recordingsDir = documents.appendingPathComponent("Recordings", isDirectory: true)
-        guard fileManager.fileExists(atPath: recordingsDir.path) else { return }
-        try fileManager.removeItem(at: recordingsDir)
     }
 
     // MARK: - Storage Info
