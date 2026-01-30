@@ -1,6 +1,6 @@
 # Cravey App - AI Agent Development Context
 
-**Last Updated:** 2026-01-27
+**Last Updated:** 2026-01-29
 **Current Status:** See `docs/PROJECT_STATUS.md` for authoritative status
 **Parity:** `AGENTS.md` and `CLAUDE.md` are redundant copies and must be kept in sync.
 
@@ -250,13 +250,17 @@ While `@Environment(\.modelContext)` is valid for simple apps, we use **Clean Ar
 Cravey/
 ├── App/                         # Composition Root (DI)
 │   ├── CraveyApp.swift         # @main entry point
-│   └── DependencyContainer.swift
+│   ├── DependencyContainer.swift
+│   ├── AppStartupHandler.swift # Startup initialization logic
+│   └── AppUnavailableView.swift
 ├── Domain/                      # Pure Swift (NO frameworks)
 │   ├── Entities/               # Business models
 │   │   ├── CravingEntity.swift
 │   │   ├── UsageEntity.swift
 │   │   ├── RecordingEntity.swift
-│   │   └── MotivationalMessageEntity.swift
+│   │   ├── MotivationalMessageEntity.swift
+│   │   ├── ValidationLimits.swift  # Shared validation constants
+│   │   └── TriggerOptions.swift    # HAALT trigger definitions
 │   ├── UseCases/               # Business logic
 │   │   ├── LogCravingUseCase.swift
 │   │   ├── FetchCravingsUseCase.swift
@@ -274,8 +278,11 @@ Cravey/
 │   │   ├── RecordingModel.swift
 │   │   └── MotivationalMessageModel.swift
 │   ├── Repositories/           # Concrete implementations
-│   │   ├── CravingRepository.swift  # ✅ Implemented
-│   │   └── UsageRepository.swift    # ✅ Implemented
+│   │   ├── CravingRepository.swift
+│   │   ├── UsageRepository.swift
+│   │   ├── RecordingRepository.swift
+│   │   ├── MessageRepository.swift
+│   │   └── RepositoryHelpers.swift  # Shared CRUD helpers
 │   ├── Mappers/                # Entity ↔ Model conversion
 │   │   ├── CravingMapper.swift
 │   │   ├── UsageMapper.swift
@@ -285,6 +292,14 @@ Cravey/
 │       ├── FileStorageManager.swift
 │       └── ModelContainerSetup.swift
 └── Presentation/                # UI Layer
+    ├── Protocols/              # Shared ViewModel protocols
+    │   ├── LocationHandling.swift   # GPS location selection
+    │   ├── TimestampWarning.swift   # Old timestamp validation
+    │   ├── FormSubmission.swift     # Loading/error/success state
+    │   └── ListViewModel.swift      # Fetch/delete patterns
+    ├── Constants/              # UI constants
+    │   ├── AppConstants.swift       # Timeouts, limits, defaults
+    │   └── UIConstants.swift        # Toast duration, etc.
     ├── ViewModels/              # @Observable state
     │   ├── CravingLogViewModel.swift
     │   ├── CravingListViewModel.swift
@@ -299,7 +314,19 @@ Cravey/
         ├── Craving/CravingLogForm.swift, CravingListView.swift
         ├── Usage/UsageLogForm.swift, UsageListView.swift
         ├── Settings/SettingsView.swift, ExportDataSheet.swift
-        └── Components/ChipSelector, IntensitySlider, etc.
+        ├── Modifiers/          # Reusable ViewModifiers
+        │   ├── FormAlertsModifier.swift
+        │   ├── FormToolbarModifier.swift
+        │   ├── DeleteConfirmationModifier.swift
+        │   └── LocationPermissionAlertModifier.swift
+        └── Components/         # Reusable UI components
+            ├── ChipSelector.swift
+            ├── IntensitySlider.swift
+            ├── TimestampPicker.swift
+            ├── ROAPickerInput.swift
+            ├── EmptyStateView.swift     # Generic empty state
+            ├── LocationSelector.swift   # GPS-aware location picker
+            └── LocationOptions.swift
 
 CraveyTests/                     # Unit Tests
 ├── Domain/UseCases/
@@ -503,12 +530,15 @@ ModelConfiguration(
 
 ### ✅ Technical Foundation
 - Clean Architecture folder structure
-- Domain layer (5 entities, 10 use case files, 4 protocols)
-- Data layer (4 models, 4 mappers, 4 repositories: Craving, Usage, Recording, Message, plus 1 SwiftData-backed DeleteAllUserData use case)
-- DependencyContainer with DI
+- Domain layer (6 entities, 10 use case files, 4 repository protocols)
+- Data layer (4 models, 4 mappers, 4 repositories + RepositoryHelpers)
+- DependencyContainer with DI + AppStartupHandler
+- 4 shared ViewModel protocols (LocationHandling, TimestampWarning, FormSubmission, ListViewModel)
+- 4 reusable ViewModifiers (FormAlerts, FormToolbar, DeleteConfirmation, LocationPermissionAlert)
 - 6 ViewModels (CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings)
-- 10+ SwiftUI Views with reusable components
-- Unit tests (42 Swift Testing tests passing in `CraveyTests`)
+- 10+ SwiftUI Views with reusable components (EmptyStateView, LocationSelector, etc.)
+- Centralized constants (AppConstants, ValidationLimits, UIConstants)
+- Unit tests (93 Swift Testing tests passing in `CraveyTests`)
 - XcodeGen configuration
 
 ### 🚧 TODO (Not Implemented)
