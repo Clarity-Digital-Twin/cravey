@@ -6,15 +6,33 @@ import Testing
 /// Tests business logic in isolation with mocked repository
 @Suite("LogCravingUseCase Tests")
 struct LogCravingUseCaseTests {
+    // MARK: - Test Helpers
+
+    private struct FixedClock: Clock, Sendable {
+        let fixedNow: Date
+        let calendar: Calendar
+
+        init(fixedNow: Date, calendar: Calendar = Calendar(identifier: .gregorian)) {
+            self.fixedNow = fixedNow
+            self.calendar = calendar
+        }
+
+        func now() -> Date { fixedNow }
+    }
+
+    // MARK: - Tests
+
     @Test("Should save valid craving")
     func logValidCraving() async throws {
         // Arrange
+        let fixedNow = Date(timeIntervalSince1970: 1_000_000_000)
+        let clock = FixedClock(fixedNow: fixedNow)
         let mockRepo = MockCravingRepository()
-        let useCase = DefaultLogCravingUseCase(repository: mockRepo)
+        let useCase = DefaultLogCravingUseCase(repository: mockRepo, clock: clock)
 
         // Act
         let result = try await useCase.execute(
-            timestamp: Date(),
+            timestamp: fixedNow.addingTimeInterval(-3600), // 1 hour before "now"
             intensity: 5,
             triggers: ["Anxious", "Bored"],
             notes: "Test note",
@@ -24,6 +42,7 @@ struct LogCravingUseCaseTests {
         // Assert
         #expect(result.intensity == 5)
         #expect(result.triggers == ["Anxious", "Bored"])
+        #expect(result.createdAt == fixedNow) // Now verifiable!
         let savedCount = try await mockRepo.count()
         #expect(savedCount == 1)
     }
@@ -31,13 +50,15 @@ struct LogCravingUseCaseTests {
     @Test("Should reject invalid intensity")
     func rejectInvalidIntensity() async {
         // Arrange
+        let fixedNow = Date(timeIntervalSince1970: 1_000_000_000)
+        let clock = FixedClock(fixedNow: fixedNow)
         let mockRepo = MockCravingRepository()
-        let useCase = DefaultLogCravingUseCase(repository: mockRepo)
+        let useCase = DefaultLogCravingUseCase(repository: mockRepo, clock: clock)
 
         // Act & Assert
         await #expect(throws: CravingError.self) {
             try await useCase.execute(
-                timestamp: Date(),
+                timestamp: fixedNow,
                 intensity: 11, // Invalid
                 triggers: [],
                 notes: nil,
@@ -48,12 +69,14 @@ struct LogCravingUseCaseTests {
 
     @Test("Should reject future timestamp")
     func rejectFutureTimestamp() async throws {
+        let fixedNow = Date(timeIntervalSince1970: 1_000_000_000)
+        let clock = FixedClock(fixedNow: fixedNow)
         let mockRepo = MockCravingRepository()
-        let useCase = DefaultLogCravingUseCase(repository: mockRepo)
+        let useCase = DefaultLogCravingUseCase(repository: mockRepo, clock: clock)
 
         do {
             _ = try await useCase.execute(
-                timestamp: Date().addingTimeInterval(60),
+                timestamp: fixedNow.addingTimeInterval(60), // Always future relative to fixedNow
                 intensity: 5,
                 triggers: [],
                 notes: nil,
@@ -69,14 +92,16 @@ struct LogCravingUseCaseTests {
 
     @Test("Should reject notes longer than 500 characters")
     func rejectNotesTooLong() async throws {
+        let fixedNow = Date(timeIntervalSince1970: 1_000_000_000)
+        let clock = FixedClock(fixedNow: fixedNow)
         let mockRepo = MockCravingRepository()
-        let useCase = DefaultLogCravingUseCase(repository: mockRepo)
+        let useCase = DefaultLogCravingUseCase(repository: mockRepo, clock: clock)
 
         let longNotes = String(repeating: "a", count: 501)
 
         do {
             _ = try await useCase.execute(
-                timestamp: Date(),
+                timestamp: fixedNow,
                 intensity: 5,
                 triggers: [],
                 notes: longNotes,

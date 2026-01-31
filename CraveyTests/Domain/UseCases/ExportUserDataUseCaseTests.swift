@@ -164,7 +164,5 @@ struct ExportUserDataUseCaseTests {
         func delete(id _: UUID) async throws {}
 
         func update(_: MotivationalMessageEntity) async throws {}
-
-        func seedDefaultMessagesIfNeeded() async throws {}
     }
 }

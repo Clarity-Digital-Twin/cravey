@@ -116,8 +116,4 @@ actor MarkMessageMockRepository: MessageRepositoryProtocol {
         updateCalled = true
         messages[message.id] = message
     }
-
-    func seedDefaultMessagesIfNeeded() async throws {
-        // No-op for tests
-    }
 }

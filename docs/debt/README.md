@@ -1,16 +1,43 @@
 # Technical Debt Tracker
 
-**Last Updated:** 2026-01-30
+**Last Updated:** 2026-01-31
 
 ## Open Debt
 
-_None._
+| ID | Summary | Priority | Status |
+|----|---------|----------|--------|
+
+**Total Open Debt Items:** 0
+
+---
+
+## Audit (2026-01-31)
+
+Comprehensive test suite audit completed (see `AUDIT-001.md`):
+- **139 unit tests passing** (up from 121)
+- **0 architectural violations** (Clean Architecture compliant)
+- **5 test coverage gaps resolved** (DEBT-048–052)
+
+### Findings Summary (All Resolved)
+
+1. ✅ DEBT-048: Added DeleteCravingUseCase unit tests
+2. ✅ DEBT-049: Added DeleteUsageUseCase unit tests
+3. ✅ DEBT-050: Added FetchCravingsUseCase unit tests
+4. ✅ DEBT-051: Added CravingEntity unit tests (isWithinLast, intensityLevel)
+5. ✅ DEBT-052: Fixed LogCravingUseCaseTests to use injected FixedClock
+
+**Bonus cleanup:** Removed stale `seedDefaultMessagesIfNeeded` from 2 test mocks.
 
 ---
 
 ## Summary
 
-**Total Open Debt Items:** 0 🎉
+**Total Open Debt Items:** 0
+
+**Test Coverage Resolution (2026-01-31):** Resolved DEBT-048–052:
+- Added 14 new tests across 4 new test files
+- Refactored LogCravingUseCaseTests for determinism
+- Removed stale mock methods
 
 **Audit (2026-01-30):** Resolved DEBT-045, DEBT-046, DEBT-047:
 - DEBT-045: Removed seeding from Domain layer (now App-only)
@@ -39,6 +66,11 @@ All resolved DEBT items are in `docs/_archive/debt/`.
 
 | ID | Summary | Resolved |
 | ---- | --------- | ---------- |
+| DEBT-052 | LogCravingUseCaseTests uses deterministic FixedClock | 2026-01-31 |
+| DEBT-051 | CravingEntity unit tests added | 2026-01-31 |
+| DEBT-050 | FetchCravingsUseCase unit tests added | 2026-01-31 |
+| DEBT-049 | DeleteUsageUseCase unit tests added | 2026-01-31 |
+| DEBT-048 | DeleteCravingUseCase unit tests added | 2026-01-31 |
 | DEBT-047 | Integration tests for MessageRepository + FileStorageManager | 2026-01-30 |
 | DEBT-046 | SwiftLint removed from build phase | 2026-01-30 |
 | DEBT-045 | Seeding consolidated to App layer only | 2026-01-30 |
