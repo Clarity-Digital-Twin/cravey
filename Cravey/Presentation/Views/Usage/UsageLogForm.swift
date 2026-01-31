@@ -64,9 +64,9 @@ struct UsageLogForm: View {
                     Text("Location")
                 }
 
-                // MARK: - Notes Section (Optional)
+                // MARK: - Notes Section
 
-                Section {
+                Section("Notes") {
                     TextEditor(text: $viewModel.notes)
                         .frame(minHeight: 100)
 
@@ -82,11 +82,6 @@ struct UsageLogForm: View {
                                 )
                         }
                     }
-                } header: {
-                    Text("Notes (Optional)")
-                } footer: {
-                    Text("Any additional context or observations")
-                        .font(.caption)
                 }
             }
             .navigationTitle("Log Usage")

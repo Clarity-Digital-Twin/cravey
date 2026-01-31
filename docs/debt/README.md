@@ -6,9 +6,8 @@
 
 | ID | Summary | Priority | Status |
 |----|---------|----------|--------|
-| DEBT-055 | CravingLogForm UI overhaul (separate sections, remove "Optional", center intensity, reorder triggers) | P2 | Open |
 
-**Total Open Debt Items:** 1
+**Total Open Debt Items:** 0
 
 ---
 
@@ -60,7 +59,10 @@ CraveyTests/
 
 ## Summary
 
-**Total Open Debt Items:** 1
+**Total Open Debt Items:** 0
+
+**UI Overhaul (2026-01-31):**
+- DEBT-055: CravingLogForm + UsageLogForm restructured (Steve Jobs minimal, explicit row breaks)
 
 **Test Coverage Resolution (2026-01-31):**
 - DEBT-053: Added TestConstants.swift, eliminated magic numbers
@@ -82,6 +84,7 @@ All resolved DEBT items are in `docs/_archive/debt/`.
 
 | ID | Summary | Resolved |
 | ---- | --------- | ---------- |
+| DEBT-055 | CravingLogForm + UsageLogForm UI overhaul | 2026-01-31 |
 | DEBT-054 | Test suite structure & coverage gaps | 2026-01-31 |
 | DEBT-053 | Test suite magic numbers | 2026-01-31 |
 | DEBT-052 | LogCravingUseCaseTests uses deterministic FixedClock | 2026-01-31 |
