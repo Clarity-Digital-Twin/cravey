@@ -7,6 +7,10 @@ options:
   deploymentTarget:
     iOS: 18.0
   createIntermediateGroups: true
+  # Suppress "Update to recommended settings" prompt in Xcode.
+  # Since project.yml is the source of truth (not .xcodeproj), manual Xcode
+  # changes get wiped on regeneration. This tells Xcode we're already current.
+  lastUpgradeCheck: "2600"
   usesTabs: false
   indentWidth: 4
   developmentLanguage: en
