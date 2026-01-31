@@ -2,7 +2,18 @@
 
 **Created:** 2026-01-31
 **Priority:** P2 (Important - maintainability)
-**Status:** Open
+**Status:** ✅ RESOLVED
+**Resolved:** 2026-01-31
+
+## Resolution
+
+- Removed empty `CraveyTests/Data/` folder; Data layer remains covered via `CraveyTests/Integration/` with real SwiftData.
+- Added missing unit tests for:
+  - `DefaultLogUsageUseCase` (`CraveyTests/Domain/UseCases/LogUsageUseCaseTests.swift`)
+  - `DefaultFetchUsageUseCase` (`CraveyTests/Domain/UseCases/FetchUsageUseCaseTests.swift`)
+  - `MotivationalMessageEntity` (`CraveyTests/Domain/Entities/MotivationalMessageEntityTests.swift`)
+  - `RecordingEntity` (`CraveyTests/Domain/Entities/RecordingEntityTests.swift`)
+- Added `CraveyTests/Support/TestConstants.swift` for shared deterministic fixtures.
 
 ## Problem
 
@@ -94,5 +105,4 @@ This is as complex as `LogCravingUseCase` (which HAS tests). **Must add tests.**
 
 ## Expected Test Count After Fix
 
-Current: 139 unit tests
-After: ~155 unit tests (+16 estimated)
+Current (post-fix): 174 unit tests

@@ -1,8 +1,11 @@
+import OSLog
 import SwiftUI
 
 /// Reusable success/info toast banner with auto-dismiss
 /// DEBT-042: Extracted from LogView and SettingsView
 struct ToastBanner: View {
+    private static let logger = Logger(subsystem: "com.cravey", category: "ToastBanner")
+
     let systemImage: String
     let text: String
     @Binding var isPresented: Bool
@@ -31,6 +34,9 @@ struct ToastBanner: View {
                     try await Task.sleep(for: duration)
                 } catch is CancellationError {
                     // Task cancelled - view dismissed early
+                    return
+                } catch {
+                    Self.logger.error("Unexpected toast sleep error: \(String(describing: error))")
                     return
                 }
                 isPresented = false

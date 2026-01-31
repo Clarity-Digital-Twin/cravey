@@ -2,7 +2,15 @@
 
 **Created:** 2026-01-31
 **Priority:** P4 (Code quality - fix opportunistically)
-**Status:** Open
+**Status:** ✅ RESOLVED
+**Resolved:** 2026-01-31
+
+## Resolution
+
+- Added `CraveyTests/Support/TestConstants.swift` (`TestConstants`, `FixedClock`).
+- Replaced remaining time math (`3600`, `86400`, fixed epoch) with `TestConstants.Time` / `TestConstants.fixedEpoch`.
+- Replaced remaining notes-length fixtures (`500`, `501`) with `TestConstants.Notes` / `ValidationLimits`.
+- Removed non-essential `Date()` usage in tests (kept only where explicitly testing `Date()` fallback or performance timing).
 
 ## Problem
 
@@ -84,6 +92,6 @@ However, tests serve as documentation. A test named `"Should reject notes longer
 
 ## Decision
 
-- [ ] Implement Option A (add TestConstants)
+- [x] Implement Option A (add TestConstants)
 - [ ] Implement Option B (accept and close)
 - [ ] Defer (keep as P4 debt)
