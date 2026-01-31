@@ -10,7 +10,7 @@ struct UsageMethodTests {
 
     @Test("Bowls amount range is 0.5 to 5.0 by 0.5")
     func bowlsAmountRange() {
-        let expected = stride(from: 0.5, through: 5.0, by: 0.5).map { $0 }
+        let expected = stride(from: 0.5, through: 5.0, by: 0.5).map(\.self)
         #expect(UsageMethod.bowls.amountRange == expected)
         #expect(UsageMethod.bowls.amountRange.count == 10)
         #expect(UsageMethod.bowls.amountRange.first == 0.5)
@@ -45,7 +45,7 @@ struct UsageMethodTests {
 
     @Test("Edible amount range is 5 to 100mg by 5")
     func edibleAmountRange() {
-        let expected = stride(from: 5.0, through: 100.0, by: 5.0).map { $0 }
+        let expected = stride(from: 5.0, through: 100.0, by: 5.0).map(\.self)
         #expect(UsageMethod.edible.amountRange == expected)
         #expect(UsageMethod.edible.amountRange.count == 20)
         #expect(UsageMethod.edible.amountRange.first == 5.0)

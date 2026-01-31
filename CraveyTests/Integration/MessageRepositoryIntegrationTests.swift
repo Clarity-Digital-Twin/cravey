@@ -133,7 +133,7 @@ struct MessageRepositoryIntegrationTests {
         // The key assertion: modifiedAt should be what we passed, not overwritten
         #expect(fetched[0].modifiedAt != nil)
         #expect(abs(fetched[0].modifiedAt!.timeIntervalSince(specificModifiedAt)) < 1.0,
-               "modifiedAt should be preserved from entity, not overwritten by repository")
+                "modifiedAt should be preserved from entity, not overwritten by repository")
     }
 
     @Test("update uses fallback Date() when modifiedAt is nil")

@@ -169,7 +169,7 @@ struct FileStorageManagerTests {
 
         // Then: Temp file should be gone (moved, not copied)
         #expect(!FileManager.default.fileExists(atPath: tempFile.path),
-               "Temp file should be removed after successful save")
+                "Temp file should be removed after successful save")
 
         // Cleanup
         try await storage.deleteRecording(at: relativePath)
