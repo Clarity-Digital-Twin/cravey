@@ -539,7 +539,7 @@ ModelConfiguration(
 - 4 reusable ViewModifiers (FormAlerts, FormToolbar, DeleteConfirmation, LocationPermissionAlert)
 - 7 ViewModels (CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings, HomeMotivation)
 - 10+ SwiftUI Views with reusable components (EmptyStateView, LocationSelector, etc.)
-- Centralized constants (AppConstants, ValidationLimits, UIConstants)
+- Centralized constants (InfrastructureConstants (App), AppConstants/UIConstants (Presentation), ValidationLimits (Domain))
 - Unit tests (121 Swift Testing tests passing in `CraveyTests`)
 - UI tests (22 XCTest UI tests passing in `CraveyUITests`; optional via `scripts/verify.sh --ui`)
 - XcodeGen configuration
