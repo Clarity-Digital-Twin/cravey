@@ -6,8 +6,9 @@
 
 | ID | Summary | Priority | Status |
 |----|---------|----------|--------|
+| DEBT-056 | UsageLogForm polish (remove "When" header, remove "(ROA)") | P4 | Open |
 
-**Total Open Debt Items:** 0
+**Total Open Debt Items:** 1
 
 ---
 
@@ -59,7 +60,7 @@ CraveyTests/
 
 ## Summary
 
-**Total Open Debt Items:** 0
+**Total Open Debt Items:** 1
 
 **UI Overhaul (2026-01-31):**
 - DEBT-055: CravingLogForm + UsageLogForm restructured (Steve Jobs minimal, explicit row breaks)
