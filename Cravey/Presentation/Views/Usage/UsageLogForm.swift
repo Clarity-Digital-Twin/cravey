@@ -39,32 +39,29 @@ struct UsageLogForm: View {
                     Text("What & How Much")
                 }
 
-                // MARK: - Triggers Section (Optional)
+                // MARK: - Triggers Section
 
                 Section {
                     ChipSelector(
-                        title: "Triggers",
+                        title: nil,
                         groups: [
-                            .init(title: "Primary", options: TriggerOptions.primary),
+                            .init(title: "Primary", options: TriggerOptions.primaryHALT),
+                            .init(title: nil, options: TriggerOptions.primaryOther),
                             .init(title: "Secondary", options: TriggerOptions.secondary),
                         ],
                         selectedValues: $viewModel.selectedTriggers,
                         multiSelect: true
                     )
                 } header: {
-                    Text("Triggers (Optional)")
-                } footer: {
-                    Text("Select all that apply")
-                        .font(.caption)
+                    Text("Triggers")
                 }
 
-                // MARK: - Location Section (Optional)
+                // MARK: - Location Section
 
                 Section {
-                    // DEBT-026: Extracted to reusable LocationSelector component
-                    LocationSelector(viewModel: viewModel)
+                    LocationSelector(viewModel: viewModel, showTitle: false)
                 } header: {
-                    Text("Location (Optional)")
+                    Text("Location")
                 }
 
                 // MARK: - Notes Section (Optional)

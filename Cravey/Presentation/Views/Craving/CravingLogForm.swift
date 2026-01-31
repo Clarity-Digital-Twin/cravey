@@ -9,7 +9,8 @@ struct CravingLogForm: View {
     var body: some View {
         NavigationStack {
             Form {
-                // REQUIRED SECTION (CLINICAL_CANNABIS_SPEC.md:187-193)
+                // MARK: - Required Section (timestamp + intensity)
+
                 Section {
                     TimestampPicker(date: $viewModel.timestamp)
                         .accessibilityLabel("Timestamp")
@@ -18,36 +19,42 @@ struct CravingLogForm: View {
                         .accessibilityLabel("Intensity")
                 }
 
-                // OPTIONAL SECTION
-                Section("Details (Optional)") {
+                // MARK: - Triggers Section
+
+                Section("Triggers") {
                     ChipSelector(
-                        title: "Triggers",
+                        title: nil,
                         groups: [
-                            .init(title: "Primary", options: TriggerOptions.primary),
+                            .init(title: "Primary", options: TriggerOptions.primaryHALT),
+                            .init(title: nil, options: TriggerOptions.primaryOther),
                             .init(title: "Secondary", options: TriggerOptions.secondary),
                         ],
                         selectedValues: $viewModel.selectedTriggers,
                         multiSelect: true
                     )
+                }
 
-                    // DEBT-026: Extracted to reusable LocationSelector component
-                    LocationSelector(viewModel: viewModel)
+                // MARK: - Location Section
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        TextField("Notes", text: $viewModel.notes, axis: .vertical)
-                            .lineLimit(3 ... 5)
+                Section("Location") {
+                    LocationSelector(viewModel: viewModel, showTitle: false)
+                }
 
-                        // BUG-006 FIX: Only show counter at 400+ chars (matches UsageLogForm)
-                        if viewModel.shouldShowNotesCounter {
-                            HStack {
-                                Spacer()
-                                Text("\(viewModel.notesCharacterCount)/\(ValidationLimits.notesMaxLength)")
-                                    .font(.caption)
-                                    .foregroundStyle(
-                                        viewModel.notesCharacterCount == ValidationLimits.notesMaxLength
-                                            ? .red : .secondary
-                                    )
-                            }
+                // MARK: - Notes Section
+
+                Section("Notes") {
+                    TextField("", text: $viewModel.notes, axis: .vertical)
+                        .lineLimit(3 ... 5)
+
+                    if viewModel.shouldShowNotesCounter {
+                        HStack {
+                            Spacer()
+                            Text("\(viewModel.notesCharacterCount)/\(ValidationLimits.notesMaxLength)")
+                                .font(.caption)
+                                .foregroundStyle(
+                                    viewModel.notesCharacterCount == ValidationLimits.notesMaxLength
+                                        ? .red : .secondary
+                                )
                         }
                     }
                 }

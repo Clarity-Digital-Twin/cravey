@@ -6,8 +6,9 @@
 
 | ID | Summary | Priority | Status |
 |----|---------|----------|--------|
+| DEBT-055 | CravingLogForm UI overhaul (separate sections, remove "Optional", center intensity, reorder triggers) | P2 | Open |
 
-**Total Open Debt Items:** 0
+**Total Open Debt Items:** 1
 
 ---
 
@@ -59,7 +60,7 @@ CraveyTests/
 
 ## Summary
 
-**Total Open Debt Items:** 0
+**Total Open Debt Items:** 1
 
 **Test Coverage Resolution (2026-01-31):**
 - DEBT-053: Added TestConstants.swift, eliminated magic numbers

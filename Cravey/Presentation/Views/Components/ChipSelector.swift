@@ -12,19 +12,19 @@ struct ChipSelector: View {
         }
     }
 
-    let title: String
+    let title: String?
     let groups: [Group]
     @Binding var selectedValues: Set<String>
     let multiSelect: Bool
 
-    init(title: String, options: [String], selectedValues: Binding<Set<String>>, multiSelect: Bool) {
+    init(title: String?, options: [String], selectedValues: Binding<Set<String>>, multiSelect: Bool) {
         self.title = title
         groups = [Group(title: nil, options: options)]
         _selectedValues = selectedValues
         self.multiSelect = multiSelect
     }
 
-    init(title: String, groups: [Group], selectedValues: Binding<Set<String>>, multiSelect: Bool) {
+    init(title: String?, groups: [Group], selectedValues: Binding<Set<String>>, multiSelect: Bool) {
         self.title = title
         self.groups = groups
         _selectedValues = selectedValues
@@ -33,9 +33,11 @@ struct ChipSelector: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            if let title {
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
             VStack(alignment: .leading, spacing: 12) {
                 ForEach(groups) { group in
@@ -83,15 +85,17 @@ struct ChipSelector: View {
 /// Use this instead of ChipSelector with multiSelect: false to avoid
 /// creating a new Set on every SwiftUI render cycle
 struct SingleSelectChipSelector: View {
-    let title: String
+    let title: String?
     let options: [String]
     @Binding var selectedValue: String
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            if let title {
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
             FlowLayout(spacing: 8) {
                 ForEach(options, id: \.self) { option in
@@ -111,15 +115,17 @@ struct SingleSelectChipSelector: View {
 /// Optional single-select chip selector (allows no selection)
 /// Returns nil when nothing is selected
 struct OptionalSingleSelectChipSelector: View {
-    let title: String
+    let title: String?
     let options: [String]
     @Binding var selectedValue: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            if let title {
+                Text(title)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
             FlowLayout(spacing: 8) {
                 ForEach(options, id: \.self) { option in

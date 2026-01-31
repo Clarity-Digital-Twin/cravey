@@ -39,6 +39,7 @@ struct IntensitySlider: View {
             Text(Self.formatLabel(for: Int(value)))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+                .frame(maxWidth: .infinity)
         }
         // iOS 17+ declarative haptics on value change
         .sensoryFeedback(.selection, trigger: hapticTrigger)
