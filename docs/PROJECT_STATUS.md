@@ -1,7 +1,7 @@
 # Cravey Project Status
 
 **Last Updated:** 2026-01-31
-**Build Gate:** `bash scripts/verify.sh` ✅ (139 unit tests passing; add `--ui` for 22 UI tests)
+**Build Gate:** `bash scripts/verify.sh` ✅ (174 unit tests passing; add `--ui` for 22 UI tests)
 **App Version:** Pre-release (development)
 
 ---
@@ -37,7 +37,7 @@ Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built 
 | **Data (Use Cases)** | 1 | SwiftDataDeleteAllUserDataUseCase (DeleteAllUserDataUseCase implementation) |
 | **Presentation (ViewModels)** | 7 | CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings, HomeMotivation |
 | **Presentation (Views + Components)** | 16 | Home (dashboard), Log, History, Settings (incl. export flow), Craving/Usage forms+lists, reusable components |
-| **Tests** | 41 files | 139 unit tests (Swift Testing) + 22 UI tests (XCTest), all passing |
+| **Tests** | 46 files | 174 unit tests (Swift Testing) + 22 UI tests (XCTest), all passing |
 
 ### Architecture Compliance
 - Clean Architecture enforced (Domain has no SwiftUI/SwiftData imports)
@@ -167,6 +167,7 @@ swiftlint
 
 | Date | Change |
 |------|--------|
+| 2026-01-31 | Test suite overhaul: DEBT-053–054 resolved, 174 unit tests (+35), TestConstants.swift added |
 | 2026-01-31 | Test coverage debt resolved: DEBT-048–052 all fixed, 139 unit tests (+18), 0 open debt |
 | 2026-01-31 | Test suite audit: 5 coverage gaps identified (DEBT-048–052), architecture compliant |
 | 2026-01-30 | Stabilization complete: 0 open debt/bugs, 121 unit tests + 22 UI tests, verification gate updated |
