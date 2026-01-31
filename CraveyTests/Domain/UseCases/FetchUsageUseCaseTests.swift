@@ -9,7 +9,11 @@ struct FetchUsageUseCaseTests {
         let mockRepo = FetchUsageMockRepository()
         let now = TestConstants.fixedEpoch
 
-        let usage1 = UsageEntity(timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerHour), method: "Bowls", amount: 1.0)
+        let usage1 = UsageEntity(
+            timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerHour),
+            method: "Bowls",
+            amount: 1.0
+        )
         let usage2 = UsageEntity(timestamp: now, method: "Vape", amount: 3.0)
         await mockRepo.addUsage(usage1)
         await mockRepo.addUsage(usage2)
@@ -26,7 +30,11 @@ struct FetchUsageUseCaseTests {
         let now = TestConstants.fixedEpoch
 
         let recent = UsageEntity(timestamp: now, method: "Bowls", amount: 1.0)
-        let old = UsageEntity(timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerDay * 10), method: "Vape", amount: 3.0)
+        let old = UsageEntity(
+            timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerDay * 10),
+            method: "Vape",
+            amount: 3.0
+        )
         await mockRepo.addUsage(recent)
         await mockRepo.addUsage(old)
 
@@ -53,7 +61,11 @@ struct FetchUsageUseCaseTests {
         let mockRepo = FetchUsageMockRepository()
         let now = TestConstants.fixedEpoch
 
-        let old = UsageEntity(timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerDay * 30), method: "Edible", amount: 10.0)
+        let old = UsageEntity(
+            timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerDay * 30),
+            method: "Edible",
+            amount: 10.0
+        )
         await mockRepo.addUsage(old)
 
         let useCase = DefaultFetchUsageUseCase(repository: mockRepo)

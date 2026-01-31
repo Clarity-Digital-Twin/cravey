@@ -111,7 +111,43 @@ actor FileStorageManager: RecordingFileDeleting {
             try fileManager.moveItem(at: tempURL, to: destinationURL)
         } catch CocoaError.fileWriteFileExists {
             // Destination exists - replace atomically to avoid data loss if move fails
-            _ = try fileManager.replaceItemAt(destinationURL, withItemAt: tempURL, backupItemName: nil)
+            do {
+                _ = try fileManager.replaceItemAt(destinationURL, withItemAt: tempURL, backupItemName: nil)
+            } catch let replaceError {
+                // replaceItemAt can fail (e.g., permission issues). Fall back to a safe replace:
+                // 1) Move the original aside
+                // 2) Attempt move (then copy) from temp → destination
+                // 3) Restore original on failure
+                let backupURL = destinationURL
+                    .deletingLastPathComponent()
+                    .appendingPathComponent("\(filename).backup-\(UUID().uuidString)")
+
+                do {
+                    try fileManager.moveItem(at: destinationURL, to: backupURL)
+                } catch let backupMoveError {
+                    Self.logger.error(
+                        "replaceItemAt failed for \(destinationURL.path, privacy: .public): \(replaceError.localizedDescription). "
+                            + "Backup move failed: \(backupMoveError.localizedDescription)"
+                    )
+                    throw replaceError
+                }
+
+                do {
+                    try fileManager.moveItem(at: tempURL, to: destinationURL)
+                } catch {
+                    do {
+                        try fileManager.copyItem(at: tempURL, to: destinationURL)
+                        try? fileManager.removeItem(at: tempURL) // Best-effort cleanup
+                    } catch let copyError {
+                        // Restore the original file and rethrow
+                        try? fileManager.moveItem(at: backupURL, to: destinationURL)
+                        throw copyError
+                    }
+                }
+
+                // New file saved; best-effort remove backup
+                try? fileManager.removeItem(at: backupURL)
+            }
         } catch {
             // Move failed for other reason - fall back to copy + cleanup
             try fileManager.copyItem(at: tempURL, to: destinationURL)
