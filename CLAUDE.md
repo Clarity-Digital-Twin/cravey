@@ -1,6 +1,6 @@
 # Cravey App - AI Agent Development Context
 
-**Last Updated:** 2026-01-29
+**Last Updated:** 2026-01-31
 **Current Status:** See `docs/PROJECT_STATUS.md` for authoritative status
 **Parity:** `AGENTS.md` and `CLAUDE.md` are redundant copies and must be kept in sync.
 
@@ -530,21 +530,21 @@ ModelConfiguration(
 
 ### ✅ Technical Foundation
 - Clean Architecture folder structure
-- Domain layer (6 entities, 10 use case files, 4 repository protocols)
+- Domain layer (7 entities/value objects, 12 use case files, 4 repository protocols)
 - Data layer (4 models, 4 mappers, 4 repositories + RepositoryHelpers)
 - DependencyContainer with DI + AppStartupHandler
 - 4 shared ViewModel protocols (LocationHandling, TimestampWarning, FormSubmission, ListViewModel)
 - 4 reusable ViewModifiers (FormAlerts, FormToolbar, DeleteConfirmation, LocationPermissionAlert)
-- 6 ViewModels (CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings)
+- 7 ViewModels (CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings, HomeMotivation)
 - 10+ SwiftUI Views with reusable components (EmptyStateView, LocationSelector, etc.)
 - Centralized constants (AppConstants, ValidationLimits, UIConstants)
-- Unit tests (93 Swift Testing tests passing in `CraveyTests`)
+- Unit tests (121 Swift Testing tests passing in `CraveyTests`)
+- UI tests (22 XCTest UI tests passing in `CraveyUITests`; optional via `scripts/verify.sh --ui`)
 - XcodeGen configuration
 
 ### 🚧 TODO (Not Implemented)
 - **Recording Views** - AVFoundation integration, recording/playback UI
 - **Onboarding** - WelcomeView, TourView not created
-- **UI Tests** - Scaffolding exists; not part of the automated convergence gate
 
 ---
 

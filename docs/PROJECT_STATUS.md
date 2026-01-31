@@ -1,14 +1,14 @@
 # Cravey Project Status
 
-**Last Updated:** 2026-01-27
-**Build Gate:** `bash scripts/verify.sh` ✅ (48 Swift Testing tests passing)
+**Last Updated:** 2026-01-31
+**Build Gate:** `bash scripts/verify.sh` ✅ (121 unit tests passing; add `--ui` for 22 UI tests)
 **App Version:** Pre-release (development)
 
 ---
 
 ## Executive Summary
 
-Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built with Clean Architecture + MVVM using SwiftUI + SwiftData. Core tracking (cravings + usage), dashboard metrics, and data management (export + delete-all) work end-to-end. Recordings and motivational messages are scaffolded (entities/models/protocols exist) but are not yet implemented as end-user features.
+Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built with Clean Architecture + MVVM using SwiftUI + SwiftData. Core tracking (cravings + usage), dashboard metrics, a Home motivation card (seeded defaults), and data management (export + delete-all) work end-to-end. Recordings are scaffolded (models + storage exist) but are not yet implemented as an end-user feature.
 
 ---
 
@@ -28,16 +28,16 @@ Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built 
 
 | Layer | Files | Status |
 |-------|-------|--------|
-| **Domain (Entities)** | 5 | CravingEntity, UsageEntity, RecordingEntity, MotivationalMessageEntity, TriggerOptions |
-| **Domain (Use Cases)** | 10 | Log/Fetch/Delete (Craving/Usage), Export/DeleteAll, plus ROAAmountRange helper |
+| **Domain (Entities)** | 7 | CravingEntity, UsageEntity, RecordingEntity, MotivationalMessageEntity, TriggerOptions, UsageMethod, ValidationLimits |
+| **Domain (Use Cases)** | 12 | Log/Fetch/Delete (Craving/Usage), Export/DeleteAll, Select/MarkShown (Motivation), plus helpers |
 | **Domain (Protocols)** | 4 | CravingRepositoryProtocol, UsageRepositoryProtocol, RecordingRepositoryProtocol, MessageRepositoryProtocol |
 | **Data (Models)** | 4 | CravingModel, UsageModel, RecordingModel, MotivationalMessageModel |
 | **Data (Mappers)** | 4 | All mappers implemented |
 | **Data (Repositories)** | 4 | CravingRepository, UsageRepository, RecordingRepository, MessageRepository (concrete implementations) |
 | **Data (Use Cases)** | 1 | SwiftDataDeleteAllUserDataUseCase (DeleteAllUserDataUseCase implementation) |
-| **Presentation (ViewModels)** | 6 | CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings |
+| **Presentation (ViewModels)** | 7 | CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings, HomeMotivation |
 | **Presentation (Views + Components)** | 16 | Home (dashboard), Log, History, Settings (incl. export flow), Craving/Usage forms+lists, reusable components |
-| **Tests** | 15 files | 48 Swift Testing tests, all passing (`CraveyTests`) |
+| **Tests** | 37 files | 121 unit tests (Swift Testing) + 22 UI tests (XCTest), all passing |
 
 ### Architecture Compliance
 - Clean Architecture enforced (Domain has no SwiftUI/SwiftData imports)
@@ -53,8 +53,7 @@ Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built 
 
 | Component | What Exists | What's Missing |
 |-----------|-------------|----------------|
-| **Recordings Feature** | Models + repository | AVFoundation capture/playback + user-facing UI |
-| **Motivational Messages Feature** | Models + repository | Message selection UI + use cases |
+| **Recordings Feature** | Models + repository + file storage | AVFoundation capture/playback + user-facing UI |
 | **Recording Use Cases** | Entity defined | No SaveRecording/FetchRecordings use cases |
 | **Recording ViewModels** | - | RecordingViewModel, RecordingLibraryViewModel |
 | **Recording Views** | - | RecordingView, RecordingLibraryView, playback UI |
@@ -66,7 +65,7 @@ Cravey is a privacy-first cannabis tracking and support iOS app (iOS 18+) built 
 |---------|-------------|----------------|
 | **Onboarding** | Spec complete (UX_FLOW_SPEC.md) | WelcomeView, TourView not created |
 | **Quick Play (Home)** | Spec complete | Recordings feature not implemented yet |
-| **UI Tests** | Files exist | Not part of `scripts/verify.sh` gate (headless CI constraints) |
+| **Custom Motivational Messages UI** | Repository + models exist | UI to create/edit/manage messages not implemented |
 
 ### Launch Prep (Phase 6)
 - TestFlight setup
@@ -89,7 +88,8 @@ bash scripts/verify.sh
 - `swiftlint lint`
 - Static invariants (privacy + Clean Architecture boundaries)
 - iOS Simulator compile check (uses an installed simulator, prefers `iPhone 17 Pro`)
-- Unit tests (`CraveyTests`) on Mac Catalyst with code signing disabled
+- Unit tests (`CraveyTests`) on iOS Simulator with code signing disabled
+- Optional UI tests (`CraveyUITests`) on iOS Simulator (`bash scripts/verify.sh --ui`)
 
 ---
 
@@ -167,6 +167,7 @@ swiftlint
 
 | Date | Change |
 |------|--------|
+| 2026-01-30 | Stabilization complete: 0 open debt/bugs, 121 unit tests + 22 UI tests, verification gate updated |
 | 2026-01-27 | UI redesign complete: 4-tab structure (Home/Log/History/Settings), 48 tests |
 | 2026-01-27 | Refreshed status to match current implementation + verification gate |
 | 2025-01-24 | Created PROJECT_STATUS.md, consolidated status docs, archived outdated files |
