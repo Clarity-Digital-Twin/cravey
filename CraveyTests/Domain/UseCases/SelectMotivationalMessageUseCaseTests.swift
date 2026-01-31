@@ -37,20 +37,10 @@ struct SelectMotivationalMessageUseCaseTests {
         #expect(result == nil)
     }
 
-    // MARK: - Test 3: Seeds default messages if needed
+    // NOTE: Test for seeding removed (DEBT-045).
+    // Seeding is now handled at app startup, not by the use case.
 
-    @Test("execute should seed default messages when repository is empty")
-    func seedsDefaultMessages() async throws {
-        let mockRepo = MockMessageRepository()
-
-        let useCase = DefaultSelectMotivationalMessageUseCase(repository: mockRepo)
-        _ = try await useCase.execute()
-
-        let seedCalled = await mockRepo.seedDefaultMessagesIfNeededCalled
-        #expect(seedCalled == true)
-    }
-
-    // MARK: - Test 4: Prefers less-shown messages
+    // MARK: - Test 3: Prefers less-shown messages
 
     @Test("execute should prefer messages that have been shown fewer times")
     func prefersLessShownMessages() async throws {
@@ -86,7 +76,6 @@ struct SelectMotivationalMessageUseCaseTests {
 
 actor MockMessageRepository: MessageRepositoryProtocol {
     private var messages: [MotivationalMessageEntity] = []
-    var seedDefaultMessagesIfNeededCalled = false
 
     func addMessage(_ message: MotivationalMessageEntity) {
         messages.append(message)
@@ -118,8 +107,6 @@ actor MockMessageRepository: MessageRepositoryProtocol {
         }
     }
 
-    func seedDefaultMessagesIfNeeded() async throws {
-        seedDefaultMessagesIfNeededCalled = true
-        // Don't actually seed in tests - let tests control what messages exist
-    }
+    // NOTE: seedDefaultMessagesIfNeeded() removed from protocol (DEBT-045).
+    // Seeding is now handled at app startup.
 }

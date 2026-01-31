@@ -90,18 +90,6 @@ final class MessageRepository: MessageRepositoryProtocol {
         }
     }
 
-    func seedDefaultMessagesIfNeeded() async throws {
-        try await MainActor.run {
-            let descriptor = FetchDescriptor<MotivationalMessageModel>()
-            let count = try modelContext.fetchCount(descriptor)
-
-            guard count == 0 else { return }
-
-            for message in MotivationalMessageEntity.defaultMessages {
-                modelContext.insert(MessageMapper.toModel(message))
-            }
-
-            try modelContext.save()
-        }
-    }
+    // NOTE: seedDefaultMessagesIfNeeded() removed (DEBT-045).
+    // Seeding is now handled at app startup via ModelContainerSetup.seedDefaultMessages().
 }

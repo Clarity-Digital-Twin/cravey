@@ -16,9 +16,8 @@ final class DefaultSelectMotivationalMessageUseCase: SelectMotivationalMessageUs
     }
 
     func execute() async throws -> MotivationalMessageEntity? {
-        // Ensure default messages are seeded
-        try await repository.seedDefaultMessagesIfNeeded()
-
+        // NOTE: Default messages are seeded at app startup (App layer).
+        // This use case is read-only. Returns nil if no messages exist.
         let messages = try await repository.fetchActive()
 
         guard !messages.isEmpty else { return nil }

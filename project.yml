@@ -39,14 +39,8 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1,2"  # iPhone and iPad
         SUPPORTS_MACCATALYST: false
-    preBuildScripts:
-      - script: |
-          # SwiftLint
-          if which swiftlint >/dev/null; then
-            swiftlint
-          fi
-        name: SwiftLint
-        basedOnDependencyAnalysis: false
+    # NOTE: SwiftLint removed from build phase (DEBT-046).
+    # Linting is enforced via `scripts/verify.sh` instead.
 
   CraveyTests:
     type: bundle.unit-test
