@@ -252,7 +252,9 @@ Cravey/
 │   ├── CraveyApp.swift         # @main entry point
 │   ├── DependencyContainer.swift
 │   ├── AppStartupHandler.swift # Startup initialization logic
-│   └── AppUnavailableView.swift
+│   ├── AppUnavailableView.swift
+│   └── Constants/
+│       └── InfrastructureConstants.swift  # Timeouts, storage limits (Data layer config)
 ├── Domain/                      # Pure Swift (NO frameworks)
 │   ├── Entities/               # Business models
 │   │   ├── CravingEntity.swift
@@ -298,8 +300,8 @@ Cravey/
     │   ├── FormSubmission.swift     # Loading/error/success state
     │   └── ListViewModel.swift      # Fetch/delete patterns
     ├── Constants/              # UI constants
-    │   ├── AppConstants.swift       # Timeouts, limits, defaults
-    │   └── UIConstants.swift        # Toast duration, etc.
+    │   ├── AppConstants.swift       # Form defaults (Presentation layer only)
+    │   └── UIConstants.swift        # Toast duration, animation timing
     ├── ViewModels/              # @Observable state
     │   ├── CravingLogViewModel.swift
     │   ├── CravingListViewModel.swift
