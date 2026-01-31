@@ -7,7 +7,7 @@ struct DeleteUsageUseCaseTests {
     @Test("execute deletes existing usage")
     func deleteExistingUsage() async throws {
         let mockRepo = DeleteUsageMockRepository()
-        let usage = UsageEntity(timestamp: Date(), method: "Bowls", amount: 1.0)
+        let usage = UsageEntity(timestamp: TestConstants.fixedEpoch, method: "Bowls", amount: 1.0)
         await mockRepo.addUsage(usage)
 
         let useCase = DefaultDeleteUsageUseCase(repository: mockRepo)
@@ -20,7 +20,7 @@ struct DeleteUsageUseCaseTests {
     @Test("execute calls repository delete with correct ID")
     func deleteCallsRepositoryWithCorrectId() async throws {
         let mockRepo = DeleteUsageMockRepository()
-        let usage = UsageEntity(timestamp: Date(), method: "Vape", amount: 5.0)
+        let usage = UsageEntity(timestamp: TestConstants.fixedEpoch, method: "Vape", amount: 5.0)
         await mockRepo.addUsage(usage)
 
         let useCase = DefaultDeleteUsageUseCase(repository: mockRepo)

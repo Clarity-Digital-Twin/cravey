@@ -1,10 +1,13 @@
 import Foundation
+import OSLog
 
 /// Settings ViewModel - handles data export and deletion
 /// Presentation layer - Clean Architecture
 @Observable
 @MainActor
 final class SettingsViewModel {
+    private static let logger = Logger(subsystem: "com.cravey", category: "SettingsViewModel")
+
     // MARK: - Dependencies
 
     @ObservationIgnored
@@ -71,6 +74,7 @@ final class SettingsViewModel {
             exportURL = fileURL
             showShareSheet = true
         } catch {
+            Self.logger.error("Failed to export data: \(error.localizedDescription)")
             errorMessage = "We couldn’t export your data. Please try again."
             showError = true
         }
@@ -87,7 +91,8 @@ final class SettingsViewModel {
 
             deleteSuccess = true
         } catch {
-            errorMessage = "Failed to delete data: \(error.localizedDescription)"
+            Self.logger.error("Failed to delete all data: \(error.localizedDescription)")
+            errorMessage = "We couldn’t delete your data. Please try again."
             showError = true
         }
     }

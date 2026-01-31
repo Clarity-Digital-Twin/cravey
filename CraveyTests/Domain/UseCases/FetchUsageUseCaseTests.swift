@@ -22,6 +22,8 @@ struct FetchUsageUseCaseTests {
         let result = try await useCase.execute()
 
         #expect(result.count == 2)
+        #expect(result[0].id == usage2.id, "Newest usage should be first")
+        #expect(result[1].id == usage1.id, "Oldest usage should be last")
     }
 
     @Test("execute with since date filters correctly")

@@ -113,9 +113,14 @@ actor MockFetchCravingsUseCase: FetchCravingsUseCase {
         if shouldThrow { throw MockFetchCravingsError.fetchFailed }
         if returnEmpty { return [] }
 
+        let now = TestConstants.fixedEpoch
         return [
-            CravingEntity(timestamp: Date(), intensity: 7, triggers: ["Anxious"]),
-            CravingEntity(timestamp: Date().addingTimeInterval(-3600), intensity: 4, triggers: ["Bored"]),
+            CravingEntity(timestamp: now, intensity: 7, triggers: ["Anxious"]),
+            CravingEntity(
+                timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerHour),
+                intensity: 4,
+                triggers: ["Bored"]
+            ),
         ]
     }
 

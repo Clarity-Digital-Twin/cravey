@@ -1,7 +1,7 @@
 import Foundation
-import os
+import OSLog
 
-private let logger = Logger(subsystem: "com.cravey.app", category: "RecordingMapper")
+private let logger = Logger(subsystem: "com.cravey", category: "RecordingMapper")
 
 /// Mapper between RecordingEntity (Domain) and RecordingModel (Data/SwiftData)
 enum RecordingMapper {

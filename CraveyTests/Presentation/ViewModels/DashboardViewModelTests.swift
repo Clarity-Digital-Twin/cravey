@@ -7,29 +7,41 @@ import Testing
 struct DashboardViewModelTests {
     @Test("Streaks and weekly counts are computed deterministically")
     func streaksAndWeeklyCounts() async {
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
 
         let cravings: [CravingEntity] = [
-            CravingEntity(timestamp: now.addingTimeInterval(-2 * 86400), intensity: 6, triggers: ["Bored"]),
-            CravingEntity(timestamp: now.addingTimeInterval(-3 * 86400), intensity: 8, triggers: ["Anxious"]),
-            CravingEntity(timestamp: now.addingTimeInterval(-20 * 86400), intensity: 4, triggers: ["Habit"]),
+            CravingEntity(
+                timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerDay * 2),
+                intensity: 6,
+                triggers: ["Bored"]
+            ),
+            CravingEntity(
+                timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerDay * 3),
+                intensity: 8,
+                triggers: ["Anxious"]
+            ),
+            CravingEntity(
+                timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerDay * 20),
+                intensity: 4,
+                triggers: ["Habit"]
+            ),
         ]
 
         let usages: [UsageEntity] = [
             UsageEntity(
-                timestamp: now.addingTimeInterval(-10 * 86400),
+                timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerDay * 10),
                 method: "Bowls",
                 amount: 1.0,
                 triggers: ["Bored"]
             ),
             UsageEntity(
-                timestamp: now.addingTimeInterval(-6 * 86400),
+                timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerDay * 6),
                 method: "Vape",
                 amount: 2.0,
                 triggers: ["Anxious"]
             ),
             UsageEntity(
-                timestamp: now.addingTimeInterval(-1 * 86400),
+                timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerDay),
                 method: "Edible",
                 amount: 10.0,
                 triggers: ["Bored"]
@@ -60,14 +72,23 @@ struct DashboardViewModelTests {
 
     @Test("Top triggers do not double-count duplicate triggers in a single entry")
     func topTriggersDeduplicateWithinEntry() async {
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
 
         let cravings: [CravingEntity] = [
-            CravingEntity(timestamp: now, intensity: 5, triggers: ["Bored", "Bored", "Anxious"]),
+            CravingEntity(
+                timestamp: now,
+                intensity: 5,
+                triggers: ["Bored", "Bored", "Anxious"]
+            ),
         ]
 
         let usages: [UsageEntity] = [
-            UsageEntity(timestamp: now, method: "Bowls", amount: 1.0, triggers: ["Bored", "Bored"]),
+            UsageEntity(
+                timestamp: now,
+                method: "Bowls",
+                amount: 1.0,
+                triggers: ["Bored", "Bored"]
+            ),
         ]
 
         let viewModel = DashboardViewModel(

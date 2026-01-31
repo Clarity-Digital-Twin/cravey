@@ -6,6 +6,7 @@ import Foundation
 enum TestConstants {
     /// Time intervals for date arithmetic in tests
     enum Time {
+        static let secondsPerMinute: TimeInterval = 60
         static let secondsPerHour: TimeInterval = 3600
         static let secondsPerDay: TimeInterval = 86400
         static let hoursPerDay = 24

@@ -20,8 +20,10 @@ struct CravingLogIntegrationTests {
 
         // Setup: Real dependencies (no mocks)
         let repository = CravingRepository(modelContext: context)
-        let useCase = DefaultLogCravingUseCase(repository: repository)
-        let viewModel = CravingLogViewModel(logCravingUseCase: useCase)
+        let now = TestConstants.fixedEpoch
+        let clock = FixedClock(fixedNow: now)
+        let useCase = DefaultLogCravingUseCase(repository: repository, clock: clock)
+        let viewModel = CravingLogViewModel(logCravingUseCase: useCase, nowProvider: { now })
 
         // Given: User fills form
         viewModel.intensity = 7
@@ -59,8 +61,9 @@ struct CravingLogIntegrationTests {
         let context = ModelContext(container)
 
         // Insert sample craving
+        let now = TestConstants.fixedEpoch
         let craving = CravingModel(
-            timestamp: Date(),
+            timestamp: now,
             intensity: 5,
             triggers: ["Anxious"],
             location: nil,

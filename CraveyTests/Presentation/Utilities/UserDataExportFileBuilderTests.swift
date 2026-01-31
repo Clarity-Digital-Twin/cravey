@@ -6,7 +6,7 @@ import Testing
 struct UserDataExportFileBuilderTests {
     @Test("CSV export contains header and one row per record")
     func csvIncludesAllRecords() throws {
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
 
         let export = UserDataExport(
             schemaVersion: UserDataExport.currentSchemaVersion,
@@ -49,7 +49,7 @@ struct UserDataExportFileBuilderTests {
 
     @Test("JSON export round-trips UserDataExport")
     func jsonRoundTrip() throws {
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
 
         let export = UserDataExport(
             schemaVersion: UserDataExport.currentSchemaVersion,

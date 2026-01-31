@@ -23,11 +23,13 @@ struct UsageDataLayerTests {
 
         // Create real repository and use case
         let repository = UsageRepository(modelContext: context)
-        let useCase = DefaultLogUsageUseCase(repository: repository)
+        let now = TestConstants.fixedEpoch
+        let clock = FixedClock(fixedNow: now)
+        let useCase = DefaultLogUsageUseCase(repository: repository, clock: clock)
 
         // Execute
         let request = LogUsageRequest(
-            timestamp: Date(),
+            timestamp: now,
             method: "Bowls",
             amount: 2.5,
             triggers: ["Anxious", "Bored"],
@@ -58,8 +60,13 @@ struct UsageDataLayerTests {
         let context = try Self.makeInMemoryContext()
 
         // Insert test data directly
-        let model1 = UsageModel(timestamp: Date(), method: "Vape", amount: 5.0)
-        let model2 = UsageModel(timestamp: Date().addingTimeInterval(-3600), method: "Edible", amount: 10.0)
+        let now = TestConstants.fixedEpoch
+        let model1 = UsageModel(timestamp: now, method: "Vape", amount: 5.0)
+        let model2 = UsageModel(
+            timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerHour),
+            method: "Edible",
+            amount: 10.0
+        )
         context.insert(model1)
         context.insert(model2)
         try context.save()
@@ -83,10 +90,11 @@ struct UsageDataLayerTests {
         let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
-        let useCase = DefaultLogUsageUseCase(repository: repository)
+        let now = TestConstants.fixedEpoch
+        let clock = FixedClock(fixedNow: now)
+        let useCase = DefaultLogUsageUseCase(repository: repository, clock: clock)
 
-        let methods = ["Bowls", "Joints", "Blunts", "Vape", "Dab", "Edible"]
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let methods = UsageMethod.allCases.map(\.rawValue)
 
         for method in methods {
             let validAmount = ROAAmountRange.range(for: method).first ?? 1.0
@@ -110,8 +118,9 @@ struct UsageDataLayerTests {
         let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
-        let useCase = DefaultLogUsageUseCase(repository: repository)
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
+        let clock = FixedClock(fixedNow: now)
+        let useCase = DefaultLogUsageUseCase(repository: repository, clock: clock)
 
         do {
             _ = try await useCase.execute(
@@ -133,8 +142,9 @@ struct UsageDataLayerTests {
         let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
-        let useCase = DefaultLogUsageUseCase(repository: repository)
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
+        let clock = FixedClock(fixedNow: now)
+        let useCase = DefaultLogUsageUseCase(repository: repository, clock: clock)
 
         do {
             _ = try await useCase.execute(LogUsageRequest(timestamp: now, method: "Bowls", amount: 0))
@@ -154,11 +164,17 @@ struct UsageDataLayerTests {
         let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
-        let useCase = DefaultLogUsageUseCase(repository: repository)
+        let now = TestConstants.fixedEpoch
+        let clock = FixedClock(fixedNow: now)
+        let useCase = DefaultLogUsageUseCase(repository: repository, clock: clock)
 
         do {
             _ = try await useCase.execute(
-                LogUsageRequest(timestamp: Date().addingTimeInterval(60), method: "Bowls", amount: 1.0)
+                LogUsageRequest(
+                    timestamp: now.addingTimeInterval(TestConstants.Time.secondsPerMinute),
+                    method: "Bowls",
+                    amount: 1.0
+                )
             )
             Issue.record("Should have thrown futureTimestamp error")
         } catch UsageError.futureTimestamp {
@@ -176,10 +192,11 @@ struct UsageDataLayerTests {
         let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
-        let useCase = DefaultLogUsageUseCase(repository: repository)
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
+        let clock = FixedClock(fixedNow: now)
+        let useCase = DefaultLogUsageUseCase(repository: repository, clock: clock)
 
-        let longNotes = String(repeating: "a", count: 501)
+        let longNotes = String(repeating: "a", count: TestConstants.Notes.overMaxLength)
 
         do {
             _ = try await useCase.execute(
@@ -201,16 +218,17 @@ struct UsageDataLayerTests {
         let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
-        let useCase = DefaultLogUsageUseCase(repository: repository)
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
+        let clock = FixedClock(fixedNow: now)
+        let useCase = DefaultLogUsageUseCase(repository: repository, clock: clock)
 
-        let maxNotes = String(repeating: "a", count: 500)
+        let maxNotes = String(repeating: "a", count: TestConstants.Notes.atMaxLength)
         let result = try await useCase.execute(
             LogUsageRequest(timestamp: now, method: "Bowls", amount: 1.0, notes: maxNotes)
         )
 
         #expect(result.notes == maxNotes)
-        #expect(result.notes?.count == 500)
+        #expect(result.notes?.count == TestConstants.Notes.atMaxLength)
     }
 
     // MARK: - Test 9: HAALT Triggers Validation
@@ -221,8 +239,9 @@ struct UsageDataLayerTests {
         let context = try Self.makeInMemoryContext()
 
         let repository = UsageRepository(modelContext: context)
-        let useCase = DefaultLogUsageUseCase(repository: repository)
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
+        let clock = FixedClock(fixedNow: now)
+        let useCase = DefaultLogUsageUseCase(repository: repository, clock: clock)
 
         // Test with all 10 HAALT triggers
         let allTriggers = TriggerOptions.all

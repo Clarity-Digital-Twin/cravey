@@ -29,8 +29,9 @@ struct ToastBanner: View {
             .task {
                 do {
                     try await Task.sleep(for: duration)
-                } catch {
+                } catch is CancellationError {
                     // Task cancelled - view dismissed early
+                    return
                 }
                 isPresented = false
             }

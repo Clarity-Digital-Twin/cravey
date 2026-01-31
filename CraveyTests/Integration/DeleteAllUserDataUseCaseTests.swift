@@ -18,8 +18,9 @@ struct DeleteAllUserDataUseCaseTests {
         let container = try ModelContainer(for: schema, configurations: config)
         let context = ModelContext(container)
 
-        context.insert(CravingModel(timestamp: Date(), intensity: 5))
-        context.insert(UsageModel(timestamp: Date(), method: "Bowls", amount: 1.0))
+        let now = TestConstants.fixedEpoch
+        context.insert(CravingModel(timestamp: now, intensity: 5))
+        context.insert(UsageModel(timestamp: now, method: "Bowls", amount: 1.0))
         context.insert(
             RecordingModel(
                 type: "audio",

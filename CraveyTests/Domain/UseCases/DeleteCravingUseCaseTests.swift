@@ -7,7 +7,7 @@ struct DeleteCravingUseCaseTests {
     @Test("execute deletes existing craving")
     func deleteExistingCraving() async throws {
         let mockRepo = DeleteCravingMockRepository()
-        let craving = CravingEntity(timestamp: Date(), intensity: 5)
+        let craving = CravingEntity(timestamp: TestConstants.fixedEpoch, intensity: 5)
         await mockRepo.addCraving(craving)
 
         let useCase = DefaultDeleteCravingUseCase(repository: mockRepo)
@@ -20,7 +20,7 @@ struct DeleteCravingUseCaseTests {
     @Test("execute calls repository delete with correct ID")
     func deleteCallsRepositoryWithCorrectId() async throws {
         let mockRepo = DeleteCravingMockRepository()
-        let craving = CravingEntity(timestamp: Date(), intensity: 5)
+        let craving = CravingEntity(timestamp: TestConstants.fixedEpoch, intensity: 5)
         await mockRepo.addCraving(craving)
 
         let useCase = DefaultDeleteCravingUseCase(repository: mockRepo)

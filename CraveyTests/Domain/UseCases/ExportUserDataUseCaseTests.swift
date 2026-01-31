@@ -6,7 +6,7 @@ import Testing
 struct ExportUserDataUseCaseTests {
     @Test("Export includes all user data types and sorts deterministically")
     func exportIncludesAllTypes() async throws {
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
 
         let cravings: [CravingEntity] = [
             CravingEntity(timestamp: now.addingTimeInterval(-50), intensity: 2, triggers: ["Bored"]),

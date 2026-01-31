@@ -88,9 +88,14 @@ actor MockFetchUsageUseCase: FetchUsageUseCase {
         if shouldThrow { throw MockFetchUsageError.fetchFailed }
         if returnEmpty { return [] }
 
+        let now = TestConstants.fixedEpoch
         return [
-            UsageEntity(timestamp: Date(), method: "Bowls", amount: 2.5),
-            UsageEntity(timestamp: Date().addingTimeInterval(-3600), method: "Edible", amount: 25.0),
+            UsageEntity(timestamp: now, method: "Bowls", amount: 2.5),
+            UsageEntity(
+                timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerHour),
+                method: "Edible",
+                amount: 25.0
+            ),
         ]
     }
 

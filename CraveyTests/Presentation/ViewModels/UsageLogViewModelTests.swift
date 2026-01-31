@@ -71,11 +71,11 @@ struct UsageLogViewModelTests {
         let viewModel = UsageLogViewModel(logUsageUseCase: mockUseCase)
 
         // Set notes to 501 characters (should truncate to 500)
-        let longNotes = String(repeating: "a", count: 501)
+        let longNotes = String(repeating: "a", count: TestConstants.Notes.overMaxLength)
         viewModel.notes = longNotes
 
-        #expect(viewModel.notes.count == 500)
-        #expect(viewModel.notesCharacterCount == 500)
+        #expect(viewModel.notes.count == TestConstants.Notes.atMaxLength)
+        #expect(viewModel.notesCharacterCount == TestConstants.Notes.atMaxLength)
         #expect(viewModel.shouldShowNotesCounter == true)
     }
 
@@ -84,10 +84,11 @@ struct UsageLogViewModelTests {
     @Test("Timestamp >7 days old should trigger warning")
     func oldTimestampWarning() {
         let mockUseCase = MockLogUsageUseCase()
-        let viewModel = UsageLogViewModel(logUsageUseCase: mockUseCase)
+        let now = TestConstants.fixedEpoch
+        let viewModel = UsageLogViewModel(logUsageUseCase: mockUseCase, nowProvider: { now })
 
         // Set timestamp to 8 days ago
-        let eightDaysAgo = Calendar.current.date(byAdding: .day, value: -8, to: Date()) ?? Date()
+        let eightDaysAgo = Calendar.current.date(byAdding: .day, value: -8, to: now) ?? now
         viewModel.timestamp = eightDaysAgo
 
         #expect(viewModel.isTimestampOld == true)

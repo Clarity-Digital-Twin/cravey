@@ -18,10 +18,14 @@ final class DefaultFetchUsageUseCase: FetchUsageUseCase, Sendable {
     }
 
     func execute() async throws -> [UsageEntity] {
-        try await repository.fetchAll()
+        let usages = try await repository.fetchAll()
+        // Business rule: Sort by timestamp descending (matches cravings)
+        return usages.sorted { $0.timestamp > $1.timestamp }
     }
 
     func execute(since date: Date) async throws -> [UsageEntity] {
-        try await repository.fetch(since: date)
+        let usages = try await repository.fetch(since: date)
+        // Business rule: Sort by timestamp descending
+        return usages.sorted { $0.timestamp > $1.timestamp }
     }
 }

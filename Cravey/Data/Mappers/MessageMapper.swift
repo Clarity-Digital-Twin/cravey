@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 
-private let logger = Logger(subsystem: "com.cravey.app", category: "MessageMapper")
+private let logger = Logger(subsystem: "com.cravey", category: "MessageMapper")
 
 /// Mapper between MotivationalMessageEntity (Domain) and MotivationalMessageModel (Data/SwiftData)
 enum MessageMapper {

@@ -153,14 +153,15 @@ actor MockExportUserDataUseCase: ExportUserDataUseCase {
     func execute() async throws -> UserDataExport {
         if shouldThrow { throw MockExportError.exportFailed }
 
+        let now = TestConstants.fixedEpoch
         return UserDataExport(
-            schemaVersion: 1,
-            exportDate: Date(),
+            schemaVersion: UserDataExport.currentSchemaVersion,
+            exportDate: now,
             cravings: [
-                CravingEntity(timestamp: Date(), intensity: 5, triggers: ["Stressed"]),
+                CravingEntity(timestamp: now, intensity: 5, triggers: ["Stressed"]),
             ],
             usages: [
-                UsageEntity(timestamp: Date(), method: "Bowls", amount: 1.0),
+                UsageEntity(timestamp: now, method: "Bowls", amount: 1.0),
             ],
             recordings: [],
             messages: []

@@ -21,11 +21,13 @@ struct UsageLogIntegrationTests {
 
         // Create real repository, use case, and ViewModel
         let repository = UsageRepository(modelContext: context)
-        let useCase = DefaultLogUsageUseCase(repository: repository)
-        let viewModel = UsageLogViewModel(logUsageUseCase: useCase)
+        let now = TestConstants.fixedEpoch
+        let clock = FixedClock(fixedNow: now)
+        let useCase = DefaultLogUsageUseCase(repository: repository, clock: clock)
+        let viewModel = UsageLogViewModel(logUsageUseCase: useCase, nowProvider: { now })
 
         // Simulate user filling form (Form → VM)
-        viewModel.timestamp = Date()
+        viewModel.timestamp = now
         viewModel.selectedMethod = "Vape"
         viewModel.amount = 5.0
         viewModel.selectedTriggers = ["Anxious", "Bored"]
@@ -67,8 +69,9 @@ struct UsageLogIntegrationTests {
         let context = ModelContext(container)
 
         // Insert test data directly into SwiftData
+        let now = TestConstants.fixedEpoch
         let usage1 = UsageModel(
-            timestamp: Date(),
+            timestamp: now,
             method: "Bowls",
             amount: 2.5,
             triggers: ["Bored"],
@@ -76,7 +79,7 @@ struct UsageLogIntegrationTests {
             notes: "Test entry 1"
         )
         let usage2 = UsageModel(
-            timestamp: Date().addingTimeInterval(-3600),
+            timestamp: now.addingTimeInterval(-TestConstants.Time.secondsPerHour),
             method: "Edible",
             amount: 10.0,
             triggers: ["Social"],
@@ -158,11 +161,13 @@ struct UsageLogIntegrationTests {
         let context = ModelContext(container)
 
         let repository = UsageRepository(modelContext: context)
-        let useCase = DefaultLogUsageUseCase(repository: repository)
-        let viewModel = UsageLogViewModel(logUsageUseCase: useCase)
+        let now = TestConstants.fixedEpoch
+        let clock = FixedClock(fixedNow: now)
+        let useCase = DefaultLogUsageUseCase(repository: repository, clock: clock)
+        let viewModel = UsageLogViewModel(logUsageUseCase: useCase, nowProvider: { now })
 
         // Set timestamp to 8 days ago (>7 days)
-        let eightDaysAgo = Calendar.current.date(byAdding: .day, value: -8, to: Date()) ?? Date()
+        let eightDaysAgo = Calendar.current.date(byAdding: .day, value: -8, to: now) ?? now
         viewModel.timestamp = eightDaysAgo
         viewModel.selectedMethod = "Bowls"
         viewModel.amount = 1.0
@@ -200,17 +205,19 @@ struct UsageLogIntegrationTests {
         let context = ModelContext(container)
 
         let repository = UsageRepository(modelContext: context)
-        let useCase = DefaultLogUsageUseCase(repository: repository)
-        let viewModel = UsageLogViewModel(logUsageUseCase: useCase)
+        let now = TestConstants.fixedEpoch
+        let clock = FixedClock(fixedNow: now)
+        let useCase = DefaultLogUsageUseCase(repository: repository, clock: clock)
+        let viewModel = UsageLogViewModel(logUsageUseCase: useCase, nowProvider: { now })
 
         // Set notes to 501 characters (should truncate to 500)
-        let longNotes = String(repeating: "a", count: 501)
+        let longNotes = String(repeating: "a", count: TestConstants.Notes.overMaxLength)
         viewModel.selectedMethod = "Bowls"
         viewModel.amount = 1.0
         viewModel.notes = longNotes
 
         // ViewModel should enforce limit
-        #expect(viewModel.notes.count == 500, "ViewModel should truncate to 500")
+        #expect(viewModel.notes.count == TestConstants.Notes.atMaxLength, "ViewModel should truncate to 500")
         #expect(viewModel.shouldShowNotesCounter == true)
 
         // Log usage
@@ -222,6 +229,6 @@ struct UsageLogIntegrationTests {
         #expect(saved.count == 1)
 
         let savedUsage = try #require(saved.first)
-        #expect(savedUsage.notes?.count == 500, "Saved notes should be truncated to 500")
+        #expect(savedUsage.notes?.count == TestConstants.Notes.atMaxLength, "Saved notes should be truncated to 500")
     }
 }

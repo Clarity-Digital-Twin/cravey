@@ -1,5 +1,3 @@
-import Foundation
-
 /// Static trigger options for craving/usage logging.
 /// Based on HAALT framework with additional emotional states
 /// Source: CLINICAL_CANNABIS_SPEC.md lines 196-198

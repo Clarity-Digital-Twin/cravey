@@ -47,10 +47,10 @@ struct CravingLogViewModelTests {
         let mockUseCase = MockLogCravingUseCase()
         let viewModel = CravingLogViewModel(logCravingUseCase: mockUseCase)
 
-        viewModel.notes = String(repeating: "a", count: 501)
+        viewModel.notes = String(repeating: "a", count: TestConstants.Notes.overMaxLength)
 
-        #expect(viewModel.notes.count == 500)
-        #expect(viewModel.notesCharacterCount == 500)
+        #expect(viewModel.notes.count == TestConstants.Notes.atMaxLength)
+        #expect(viewModel.notesCharacterCount == TestConstants.Notes.atMaxLength)
     }
 
     @Test("Cancelling a GPS request clears loading state and preserves new selection")

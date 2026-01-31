@@ -4,24 +4,12 @@ import Testing
 
 @Suite("MarkMessageShownUseCase Tests")
 struct MarkMessageShownUseCaseTests {
-    private struct FixedClock: Clock, Sendable {
-        let fixedNow: Date
-        let calendar: Calendar
-
-        init(fixedNow: Date, calendar: Calendar = Calendar(identifier: .gregorian)) {
-            self.fixedNow = fixedNow
-            self.calendar = calendar
-        }
-
-        func now() -> Date { fixedNow }
-    }
-
     // MARK: - Test 1: Increments timesShown
 
     @Test("execute should increment timesShown")
     func incrementsTimesShown() async throws {
         let mockRepo = MarkMessageMockRepository()
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
         let message = MotivationalMessageEntity(
             content: "Test message",
             category: .urge,
@@ -42,7 +30,7 @@ struct MarkMessageShownUseCaseTests {
     @Test("execute should set lastShownAt to current time")
     func setsLastShownAt() async throws {
         let mockRepo = MarkMessageMockRepository()
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
         let message = MotivationalMessageEntity(
             content: "Test message",
             category: .anxiety,
@@ -63,7 +51,7 @@ struct MarkMessageShownUseCaseTests {
     @Test("execute should call repository update")
     func callsRepositoryUpdate() async throws {
         let mockRepo = MarkMessageMockRepository()
-        let now = Date(timeIntervalSince1970: 1_000_000_000)
+        let now = TestConstants.fixedEpoch
         let message = MotivationalMessageEntity(
             content: "Test message",
             category: .boredom

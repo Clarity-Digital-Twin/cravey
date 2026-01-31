@@ -91,6 +91,7 @@ struct MessageRepositoryIntegrationTests {
         let context = ModelContext(container)
 
         let repository = MessageRepository(modelContext: context)
+        let now = TestConstants.fixedEpoch
 
         // Insert a message
         let originalEntity = MotivationalMessageEntity(
@@ -101,7 +102,7 @@ struct MessageRepositoryIntegrationTests {
             isActive: true,
             timesShown: 0,
             lastShownAt: nil,
-            createdAt: Date(),
+            createdAt: now,
             modifiedAt: nil
         )
         try await repository.save(originalEntity)
@@ -116,7 +117,7 @@ struct MessageRepositoryIntegrationTests {
             priority: 1,
             isActive: true,
             timesShown: 5,
-            lastShownAt: Date(),
+            lastShownAt: now,
             createdAt: originalEntity.createdAt,
             modifiedAt: specificModifiedAt
         )
