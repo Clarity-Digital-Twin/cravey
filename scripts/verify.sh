@@ -134,12 +134,12 @@ else
     -derivedDataPath "$DERIVED_DATA_PATH"
 fi
 
-echo "==> Unit tests (Mac Catalyst, code signing disabled)"
+echo "==> Unit tests (iOS Simulator, code signing disabled)"
 if command -v xcbeautify >/dev/null 2>&1; then
   xcodebuild test \
     -project Cravey.xcodeproj \
     -scheme Cravey \
-    -destination "platform=macOS,variant=Mac Catalyst,name=My Mac" \
+    -destination "platform=iOS Simulator,name=${IOS_SIMULATOR_NAME}" \
     -only-testing:CraveyTests \
     CODE_SIGNING_ALLOWED=NO \
     CODE_SIGNING_REQUIRED=NO \
@@ -150,7 +150,7 @@ else
   xcodebuild test \
     -project Cravey.xcodeproj \
     -scheme Cravey \
-    -destination "platform=macOS,variant=Mac Catalyst,name=My Mac" \
+    -destination "platform=iOS Simulator,name=${IOS_SIMULATOR_NAME}" \
     -only-testing:CraveyTests \
     CODE_SIGNING_ALLOWED=NO \
     CODE_SIGNING_REQUIRED=NO \
