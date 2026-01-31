@@ -18,8 +18,6 @@ struct UsageLogForm: View {
 
                 Section {
                     TimestampPicker(title: nil, date: $viewModel.timestamp)
-                } header: {
-                    Text("When")
                 }
 
                 // MARK: - Method/Amount Section
@@ -28,7 +26,7 @@ struct UsageLogForm: View {
                     // Method selector (radio button chips per UX_FLOW:363)
                     // BUG-003 FIX: Use SingleSelectChipSelector to avoid Set allocation per render
                     SingleSelectChipSelector(
-                        title: "Method (ROA)",
+                        title: "Method",
                         options: methods,
                         selectedValue: $viewModel.selectedMethod
                     )
