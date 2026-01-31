@@ -116,7 +116,9 @@ actor MockLogCravingUseCase: LogCravingUseCase {
 actor HangingLocationService: LocationServiceProtocol {
     func requestCurrentLocation() async -> LocationResult {
         do {
-            try await Task.sleep(for: .seconds(60))
+            // Long enough that the test reliably cancels the request before it completes,
+            // but short enough that a cancellation regression doesn't stall the suite.
+            try await Task.sleep(for: .seconds(5))
             return .success(latitude: 1.0, longitude: 2.0)
         } catch {
             return .cancelled

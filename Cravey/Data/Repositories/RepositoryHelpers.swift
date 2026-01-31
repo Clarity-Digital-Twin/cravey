@@ -7,7 +7,7 @@ import SwiftData
 enum RepositoryHelpers {
     /// Insert a model and save the context
     @MainActor
-    static func insertAndSave<M: PersistentModel>(_ model: M, in context: ModelContext) throws {
+    static func insertAndSave(_ model: some PersistentModel, in context: ModelContext) throws {
         context.insert(model)
         try context.save()
     }

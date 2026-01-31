@@ -1,7 +1,7 @@
 import Foundation
 
 /// Domain entity representing a craving episode
-/// Pure Swift - no framework dependencies
+/// Domain layer - no UI framework dependencies
 struct CravingEntity: Identifiable, Codable, Equatable, Hashable, Sendable {
     let id: UUID
     let timestamp: Date

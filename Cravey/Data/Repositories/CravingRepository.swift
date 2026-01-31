@@ -64,7 +64,7 @@ final class CravingRepository: CravingRepositoryProtocol {
             model.triggers = craving.triggers
             model.notes = craving.notes
             model.location = craving.location
-            model.modifiedAt = Date()
+            model.modifiedAt = craving.modifiedAt ?? Date()
 
             try modelContext.save()
         }

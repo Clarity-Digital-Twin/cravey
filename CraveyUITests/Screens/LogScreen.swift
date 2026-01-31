@@ -91,7 +91,7 @@ final class LogScreen: BaseScreen {
 
     func verifyLogScreenLoaded() -> Bool {
         // Check for the prompt text or button (no nav title anymore)
-        return waitForElement(logPromptText) ||
+        waitForElement(logPromptText) ||
             logCravingButton.waitForExistence(timeout: 3) ||
             logCravingText.waitForExistence(timeout: 3)
     }

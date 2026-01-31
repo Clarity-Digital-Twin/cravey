@@ -101,7 +101,7 @@ final class RecordingRepository: RecordingRepositoryProtocol {
             model.notes = recording.notes
             model.lastPlayedAt = recording.lastPlayedAt
             model.playCount = recording.playCount
-            model.modifiedAt = Date()
+            model.modifiedAt = recording.modifiedAt ?? Date()
 
             try modelContext.save()
         }

@@ -40,8 +40,8 @@ struct FormAlertsModifier<ViewModel: AnyObject & FormSubmission & TimestampWarni
 
 extension View {
     /// Adds standard form alerts (error alert + timestamp warning)
-    func formAlerts<ViewModel: AnyObject & FormSubmission & TimestampWarning & Observable>(
-        viewModel: ViewModel,
+    func formAlerts(
+        viewModel: some AnyObject & FormSubmission & TimestampWarning & Observable,
         entityName: String,
         confirmButtonTitle: String = "Continue Anyway",
         onTimestampConfirm: @escaping () async -> Void

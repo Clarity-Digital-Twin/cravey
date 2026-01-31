@@ -119,7 +119,7 @@ LocationSelector(viewModel: viewModel)
 ## Files to Modify
 
 | File | Change |
-|------|--------|
+| ---- | ------ |
 | Create `Cravey/Presentation/Views/Components/LocationSelector.swift` | New component |
 | `CravingLogForm.swift` | Replace ~25 lines with `LocationSelector(viewModel: viewModel)` |
 | `UsageLogForm.swift` | Replace ~25 lines with `LocationSelector(viewModel: viewModel)` |

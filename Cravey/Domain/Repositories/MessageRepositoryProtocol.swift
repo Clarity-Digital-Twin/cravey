@@ -21,6 +21,6 @@ protocol MessageRepositoryProtocol: Sendable {
     /// Update an existing message
     func update(_ message: MotivationalMessageEntity) async throws
 
-    /// Seed default messages if none exist
-    func seedDefaultMessagesIfNeeded() async throws
+    // NOTE: Seeding is handled at app startup (App layer), not in Domain.
+    // See DEBT-045 resolution.
 }

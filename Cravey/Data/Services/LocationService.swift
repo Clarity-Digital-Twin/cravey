@@ -74,13 +74,13 @@ final class LocationService: LocationServiceProtocol {
     private func handleAuthorizedStatus(_ status: CLAuthorizationStatus) async -> LocationResult {
         switch status {
         case .denied:
-            return .permissionDenied
+            .permissionDenied
         case .restricted:
-            return .permissionRestricted
+            .permissionRestricted
         case .authorizedWhenInUse, .authorizedAlways:
-            return await fetchLocation()
+            await fetchLocation()
         default:
-            return .error("Authorization not granted")
+            .error("Authorization not granted")
         }
     }
 

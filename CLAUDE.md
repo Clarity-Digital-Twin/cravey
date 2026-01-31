@@ -1,6 +1,6 @@
 # Cravey App - AI Agent Development Context
 
-**Last Updated:** 2026-01-29
+**Last Updated:** 2026-01-31
 **Current Status:** See `docs/PROJECT_STATUS.md` for authoritative status
 **Parity:** `AGENTS.md` and `CLAUDE.md` are redundant copies and must be kept in sync.
 
@@ -252,7 +252,9 @@ Cravey/
 │   ├── CraveyApp.swift         # @main entry point
 │   ├── DependencyContainer.swift
 │   ├── AppStartupHandler.swift # Startup initialization logic
-│   └── AppUnavailableView.swift
+│   ├── AppUnavailableView.swift
+│   └── Constants/
+│       └── InfrastructureConstants.swift  # Timeouts, storage limits (Data layer config)
 ├── Domain/                      # Pure Swift (NO frameworks)
 │   ├── Entities/               # Business models
 │   │   ├── CravingEntity.swift
@@ -298,8 +300,8 @@ Cravey/
     │   ├── FormSubmission.swift     # Loading/error/success state
     │   └── ListViewModel.swift      # Fetch/delete patterns
     ├── Constants/              # UI constants
-    │   ├── AppConstants.swift       # Timeouts, limits, defaults
-    │   └── UIConstants.swift        # Toast duration, etc.
+    │   ├── AppConstants.swift       # Form defaults (Presentation layer only)
+    │   └── UIConstants.swift        # Toast duration, animation timing
     ├── ViewModels/              # @Observable state
     │   ├── CravingLogViewModel.swift
     │   ├── CravingListViewModel.swift
@@ -333,7 +335,7 @@ CraveyTests/                     # Unit Tests
 ├── Integration/
 └── Presentation/ViewModels/
 
-CraveyUITests/                   # UI Tests (disabled - Swift 6 concurrency)
+CraveyUITests/                   # UI Tests (XCTest; uses --uitesting in-memory mode)
 ```
 
 ### Dependency Flow (Clean Architecture Rules)
@@ -530,21 +532,21 @@ ModelConfiguration(
 
 ### ✅ Technical Foundation
 - Clean Architecture folder structure
-- Domain layer (6 entities, 10 use case files, 4 repository protocols)
+- Domain layer (7 entities/value objects, 12 use case files, 4 repository protocols)
 - Data layer (4 models, 4 mappers, 4 repositories + RepositoryHelpers)
 - DependencyContainer with DI + AppStartupHandler
 - 4 shared ViewModel protocols (LocationHandling, TimestampWarning, FormSubmission, ListViewModel)
 - 4 reusable ViewModifiers (FormAlerts, FormToolbar, DeleteConfirmation, LocationPermissionAlert)
-- 6 ViewModels (CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings)
+- 7 ViewModels (CravingLog, CravingList, UsageLog, UsageList, Dashboard, Settings, HomeMotivation)
 - 10+ SwiftUI Views with reusable components (EmptyStateView, LocationSelector, etc.)
-- Centralized constants (AppConstants, ValidationLimits, UIConstants)
-- Unit tests (93 Swift Testing tests passing in `CraveyTests`)
+- Centralized constants (InfrastructureConstants (App), AppConstants/UIConstants (Presentation), ValidationLimits (Domain))
+- Unit tests (121 Swift Testing tests passing in `CraveyTests`)
+- UI tests (22 XCTest UI tests passing in `CraveyUITests`; optional via `scripts/verify.sh --ui`)
 - XcodeGen configuration
 
 ### 🚧 TODO (Not Implemented)
 - **Recording Views** - AVFoundation integration, recording/playback UI
 - **Onboarding** - WelcomeView, TourView not created
-- **UI Tests** - Scaffolding exists; not part of the automated convergence gate
 
 ---
 
@@ -642,8 +644,9 @@ func testLogValidCraving() async throws {
 ### UI Tests (Slow)
 **Run:** `xcodebuild test -scheme Cravey -destination 'platform=iOS Simulator,name=iPhone 17 Pro' -only-testing:CraveyUITests | xcbeautify`
 
-- Currently disabled due to Swift 6 strict concurrency
-- Will test end-to-end user flows when re-enabled
+- 22 tests covering craving/usage flows, navigation, and empty states
+- Uses `--uitesting` launch argument for in-memory SwiftData
+- Not part of automated CI gate (manual verification)
 
 ---
 

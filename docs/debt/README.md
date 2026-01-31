@@ -10,12 +10,17 @@ _None._
 
 ## Summary
 
-**Total Open Debt Items:** 0
+**Total Open Debt Items:** 0 🎉
 
-**Audit (2026-01-30):** Added items DEBT-037 through DEBT-044 and resolved them.
+**Audit (2026-01-30):** Resolved DEBT-045, DEBT-046, DEBT-047:
+- DEBT-045: Removed seeding from Domain layer (now App-only)
+- DEBT-046: Removed SwiftLint from build phase (verify.sh is the gate)
+- DEBT-047: Added 11 integration tests for MessageRepository + FileStorageManager
 
-**Recent Resolutions (2026-01-30):** Resolved 10 items:
-- **DEBT-037–044:** See `docs/_archive/debt/`
+**Previous Audit (2026-01-30):** Added items DEBT-037 through DEBT-044 and resolved them.
+
+**Recent Resolutions (2026-01-30):** Resolved 13 items total:
+- **DEBT-037–047:** See `docs/_archive/debt/`
 - **DEBT-026:** `LocationSelector` component adopted in both forms (~60 lines removed)
 - **DEBT-029:** `RepositoryHelpers` available for future use (opt-in helpers, no mandatory refactoring)
 
@@ -34,6 +39,9 @@ All resolved DEBT items are in `docs/_archive/debt/`.
 
 | ID | Summary | Resolved |
 | ---- | --------- | ---------- |
+| DEBT-047 | Integration tests for MessageRepository + FileStorageManager | 2026-01-30 |
+| DEBT-046 | SwiftLint removed from build phase | 2026-01-30 |
+| DEBT-045 | Seeding consolidated to App layer only | 2026-01-30 |
 | DEBT-044 | RecordingModel `filePath` docs inconsistent (AGENTS/CLAUDE vs code) | 2026-01-30 |
 | DEBT-043 | FileStorageManager unused APIs + temp cleanup semantics | 2026-01-30 |
 | DEBT-042 | Success toast/banner duplication + broad catch | 2026-01-30 |
