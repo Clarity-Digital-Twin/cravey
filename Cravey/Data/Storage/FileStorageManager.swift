@@ -126,9 +126,9 @@ actor FileStorageManager: RecordingFileDeleting {
                     try fileManager.moveItem(at: destinationURL, to: backupURL)
                 } catch let backupMoveError {
                     Self.logger.error(
-                        "replaceItemAt failed for \(destinationURL.path, privacy: .public): \(replaceError.localizedDescription). "
-                            + "Backup move failed: \(backupMoveError.localizedDescription)"
+                        "replaceItemAt failed for \(filename, privacy: .public): \(replaceError.localizedDescription)"
                     )
+                    Self.logger.error("Backup move failed: \(backupMoveError.localizedDescription)")
                     throw replaceError
                 }
 
