@@ -1,8 +1,13 @@
 # DEBT-049: Missing DeleteUsageUseCase Unit Tests
 
 **Created:** 2026-01-31
+**Resolved:** 2026-01-31
 **Priority:** P2 (Important)
-**Status:** Open
+**Status:** ✅ RESOLVED
+
+## Resolution
+
+- Added `CraveyTests/Domain/UseCases/DeleteUsageUseCaseTests.swift`.
 
 ## Problem
 

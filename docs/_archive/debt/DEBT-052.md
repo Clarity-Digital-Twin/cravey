@@ -1,8 +1,13 @@
 # DEBT-052: LogCravingUseCaseTests Uses Non-Deterministic Date()
 
 **Created:** 2026-01-31
+**Resolved:** 2026-01-31
 **Priority:** P3 (Architecture)
-**Status:** Open
+**Status:** ✅ RESOLVED
+
+## Resolution
+
+- Updated `CraveyTests/Domain/UseCases/LogCravingUseCaseTests.swift` to use `FixedClock` + `TestConstants.fixedEpoch`.
 
 ## Problem
 
